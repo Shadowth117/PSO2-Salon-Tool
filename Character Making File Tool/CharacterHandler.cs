@@ -533,6 +533,7 @@ namespace Character_Making_File_Tool
                     case 6:
                         ReadV6(streamReader);
                         break;
+                    case 8:
                     case 9:
                         ReadV9(streamReader);
                         break;
