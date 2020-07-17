@@ -70,17 +70,16 @@ namespace Character_Making_File_Tool
                 {
                     if (Path.GetExtension(openFileDialog.FileName).Equals(".cml", StringComparison.OrdinalIgnoreCase))
                     {
-                        MessageBox.Show("Sorry! That feature isn't supported yet!");
+                        characterHandler.ParseCML(openFileDialog.FileName);
                     }
                     else
                     {
                         characterHandler.ParseToStruct(characterHandler.DecryptFile(openFileDialog.FileName));
-
-                        //Setup UI
-                        genderButtons[(int)characterHandler.xxpGeneral.baseDOC.gender].Checked = true;
-                        raceButtons[(int)characterHandler.xxpGeneral.baseDOC.race].Checked = true;
                     }
-                    
+                    //Setup UI
+                    genderButtons[(int)characterHandler.xxpGeneral.baseDOC.gender].Checked = true;
+                    raceButtons[(int)characterHandler.xxpGeneral.baseDOC.race].Checked = true;
+
                     if (characterHandler.getVersion() != -1)
                     {
                         versionLabel.Text = "Version: " + characterHandler.getVersion();

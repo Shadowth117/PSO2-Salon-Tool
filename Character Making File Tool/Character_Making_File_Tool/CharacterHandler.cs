@@ -11,6 +11,7 @@ using System.Security.Cryptography;
 using System.Security.Policy;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Converters;
 using System.Windows.Forms;
 using System.Xml;
 using zamboni;
@@ -24,7 +25,8 @@ namespace Character_Making_File_Tool
     {
         private static uint CharacterBlowfishKey = 2588334024;
         private static int MinHeightSlider = -5501;
-        private static byte[] ConstantCMLHeader = { 0x56,0x54,0x42,0x46,0x10,0,0,0,0x43,0x4D,0x4C,0x50,0x1,0,0,0x4C};
+        private static int DeicerCMLType = 0x6C6D63;
+        private static byte[] ConstantCMLHeader = { 0x56, 0x54, 0x42, 0x46, 0x10, 0, 0, 0, 0x43, 0x4D, 0x4C, 0x50, 0x1, 0, 0, 0x4C };
         private int version;
         private Dictionary<int, int> fileSizes = new Dictionary<int, int>()
         {
@@ -34,6 +36,12 @@ namespace Character_Making_File_Tool
             { 1, 0x2DC}, //v6
             { 0, 0x2F0}  //v9
         };
+        private byte[] Vtc0 = { 0x76, 0x74, 0x63, 0x30 };
+        private byte[] DocText = { 0x44, 0x4F, 0x43, 0x20 };
+        private byte[] FigrText = { 0x46, 0x49, 0x47, 0x52 };
+        private byte[] OfstText = { 0x4F, 0x46, 0x53, 0x54 };
+        private byte[] ColrText = { 0x43, 0x4F, 0x4C, 0x52 };
+        private byte[] SlctText = { 0x53, 0x4C, 0x43, 0x54 };
 
         public XXPV2 xxpv2;
         public XXPV5 xxpv5;
@@ -81,7 +89,7 @@ namespace Character_Making_File_Tool
             public fixed int armVerts[3];
             public fixed int legVerts[3];
             public fixed int bustVerts[3];
-            public fixed int unkFIGR0Verts[3]; //?
+            public fixed int headVerts[3]; 
             public fixed int faceShapeVerts[3];
             public fixed int eyeShapeVerts[3];
             public fixed int noseHeightVerts[3];
@@ -98,7 +106,7 @@ namespace Character_Making_File_Tool
             public fixed int body2Verts[3];
             public fixed int arm2Verts[3];
             public fixed int leg2Verts[3];
-            public fixed int unkFIGR1Verts[3];
+            public fixed int bust2Verts[3];
             public fixed int neck2Verts[3];
             public fixed int waist2Verts[3];
         }
@@ -106,7 +114,7 @@ namespace Character_Making_File_Tool
         public struct BaseCOLR
         {
             //Color vertex positions. 0 to 60000 or 10000 to -10000. X, Y, and Saturation
-            public fixed int unkCOLR0Verts[3]; //Changed to copy of Main Color on changing body part allegedly
+            public fixed int outer_MainColorVerts[3]; //Changed to copy of Main Color on changing body part allegedly as well as Ou color
             public fixed int costumeColorVerts[3];
             public fixed int mainColor_hair2Verts[3];
             public fixed int subColor1Verts[3];
@@ -122,7 +130,8 @@ namespace Character_Making_File_Tool
             public uint costumePart;
             public uint bodypaintPart;
             public uint stickerPart;
-            public uint rightEyePart; //used for left eye as well prior to v9
+            public short rightEyePart; 
+            public short leftEyePart; //used for left eye prior to v9
             public uint eyebrowPart;
             public uint eyelashPart;
             public uint faceTypePart;
@@ -260,7 +269,7 @@ namespace Character_Making_File_Tool
             public BaseDOC baseDOC;
             public byte skinVariant; //0 or above 3 for default, 1 for human, 2 for dewman, 3 for cast. This decides the color map used for the skin. 
             public sbyte eyebrowDensity; //-100 to 100 
-            public short DOCUnk0;
+            public short cmlVariant;
 
             //FIGR 0x20
             public BaseFIGR baseFIGR;
@@ -279,7 +288,7 @@ namespace Character_Making_File_Tool
             //SLCT 0x248 - .cmx piece references.
             public BaseSLCT baseSLCT;
             public BaseSLCT2 baseSLCT2;
-            public uint leftEyePart;
+            public uint rightEyePart;
 
             //Padding 3 0x29C - Padding to a multiple of 0x10 + 0x20 bytes + padding of 0x8?
             public uint padding3Start;
@@ -306,7 +315,7 @@ namespace Character_Making_File_Tool
             public BaseDOC baseDOC;
             public byte skinVariant; //0 or above 3 for default, 1 for human, 2 for dewman, 3 for cast. This decides the color map used for the skin. 
             public sbyte eyebrowDensity; //-100 to 100 
-            public short DOCUnk0;
+            public short cmlVariant;
 
             //FIGR 
             public BaseFIGR baseFIGR;
@@ -318,7 +327,7 @@ namespace Character_Making_File_Tool
             //SLCT  .cmx piece references.
             public BaseSLCT baseSLCT;
             public BaseSLCT2 baseSLCT2;
-            public uint leftEyePart;
+            public uint rightEyePart;
 
             //Accessory - Position Scale Rotation, stored as nibbles in v6. In v9, range is -126 to 126
             public fixed byte accessorySlidersv6[18]; //18 bytes.
@@ -329,12 +338,20 @@ namespace Character_Making_File_Tool
 
         }
 
+        public void ArrayGetValue(Dictionary<int, int[]> dict, int key, out int[] value)
+        {
+            dict.TryGetValue(key, out value);
+            if(value == null)
+            {
+                value = new int[] { 0 };
+            }
+        }
 
         //Expects two fixed int arrays of same length
         public unsafe void ArrayOfIntsSwap(int* array1, int* array2, int length)
         {
             int temp;
-            for(int i = 0; i < length; i++)
+            for (int i = 0; i < length; i++)
             {
                 temp = array1[i];
                 array1[i] = array2[i];
@@ -342,7 +359,34 @@ namespace Character_Making_File_Tool
             }
         }
 
-        public byte[] DecryptFile(string inFilename)
+        public bool CheckForV6AccSliders(Dictionary<int, int[]> dict)
+        {
+            if (dict.ContainsKey(0x80) || dict.ContainsKey(0x81) || dict.ContainsKey(0x82) || dict.ContainsKey(0x83)
+                || dict.ContainsKey(0x84) || dict.ContainsKey(0x85) || dict.ContainsKey(0x86) || dict.ContainsKey(0x87)
+                || dict.ContainsKey(0x88) )
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        public bool CheckForV9AccSliders(Dictionary<int, int[]> dict)
+        {
+            if (dict.ContainsKey(0x90) || dict.ContainsKey(0x91) || dict.ContainsKey(0x92) || dict.ContainsKey(0x93)
+                || dict.ContainsKey(0x95) || dict.ContainsKey(0x96) || dict.ContainsKey(0x97) || dict.ContainsKey(0x98)
+                || dict.ContainsKey(0x9B) || dict.ContainsKey(0x9C) || dict.ContainsKey(0x9D) || dict.ContainsKey(0x9E))
+            {
+                return true;
+            } else
+            {
+                return false;
+            }
+        }
+
+    public byte[] DecryptFile(string inFilename)
         {
             byte[] fileVersion = new byte[4];
             byte[] header;
@@ -458,6 +502,29 @@ namespace Character_Making_File_Tool
                 }
             }
 
+            //Swap eye colors for cml from xxp and vice versa since it's needed.
+            if (version != -1 && saveVersion == 4 && (xxpGeneral.baseDOC.race == 3))
+            {
+                version = -1;
+                fixed (int* pointer = xxpGeneral.baseCOLR.rightEye_EyesVerts)
+                {
+                    fixed (int* pointer2 = xxpGeneral.baseCOLR.subColor3_leftEye_castHair2Verts)
+                    {
+                        ArrayOfIntsSwap(pointer, pointer2, 3);
+                    }
+                }
+            } else if (version == -1 && saveVersion != 4 && (xxpGeneral.baseDOC.race == 3))
+            {
+                version = 9;
+                fixed (int* pointer = xxpGeneral.baseCOLR.rightEye_EyesVerts)
+                {
+                    fixed (int* pointer2 = xxpGeneral.baseCOLR.subColor3_leftEye_castHair2Verts)
+                    {
+                        ArrayOfIntsSwap(pointer, pointer2, 3);
+                    }
+                }
+            }
+
             using (MemoryStream xxpMem = new MemoryStream())
             {
                 switch (saveVersion)
@@ -479,6 +546,7 @@ namespace Character_Making_File_Tool
                         body = SetupV2();
                         break;
                     case 4:
+
                         windowVersion = "cml";
                         SaveCML(filename);
                         return;
@@ -523,32 +591,249 @@ namespace Character_Making_File_Tool
 
         public void ParseCML(string inFilename)
         {
+            this.version = -1;
+            Dictionary<int, int[]> tagStructs = new Dictionary<int, int[]>();
+
             using (Stream stream = (Stream)new FileStream(inFilename, FileMode.Open))
             using (var streamReader = new BufferedStreamReader(stream, 8192))
             {
-                streamReader.Seek(0x10, SeekOrigin.Begin);
+                //Handle deicer cmls too
+                if (streamReader.Read<int>() == DeicerCMLType)
+                {
+                    streamReader.Seek(0x4C, SeekOrigin.Current);
+                } else
+                {
+                    streamReader.Seek(0xC, SeekOrigin.Current);
+                }
+                
                 while(streamReader.CanRead(0x10))
                 {
                     streamReader.Seek(0x8, SeekOrigin.Current); //We don't really need the vtc0 information as long as everything else is written correctly.
                     int structType = streamReader.Read<int>();
                     streamReader.Seek(0x2, SeekOrigin.Current);
                     short structCount = streamReader.Read<short>();
-
-                    switch(structType)
-                    {
-                        case 0x52474946: //FIGR
-                            //ReadFIGR(streamReader, structCount);
-                            break;
-                        default:
-                            MessageBox.Show("" + structType + " " + inFilename);
-                            break;
-                    }
-                    /*
+                    
                     for(int i = 0; i < structCount; i++)
                     {
-
-                    }*/
+                        int id = streamReader.Read<byte>();
+                        int subStructDataType = streamReader.Read<byte>();
+                        switch(subStructDataType)
+                        {
+                            case 0x8: //DOC or SLCT data - Two shorts possibly? Seemingly fine to read as an int32 since short 2 seems blank in character files
+                                tagStructs[id] = new int[] { streamReader.Read<int>() };
+                                break;
+                            case 0x48: //FIGR or COLR data - Array of 3 int32s
+                                streamReader.Seek(0x1, SeekOrigin.Current); //Skip byte 0x1 that follows 0x48
+                                tagStructs[id] = new int[] { streamReader.Read<int>(), streamReader.Read<int>(), streamReader.Read<int>() };
+                                break;
+                            case 0x83: //OFST data - Array of 4 signed bytes, first byte always observed as 0x2. 
+                                streamReader.Seek(0x1, SeekOrigin.Current); //Skip byte 0x8 that follows 0x83
+                                tagStructs[id] = new int[] { streamReader.Read<sbyte>(), streamReader.Read<sbyte>(), streamReader.Read<sbyte>(), streamReader.Read<sbyte>() };
+                                break;
+                            default:
+                                MessageBox.Show(inFilename + " " + subStructDataType + " Position: " + streamReader.Position());
+                                break;
+                        }
+                    }
                 }
+            }
+
+            //Throw together an xxpGeneral based on the dictionary. Main thing to watch for is the accessory 
+            xxpGeneral = new XXPGeneral();
+            int[] value = { 0, 0, 0};
+
+            //DOC
+            ArrayGetValue(tagStructs, 0x70, out value); xxpGeneral.baseDOC.race = (uint)value[0];
+            ArrayGetValue(tagStructs, 0x71, out value); xxpGeneral.baseDOC.gender = (uint)value[0];
+            ArrayGetValue(tagStructs, 0x72, out value); xxpGeneral.baseDOC.muscleMass = value[0];
+            ArrayGetValue(tagStructs, 0x73, out value); xxpGeneral.cmlVariant = (byte)value[0];
+            ArrayGetValue(tagStructs, 0x74, out value); xxpGeneral.eyebrowDensity = (sbyte)value[0];
+            ArrayGetValue(tagStructs, 0x75, out value); xxpGeneral.skinVariant = (byte)value[0];
+
+            //FIGR
+            ArrayGetValue(tagStructs, 0x0, out value); for (int i = 0; i < 3; i++) { xxpGeneral.baseFIGR.bodyVerts[i] = TryGetIndex(value, i); }
+            ArrayGetValue(tagStructs, 0x1, out value); for (int i = 0; i < 3; i++) { xxpGeneral.baseFIGR.armVerts[i] = TryGetIndex(value, i); }
+            ArrayGetValue(tagStructs, 0x2, out value); for (int i = 0; i < 3; i++) { xxpGeneral.baseFIGR.legVerts[i] = TryGetIndex(value, i); }
+            ArrayGetValue(tagStructs, 0x3, out value); for (int i = 0; i < 3; i++) { xxpGeneral.baseFIGR.bustVerts[i] = TryGetIndex(value, i); }
+            ArrayGetValue(tagStructs, 0x4, out value); for (int i = 0; i < 3; i++) { xxpGeneral.baseFIGR.headVerts[i] = TryGetIndex(value, i); }
+            ArrayGetValue(tagStructs, 0x5, out value); for (int i = 0; i < 3; i++) { xxpGeneral.baseFIGR.faceShapeVerts[i] = TryGetIndex(value, i); }
+            ArrayGetValue(tagStructs, 0x6, out value); for (int i = 0; i < 3; i++) { xxpGeneral.baseFIGR.eyeShapeVerts[i] = TryGetIndex(value, i); }
+            ArrayGetValue(tagStructs, 0x7, out value); for (int i = 0; i < 3; i++) { xxpGeneral.baseFIGR.noseHeightVerts[i] = TryGetIndex(value, i); }
+            ArrayGetValue(tagStructs, 0x8, out value); for (int i = 0; i < 3; i++) { xxpGeneral.baseFIGR.noseShapeVerts[i] = TryGetIndex(value, i); }
+            ArrayGetValue(tagStructs, 0x9, out value); for (int i = 0; i < 3; i++) { xxpGeneral.baseFIGR.mouthVerts[i] = TryGetIndex(value, i); }
+            ArrayGetValue(tagStructs, 0xA, out value); for (int i = 0; i < 3; i++) { xxpGeneral.baseFIGR.ear_hornVerts[i] = TryGetIndex(value, i); }
+            ArrayGetValue(tagStructs, 0xC, out value); for (int i = 0; i < 3; i++) { xxpGeneral.baseFIGR2.neckVerts[i] = TryGetIndex(value, i); }
+            ArrayGetValue(tagStructs, 0xD, out value); for (int i = 0; i < 3; i++) { xxpGeneral.baseFIGR2.waistVerts[i] = TryGetIndex(value, i); }
+            ArrayGetValue(tagStructs, 0x10, out value); for (int i = 0; i < 3; i++) { xxpGeneral.baseFIGR2.body2Verts[i] = TryGetIndex(value, i); }
+            ArrayGetValue(tagStructs, 0x11, out value); for (int i = 0; i < 3; i++) { xxpGeneral.baseFIGR2.arm2Verts[i] = TryGetIndex(value, i); }
+            ArrayGetValue(tagStructs, 0x12, out value); for (int i = 0; i < 3; i++) { xxpGeneral.baseFIGR2.leg2Verts[i] = TryGetIndex(value, i); }
+            ArrayGetValue(tagStructs, 0x13, out value); for (int i = 0; i < 3; i++) { xxpGeneral.baseFIGR2.bust2Verts[i] = TryGetIndex(value, i); }
+            ArrayGetValue(tagStructs, 0x14, out value); for (int i = 0; i < 3; i++) { xxpGeneral.baseFIGR2.neck2Verts[i] = TryGetIndex(value, i); }
+            ArrayGetValue(tagStructs, 0x15, out value); for (int i = 0; i < 3; i++) { xxpGeneral.baseFIGR2.waist2Verts[i] = TryGetIndex(value, i); }
+
+            //Fill in accessory values
+            for (int i = 0; i < 36; i++)
+            {
+                xxpGeneral.accessorySliders[i] = 0;
+            }
+            for (int i = 0; i < 18; i++)
+            {
+                xxpGeneral.accessorySlidersv6[i] = 0;
+            }
+
+            //Check if we're using the newer format or not
+            if (xxpGeneral.cmlVariant >= 0x5)
+            {
+                //Set up v9 accessories
+                int typeIterator = 0;
+                for (int i = 0; i < 12; i++)
+                {
+                    switch (typeIterator)
+                    {
+                        case 4:
+                            typeIterator = 1;
+                            break;
+                        case 8:
+                            typeIterator = 2;
+                            break;
+                        default:
+                            break;
+                    }
+
+                    ArrayGetValue(tagStructs, 0x90 + i, out value); List<byte> byteList = (BitConverter.GetBytes(value[0])).ToList();
+                    xxpGeneral.accessorySlidersv6[i * 3 + typeIterator] = byteList.ElementAtOrDefault(0);
+                    xxpGeneral.accessorySlidersv6[i * 3 + typeIterator + 1] = byteList.ElementAtOrDefault(1);
+                    xxpGeneral.accessorySlidersv6[i * 3 + typeIterator + 2] = byteList.ElementAtOrDefault(2);
+                }
+
+                ConvertV9toV6Sliders();
+            }
+            else
+            {
+                //Set up v6 accessories
+                for (int i = 0; i < 9; i++)
+                {
+                    ArrayGetValue(tagStructs, 0x80 + i, out value); List<byte> byteList = (BitConverter.GetBytes(value[0])).ToList();
+                    xxpGeneral.accessorySlidersv6[i * 2] = byteList.ElementAtOrDefault(0);
+                    xxpGeneral.accessorySlidersv6[i * 2 + 1] = byteList.ElementAtOrDefault(1);
+                }
+
+                SwapV6RotationScale();
+
+                ConvertV6toV9Sliders();
+            }
+
+            //COLR
+            ArrayGetValue(tagStructs, 0x27, out value); for (int i = 0; i < 3; i++) { xxpGeneral.baseCOLR.outer_MainColorVerts[i] = TryGetIndex(value, i); }
+            ArrayGetValue(tagStructs, 0x20, out value); for (int i = 0; i < 3; i++) { xxpGeneral.baseCOLR.costumeColorVerts[i] = TryGetIndex(value, i); }
+            ArrayGetValue(tagStructs, 0x21, out value); for (int i = 0; i < 3; i++) { xxpGeneral.baseCOLR.mainColor_hair2Verts[i] = TryGetIndex(value, i); }
+            ArrayGetValue(tagStructs, 0x22, out value); for (int i = 0; i < 3; i++) { xxpGeneral.baseCOLR.subColor1Verts[i] = TryGetIndex(value, i); }
+            ArrayGetValue(tagStructs, 0x23, out value); for (int i = 0; i < 3; i++) { xxpGeneral.baseCOLR.skinSubColor2Verts[i] = TryGetIndex(value, i); }
+            ArrayGetValue(tagStructs, 0x24, out value); for (int i = 0; i < 3; i++) { xxpGeneral.baseCOLR.subColor3_leftEye_castHair2Verts[i] = TryGetIndex(value, i); }
+            ArrayGetValue(tagStructs, 0x25, out value); for (int i = 0; i < 3; i++) { xxpGeneral.baseCOLR.rightEye_EyesVerts[i] = TryGetIndex(value, i); }
+
+            //Technically in the data twice, but we only read it once. It's copy pasted in all observed instances
+            ArrayGetValue(tagStructs, 0x26, out value); for (int i = 0; i < 3; i++) { xxpGeneral.baseCOLR.hairVerts[i] = TryGetIndex(value, i); }
+
+            //SLCT
+            ArrayGetValue(tagStructs, 0x40, out value); xxpGeneral.baseSLCT.costumePart = (uint)value[0];
+            ArrayGetValue(tagStructs, 0x41, out value); xxpGeneral.baseSLCT.bodypaintPart = (uint)value[0];
+            ArrayGetValue(tagStructs, 0x42, out value); xxpGeneral.baseSLCT.stickerPart = (uint)value[0];
+            ArrayGetValue(tagStructs, 0x44, out value); xxpGeneral.baseSLCT.eyebrowPart = (uint)value[0];
+            ArrayGetValue(tagStructs, 0x45, out value); xxpGeneral.baseSLCT.eyelashPart = (uint)value[0];
+            ArrayGetValue(tagStructs, 0x46, out value); xxpGeneral.baseSLCT.faceTypePart = (uint)value[0];
+            ArrayGetValue(tagStructs, 0x47, out value); xxpGeneral.baseSLCT.unknownPart = (uint)value[0];
+            ArrayGetValue(tagStructs, 0x48, out value); xxpGeneral.baseSLCT.makeup1Part = (uint)value[0];
+            ArrayGetValue(tagStructs, 0x49, out value); xxpGeneral.baseSLCT.hairPart = (uint)value[0];
+            ArrayGetValue(tagStructs, 0x50, out value); xxpGeneral.baseSLCT.acc1Part = (uint)value[0];
+            ArrayGetValue(tagStructs, 0x51, out value); xxpGeneral.baseSLCT.acc2Part = (uint)value[0];
+            ArrayGetValue(tagStructs, 0x52, out value); xxpGeneral.baseSLCT.acc3Part = (uint)value[0];
+            ArrayGetValue(tagStructs, 0x53, out value); xxpGeneral.baseSLCT.makeup2Part = (uint)value[0];
+            ArrayGetValue(tagStructs, 0x54, out value); xxpGeneral.baseSLCT.legPart = (uint)value[0];
+            ArrayGetValue(tagStructs, 0x55, out value); xxpGeneral.baseSLCT.armPart = (uint)value[0];
+            ArrayGetValue(tagStructs, 0x56, out value); xxpGeneral.baseSLCT2.acc4Part = (uint)value[0];
+            ArrayGetValue(tagStructs, 0x57, out value); xxpGeneral.baseSLCT2.basewearPart = (uint)value[0];
+            ArrayGetValue(tagStructs, 0x58, out value); xxpGeneral.baseSLCT2.innerwearPart = (uint)value[0];
+            ArrayGetValue(tagStructs, 0x59, out value); xxpGeneral.baseSLCT2.bodypaint2Part = (uint)value[0];
+
+            //Handle eye part
+            if (tagStructs.ContainsKey(0x63))
+            {
+                ArrayGetValue(tagStructs, 0x43, out value); xxpGeneral.baseSLCT.leftEyePart = (short)value[0];
+                ArrayGetValue(tagStructs, 0x63, out value); xxpGeneral.rightEyePart = (uint)value[0];
+            }
+            else
+            {
+                ArrayGetValue(tagStructs, 0x43, out value);
+                byte[] eyes = BitConverter.GetBytes(value[0]);
+
+                xxpGeneral.baseSLCT.leftEyePart = BitConverter.ToInt16(eyes, 0);
+                xxpGeneral.rightEyePart = BitConverter.ToUInt16(eyes, 2);
+            }
+
+
+            //SLCT 2 - Body Paint Priority
+            ArrayGetValue(tagStructs, 0x60, out value); xxpGeneral.paintPriority.priority1 = (ushort)value[0];
+            ArrayGetValue(tagStructs, 0x61, out value); xxpGeneral.paintPriority.priority2 = (ushort)value[0];
+            ArrayGetValue(tagStructs, 0x62, out value); xxpGeneral.paintPriority.priority3 = (ushort)value[0];
+
+        }
+
+        private void SwapV6RotationScale()
+        {
+            //Swap Rotation and Scale to get consistency with other formats
+            byte[] temp = {xxpGeneral.accessorySlidersv6[6], xxpGeneral.accessorySlidersv6[7], xxpGeneral.accessorySlidersv6[8],
+                    xxpGeneral.accessorySlidersv6[9], xxpGeneral.accessorySlidersv6[10], xxpGeneral.accessorySlidersv6[11] };
+
+            for (int i = 6; i < 12; i++)
+            {
+                xxpGeneral.accessorySlidersv6[i] = xxpGeneral.accessorySlidersv6[i + 6];
+            }
+            for (int i = 12; i < 18; i++)
+            {
+                xxpGeneral.accessorySlidersv6[i] = temp[i - 12];
+            }
+        }
+
+        private void ConvertV6toV9Sliders()
+        {
+            //Set up v9 accessories
+            for (int i = 0; i < 3; i++)
+            {
+                //Accessory 1 Y+Z
+                SignednibbleUnpack(xxpGeneral.accessorySlidersv6[i * 6], out xxpGeneral.accessorySliders[i * 12 + 1], out xxpGeneral.accessorySliders[i * 12 + 2]);
+                //Accessory 4 X + Accessory 1 X
+                SignednibbleUnpack(xxpGeneral.accessorySlidersv6[i * 6 + 1], out xxpGeneral.accessorySliders[i * 12 + 9], out xxpGeneral.accessorySliders[i * 12]);
+                //Accessory 2 Y+Z
+                SignednibbleUnpack(xxpGeneral.accessorySlidersv6[i * 6 + 2], out xxpGeneral.accessorySliders[i * 12 + 4], out xxpGeneral.accessorySliders[i * 12 + 5]);
+                //Accessory 4 Y + Accessory 2 X
+                SignednibbleUnpack(xxpGeneral.accessorySlidersv6[i * 6 + 3], out xxpGeneral.accessorySliders[i * 12 + 10], out xxpGeneral.accessorySliders[i * 12 + 3]);
+                //Accessory 3 Y+Z
+                SignednibbleUnpack(xxpGeneral.accessorySlidersv6[i * 6 + 4], out xxpGeneral.accessorySliders[i * 12 + 7], out xxpGeneral.accessorySliders[i * 12 + 8]);
+                //Accessory 4 Y + Accessory 3 X
+                SignednibbleUnpack(xxpGeneral.accessorySlidersv6[i * 6 + 5], out xxpGeneral.accessorySliders[i * 12 + 11], out xxpGeneral.accessorySliders[i * 12 + 6]);
+            }
+        }
+
+        private void ConvertV9toV6Sliders()
+        {
+            //Set up v6 accessories
+            for (int i = 0; i < 3; i++)
+            {
+                //Accessory 1 Y+Z
+                xxpGeneral.accessorySlidersv6[i * 6] = SignednibblePack(xxpGeneral.accessorySliders[i * 12 + 1], xxpGeneral.accessorySliders[i * 12 + 2]);
+                //Accessory 4 X + Accessory 1 X
+                xxpGeneral.accessorySlidersv6[i * 6 + 1] = SignednibblePack(xxpGeneral.accessorySliders[i * 12 + 9], xxpGeneral.accessorySliders[i * 12]);
+
+                //Accessory 2 Y+Z
+                xxpGeneral.accessorySlidersv6[i * 6 + 2] = SignednibblePack(xxpGeneral.accessorySliders[i * 12 + 4], xxpGeneral.accessorySliders[i * 12 + 5]);
+                //Accessory 4 Y + Accessory 2 X
+                xxpGeneral.accessorySlidersv6[i * 6 + 3] = SignednibblePack(xxpGeneral.accessorySliders[i * 12 + 10], xxpGeneral.accessorySliders[i * 12 + 3]);
+
+                //Accessory 3 Y+Z
+                xxpGeneral.accessorySlidersv6[i * 6 + 4] = SignednibblePack(xxpGeneral.accessorySliders[i * 12 + 7], xxpGeneral.accessorySliders[i * 12 + 8]);
+                //Accessory 4 Y + Accessory 3 X
+                xxpGeneral.accessorySlidersv6[i * 6 + 5] = SignednibblePack(xxpGeneral.accessorySliders[i * 12 + 11], xxpGeneral.accessorySliders[i * 12 + 6]);
             }
         }
 
@@ -597,7 +882,7 @@ namespace Character_Making_File_Tool
                 xxpGeneral.baseFIGR2.arm2Verts[i] = xxpGeneral.baseFIGR.armVerts[i];
                 xxpGeneral.baseFIGR2.body2Verts[i] = xxpGeneral.baseFIGR.bodyVerts[i];
                 xxpGeneral.baseFIGR2.leg2Verts[i] = xxpGeneral.baseFIGR.legVerts[i];
-                xxpGeneral.baseFIGR2.unkFIGR1Verts[i] = xxpGeneral.baseFIGR.unkFIGR0Verts[i];
+                xxpGeneral.baseFIGR2.bust2Verts[i] = xxpGeneral.baseFIGR.headVerts[i];
                 xxpGeneral.baseFIGR2.neckVerts[i] = 0;
                 xxpGeneral.baseFIGR2.neck2Verts[i] = 0;
                 xxpGeneral.baseFIGR2.waistVerts[i] = 0;
@@ -630,7 +915,7 @@ namespace Character_Making_File_Tool
                 xxpGeneral.baseFIGR2.arm2Verts[i] = xxpGeneral.baseFIGR.armVerts[i];
                 xxpGeneral.baseFIGR2.body2Verts[i] = xxpGeneral.baseFIGR.bodyVerts[i];
                 xxpGeneral.baseFIGR2.leg2Verts[i] = xxpGeneral.baseFIGR.legVerts[i];
-                xxpGeneral.baseFIGR2.unkFIGR1Verts[i] = xxpGeneral.baseFIGR.unkFIGR0Verts[i];
+                xxpGeneral.baseFIGR2.bust2Verts[i] = xxpGeneral.baseFIGR.headVerts[i];
                 xxpGeneral.baseFIGR2.neckVerts[i] = 0;
                 xxpGeneral.baseFIGR2.neck2Verts[i] = 0;
                 xxpGeneral.baseFIGR2.waistVerts[i] = 0;
@@ -696,21 +981,7 @@ namespace Character_Making_File_Tool
             {
                 xxpGeneral.accessorySlidersv6[i] = streamReader.Read<byte>();
             }
-            for (int i = 0; i < 3; i++)
-            {
-                //Accessory 1 Y+Z
-                SignednibbleUnpack(xxpGeneral.accessorySlidersv6[i * 6], out xxpGeneral.accessorySliders[i * 12 + 1], out xxpGeneral.accessorySliders[i * 12 + 2]);
-                //Accessory 4 X + Accessory 1 X
-                SignednibbleUnpack(xxpGeneral.accessorySlidersv6[i * 6 + 1], out xxpGeneral.accessorySliders[i * 12 + 9], out xxpGeneral.accessorySliders[i * 12]);
-                //Accessory 2 Y+Z
-                SignednibbleUnpack(xxpGeneral.accessorySlidersv6[i * 6 + 2], out xxpGeneral.accessorySliders[i * 12 + 4], out xxpGeneral.accessorySliders[i * 12 + 5]);
-                //Accessory 4 Y + Accessory 2 X
-                SignednibbleUnpack(xxpGeneral.accessorySlidersv6[i * 6 + 3], out xxpGeneral.accessorySliders[i * 12 + 10], out xxpGeneral.accessorySliders[i * 12 + 3]);
-                //Accessory 3 Y+Z
-                SignednibbleUnpack(xxpGeneral.accessorySlidersv6[i * 6 + 4], out xxpGeneral.accessorySliders[i * 12 + 7], out xxpGeneral.accessorySliders[i * 12 + 8]);
-                //Accessory 4 Y + Accessory 3 X
-                SignednibbleUnpack(xxpGeneral.accessorySlidersv6[i * 6 + 5], out xxpGeneral.accessorySliders[i * 12 + 11], out xxpGeneral.accessorySliders[i * 12 + 6]);
-            }
+            ConvertV6toV9Sliders();
             xxpGeneral.paintPriority = streamReader.Read<PaintPriority>();
         }
 
@@ -720,7 +991,7 @@ namespace Character_Making_File_Tool
             xxpGeneral.baseDOC = streamReader.Read<BaseDOC>();
             xxpGeneral.skinVariant = streamReader.Read<byte>();
             xxpGeneral.eyebrowDensity = streamReader.Read<sbyte>();
-            xxpGeneral.DOCUnk0 = streamReader.Read<short>();
+            xxpGeneral.cmlVariant = streamReader.Read<short>();
 
             xxpGeneral.baseFIGR = streamReader.Read<BaseFIGR>();
             xxpGeneral.baseFIGR2 = streamReader.Read<BaseFIGR2>();
@@ -733,7 +1004,7 @@ namespace Character_Making_File_Tool
             
             xxpGeneral.baseSLCT = streamReader.Read<BaseSLCT>();
             xxpGeneral.baseSLCT2 = streamReader.Read<BaseSLCT2>();
-            xxpGeneral.leftEyePart = streamReader.Read<uint>();
+            xxpGeneral.rightEyePart = streamReader.Read<uint>();
 
             streamReader.Seek(0x2C, SeekOrigin.Current);
 
@@ -741,45 +1012,22 @@ namespace Character_Making_File_Tool
             {
                 xxpGeneral.accessorySliders[i] = streamReader.Read<sbyte>();
             }
-            for(int i = 0; i < 3; i++)
-            {
-                //Accessory 1 Y+Z
-                xxpGeneral.accessorySlidersv6[i * 6] = SignednibblePack(xxpGeneral.accessorySliders[i * 12 + 1], xxpGeneral.accessorySliders[i * 12 + 2]);
-                //Accessory 4 X + Accessory 1 X
-                xxpGeneral.accessorySlidersv6[i * 6 + 1] = SignednibblePack(xxpGeneral.accessorySliders[i * 12 + 9], xxpGeneral.accessorySliders[i * 12]);
-
-                //Accessory 2 Y+Z
-                xxpGeneral.accessorySlidersv6[i * 6 + 2] = SignednibblePack(xxpGeneral.accessorySliders[i * 12 + 4], xxpGeneral.accessorySliders[i * 12 + 5]);
-                //Accessory 4 Y + Accessory 2 X
-                xxpGeneral.accessorySlidersv6[i * 6 + 3] = SignednibblePack(xxpGeneral.accessorySliders[i * 12 + 10], xxpGeneral.accessorySliders[i * 12 + 3]);
-
-                //Accessory 3 Y+Z
-                xxpGeneral.accessorySlidersv6[i * 6 + 4] = SignednibblePack(xxpGeneral.accessorySliders[i * 12 + 7], xxpGeneral.accessorySliders[i * 12 + 8]);
-                //Accessory 4 Y + Accessory 3 X
-                xxpGeneral.accessorySlidersv6[i * 6 + 5] = SignednibblePack(xxpGeneral.accessorySliders[i * 12 + 11], xxpGeneral.accessorySliders[i * 12 + 6]);
-            }
+            ConvertV9toV6Sliders();
 
             xxpGeneral.paintPriority = streamReader.Read<PaintPriority>();
         }
 
         public void SaveCML(string filename)
         {
-            byte[] vtc0 = { 0x76, 0x74, 0x63, 0x30 };
-            byte[] docText = { 0x44, 0x4F, 0x43, 0x20 };
-            byte[] figrText = { 0x46, 0x49, 0x47, 0x52 };
-            byte[] fstText = { 0x4F, 0x46, 0x53, 0x54};
-            byte[] colrText = { 0x43, 0x4F, 0x4C, 0x52 };
-            byte[] slctText = { 0x53, 0x4C, 0x43, 0x54 };
-
             using (MemoryStream cml = new MemoryStream())
             {
                 //Header
                 cml.Write(ConstantCMLHeader, 0, 16); //Always the same in all observed files
 
                 //DOC tag
-                cml.Write(vtc0.ToArray(), 0, 4);
+                cml.Write(Vtc0.ToArray(), 0, 4);
                 cml.Write(BitConverter.GetBytes(0x2C), 0, 4);
-                cml.Write(docText, 0, 4);
+                cml.Write(DocText, 0, 4);
                 cml.Write(BitConverter.GetBytes(0x7),0,2); cml.Write(BitConverter.GetBytes(0x6), 0, 2); //First short is unknown, second is number of structs inside tag
 
                 cml.WriteByte(0x70); cml.WriteByte(0x8);
@@ -791,18 +1039,18 @@ namespace Character_Making_File_Tool
                 uint muscles = Convert.ToUInt16(xxpGeneral.baseDOC.muscleMass); //Muscle Mass is a float ranging 0 - 60000 in xxp, but in cml is an integer
                 cml.Write(BitConverter.GetBytes(muscles), 0, 4);
                 cml.WriteByte(0x73); cml.WriteByte(0x8);
-                cml.Write(BitConverter.GetBytes(xxpGeneral.skinVariant), 0, 1); cml.WriteByte(0); cml.WriteByte(0); cml.WriteByte(0);
+                cml.WriteByte(0x9); cml.WriteByte(0); cml.WriteByte(0); cml.WriteByte(0); //Equivalent Salon File version? Determines mostly how accessory sliders will be interpreted seemingly. Use 9
                 cml.WriteByte(0x74); cml.WriteByte(0x8);
                 cml.Write(BitConverter.GetBytes(xxpGeneral.eyebrowDensity), 0, 1); cml.WriteByte(0); cml.WriteByte(0); cml.WriteByte(0);
                 cml.WriteByte(0x75); cml.WriteByte(0x8);
-                cml.Write(BitConverter.GetBytes(xxpGeneral.DOCUnk0), 0, 2); cml.WriteByte(0); cml.WriteByte(0);
+                cml.Write(BitConverter.GetBytes(xxpGeneral.skinVariant), 0, 1); cml.WriteByte(0); cml.WriteByte(0); cml.WriteByte(0);
 
                 //FIGR tag
-                cml.Write(vtc0.ToArray(), 0, 4);
+                cml.Write(Vtc0.ToArray(), 0, 4);
                 cml.Write(BitConverter.GetBytes(0x125), 0, 4);
-                cml.Write(figrText, 0, 4);
+                cml.Write(FigrText, 0, 4);
                 cml.Write(BitConverter.GetBytes(0), 0, 2); cml.Write(BitConverter.GetBytes(0x13), 0, 2);
-                cml.WriteByte(0); cml.WriteByte(0x48); cml.WriteByte(0x1); //First byte here in these is data type probably? DOC technically probably uses this too
+                cml.WriteByte(0); cml.WriteByte(0x48); cml.WriteByte(0x1); //Second byte here in these is data type probably? DOC technically probably uses this too
                 for (int i = 0; i < 3; i++){cml.Write(BitConverter.GetBytes(xxpGeneral.baseFIGR.bodyVerts[i]), 0, 4);}
                 cml.WriteByte(0x1); cml.WriteByte(0x48); cml.WriteByte(0x1);
                 for (int i = 0; i < 3; i++) { cml.Write(BitConverter.GetBytes(xxpGeneral.baseFIGR.armVerts[i]), 0, 4); }
@@ -811,7 +1059,7 @@ namespace Character_Making_File_Tool
                 cml.WriteByte(0x3); cml.WriteByte(0x48); cml.WriteByte(0x1);
                 for (int i = 0; i < 3; i++) { cml.Write(BitConverter.GetBytes(xxpGeneral.baseFIGR.bustVerts[i]), 0, 4); }
                 cml.WriteByte(0x4); cml.WriteByte(0x48); cml.WriteByte(0x1);
-                for (int i = 0; i < 3; i++) { cml.Write(BitConverter.GetBytes(xxpGeneral.baseFIGR.unkFIGR0Verts[i]), 0, 4); }
+                for (int i = 0; i < 3; i++) { cml.Write(BitConverter.GetBytes(xxpGeneral.baseFIGR.headVerts[i]), 0, 4); }
                 cml.WriteByte(0x5); cml.WriteByte(0x48); cml.WriteByte(0x1);
                 for (int i = 0; i < 3; i++) { cml.Write(BitConverter.GetBytes(xxpGeneral.baseFIGR.faceShapeVerts[i]), 0, 4); }
                 cml.WriteByte(0x6); cml.WriteByte(0x48); cml.WriteByte(0x1);
@@ -835,16 +1083,17 @@ namespace Character_Making_File_Tool
                 cml.WriteByte(0x12); cml.WriteByte(0x48); cml.WriteByte(0x1);
                 for (int i = 0; i < 3; i++) { cml.Write(BitConverter.GetBytes(xxpGeneral.baseFIGR2.leg2Verts[i]), 0, 4); }
                 cml.WriteByte(0x13); cml.WriteByte(0x48); cml.WriteByte(0x1);
-                for (int i = 0; i < 3; i++) { cml.Write(BitConverter.GetBytes(xxpGeneral.baseFIGR2.unkFIGR1Verts[i]), 0, 4); }
+                for (int i = 0; i < 3; i++) { cml.Write(BitConverter.GetBytes(xxpGeneral.baseFIGR2.bust2Verts[i]), 0, 4); }
                 cml.WriteByte(0x14); cml.WriteByte(0x48); cml.WriteByte(0x1);
                 for (int i = 0; i < 3; i++) { cml.Write(BitConverter.GetBytes(xxpGeneral.baseFIGR2.neck2Verts[i]), 0, 4); }
                 cml.WriteByte(0x15); cml.WriteByte(0x48); cml.WriteByte(0x1);
                 for (int i = 0; i < 3; i++) { cml.Write(BitConverter.GetBytes(xxpGeneral.baseFIGR2.waist2Verts[i]), 0, 4); }
 
-                //OFST - Accessory Position
-                cml.Write(vtc0.ToArray(), 0, 4);
+                //Either OFST or SLCT format can go here for accessory sliders. SLCT offers less range.
+                //OFST - Accessory Position 
+                cml.Write(Vtc0.ToArray(), 0, 4);
                 cml.Write(BitConverter.GetBytes(0x24), 0, 4);
-                cml.Write(fstText, 0, 4);
+                cml.Write(OfstText, 0, 4);
                 cml.Write(BitConverter.GetBytes(0), 0, 2); cml.Write(BitConverter.GetBytes(0x4), 0, 2);
                 cml.WriteByte(0x90); cml.WriteByte(0x83); cml.WriteByte(0x8); cml.WriteByte(0x2);
                 for (int i = 0; i < 3; i++) { cml.Write(BitConverter.GetBytes(xxpGeneral.accessorySliders[i]), 0, 1); }
@@ -856,41 +1105,41 @@ namespace Character_Making_File_Tool
                 for (int i = 9; i < 12; i++) { cml.Write(BitConverter.GetBytes(xxpGeneral.accessorySliders[i]), 0, 1); }
 
                 //OFST - Accessory Rotation
-                cml.Write(vtc0.ToArray(), 0, 4);
+                cml.Write(Vtc0.ToArray(), 0, 4);
                 cml.Write(BitConverter.GetBytes(0x24), 0, 4);
-                cml.Write(fstText, 0, 4);
+                cml.Write(OfstText, 0, 4);
                 cml.Write(BitConverter.GetBytes(0), 0, 2); cml.Write(BitConverter.GetBytes(0x4), 0, 2);
                 cml.WriteByte(0x95); cml.WriteByte(0x83); cml.WriteByte(0x8); cml.WriteByte(0x2);
-                for (int i = 12; i < 15; i++) { cml.Write(BitConverter.GetBytes(xxpGeneral.accessorySliders[i]), 0, 1); }
+                for (int i = 24; i < 27; i++) { cml.Write(BitConverter.GetBytes(xxpGeneral.accessorySliders[i]), 0, 1); }  //In XXP, rotation is stored after scale, unlike here. So we start later in the array
                 cml.WriteByte(0x96); cml.WriteByte(0x83); cml.WriteByte(0x8); cml.WriteByte(0x2);
-                for (int i = 15; i < 18; i++) { cml.Write(BitConverter.GetBytes(xxpGeneral.accessorySliders[i]), 0, 1); }
-                cml.WriteByte(0x97); cml.WriteByte(0x83); cml.WriteByte(0x8); cml.WriteByte(0x2);
-                for (int i = 18; i < 21; i++) { cml.Write(BitConverter.GetBytes(xxpGeneral.accessorySliders[i]), 0, 1); }
-                cml.WriteByte(0x98); cml.WriteByte(0x83); cml.WriteByte(0x8); cml.WriteByte(0x2);
-                for (int i = 21; i < 24; i++) { cml.Write(BitConverter.GetBytes(xxpGeneral.accessorySliders[i]), 0, 1); }
-
-                //OFST - Accessory Scale
-                cml.Write(vtc0.ToArray(), 0, 4);
-                cml.Write(BitConverter.GetBytes(0x24), 0, 4);
-                cml.Write(fstText, 0, 4);
-                cml.Write(BitConverter.GetBytes(0), 0, 2); cml.Write(BitConverter.GetBytes(0x4), 0, 2);
-                cml.WriteByte(0x9B); cml.WriteByte(0x83); cml.WriteByte(0x8); cml.WriteByte(0x2);
-                for (int i = 24; i < 27; i++) { cml.Write(BitConverter.GetBytes(xxpGeneral.accessorySliders[i]), 0, 1); }
-                cml.WriteByte(0x9C); cml.WriteByte(0x83); cml.WriteByte(0x8); cml.WriteByte(0x2);
                 for (int i = 27; i < 30; i++) { cml.Write(BitConverter.GetBytes(xxpGeneral.accessorySliders[i]), 0, 1); }
-                cml.WriteByte(0x9D); cml.WriteByte(0x83); cml.WriteByte(0x8); cml.WriteByte(0x2);
+                cml.WriteByte(0x97); cml.WriteByte(0x83); cml.WriteByte(0x8); cml.WriteByte(0x2);
                 for (int i = 30; i < 33; i++) { cml.Write(BitConverter.GetBytes(xxpGeneral.accessorySliders[i]), 0, 1); }
-                cml.WriteByte(0x9E); cml.WriteByte(0x83); cml.WriteByte(0x8); cml.WriteByte(0x2);
+                cml.WriteByte(0x98); cml.WriteByte(0x83); cml.WriteByte(0x8); cml.WriteByte(0x2);
                 for (int i = 33; i < 36; i++) { cml.Write(BitConverter.GetBytes(xxpGeneral.accessorySliders[i]), 0, 1); }
 
+                //OFST - Accessory Scale
+                cml.Write(Vtc0.ToArray(), 0, 4);
+                cml.Write(BitConverter.GetBytes(0x24), 0, 4);
+                cml.Write(OfstText, 0, 4);
+                cml.Write(BitConverter.GetBytes(0), 0, 2); cml.Write(BitConverter.GetBytes(0x4), 0, 2);
+                cml.WriteByte(0x9B); cml.WriteByte(0x83); cml.WriteByte(0x8); cml.WriteByte(0x2);
+                for (int i = 12; i < 15; i++) { cml.Write(BitConverter.GetBytes(xxpGeneral.accessorySliders[i]), 0, 1); }
+                cml.WriteByte(0x9C); cml.WriteByte(0x83); cml.WriteByte(0x8); cml.WriteByte(0x2);
+                for (int i = 15; i < 18; i++) { cml.Write(BitConverter.GetBytes(xxpGeneral.accessorySliders[i]), 0, 1); }
+                cml.WriteByte(0x9D); cml.WriteByte(0x83); cml.WriteByte(0x8); cml.WriteByte(0x2);
+                for (int i = 18; i < 21; i++) { cml.Write(BitConverter.GetBytes(xxpGeneral.accessorySliders[i]), 0, 1); }
+                cml.WriteByte(0x9E); cml.WriteByte(0x83); cml.WriteByte(0x8); cml.WriteByte(0x2);
+                for (int i = 21; i < 24; i++) { cml.Write(BitConverter.GetBytes(xxpGeneral.accessorySliders[i]), 0, 1); }
+
                 //COLR
-                cml.Write(vtc0.ToArray(), 0, 4);
+                cml.Write(Vtc0.ToArray(), 0, 4);
                 cml.Write(BitConverter.GetBytes(0x8F), 0, 4);
-                cml.Write(colrText, 0, 4);
+                cml.Write(ColrText, 0, 4);
                 cml.Write(BitConverter.GetBytes(0), 0, 2); cml.Write(BitConverter.GetBytes(0x9), 0, 2);
 
                 cml.WriteByte(0x27); cml.WriteByte(0x48); cml.WriteByte(0x1);
-                for (int i = 0; i < 3; i++) { cml.Write(BitConverter.GetBytes(xxpGeneral.baseCOLR.unkCOLR0Verts[i]), 0, 4); }
+                for (int i = 0; i < 3; i++) { cml.Write(BitConverter.GetBytes(xxpGeneral.baseCOLR.outer_MainColorVerts[i]), 0, 4); }
                 cml.WriteByte(0x20); cml.WriteByte(0x48); cml.WriteByte(0x1);
                 for (int i = 0; i < 3; i++) { cml.Write(BitConverter.GetBytes(xxpGeneral.baseCOLR.costumeColorVerts[i]), 0, 4); }
                 cml.WriteByte(0x21); cml.WriteByte(0x48); cml.WriteByte(0x1);
@@ -909,9 +1158,9 @@ namespace Character_Making_File_Tool
                 for (int i = 0; i < 3; i++) { cml.Write(BitConverter.GetBytes(xxpGeneral.baseCOLR.hairVerts[i]), 0, 4); }
 
                 //SLCT
-                cml.Write(vtc0.ToArray(), 0, 4);
+                cml.Write(Vtc0.ToArray(), 0, 4);
                 cml.Write(BitConverter.GetBytes(0x86), 0, 4);
-                cml.Write(slctText, 0, 4);
+                cml.Write(SlctText, 0, 4);
                 cml.Write(BitConverter.GetBytes(0), 0, 2); cml.Write(BitConverter.GetBytes(0x15), 0, 2);
                 cml.WriteByte(0x40); cml.WriteByte(0x08);
                 cml.Write(BitConverter.GetBytes(xxpGeneral.baseSLCT.costumePart), 0, 4);
@@ -920,7 +1169,7 @@ namespace Character_Making_File_Tool
                 cml.WriteByte(0x42); cml.WriteByte(0x08);
                 cml.Write(BitConverter.GetBytes(xxpGeneral.baseSLCT.stickerPart), 0, 4);
                 cml.WriteByte(0x43); cml.WriteByte(0x08);
-                cml.Write(BitConverter.GetBytes(xxpGeneral.baseSLCT.rightEyePart), 0, 4);
+                cml.Write(BitConverter.GetBytes(xxpGeneral.baseSLCT.rightEyePart), 0, 2); cml.Write(BitConverter.GetBytes(0), 0, 2); //Null short 2 out since we don't write to the old cml format
                 cml.WriteByte(0x44); cml.WriteByte(0x08);
                 cml.Write(BitConverter.GetBytes(xxpGeneral.baseSLCT.eyebrowPart), 0, 4);
                 cml.WriteByte(0x45); cml.WriteByte(0x08);
@@ -954,12 +1203,12 @@ namespace Character_Making_File_Tool
                 cml.WriteByte(0x59); cml.WriteByte(0x08);
                 cml.Write(BitConverter.GetBytes(xxpGeneral.baseSLCT2.bodypaint2Part), 0, 4);
                 cml.WriteByte(0x63); cml.WriteByte(0x08);                                    //Absent in non deumans normally
-                cml.Write(BitConverter.GetBytes(xxpGeneral.leftEyePart), 0, 4);
+                cml.Write(BitConverter.GetBytes(xxpGeneral.rightEyePart), 0, 4);
 
                 //SLCT 2 - Body Paint Priority
-                cml.Write(vtc0.ToArray(), 0, 4);
+                cml.Write(Vtc0.ToArray(), 0, 4);
                 cml.Write(BitConverter.GetBytes(0x1A), 0, 4);
-                cml.Write(slctText, 0, 4);
+                cml.Write(SlctText, 0, 4);
                 cml.Write(BitConverter.GetBytes(0), 0, 2); cml.Write(BitConverter.GetBytes(0x3), 0, 2);
                 cml.WriteByte(0x60); cml.WriteByte(0x08);                                    
                 cml.Write(BitConverter.GetBytes(xxpGeneral.paintPriority.priority1), 0, 2); cml.Write(BitConverter.GetBytes(0), 0, 2);
@@ -1107,7 +1356,7 @@ namespace Character_Making_File_Tool
             xxp.Write(Reloaded.Memory.Struct.GetBytes(xxpGeneral.baseDOC), 0, 0xC);
             xxp.Write(Reloaded.Memory.Struct.GetBytes(xxpGeneral.skinVariant), 0, 1);
             xxp.Write(Reloaded.Memory.Struct.GetBytes(xxpGeneral.eyebrowDensity), 0, 1);
-            xxp.Write(Reloaded.Memory.Struct.GetBytes(xxpGeneral.DOCUnk0),0, 2);
+            xxp.Write(Reloaded.Memory.Struct.GetBytes(xxpGeneral.cmlVariant),0, 2);
 
             //FIGR
             xxp.Write(Reloaded.Memory.Struct.GetBytes(xxpGeneral.baseFIGR), 0, sizeof(BaseFIGR));
@@ -1132,7 +1381,7 @@ namespace Character_Making_File_Tool
             //SLCT
             xxp.Write(Reloaded.Memory.Struct.GetBytes(xxpGeneral.baseSLCT), 0, sizeof(BaseSLCT));
             xxp.Write(Reloaded.Memory.Struct.GetBytes(xxpGeneral.baseSLCT2), 0, sizeof(BaseSLCT2));
-            xxp.Write(Reloaded.Memory.Struct.GetBytes(xxpGeneral.leftEyePart), 0, 4);
+            xxp.Write(Reloaded.Memory.Struct.GetBytes(xxpGeneral.rightEyePart), 0, 4);
 
             //Padding 3
             xxp.Write(zeroInt, 0, 4);
@@ -1201,6 +1450,17 @@ namespace Character_Making_File_Tool
 
             left = Convert.ToSByte(SetupIntFromXXPnibble(tempLeft));
             right = Convert.ToSByte(SetupIntFromXXPnibble(tempRight));
+        }
+
+        public int TryGetIndex(int[] arr, int index)
+        {
+            if( arr.Length - 1 < index)
+            {
+                return 0;
+            } else
+            {
+                return arr[index];
+            }
         }
     }
 }
