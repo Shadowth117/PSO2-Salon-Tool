@@ -631,9 +631,11 @@ namespace Character_Making_File_Tool
             using (var streamReader = new BufferedStreamReader(stream, 8192))
             {
                 //Handle deicer cmls too
-                if (streamReader.Read<int>() == DeicerCMLType)
+                int fileVariant = streamReader.Read<int>();
+
+                if (fileVariant == DeicerCMLType)
                 {
-                    streamReader.Seek(0x4C, SeekOrigin.Current);
+                    streamReader.Seek(0x5C, SeekOrigin.Current);
                 } else
                 {
                     streamReader.Seek(0xC, SeekOrigin.Current);
