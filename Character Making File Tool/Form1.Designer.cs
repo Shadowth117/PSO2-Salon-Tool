@@ -41,10 +41,10 @@
             this.panel2 = new System.Windows.Forms.Panel();
             this.fileButton = new System.Windows.Forms.Button();
             this.panel3 = new System.Windows.Forms.Panel();
+            this.quitButton = new System.Windows.Forms.Button();
             this.fileButtonSubmenu = new System.Windows.Forms.Panel();
             this.saveButton = new System.Windows.Forms.Button();
             this.openButton = new System.Windows.Forms.Button();
-            this.quitButton = new System.Windows.Forms.Button();
             this.panel4 = new System.Windows.Forms.Panel();
             this.panel6 = new System.Windows.Forms.Panel();
             this.label1 = new System.Windows.Forms.Label();
@@ -235,6 +235,22 @@
             this.panel3.Size = new System.Drawing.Size(141, 131);
             this.panel3.TabIndex = 14;
             // 
+            // quitButton
+            // 
+            this.quitButton.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(30)))), ((int)(((byte)(30)))), ((int)(((byte)(37)))));
+            this.quitButton.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.quitButton.FlatAppearance.BorderSize = 0;
+            this.quitButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.quitButton.Font = new System.Drawing.Font("Calibri", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.quitButton.ForeColor = System.Drawing.Color.Gainsboro;
+            this.quitButton.Location = new System.Drawing.Point(0, 100);
+            this.quitButton.Name = "quitButton";
+            this.quitButton.Size = new System.Drawing.Size(141, 31);
+            this.quitButton.TabIndex = 15;
+            this.quitButton.Text = "Quit";
+            this.quitButton.UseVisualStyleBackColor = false;
+            this.quitButton.Click += new System.EventHandler(this.quitButton_Click);
+            // 
             // fileButtonSubmenu
             // 
             this.fileButtonSubmenu.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(47)))), ((int)(((byte)(50)))), ((int)(((byte)(57)))));
@@ -257,7 +273,7 @@
             this.saveButton.Location = new System.Drawing.Point(0, 29);
             this.saveButton.Name = "saveButton";
             this.saveButton.Padding = new System.Windows.Forms.Padding(20, 0, 0, 0);
-            this.saveButton.Size = new System.Drawing.Size(141, 33);
+            this.saveButton.Size = new System.Drawing.Size(141, 30);
             this.saveButton.TabIndex = 15;
             this.saveButton.Text = "Save As...";
             this.saveButton.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -280,22 +296,6 @@
             this.openButton.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             this.openButton.UseVisualStyleBackColor = true;
             this.openButton.Click += new System.EventHandler(this.openButton_Click);
-            // 
-            // quitButton
-            // 
-            this.quitButton.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(30)))), ((int)(((byte)(30)))), ((int)(((byte)(37)))));
-            this.quitButton.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.quitButton.FlatAppearance.BorderSize = 0;
-            this.quitButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.quitButton.Font = new System.Drawing.Font("Calibri", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.quitButton.ForeColor = System.Drawing.Color.Gainsboro;
-            this.quitButton.Location = new System.Drawing.Point(0, 100);
-            this.quitButton.Name = "quitButton";
-            this.quitButton.Size = new System.Drawing.Size(141, 31);
-            this.quitButton.TabIndex = 15;
-            this.quitButton.Text = "Quit";
-            this.quitButton.UseVisualStyleBackColor = false;
-            this.quitButton.Click += new System.EventHandler(this.quitButton_Click);
             // 
             // panel4
             // 
@@ -362,7 +362,7 @@
             this.unencryptCheckBox.AutoSize = true;
             this.unencryptCheckBox.Font = new System.Drawing.Font("Calibri", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.unencryptCheckBox.ForeColor = System.Drawing.Color.Gainsboro;
-            this.unencryptCheckBox.Location = new System.Drawing.Point(12, 146);
+            this.unencryptCheckBox.Location = new System.Drawing.Point(12, 141);
             this.unencryptCheckBox.Name = "unencryptCheckBox";
             this.unencryptCheckBox.Size = new System.Drawing.Size(310, 23);
             this.unencryptCheckBox.TabIndex = 18;
@@ -374,7 +374,7 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(37)))), ((int)(((byte)(40)))), ((int)(((byte)(47)))));
-            this.ClientSize = new System.Drawing.Size(444, 181);
+            this.ClientSize = new System.Drawing.Size(444, 169);
             this.Controls.Add(this.unencryptCheckBox);
             this.Controls.Add(this.versionLabel);
             this.Controls.Add(this.panel8);

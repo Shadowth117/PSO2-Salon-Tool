@@ -89,7 +89,7 @@ namespace Character_Making_File_Tool
             public fixed int armVerts[3];
             public fixed int legVerts[3];
             public fixed int bustVerts[3];
-            public fixed int headVerts[3]; 
+            public fixed int headVerts[3];
             public fixed int faceShapeVerts[3];
             public fixed int eyeShapeVerts[3];
             public fixed int noseHeightVerts[3];
@@ -128,9 +128,9 @@ namespace Character_Making_File_Tool
         {
             //.cmx (Character Making Index) piece references.
             public uint costumePart;
-            public uint bodypaintPart;
+            public uint bodyPaintPart;
             public uint stickerPart;
-            public short rightEyePart; 
+            public short rightEyePart;
             public short leftEyePart; //used for left eye prior to v9
             public uint eyebrowPart;
             public uint eyelashPart;
@@ -341,7 +341,7 @@ namespace Character_Making_File_Tool
         public void ArrayGetValue(Dictionary<int, int[]> dict, int key, out int[] value)
         {
             dict.TryGetValue(key, out value);
-            if(value == null)
+            if (value == null)
             {
                 value = new int[] { 0 };
             }
@@ -363,7 +363,7 @@ namespace Character_Making_File_Tool
         {
             if (dict.ContainsKey(0x80) || dict.ContainsKey(0x81) || dict.ContainsKey(0x82) || dict.ContainsKey(0x83)
                 || dict.ContainsKey(0x84) || dict.ContainsKey(0x85) || dict.ContainsKey(0x86) || dict.ContainsKey(0x87)
-                || dict.ContainsKey(0x88) )
+                || dict.ContainsKey(0x88))
             {
                 return true;
             }
@@ -386,7 +386,7 @@ namespace Character_Making_File_Tool
             }
         }
 
-    public byte[] DecryptFile(string inFilename)
+        public byte[] DecryptFile(string inFilename)
         {
             byte[] fileVersion = new byte[4];
             byte[] header;
@@ -430,9 +430,9 @@ namespace Character_Making_File_Tool
                 fileData = memoryStream.ToArray();
             }
 
-            #if DEBUG
+#if DEBUG
             DumpData(inFilename, fileData);
-            #endif
+#endif
             return fileData;
         }
 
@@ -462,6 +462,12 @@ namespace Character_Making_File_Tool
             byte[] body;
             int hash = 0;
             int ingameVersion;
+            bool cmlSave = false;
+
+            if (saveVersion == 4 || saveVersion == 5)
+            {
+                cmlSave = true;
+            }
 
             //Fix cast hair color 2 nonsense
             if ((fileLoadRace == 2 && xxpGeneral.baseDOC.race != fileLoadRace) || (fileLoadRace != 2 && xxpGeneral.baseDOC.race == 2))
@@ -503,7 +509,7 @@ namespace Character_Making_File_Tool
             }
 
             //Swap eye colors for cml from xxp and vice versa since it's needed.
-            if (version != -1 && saveVersion == 4 && (xxpGeneral.baseDOC.race == 3))
+            if (version != -1 && cmlSave && (xxpGeneral.baseDOC.race == 3))
             {
                 version = -1;
                 fixed (int* pointer = xxpGeneral.baseCOLR.rightEye_EyesVerts)
@@ -513,7 +519,7 @@ namespace Character_Making_File_Tool
                         ArrayOfIntsSwap(pointer, pointer2, 3);
                     }
                 }
-            } else if (version == -1 && saveVersion != 4 && (xxpGeneral.baseDOC.race == 3))
+            } else if (version == -1 && !cmlSave && (xxpGeneral.baseDOC.race == 3))
             {
                 version = 9;
                 fixed (int* pointer = xxpGeneral.baseCOLR.rightEye_EyesVerts)
@@ -546,9 +552,12 @@ namespace Character_Making_File_Tool
                         body = SetupV2();
                         break;
                     case 4:
-
                         windowVersion = "cml";
                         SaveCML(filename);
+                        return;
+                    case 5:
+                        windowVersion = "cml";
+                        OutputToText(filename);
                         return;
                     default:
                         windowVersion = "";
@@ -587,6 +596,30 @@ namespace Character_Making_File_Tool
             hashInt = BitConverter.ToInt32(hash, 0);
 
             return encryptedData;
+        }
+
+        public Dictionary<int, string> GenerateFilenames()
+        {
+            Dictionary<int, string> files = new Dictionary<int, string>();
+
+            string costumeDir;
+            //Male Ou are 20000ish, Female Ou are 30000ish. In the event of no Ou, default Ous of 20000 and 30000 respectively are used
+            //Cast parts are 40000 and 50000 for male and female respectively, but are bd anyways.
+            if(xxpGeneral.baseSLCT.costumePart >= 20000 && xxpGeneral.baseSLCT.costumePart < 40000)
+            {
+                costumeDir = "character/making/pl_ow_";
+            } else
+            {
+                costumeDir = "character/making/pl_bd_";
+            }
+
+            string costumeString = costumeDir + xxpGeneral.baseSLCT.costumePart + ".ice";
+            byte[] hash = ((HashAlgorithm)CryptoConfig.CreateFromName("MD5")).ComputeHash(new UTF8Encoding().GetBytes(costumeString));
+
+            files.Add(0x40, BitConverter.ToString(hash).Replace("-", string.Empty).ToLower());
+
+            MessageBox.Show( costumeString + " " + files[0x40]);
+            return files;
         }
 
         public void ParseCML(string inFilename)
@@ -737,7 +770,7 @@ namespace Character_Making_File_Tool
 
             //SLCT
             ArrayGetValue(tagStructs, 0x40, out value); xxpGeneral.baseSLCT.costumePart = (uint)value[0];
-            ArrayGetValue(tagStructs, 0x41, out value); xxpGeneral.baseSLCT.bodypaintPart = (uint)value[0];
+            ArrayGetValue(tagStructs, 0x41, out value); xxpGeneral.baseSLCT.bodyPaintPart = (uint)value[0];
             ArrayGetValue(tagStructs, 0x42, out value); xxpGeneral.baseSLCT.stickerPart = (uint)value[0];
             ArrayGetValue(tagStructs, 0x44, out value); xxpGeneral.baseSLCT.eyebrowPart = (uint)value[0];
             ArrayGetValue(tagStructs, 0x45, out value); xxpGeneral.baseSLCT.eyelashPart = (uint)value[0];
@@ -869,6 +902,136 @@ namespace Character_Making_File_Tool
                         return;
                 }
 
+            }
+        }
+
+        public void OutputToText(string filename)
+        {
+            using (StreamWriter file = new StreamWriter(filename))
+            {
+                file.WriteLine("***.xxp/.cml Character Data Dump***");
+
+                file.WriteLine("DOC");
+                file.WriteLine($"Race: {xxpGeneral.baseDOC.race} (0-3, Human, Newman, Cast, Deuman)");
+                file.WriteLine($"Gender: {xxpGeneral.baseDOC.gender} (0 = male, 1 = female)");
+                file.WriteLine($"Muscle mass: {xxpGeneral.baseDOC.muscleMass}");
+                file.WriteLine($"Cml variant: {xxpGeneral.cmlVariant}");
+                file.WriteLine($"Eyebrow density: {xxpGeneral.eyebrowDensity} ");
+                file.WriteLine($"Skin variant: {xxpGeneral.skinVariant} (Determines which race's skin slider to use; Same values as race)");
+                file.WriteLine("");
+
+                file.WriteLine("FIGR (Output in slider vertex positions. Vertex 1 Y, vertex 2 X, vertex 2 Y)");
+                file.Write($"Body verts: "); for (int i = 0; i < 3; i++) { file.Write(xxpGeneral.baseFIGR.bodyVerts[i] + " "); } file.WriteLine("");
+                file.Write($"Arm verts: "); for (int i = 0; i < 3; i++) { file.Write(xxpGeneral.baseFIGR.armVerts[i] + " "); } file.WriteLine("");
+                file.Write($"Leg verts: "); for (int i = 0; i < 3; i++) { file.Write(xxpGeneral.baseFIGR.legVerts[i] + " "); } file.WriteLine("");
+                file.Write($"Bust verts: "); for (int i = 0; i < 3; i++) { file.Write(xxpGeneral.baseFIGR.bustVerts[i] + " "); } file.WriteLine("");
+                file.Write($"Head verts: "); for (int i = 0; i < 3; i++) { file.Write(xxpGeneral.baseFIGR.headVerts[i] + " "); } file.WriteLine("");
+                file.Write($"Face shape verts: "); for (int i = 0; i < 3; i++) { file.Write(xxpGeneral.baseFIGR.faceShapeVerts[i] + " "); } file.WriteLine("");
+                file.Write($"Eye shape verts: "); for (int i = 0; i < 3; i++) { file.Write(xxpGeneral.baseFIGR.eyeShapeVerts[i] + " "); } file.WriteLine("");
+                file.Write($"Nose height verts: "); for (int i = 0; i < 3; i++) { file.Write(xxpGeneral.baseFIGR.noseHeightVerts[i] + " "); } file.WriteLine("");
+                file.Write($"Nose shape verts: "); for (int i = 0; i < 3; i++) { file.Write(xxpGeneral.baseFIGR.noseShapeVerts[i] + " "); } file.WriteLine("");
+                file.Write($"Mouth verts: "); for (int i = 0; i < 3; i++) { file.Write(xxpGeneral.baseFIGR.mouthVerts[i] + " "); } file.WriteLine("");
+                file.Write($"Ear/horn verts: "); for (int i = 0; i < 3; i++) { file.Write(xxpGeneral.baseFIGR.ear_hornVerts[i] + " "); } file.WriteLine("");
+
+                file.Write($"Neck verts: "); for (int i = 0; i < 3; i++) { file.Write(xxpGeneral.baseFIGR2.neckVerts[i] + " "); } file.WriteLine("");
+                file.Write($"Waist verts: "); for (int i = 0; i < 3; i++) { file.Write(xxpGeneral.baseFIGR2.waistVerts[i] + " "); } file.WriteLine("");
+                file.Write($"Body2 verts: "); for (int i = 0; i < 3; i++) { file.Write(xxpGeneral.baseFIGR2.body2Verts[i] + " "); } file.WriteLine(" (Thse are cast body proportions)");
+                file.Write($"Arm2 verts: "); for (int i = 0; i < 3; i++) { file.Write(xxpGeneral.baseFIGR2.arm2Verts[i] + " "); } file.WriteLine("");
+                file.Write($"Leg2 verts: "); for (int i = 0; i < 3; i++) { file.Write(xxpGeneral.baseFIGR2.leg2Verts[i] + " "); } file.WriteLine("");
+                file.Write($"Bust2 verts: "); for (int i = 0; i < 3; i++) { file.Write(xxpGeneral.baseFIGR2.bust2Verts[i] + " "); } file.WriteLine("");
+                file.Write($"Neck2 verts: "); for (int i = 0; i < 3; i++) { file.Write(xxpGeneral.baseFIGR2.neck2Verts[i] + " "); } file.WriteLine("");
+                file.Write($"Waist2 verts: "); for (int i = 0; i < 3; i++) { file.Write(xxpGeneral.baseFIGR2.waist2Verts[i] + " "); } file.WriteLine(""); 
+                file.WriteLine("");
+
+                file.WriteLine("COLR (Output in slider vertex positions. Vertex 1 Y, vertex 2 X, vertex 2 Y)");
+                file.Write($"Outer/main color verts: "); for (int i = 0; i < 3; i++) { file.Write(xxpGeneral.baseCOLR.outer_MainColorVerts[i] + " "); } file.WriteLine("");
+                file.Write($"Costume color verts: "); for (int i = 0; i < 3; i++) { file.Write(xxpGeneral.baseCOLR.costumeColorVerts[i] + " "); } file.WriteLine("");
+                file.Write($"Main/hair2 color verts: "); for (int i = 0; i < 3; i++) { file.Write(xxpGeneral.baseCOLR.mainColor_hair2Verts[i] + " "); } file.WriteLine("");
+                file.Write($"Sub color 1 verts: "); for (int i = 0; i < 3; i++) { file.Write(xxpGeneral.baseCOLR.subColor1Verts[i] + " "); } file.WriteLine("");
+                file.Write($"Skin color/sub color 2 verts: "); for (int i = 0; i < 3; i++) { file.Write(xxpGeneral.baseCOLR.skinSubColor2Verts[i] + " "); } file.WriteLine("");
+                file.Write($"Left eye color/ cast hair color/sub color 3 verts: "); for (int i = 0; i < 3; i++) { file.Write(xxpGeneral.baseCOLR.subColor3_leftEye_castHair2Verts[i] + " "); } file.WriteLine("");
+                file.Write($"Eyes/right eye color verts: "); for (int i = 0; i < 3; i++) { file.Write(xxpGeneral.baseCOLR.rightEye_EyesVerts[i] + " "); } file.WriteLine("");
+                file.Write($"Hair color verts: "); for (int i = 0; i < 3; i++) { file.Write(xxpGeneral.baseCOLR.hairVerts[i] + " "); } file.WriteLine("");
+                file.WriteLine("");
+
+                file.WriteLine("SLCT (Id per tag type in .cmx)");
+                file.WriteLine($"Costume/Outerwear/body part: {xxpGeneral.baseSLCT.costumePart} (first digit of the 5 possible determines category)");
+                file.WriteLine($"Body paint 1: {xxpGeneral.baseSLCT.bodyPaintPart}");
+                file.WriteLine($"Sticker: {xxpGeneral.baseSLCT.stickerPart}");
+                file.WriteLine($"Right eye: {xxpGeneral.baseSLCT.rightEyePart}");
+                file.WriteLine($"Left eye: {xxpGeneral.rightEyePart}");
+                file.WriteLine($"Eyebrow: {xxpGeneral.baseSLCT.eyebrowPart}");
+                file.WriteLine($"Eyelash: {xxpGeneral.baseSLCT.eyelashPart}");
+                file.WriteLine($"Face type: {xxpGeneral.baseSLCT.faceTypePart}");
+                file.WriteLine($"Unknown: {xxpGeneral.baseSLCT.unknownPart}");
+                file.WriteLine($"Makeup 1: {xxpGeneral.baseSLCT.makeup1Part}");
+                file.WriteLine($"Hair: {xxpGeneral.baseSLCT.hairPart}");
+                file.WriteLine($"Accessory 1: {xxpGeneral.baseSLCT.acc1Part}");
+                file.WriteLine($"Accessory 2: {xxpGeneral.baseSLCT.acc2Part}");
+                file.WriteLine($"Accessory 3: {xxpGeneral.baseSLCT.acc3Part}");
+                file.WriteLine($"Makeup 2: {xxpGeneral.baseSLCT.makeup2Part}");
+                file.WriteLine($"Leg part: {xxpGeneral.baseSLCT.legPart}");
+                file.WriteLine($"Arm part: {xxpGeneral.baseSLCT.armPart}");
+
+                file.WriteLine($"Accessory 4: {xxpGeneral.baseSLCT2.acc4Part}");
+                file.WriteLine($"Basewear: {xxpGeneral.baseSLCT2.basewearPart}");
+                file.WriteLine($"Innerwear: {xxpGeneral.baseSLCT2.innerwearPart}");
+                file.WriteLine($"Body Paint 2: {xxpGeneral.baseSLCT2.bodypaint2Part}");
+                file.WriteLine("");
+
+                file.WriteLine("OFST (Accessory sliders)");
+                for(int i = 0; i < 36; i++)
+                {
+                    switch(i)
+                    {
+                        case 0:
+                            file.Write($"Accessory 1 Position: {xxpGeneral.accessorySliders[i]} ");
+                            break;
+                        case 3:
+                            file.Write($"\nAccessory 2 Position: {xxpGeneral.accessorySliders[i]} ");
+                            break;
+                        case 6:
+                            file.Write($"\nAccessory 3 Position: {xxpGeneral.accessorySliders[i]} ");
+                            break;
+                        case 9:
+                            file.Write($"\nAccessory 4 Position: {xxpGeneral.accessorySliders[i]} ");
+                            break;
+                        case 12:
+                            file.Write($"\nAccessory 1 Rotation: {xxpGeneral.accessorySliders[i]} ");
+                            break;
+                        case 15:
+                            file.Write($"\nAccessory 2 Rotation: {xxpGeneral.accessorySliders[i]} ");
+                            break;
+                        case 18:
+                            file.Write($"\nAccessory 3 Rotation: {xxpGeneral.accessorySliders[i]} ");
+                            break;
+                        case 21:
+                            file.Write($"\nAccessory 4 Rotation: {xxpGeneral.accessorySliders[i]} ");
+                            break;
+                        case 24:
+                            file.Write($"\nAccessory 1 Scale: {xxpGeneral.accessorySliders[i]} ");
+                            break;
+                        case 27:
+                            file.Write($"\nAccessory 2 Scale: {xxpGeneral.accessorySliders[i]} ");
+                            break;
+                        case 30:
+                            file.Write($"\nAccessory 3 Scale: {xxpGeneral.accessorySliders[i]} ");
+                            break;
+                        case 33:
+                            file.Write($"\nAccessory 4 Scale: {xxpGeneral.accessorySliders[i]} ");
+                            break;
+                        default:
+                            file.Write($"{xxpGeneral.accessorySliders[i]} ");
+                            break;
+                    }
+                }
+                file.WriteLine("");
+                file.WriteLine("");
+
+                file.WriteLine("Body Paint Priority (0 = inner, 1 = body paint 1, 2 = body paint 2)");
+                file.WriteLine($"Priority 1: {xxpGeneral.paintPriority.priority1}");
+                file.WriteLine($"Priority 2: {xxpGeneral.paintPriority.priority2}");
+                file.WriteLine($"Priority 3: {xxpGeneral.paintPriority.priority3}");
             }
         }
 
@@ -1104,7 +1267,7 @@ namespace Character_Making_File_Tool
                 cml.WriteByte(0x93); cml.WriteByte(0x83); cml.WriteByte(0x8); cml.WriteByte(0x2);
                 for (int i = 9; i < 12; i++) { cml.Write(BitConverter.GetBytes(xxpGeneral.accessorySliders[i]), 0, 1); }
 
-                //OFST - Accessory Rotation
+                //OFST - Accessory Scale
                 cml.Write(Vtc0.ToArray(), 0, 4);
                 cml.Write(BitConverter.GetBytes(0x24), 0, 4);
                 cml.Write(OfstText, 0, 4);
@@ -1118,7 +1281,7 @@ namespace Character_Making_File_Tool
                 cml.WriteByte(0x98); cml.WriteByte(0x83); cml.WriteByte(0x8); cml.WriteByte(0x2);
                 for (int i = 33; i < 36; i++) { cml.Write(BitConverter.GetBytes(xxpGeneral.accessorySliders[i]), 0, 1); }
 
-                //OFST - Accessory Scale
+                //OFST - Accessory Rotation
                 cml.Write(Vtc0.ToArray(), 0, 4);
                 cml.Write(BitConverter.GetBytes(0x24), 0, 4);
                 cml.Write(OfstText, 0, 4);
@@ -1165,7 +1328,7 @@ namespace Character_Making_File_Tool
                 cml.WriteByte(0x40); cml.WriteByte(0x08);
                 cml.Write(BitConverter.GetBytes(xxpGeneral.baseSLCT.costumePart), 0, 4);
                 cml.WriteByte(0x41); cml.WriteByte(0x08);
-                cml.Write(BitConverter.GetBytes(xxpGeneral.baseSLCT.bodypaintPart), 0, 4);
+                cml.Write(BitConverter.GetBytes(xxpGeneral.baseSLCT.bodyPaintPart), 0, 4);
                 cml.WriteByte(0x42); cml.WriteByte(0x08);
                 cml.Write(BitConverter.GetBytes(xxpGeneral.baseSLCT.stickerPart), 0, 4);
                 cml.WriteByte(0x43); cml.WriteByte(0x08);
