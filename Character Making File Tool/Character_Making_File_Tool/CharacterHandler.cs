@@ -894,6 +894,9 @@ namespace Character_Making_File_Tool
                     case 6:
                         ReadV6(streamReader);
                         break;
+                    case 7:
+                        ReadV7(streamReader);
+                        break;
                     case 8:
                     case 9:
                         ReadV9(streamReader);
@@ -1150,6 +1153,31 @@ namespace Character_Making_File_Tool
             xxpGeneral.paintPriority = streamReader.Read<PaintPriority>();
         }
 
+        public void ReadV7(BufferedStreamReader streamReader)
+        {
+            xxpGeneral.baseDOC = streamReader.Read<BaseDOC>();
+            xxpGeneral.baseFIGR = streamReader.Read<BaseFIGR>();
+            xxpGeneral.baseFIGR2 = streamReader.Read<BaseFIGR2>();
+
+            streamReader.Seek(0x6C, SeekOrigin.Current);
+
+            xxpGeneral.baseCOLR = streamReader.Read<BaseCOLR>();
+
+            streamReader.Seek(0x78, SeekOrigin.Current);
+
+            xxpGeneral.baseSLCT = streamReader.Read<BaseSLCT>();
+            xxpGeneral.baseSLCT2 = streamReader.Read<BaseSLCT2>();
+
+            streamReader.Seek(0x30, SeekOrigin.Current);
+
+            for (int i = 0; i < 36; i++)
+            {
+                xxpGeneral.accessorySliders[i] = streamReader.Read<sbyte>();
+            }
+            ConvertV9toV6Sliders();
+
+            xxpGeneral.paintPriority = streamReader.Read<PaintPriority>();
+        }
 
         public void ReadV9(BufferedStreamReader streamReader)
         {
