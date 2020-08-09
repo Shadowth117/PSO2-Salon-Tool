@@ -1,19 +1,11 @@
 ﻿using Reloaded.Memory.Streams;
 using System;
-using System.CodeDom.Compiler;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data.SqlTypes;
 using System.IO;
 using System.Linq;
-using System.Reflection;
 using System.Security.Cryptography;
-using System.Security.Policy;
 using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Converters;
 using System.Windows.Forms;
-using System.Xml;
 using zamboni;
 
 namespace Character_Making_File_Tool
@@ -25,6 +17,7 @@ namespace Character_Making_File_Tool
     {
         private static uint CharacterBlowfishKey = 2588334024;
         private static int MinHeightSlider = -5501;
+        private static int MinLegSlider = -5600;
         private static int DeicerCMLType = 0x6C6D63;
         private static byte[] ConstantCMLHeader = { 0x56, 0x54, 0x42, 0x46, 0x10, 0, 0, 0, 0x43, 0x4D, 0x4C, 0x50, 0x1, 0, 0, 0x4C };
         private int version;
@@ -130,8 +123,7 @@ namespace Character_Making_File_Tool
             public uint costumePart;
             public uint bodyPaintPart;
             public uint stickerPart;
-            public short rightEyePart;
-            public short leftEyePart; //used for left eye prior to v9
+            public uint eyePart;     //In files prior to v9, assume byte 0 and byte 1 are right and left eye respectively for dumans 
             public uint eyebrowPart;
             public uint eyelashPart;
             public uint faceTypePart;
@@ -288,7 +280,7 @@ namespace Character_Making_File_Tool
             //SLCT 0x248 - .cmx piece references.
             public BaseSLCT baseSLCT;
             public BaseSLCT2 baseSLCT2;
-            public uint rightEyePart;
+            public uint leftEyePart;
 
             //Padding 3 0x29C - Padding to a multiple of 0x10 + 0x20 bytes + padding of 0x8?
             public uint padding3Start;
@@ -327,7 +319,7 @@ namespace Character_Making_File_Tool
             //SLCT  .cmx piece references.
             public BaseSLCT baseSLCT;
             public BaseSLCT2 baseSLCT2;
-            public uint rightEyePart;
+            public uint leftEyePart;
 
             //Accessory - Position Scale Rotation, stored as nibbles in v6. In v9, range is -126 to 126
             public fixed byte accessorySlidersv6[18]; //18 bytes.
@@ -470,11 +462,11 @@ namespace Character_Making_File_Tool
             }
 
             //Fix cast hair color 2 nonsense
-            if ((fileLoadRace == 2 && xxpGeneral.baseDOC.race != fileLoadRace) || (fileLoadRace != 2 && xxpGeneral.baseDOC.race == 2))
+            if ((fileLoadRace == 2 && xxpGeneral.baseDOC.race != 2) || (fileLoadRace != 2 && xxpGeneral.baseDOC.race == 2))
             {
-                fixed (int* pointer = xxpGeneral.baseFIGR.bodyVerts)
+                fixed (int* pointer = xxpGeneral.baseCOLR.mainColor_hair2Verts)
                 {
-                    fixed (int* pointer2 = xxpGeneral.baseFIGR2.body2Verts)
+                    fixed (int* pointer2 = xxpGeneral.baseCOLR.subColor3_leftEye_castHair2Verts)
                     {
                         ArrayOfIntsSwap(pointer, pointer2, 3);
                     }
@@ -505,6 +497,14 @@ namespace Character_Making_File_Tool
                 if (xxpGeneral.baseFIGR2.body2Verts[0] < MinHeightSlider)
                 {
                     xxpGeneral.baseFIGR2.body2Verts[0] = MinHeightSlider;
+                }
+                if (xxpGeneral.baseFIGR.legVerts[0] < MinLegSlider)
+                {
+                    xxpGeneral.baseFIGR.legVerts[0] = MinLegSlider;
+                }
+                if (xxpGeneral.baseFIGR2.leg2Verts[0] < MinLegSlider)
+                {
+                    xxpGeneral.baseFIGR2.leg2Verts[0] = MinLegSlider;
                 }
             }
 
@@ -679,6 +679,7 @@ namespace Character_Making_File_Tool
 
             //DOC
             ArrayGetValue(tagStructs, 0x70, out value); xxpGeneral.baseDOC.race = (uint)value[0];
+            fileLoadRace = (int)xxpGeneral.baseDOC.race;
             ArrayGetValue(tagStructs, 0x71, out value); xxpGeneral.baseDOC.gender = (uint)value[0];
             ArrayGetValue(tagStructs, 0x72, out value); xxpGeneral.baseDOC.muscleMass = value[0];
             ArrayGetValue(tagStructs, 0x73, out value); xxpGeneral.cmlVariant = (byte)value[0];
@@ -792,18 +793,24 @@ namespace Character_Making_File_Tool
             ArrayGetValue(tagStructs, 0x59, out value); xxpGeneral.baseSLCT2.bodypaint2Part = (uint)value[0];
 
             //Handle eye part
+            ArrayGetValue(tagStructs, 0x43, out value);
+            byte[] eyes = BitConverter.GetBytes(value[0]);
+
             if (tagStructs.ContainsKey(0x63))
             {
-                ArrayGetValue(tagStructs, 0x43, out value); xxpGeneral.baseSLCT.leftEyePart = (short)value[0];
-                ArrayGetValue(tagStructs, 0x63, out value); xxpGeneral.rightEyePart = (uint)value[0];
+                ArrayGetValue(tagStructs, 0x43, out value); xxpGeneral.baseSLCT.eyePart = BitConverter.ToUInt32(eyes, 0);
+                ArrayGetValue(tagStructs, 0x63, out value); xxpGeneral.leftEyePart = (uint)BitConverter.ToInt16(eyes, 0);
             }
             else
             {
-                ArrayGetValue(tagStructs, 0x43, out value);
-                byte[] eyes = BitConverter.GetBytes(value[0]);
-
-                xxpGeneral.baseSLCT.leftEyePart = BitConverter.ToInt16(eyes, 0);
-                xxpGeneral.rightEyePart = BitConverter.ToUInt16(eyes, 2);
+                if(xxpGeneral.cmlVariant >= 0x9)
+                {
+                    ArrayGetValue(tagStructs, 0x43, out value); xxpGeneral.baseSLCT.eyePart = BitConverter.ToUInt32(eyes, 0);
+                } else
+                {
+                    xxpGeneral.baseSLCT.eyePart = eyes[0];
+                    xxpGeneral.leftEyePart = eyes[1];
+                }
             }
 
 
@@ -878,7 +885,9 @@ namespace Character_Making_File_Tool
             using (var streamReader = new BufferedStreamReader(stream, 8192))
             {
                 this.version = streamReader.Read<int>();
-                streamReader.Seek(0x10, SeekOrigin.Current);
+                streamReader.Seek(0xC
+                    
+                    , SeekOrigin.Current);
                 fileLoadRace = streamReader.Read<int>();
                 streamReader.Seek(0x10, SeekOrigin.Begin);
 
@@ -892,14 +901,12 @@ namespace Character_Making_File_Tool
                         ReadV5(streamReader);
                         break;
                     case 6:
-                        ReadV6(streamReader);
-                        break;
                     case 7:
-                        ReadV7(streamReader);
+                        ReadV6_V7(streamReader);
                         break;
                     case 8:
                     case 9:
-                        ReadV9(streamReader);
+                        ReadV8_V9(streamReader);
                         break;
                     default:
                         MessageBox.Show("Error: File version unknown. If this is a proper salon file, please report this!",
@@ -963,8 +970,8 @@ namespace Character_Making_File_Tool
                 file.WriteLine($"Costume/Outerwear/body part: {xxpGeneral.baseSLCT.costumePart} (first digit of the 5 possible determines category)");
                 file.WriteLine($"Body paint 1: {xxpGeneral.baseSLCT.bodyPaintPart}");
                 file.WriteLine($"Sticker: {xxpGeneral.baseSLCT.stickerPart}");
-                file.WriteLine($"Right eye: {xxpGeneral.baseSLCT.rightEyePart}");
-                file.WriteLine($"Left eye: {xxpGeneral.rightEyePart}");
+                file.WriteLine($"Right eye: {xxpGeneral.baseSLCT.eyePart}");
+                file.WriteLine($"Left eye: {xxpGeneral.leftEyePart}");
                 file.WriteLine($"Eyebrow: {xxpGeneral.baseSLCT.eyebrowPart}");
                 file.WriteLine($"Eyelash: {xxpGeneral.baseSLCT.eyelashPart}");
                 file.WriteLine($"Face type: {xxpGeneral.baseSLCT.faceTypePart}");
@@ -1045,7 +1052,7 @@ namespace Character_Making_File_Tool
             xxpGeneral.baseDOC = streamReader.Read<BaseDOC>();
             xxpGeneral.baseFIGR = streamReader.Read<BaseFIGR>();
             xxpGeneral.baseFIGR2 = new BaseFIGR2();
-            for(int i = 0; i < 3; i++)
+            for (int i = 0; i < 3; i++)
             {
                 xxpGeneral.baseFIGR2.arm2Verts[i] = xxpGeneral.baseFIGR.armVerts[i];
                 xxpGeneral.baseFIGR2.body2Verts[i] = xxpGeneral.baseFIGR.bodyVerts[i];
@@ -1060,7 +1067,11 @@ namespace Character_Making_File_Tool
 
             xxpGeneral.baseCOLR = streamReader.Read<BaseCOLR>();
             xxpGeneral.baseSLCT = streamReader.Read<BaseSLCT>();
+
+            SeparateEyes();
+
             xxpGeneral.baseSLCT2 = new BaseSLCT2();
+
             xxpGeneral.paintPriority = new PaintPriority();
 
             for (int i = 0; i < 36; i++)
@@ -1072,6 +1083,7 @@ namespace Character_Making_File_Tool
                 xxpGeneral.accessorySlidersv6[i] = 0;
             }
         }
+
 
         public void ReadV5(BufferedStreamReader streamReader)
         {
@@ -1094,7 +1106,11 @@ namespace Character_Making_File_Tool
 
             xxpGeneral.baseCOLR = streamReader.Read<BaseCOLR>();
             xxpGeneral.baseSLCT = streamReader.Read<BaseSLCT>();
+
+            SeparateEyes();
+
             xxpGeneral.baseSLCT2 = streamReader.Read<BaseSLCT2>();
+
             xxpGeneral.paintPriority = new PaintPriority();
 
             for (int i = 0; i < 36; i++)
@@ -1128,7 +1144,7 @@ namespace Character_Making_File_Tool
             }
         }
 
-        public void ReadV6(BufferedStreamReader streamReader)
+        public void ReadV6_V7(BufferedStreamReader streamReader)
         {
             xxpGeneral.baseDOC = streamReader.Read<BaseDOC>();
             xxpGeneral.baseFIGR = streamReader.Read<BaseFIGR>();
@@ -1141,45 +1157,30 @@ namespace Character_Making_File_Tool
             streamReader.Seek(0x78, SeekOrigin.Current);
 
             xxpGeneral.baseSLCT = streamReader.Read<BaseSLCT>();
+
+            SeparateEyes();
+
             xxpGeneral.baseSLCT2 = streamReader.Read<BaseSLCT2>();
 
             streamReader.Seek(0x30, SeekOrigin.Current);
 
-            for (int i = 0; i < 18; i++)
+            if (this.version > 6)
             {
-                xxpGeneral.accessorySlidersv6[i] = streamReader.Read<byte>();
+                ReadNewAccSliders(streamReader);
+            } else
+            {
+                for (int i = 0; i < 18; i++)
+                {
+                    xxpGeneral.accessorySlidersv6[i] = streamReader.Read<byte>();
+                }
+                ConvertV6toV9Sliders();
             }
-            ConvertV6toV9Sliders();
+            
             xxpGeneral.paintPriority = streamReader.Read<PaintPriority>();
         }
 
-        public void ReadV7(BufferedStreamReader streamReader)
-        {
-            xxpGeneral.baseDOC = streamReader.Read<BaseDOC>();
-            xxpGeneral.baseFIGR = streamReader.Read<BaseFIGR>();
-            xxpGeneral.baseFIGR2 = streamReader.Read<BaseFIGR2>();
 
-            streamReader.Seek(0x6C, SeekOrigin.Current);
-
-            xxpGeneral.baseCOLR = streamReader.Read<BaseCOLR>();
-
-            streamReader.Seek(0x78, SeekOrigin.Current);
-
-            xxpGeneral.baseSLCT = streamReader.Read<BaseSLCT>();
-            xxpGeneral.baseSLCT2 = streamReader.Read<BaseSLCT2>();
-
-            streamReader.Seek(0x30, SeekOrigin.Current);
-
-            for (int i = 0; i < 36; i++)
-            {
-                xxpGeneral.accessorySliders[i] = streamReader.Read<sbyte>();
-            }
-            ConvertV9toV6Sliders();
-
-            xxpGeneral.paintPriority = streamReader.Read<PaintPriority>();
-        }
-
-        public void ReadV9(BufferedStreamReader streamReader)
+        public void ReadV8_V9(BufferedStreamReader streamReader)
         {
             xxpGeneral.baseDOC = streamReader.Read<BaseDOC>();
             xxpGeneral.skinVariant = streamReader.Read<byte>();
@@ -1197,17 +1198,22 @@ namespace Character_Making_File_Tool
             
             xxpGeneral.baseSLCT = streamReader.Read<BaseSLCT>();
             xxpGeneral.baseSLCT2 = streamReader.Read<BaseSLCT2>();
-            xxpGeneral.rightEyePart = streamReader.Read<uint>();
+            xxpGeneral.leftEyePart = streamReader.Read<uint>();
 
             streamReader.Seek(0x2C, SeekOrigin.Current);
 
-            for(int i = 0; i < 36; i++)
+            ReadNewAccSliders(streamReader);
+
+            xxpGeneral.paintPriority = streamReader.Read<PaintPriority>();
+        }
+
+        private void ReadNewAccSliders(BufferedStreamReader streamReader)
+        {
+            for (int i = 0; i < 36; i++)
             {
                 xxpGeneral.accessorySliders[i] = streamReader.Read<sbyte>();
             }
             ConvertV9toV6Sliders();
-
-            xxpGeneral.paintPriority = streamReader.Read<PaintPriority>();
         }
 
         public void SaveCML(string filename)
@@ -1232,7 +1238,7 @@ namespace Character_Making_File_Tool
                 uint muscles = Convert.ToUInt16(xxpGeneral.baseDOC.muscleMass); //Muscle Mass is a float ranging 0 - 60000 in xxp, but in cml is an integer
                 cml.Write(BitConverter.GetBytes(muscles), 0, 4);
                 cml.WriteByte(0x73); cml.WriteByte(0x8);
-                cml.WriteByte(0x9); cml.WriteByte(0); cml.WriteByte(0); cml.WriteByte(0); //Equivalent Salon File version? Determines mostly how accessory sliders will be interpreted seemingly. Use 9
+                cml.WriteByte(0x9); cml.WriteByte(0); cml.WriteByte(0); cml.WriteByte(0); //Equivalent Salon File version? Determines mostly how accessory sliders will be interpreted seemingly. Same with Deuman eyes. Use 9
                 cml.WriteByte(0x74); cml.WriteByte(0x8);
                 cml.Write(BitConverter.GetBytes(xxpGeneral.eyebrowDensity), 0, 1); cml.WriteByte(0); cml.WriteByte(0); cml.WriteByte(0);
                 cml.WriteByte(0x75); cml.WriteByte(0x8);
@@ -1362,7 +1368,7 @@ namespace Character_Making_File_Tool
                 cml.WriteByte(0x42); cml.WriteByte(0x08);
                 cml.Write(BitConverter.GetBytes(xxpGeneral.baseSLCT.stickerPart), 0, 4);
                 cml.WriteByte(0x43); cml.WriteByte(0x08);
-                cml.Write(BitConverter.GetBytes(xxpGeneral.baseSLCT.rightEyePart), 0, 2); cml.Write(BitConverter.GetBytes(0), 0, 2); //Null short 2 out since we don't write to the old cml format
+                cml.Write(BitConverter.GetBytes(xxpGeneral.baseSLCT.eyePart), 0, 4);
                 cml.WriteByte(0x44); cml.WriteByte(0x08);
                 cml.Write(BitConverter.GetBytes(xxpGeneral.baseSLCT.eyebrowPart), 0, 4);
                 cml.WriteByte(0x45); cml.WriteByte(0x08);
@@ -1396,7 +1402,7 @@ namespace Character_Making_File_Tool
                 cml.WriteByte(0x59); cml.WriteByte(0x08);
                 cml.Write(BitConverter.GetBytes(xxpGeneral.baseSLCT2.bodypaint2Part), 0, 4);
                 cml.WriteByte(0x63); cml.WriteByte(0x08);                                    //Absent in non deumans normally
-                cml.Write(BitConverter.GetBytes(xxpGeneral.rightEyePart), 0, 4);
+                cml.Write(BitConverter.GetBytes(xxpGeneral.leftEyePart), 0, 4);
 
                 //SLCT 2 - Body Paint Priority
                 cml.Write(Vtc0.ToArray(), 0, 4);
@@ -1412,6 +1418,14 @@ namespace Character_Making_File_Tool
 
                 File.WriteAllBytes(filename, cml.ToArray());
             }
+        }
+
+        private void SeparateEyes()
+        {
+            byte[] eye = BitConverter.GetBytes(xxpGeneral.baseSLCT.eyePart);
+            xxpGeneral.leftEyePart = eye[1];
+            eye[1] = 0;
+            xxpGeneral.baseSLCT.eyePart = BitConverter.ToUInt32(eye, 0);
         }
 
         public byte[] SetupV2()
@@ -1468,7 +1482,17 @@ namespace Character_Making_File_Tool
             xxp.Write(Reloaded.Memory.Struct.GetBytes(xxpGeneral.baseCOLR), 0, sizeof(BaseCOLR));
 
             //SLCT
+                //Handle eye combination
+            byte[] eye = BitConverter.GetBytes(xxpGeneral.baseSLCT.eyePart);
+            eye[1] = BitConverter.GetBytes(xxpGeneral.leftEyePart)[0];
+            xxpGeneral.baseSLCT.eyePart = BitConverter.ToUInt32(eye, 0);
+
             xxp.Write(Reloaded.Memory.Struct.GetBytes(xxpGeneral.baseSLCT), 0, sizeof(BaseSLCT));
+
+                //Convert eye combination back to normal
+            eye[1] = 0;
+            xxpGeneral.baseSLCT.eyePart = BitConverter.ToUInt32(eye, 0);
+
             xxp.Write(Reloaded.Memory.Struct.GetBytes(xxpGeneral.baseSLCT2), 0, sizeof(BaseSLCT2));
 
             //Padding 2
@@ -1516,7 +1540,17 @@ namespace Character_Making_File_Tool
             }
 
             //SLCT
+                //Handle eye combination
+            byte[] eye = BitConverter.GetBytes(xxpGeneral.baseSLCT.eyePart);
+            eye[1] = BitConverter.GetBytes(xxpGeneral.leftEyePart)[0];
+            xxpGeneral.baseSLCT.eyePart = BitConverter.ToUInt32(eye, 0);
+
             xxp.Write(Reloaded.Memory.Struct.GetBytes(xxpGeneral.baseSLCT), 0, sizeof(BaseSLCT));
+
+                //Convert eye combination back to normal
+            eye[1] = 0;
+            xxpGeneral.baseSLCT.eyePart = BitConverter.ToUInt32(eye, 0);
+
             xxp.Write(Reloaded.Memory.Struct.GetBytes(xxpGeneral.baseSLCT2), 0, sizeof(BaseSLCT2));
 
             //Padding 3
@@ -1574,7 +1608,7 @@ namespace Character_Making_File_Tool
             //SLCT
             xxp.Write(Reloaded.Memory.Struct.GetBytes(xxpGeneral.baseSLCT), 0, sizeof(BaseSLCT));
             xxp.Write(Reloaded.Memory.Struct.GetBytes(xxpGeneral.baseSLCT2), 0, sizeof(BaseSLCT2));
-            xxp.Write(Reloaded.Memory.Struct.GetBytes(xxpGeneral.rightEyePart), 0, 4);
+            xxp.Write(Reloaded.Memory.Struct.GetBytes(xxpGeneral.leftEyePart), 0, 4);
 
             //Padding 3
             xxp.Write(zeroInt, 0, 4);
