@@ -69,7 +69,7 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="CharacterHandler.cs" />
+    <Compile Include="Character_Making_File_Tool\CharacterHandler.cs" />
     <Compile Include="zamboni\BlewFish.cs" />
     <Compile Include="Form1.cs">
       <SubType>Form</SubType>

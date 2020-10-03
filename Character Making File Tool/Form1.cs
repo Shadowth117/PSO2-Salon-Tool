@@ -70,17 +70,16 @@ namespace Character_Making_File_Tool
                 {
                     if (Path.GetExtension(openFileDialog.FileName).Equals(".cml", StringComparison.OrdinalIgnoreCase))
                     {
-                        MessageBox.Show("Sorry! That feature isn't supported yet!");
+                        characterHandler.ParseCML(openFileDialog.FileName);
                     }
                     else
                     {
                         characterHandler.ParseToStruct(characterHandler.DecryptFile(openFileDialog.FileName));
-
-                        //Setup UI
-                        genderButtons[(int)characterHandler.xxpGeneral.baseDOC.gender].Checked = true;
-                        raceButtons[(int)characterHandler.xxpGeneral.baseDOC.race].Checked = true;
                     }
-                    
+                    //Setup UI
+                    genderButtons[(int)characterHandler.xxpGeneral.baseDOC.gender].Checked = true;
+                    raceButtons[(int)characterHandler.xxpGeneral.baseDOC.race].Checked = true;
+
                     if (characterHandler.getVersion() != -1)
                     {
                         versionLabel.Text = "Version: " + characterHandler.getVersion();
@@ -145,17 +144,18 @@ namespace Character_Making_File_Tool
                 saveFileDialog.Filter = "V9 Salon files (*." + letterOne + letterTwo + "pu)|*." + letterOne + letterTwo + "pu|" +
                 "V6 (Ep4 Char Creator) Salon files (*." + letterOne + letterTwo + "pu)|*." + letterOne + letterTwo + "pu|" +
                 "V5 Salon files (*." + letterOne + letterTwo + "pu)|*." + letterOne + letterTwo + "pu|" +
-                "V2 (Ep1 Char Creator) Salon files (*." + letterOne + letterTwo + "pu)|*." + letterOne + letterTwo + "pu|" +
-                "Character Markup Language files (*.cml)|*.cml";
+                "V2 (Ep1 Char Creator) Salon files (*." + letterOne + letterTwo + "pu)|*." + letterOne + letterTwo + "pu";
             }
             else
             {
                 saveFileDialog.Filter = "V9 Salon files (*." + letterOne + letterTwo + "p)|*." + letterOne + letterTwo + "p|" +
                 "V6 (Ep4 Char Creator) Salon files (*." + letterOne + letterTwo + "p)|*." + letterOne + letterTwo + "p|" +
                 "V5 Salon files (*." + letterOne + letterTwo + "p)|*." + letterOne + letterTwo + "p|" +
-                "V2 (Ep1 Char Creator) Salon files (*." + letterOne + letterTwo + "p)|*." + letterOne + letterTwo + "p|" +
-                "Character Markup Language files (*.cml)|*.cml";
+                "V2 (Ep1 Char Creator) Salon files (*." + letterOne + letterTwo + "p)|*." + letterOne + letterTwo + "p";
+
             }
+            saveFileDialog.Filter += "|Character Markup Language files (*.cml)|*.cml|" +
+                "Data Dump (*.txt)|*.txt";
             if (saveFileDialog.ShowDialog() == DialogResult.OK)
             {
                 characterHandler.EncryptAndSaveFile(saveFileDialog.FileName, saveFileDialog.FilterIndex - 1, heightNACheckBox.Checked, unencryptCheckBox.Checked, out string windowVersion);
@@ -214,7 +214,6 @@ namespace Character_Making_File_Tool
                 characterHandler.xxpGeneral.baseDOC.race = UInt32.Parse(((RadioButton)sender).Tag.ToString());
             }
         }
-
 
     }
 }
