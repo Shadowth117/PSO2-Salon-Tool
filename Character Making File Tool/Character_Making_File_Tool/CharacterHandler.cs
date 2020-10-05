@@ -1208,7 +1208,7 @@ namespace Character_Making_File_Tool
                 xxpGeneral.baseSLCT2.bodypaint2Part = streamReader.Read<ushort>();
                 xxpGeneral.leftEyePart = streamReader.Read<ushort>();
 
-                streamReader.Seek(0x12, SeekOrigin.Current);
+                streamReader.Seek(0x14, SeekOrigin.Current);
 
                 for (int i = 12; i < 36; i++)
                 {
@@ -1216,15 +1216,18 @@ namespace Character_Making_File_Tool
                 }
 
                 xxpGeneral.paintPriority = new PaintPriority();
-                /*
-                xxpGeneral.paintPriority.priority1 = streamReader.Read<ushort>();
-                xxpGeneral.paintPriority.priority2 = streamReader.Read<ushort>();
-                xxpGeneral.paintPriority.priority3 = streamReader.Read<ushort>();
-                */
-                //Write defaults until we actually locate this
-                xxpGeneral.paintPriority.priority1 = 2;
-                xxpGeneral.paintPriority.priority2 = 1;
-                xxpGeneral.paintPriority.priority3 = 0;
+                xxpGeneral.paintPriority.priority1 = streamReader.Read<byte>();
+                xxpGeneral.paintPriority.priority2 = streamReader.Read<byte>();
+                xxpGeneral.paintPriority.priority3 = streamReader.Read<byte>();
+
+                if(xxpGeneral.paintPriority.priority1 == xxpGeneral.paintPriority.priority2 || xxpGeneral.paintPriority.priority1 == xxpGeneral.paintPriority.priority3
+                    || xxpGeneral.paintPriority.priority2 == xxpGeneral.paintPriority.priority3)
+                {
+                    //Fix priorities as needed
+                    xxpGeneral.paintPriority.priority1 = 0;
+                    xxpGeneral.paintPriority.priority2 = 1;
+                    xxpGeneral.paintPriority.priority3 = 2;
+                }
 
                 ConvertV9toV6Sliders();
             }
