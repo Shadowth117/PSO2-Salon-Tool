@@ -1216,9 +1216,15 @@ namespace Character_Making_File_Tool
                 }
 
                 xxpGeneral.paintPriority = new PaintPriority();
+                /*
                 xxpGeneral.paintPriority.priority1 = streamReader.Read<ushort>();
                 xxpGeneral.paintPriority.priority2 = streamReader.Read<ushort>();
                 xxpGeneral.paintPriority.priority3 = streamReader.Read<ushort>();
+                */
+                //Write defaults until we actually locate this
+                xxpGeneral.paintPriority.priority1 = 2;
+                xxpGeneral.paintPriority.priority2 = 1;
+                xxpGeneral.paintPriority.priority3 = 0;
 
                 ConvertV9toV6Sliders();
             }
