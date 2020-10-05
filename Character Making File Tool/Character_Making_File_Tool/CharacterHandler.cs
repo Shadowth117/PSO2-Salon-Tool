@@ -1047,6 +1047,183 @@ namespace Character_Making_File_Tool
             }
         }
 
+        public void ParsePacket(string inFilename)
+        {
+            using (Stream stream = (Stream)new FileStream(inFilename, FileMode.Open))
+            using (var streamReader = new BufferedStreamReader(stream, 8192))
+            {
+                this.version = streamReader.Read<short>();
+                xxpGeneral.baseDOC = new BaseDOC();
+                xxpGeneral.baseDOC.race = streamReader.Read<ushort>();
+                xxpGeneral.baseDOC.gender = streamReader.Read<ushort>();
+                xxpGeneral.baseDOC.muscleMass = streamReader.Read<ushort>();
+                //xxpGeneral.eyebrowDensity =
+                //xxpGeneral.skinVariant =
+
+                xxpGeneral.baseFIGR = new BaseFIGR();
+                for (int i = 0; i < 3; i++)
+                {
+                    xxpGeneral.baseFIGR.bodyVerts[i] = streamReader.Read<short>();
+                }
+                for (int i = 0; i < 3; i++)
+                {
+                    xxpGeneral.baseFIGR.armVerts[i] = streamReader.Read<short>();
+                }
+                for (int i = 0; i < 3; i++)
+                {
+                    xxpGeneral.baseFIGR.legVerts[i] = streamReader.Read<short>();
+                }
+                for (int i = 0; i < 3; i++)
+                {
+                    xxpGeneral.baseFIGR.bustVerts[i] = streamReader.Read<short>();
+                }
+                for (int i = 0; i < 3; i++)
+                {
+                    xxpGeneral.baseFIGR.headVerts[i] = streamReader.Read<short>();
+                }
+                for (int i = 0; i < 3; i++)
+                {
+                    xxpGeneral.baseFIGR.faceShapeVerts[i] = streamReader.Read<short>();
+                }
+                for (int i = 0; i < 3; i++)
+                {
+                    xxpGeneral.baseFIGR.eyeShapeVerts[i] = streamReader.Read<short>();
+                }
+                for (int i = 0; i < 3; i++)
+                {
+                    xxpGeneral.baseFIGR.noseHeightVerts[i] = streamReader.Read<short>();
+                }
+                for (int i = 0; i < 3; i++)
+                {
+                    xxpGeneral.baseFIGR.noseShapeVerts[i] = streamReader.Read<short>();
+                }
+                for (int i = 0; i < 3; i++)
+                {
+                    xxpGeneral.baseFIGR.mouthVerts[i] = streamReader.Read<short>();
+                }
+                for (int i = 0; i < 3; i++)
+                {
+                    xxpGeneral.baseFIGR.ear_hornVerts[i] = streamReader.Read<short>();
+                }
+
+                xxpGeneral.baseFIGR2 = new BaseFIGR2();
+                for (int i = 0; i < 3; i++)
+                {
+                    xxpGeneral.baseFIGR2.neckVerts[i] = streamReader.Read<short>();
+                }
+                for (int i = 0; i < 3; i++)
+                {
+                    xxpGeneral.baseFIGR2.waistVerts[i] = streamReader.Read<short>();
+                }
+                for (int i = 0; i < 3; i++)
+                {
+                    xxpGeneral.baseFIGR2.body2Verts[i] = streamReader.Read<short>();
+                }
+                for (int i = 0; i < 3; i++)
+                {
+                    xxpGeneral.baseFIGR2.arm2Verts[i] = streamReader.Read<short>();
+                }
+                for (int i = 0; i < 3; i++)
+                {
+                    xxpGeneral.baseFIGR2.leg2Verts[i] = streamReader.Read<short>();
+                }
+                for (int i = 0; i < 3; i++)
+                {
+                    xxpGeneral.baseFIGR2.bust2Verts[i] = streamReader.Read<short>();
+                }
+                for (int i = 0; i < 3; i++)
+                {
+                    xxpGeneral.baseFIGR2.neck2Verts[i] = streamReader.Read<short>();
+                }
+                for (int i = 0; i < 3; i++)
+                {
+                    xxpGeneral.baseFIGR2.neck2Verts[i] = streamReader.Read<short>();
+                }
+
+                streamReader.Seek(0x2A, SeekOrigin.Current);
+
+                for (int i = 0; i < 12; i++)
+                {
+                    xxpGeneral.accessorySliders[i] = streamReader.Read<sbyte>();
+                }
+
+                xxpGeneral.baseCOLR = new BaseCOLR();
+                for (int i = 0; i < 3; i++)
+                {
+                    xxpGeneral.baseCOLR.outer_MainColorVerts[i] = streamReader.Read<ushort>();
+                }
+                for (int i = 0; i < 3; i++)
+                {
+                    xxpGeneral.baseCOLR.costumeColorVerts[i] = streamReader.Read<ushort>();
+                }
+                for (int i = 0; i < 3; i++)
+                {
+                    xxpGeneral.baseCOLR.mainColor_hair2Verts[i] = streamReader.Read<ushort>();
+                }
+                for (int i = 0; i < 3; i++)
+                {
+                    xxpGeneral.baseCOLR.subColor1Verts[i] = streamReader.Read<ushort>();
+                }
+                for (int i = 0; i < 3; i++)
+                {
+                    xxpGeneral.baseCOLR.skinSubColor2Verts[i] = streamReader.Read<ushort>();
+                }
+                for (int i = 0; i < 3; i++)
+                {
+                    xxpGeneral.baseCOLR.subColor3_leftEye_castHair2Verts[i] = streamReader.Read<ushort>();
+                }
+                for (int i = 0; i < 3; i++)
+                {
+                    xxpGeneral.baseCOLR.rightEye_EyesVerts[i] = streamReader.Read<ushort>();
+                }
+                for (int i = 0; i < 3; i++)
+                {
+                    xxpGeneral.baseCOLR.hairVerts[i] = streamReader.Read<ushort>();
+                }
+
+                streamReader.Seek(0x30, SeekOrigin.Current);
+
+                xxpGeneral.baseSLCT = new BaseSLCT();
+                xxpGeneral.baseSLCT.costumePart = streamReader.Read<ushort>();
+                xxpGeneral.baseSLCT.bodyPaintPart = streamReader.Read<ushort>();
+                xxpGeneral.baseSLCT.stickerPart = streamReader.Read<ushort>();
+                xxpGeneral.baseSLCT.eyePart = streamReader.Read<ushort>();
+                xxpGeneral.baseSLCT.eyebrowPart = streamReader.Read<ushort>();
+                xxpGeneral.baseSLCT.eyelashPart = streamReader.Read<ushort>();
+                xxpGeneral.baseSLCT.faceTypePart = streamReader.Read<ushort>();
+                xxpGeneral.baseSLCT.unknownPart = streamReader.Read<ushort>();
+                xxpGeneral.baseSLCT.makeup1Part = streamReader.Read<ushort>();
+                xxpGeneral.baseSLCT.hairPart = streamReader.Read<ushort>();
+                xxpGeneral.baseSLCT.acc1Part = streamReader.Read<ushort>();
+                xxpGeneral.baseSLCT.acc2Part = streamReader.Read<ushort>();
+                xxpGeneral.baseSLCT.acc3Part = streamReader.Read<ushort>();
+                xxpGeneral.baseSLCT.makeup2Part = streamReader.Read<ushort>();
+                xxpGeneral.baseSLCT.legPart = streamReader.Read<ushort>();
+                xxpGeneral.baseSLCT.armPart = streamReader.Read<ushort>();
+
+                xxpGeneral.baseSLCT2 = new BaseSLCT2();
+                xxpGeneral.baseSLCT2.acc4Part = streamReader.Read<ushort>();
+                xxpGeneral.baseSLCT2.basewearPart = streamReader.Read<ushort>();
+                xxpGeneral.baseSLCT2.innerwearPart = streamReader.Read<ushort>();
+                xxpGeneral.baseSLCT2.bodypaint2Part = streamReader.Read<ushort>();
+                xxpGeneral.leftEyePart = streamReader.Read<ushort>();
+
+                streamReader.Seek(0x12, SeekOrigin.Current);
+
+                for (int i = 12; i < 36; i++)
+                {
+                    xxpGeneral.accessorySliders[i] = streamReader.Read<sbyte>();
+                }
+
+                xxpGeneral.paintPriority = new PaintPriority();
+                xxpGeneral.paintPriority.priority1 = streamReader.Read<ushort>();
+                xxpGeneral.paintPriority.priority2 = streamReader.Read<ushort>();
+                xxpGeneral.paintPriority.priority3 = streamReader.Read<ushort>();
+
+                ConvertV9toV6Sliders();
+            }
+        }
+
         public void ReadV2(BufferedStreamReader streamReader)
         {
             xxpGeneral.baseDOC = streamReader.Read<BaseDOC>();
