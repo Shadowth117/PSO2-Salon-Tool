@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.WindowsAPICodePack.Dialogs;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -55,6 +56,7 @@ namespace Character_Making_File_Tool
                 castButton,
                 deumanButton
             };
+
         }
 
         private void Form1_Load(object sender, EventArgs e)
@@ -220,6 +222,11 @@ namespace Character_Making_File_Tool
             {
                 characterHandler.xxpGeneral.baseDOC.race = UInt32.Parse(((RadioButton)sender).Tag.ToString());
             }
+        }
+
+        private void setPathButton_Click(object sender, EventArgs e)
+        {
+            characterHandler.SetPso2BinPath();
         }
 
     }
