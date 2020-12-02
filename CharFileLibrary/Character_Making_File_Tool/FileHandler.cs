@@ -123,6 +123,10 @@ namespace Character_Making_File_Tool
 
         public string GetFileHash(string str)
         {
+            if(str == null)
+            {
+                return "";
+            }
             byte[] hash = ((HashAlgorithm)CryptoConfig.CreateFromName("MD5")).ComputeHash(new UTF8Encoding().GetBytes(str));
             return BitConverter.ToString(hash).Replace("-", string.Empty).ToLower();
         }

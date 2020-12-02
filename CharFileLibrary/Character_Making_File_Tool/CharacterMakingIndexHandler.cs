@@ -8,7 +8,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using static AquaModelLibrary.AquaMethods.VTBFMethods;
+using static AquaModelLibrary.VTBFMethods;
 
 namespace Character_Making_File_Tool
 {
