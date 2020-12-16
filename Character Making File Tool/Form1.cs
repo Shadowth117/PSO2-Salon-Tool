@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.WindowsAPICodePack.Dialogs;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -30,11 +31,12 @@ namespace Character_Making_File_Tool
             quitButton.Visible = false;
             openFileDialog = new OpenFileDialog()
             {
-                Filter = "All character files (*.cml,*.xxp,*.xxpu)|*.fhp;*.fnp;*.fcp;*.fdp;*.mhp;*.mnp;*.mcp;*.mdp;" +
-                            "*.fhpu;*.fnpu;*.fcpu;*.fdpu;*.mhpu;*.mnpu;*.mcpu;*.mdpu;*.cml|" +
+                Filter = "All character files (*.cml,*.xxp,*.xxpu,*.bin)|*.fhp;*.fnp;*.fcp;*.fdp;*.mhp;*.mnp;*.mcp;*.mdp;" +
+                            "*.fhpu;*.fnpu;*.fcpu;*.fdpu;*.mhpu;*.mnpu;*.mcpu;*.mdpu;*.cml;*.bin|" +
                             "Character Markup Language files (*.cml)|*.cml|" +
                             "Salon files (*.xxp)|*.fhp;*.fnp;*.fcp;*.fdp;*.mhp;*.mnp;*.mcp;*.mdp|" +
-                            "Unencrypted Salon files(*.xxpu)| *.fhpu; *.fnpu; *.fcpu; *.fdpu; *.mhpu; *.mnpu; *.mcpu; *.mdpu",
+                            "Unencrypted Salon files(*.xxpu)| *.fhpu; *.fnpu; *.fcpu; *.fdpu; *.mhpu; *.mnpu; *.mcpu; *.mdpu|" +
+                            "Packet Data (*.bin)| *.bin",
                 Title = "Open character file"
             };
             saveFileDialog = new SaveFileDialog()
@@ -54,6 +56,7 @@ namespace Character_Making_File_Tool
                 castButton,
                 deumanButton
             };
+
         }
 
         private void Form1_Load(object sender, EventArgs e)
@@ -68,14 +71,20 @@ namespace Character_Making_File_Tool
             {
                 try
                 {
-                    if (Path.GetExtension(openFileDialog.FileName).Equals(".cml", StringComparison.OrdinalIgnoreCase))
+                    string extension = Path.GetExtension(openFileDialog.FileName).ToLower();
+                    switch(extension)
                     {
-                        characterHandler.ParseCML(openFileDialog.FileName);
+                        case  ".cml":
+                            characterHandler.ParseCML(openFileDialog.FileName);
+                            break;
+                        case ".bin":
+                            characterHandler.ParsePacket(openFileDialog.FileName);
+                            break;
+                        default:
+                            characterHandler.ParseToStruct(characterHandler.DecryptFile(openFileDialog.FileName));
+                            break;
                     }
-                    else
-                    {
-                        characterHandler.ParseToStruct(characterHandler.DecryptFile(openFileDialog.FileName));
-                    }
+                    
                     //Setup UI
                     genderButtons[(int)characterHandler.xxpGeneral.baseDOC.gender].Checked = true;
                     raceButtons[(int)characterHandler.xxpGeneral.baseDOC.race].Checked = true;
@@ -213,6 +222,11 @@ namespace Character_Making_File_Tool
             {
                 characterHandler.xxpGeneral.baseDOC.race = UInt32.Parse(((RadioButton)sender).Tag.ToString());
             }
+        }
+
+        private void setPathButton_Click(object sender, EventArgs e)
+        {
+            characterHandler.SetPso2BinPath();
         }
 
     }

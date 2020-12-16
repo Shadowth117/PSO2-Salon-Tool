@@ -40,7 +40,7 @@
             this.label2 = new System.Windows.Forms.Label();
             this.panel2 = new System.Windows.Forms.Panel();
             this.fileButton = new System.Windows.Forms.Button();
-            this.panel3 = new System.Windows.Forms.Panel();
+            this.filePanel = new System.Windows.Forms.Panel();
             this.quitButton = new System.Windows.Forms.Button();
             this.fileButtonSubmenu = new System.Windows.Forms.Panel();
             this.saveButton = new System.Windows.Forms.Button();
@@ -52,9 +52,10 @@
             this.panel8 = new System.Windows.Forms.Panel();
             this.versionLabel = new System.Windows.Forms.Label();
             this.unencryptCheckBox = new System.Windows.Forms.CheckBox();
+            this.setPathButton = new System.Windows.Forms.Button();
             this.panel1.SuspendLayout();
             this.panel7.SuspendLayout();
-            this.panel3.SuspendLayout();
+            this.filePanel.SuspendLayout();
             this.fileButtonSubmenu.SuspendLayout();
             this.panel4.SuspendLayout();
             this.panel6.SuspendLayout();
@@ -216,24 +217,24 @@
             this.fileButton.Location = new System.Drawing.Point(0, 0);
             this.fileButton.Name = "fileButton";
             this.fileButton.Padding = new System.Windows.Forms.Padding(10, 0, 0, 0);
-            this.fileButton.Size = new System.Drawing.Size(141, 37);
+            this.fileButton.Size = new System.Drawing.Size(145, 37);
             this.fileButton.TabIndex = 13;
             this.fileButton.Text = "File";
             this.fileButton.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             this.fileButton.UseVisualStyleBackColor = false;
             this.fileButton.Click += new System.EventHandler(this.fileButton_Click);
             // 
-            // panel3
+            // filePanel
             // 
-            this.panel3.AutoScroll = true;
-            this.panel3.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(37)))), ((int)(((byte)(40)))), ((int)(((byte)(47)))));
-            this.panel3.Controls.Add(this.quitButton);
-            this.panel3.Controls.Add(this.fileButtonSubmenu);
-            this.panel3.Controls.Add(this.fileButton);
-            this.panel3.Location = new System.Drawing.Point(0, 0);
-            this.panel3.Name = "panel3";
-            this.panel3.Size = new System.Drawing.Size(141, 131);
-            this.panel3.TabIndex = 14;
+            this.filePanel.AutoScroll = true;
+            this.filePanel.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(37)))), ((int)(((byte)(40)))), ((int)(((byte)(47)))));
+            this.filePanel.Controls.Add(this.quitButton);
+            this.filePanel.Controls.Add(this.fileButtonSubmenu);
+            this.filePanel.Controls.Add(this.fileButton);
+            this.filePanel.Location = new System.Drawing.Point(-4, 0);
+            this.filePanel.Name = "filePanel";
+            this.filePanel.Size = new System.Drawing.Size(145, 157);
+            this.filePanel.TabIndex = 14;
             // 
             // quitButton
             // 
@@ -243,9 +244,9 @@
             this.quitButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.quitButton.Font = new System.Drawing.Font("Calibri", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.quitButton.ForeColor = System.Drawing.Color.Gainsboro;
-            this.quitButton.Location = new System.Drawing.Point(0, 100);
+            this.quitButton.Location = new System.Drawing.Point(0, 126);
             this.quitButton.Name = "quitButton";
-            this.quitButton.Size = new System.Drawing.Size(141, 31);
+            this.quitButton.Size = new System.Drawing.Size(145, 31);
             this.quitButton.TabIndex = 15;
             this.quitButton.Text = "Quit";
             this.quitButton.UseVisualStyleBackColor = false;
@@ -254,12 +255,13 @@
             // fileButtonSubmenu
             // 
             this.fileButtonSubmenu.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(47)))), ((int)(((byte)(50)))), ((int)(((byte)(57)))));
+            this.fileButtonSubmenu.Controls.Add(this.setPathButton);
             this.fileButtonSubmenu.Controls.Add(this.saveButton);
             this.fileButtonSubmenu.Controls.Add(this.openButton);
             this.fileButtonSubmenu.Dock = System.Windows.Forms.DockStyle.Top;
             this.fileButtonSubmenu.Location = new System.Drawing.Point(0, 37);
             this.fileButtonSubmenu.Name = "fileButtonSubmenu";
-            this.fileButtonSubmenu.Size = new System.Drawing.Size(141, 62);
+            this.fileButtonSubmenu.Size = new System.Drawing.Size(145, 89);
             this.fileButtonSubmenu.TabIndex = 16;
             this.fileButtonSubmenu.Visible = false;
             // 
@@ -273,7 +275,7 @@
             this.saveButton.Location = new System.Drawing.Point(0, 29);
             this.saveButton.Name = "saveButton";
             this.saveButton.Padding = new System.Windows.Forms.Padding(20, 0, 0, 0);
-            this.saveButton.Size = new System.Drawing.Size(141, 30);
+            this.saveButton.Size = new System.Drawing.Size(145, 30);
             this.saveButton.TabIndex = 15;
             this.saveButton.Text = "Save As...";
             this.saveButton.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -290,7 +292,7 @@
             this.openButton.Location = new System.Drawing.Point(0, 0);
             this.openButton.Name = "openButton";
             this.openButton.Padding = new System.Windows.Forms.Padding(20, 0, 0, 0);
-            this.openButton.Size = new System.Drawing.Size(141, 29);
+            this.openButton.Size = new System.Drawing.Size(145, 29);
             this.openButton.TabIndex = 14;
             this.openButton.Text = "Open";
             this.openButton.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -362,12 +364,29 @@
             this.unencryptCheckBox.AutoSize = true;
             this.unencryptCheckBox.Font = new System.Drawing.Font("Calibri", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.unencryptCheckBox.ForeColor = System.Drawing.Color.Gainsboro;
-            this.unencryptCheckBox.Location = new System.Drawing.Point(12, 141);
+            this.unencryptCheckBox.Location = new System.Drawing.Point(145, 134);
             this.unencryptCheckBox.Name = "unencryptCheckBox";
-            this.unencryptCheckBox.Size = new System.Drawing.Size(310, 23);
+            this.unencryptCheckBox.Size = new System.Drawing.Size(298, 23);
             this.unencryptCheckBox.TabIndex = 18;
-            this.unencryptCheckBox.Text = "Save Unencrypted File (Won\'t work ingame)";
+            this.unencryptCheckBox.Text = "Save Unencrypted File (Unusable ingame)";
             this.unencryptCheckBox.UseVisualStyleBackColor = true;
+            // 
+            // setPathButton
+            // 
+            this.setPathButton.Dock = System.Windows.Forms.DockStyle.Top;
+            this.setPathButton.FlatAppearance.BorderSize = 0;
+            this.setPathButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.setPathButton.Font = new System.Drawing.Font("Calibri", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.setPathButton.ForeColor = System.Drawing.Color.Gainsboro;
+            this.setPathButton.Location = new System.Drawing.Point(0, 59);
+            this.setPathButton.Name = "setPathButton";
+            this.setPathButton.Padding = new System.Windows.Forms.Padding(20, 0, 0, 0);
+            this.setPathButton.Size = new System.Drawing.Size(145, 29);
+            this.setPathButton.TabIndex = 16;
+            this.setPathButton.Text = "Set pso2_bin";
+            this.setPathButton.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.setPathButton.UseVisualStyleBackColor = true;
+            this.setPathButton.Click += new System.EventHandler(this.setPathButton_Click);
             // 
             // Form1
             // 
@@ -379,7 +398,7 @@
             this.Controls.Add(this.versionLabel);
             this.Controls.Add(this.panel8);
             this.Controls.Add(this.panel4);
-            this.Controls.Add(this.panel3);
+            this.Controls.Add(this.filePanel);
             this.Controls.Add(this.heightNACheckBox);
             this.Controls.Add(this.panel1);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedToolWindow;
@@ -393,7 +412,7 @@
             this.panel1.PerformLayout();
             this.panel7.ResumeLayout(false);
             this.panel7.PerformLayout();
-            this.panel3.ResumeLayout(false);
+            this.filePanel.ResumeLayout(false);
             this.fileButtonSubmenu.ResumeLayout(false);
             this.panel4.ResumeLayout(false);
             this.panel4.PerformLayout();
@@ -416,7 +435,7 @@
         private System.Windows.Forms.Panel panel1;
         private System.Windows.Forms.Panel panel2;
         private System.Windows.Forms.Button fileButton;
-        private System.Windows.Forms.Panel panel3;
+        private System.Windows.Forms.Panel filePanel;
         private System.Windows.Forms.Button quitButton;
         private System.Windows.Forms.Button openButton;
         private System.Windows.Forms.Panel fileButtonSubmenu;
@@ -430,6 +449,7 @@
         private System.Windows.Forms.Panel panel8;
         private System.Windows.Forms.Label versionLabel;
         private System.Windows.Forms.CheckBox unencryptCheckBox;
+        private System.Windows.Forms.Button setPathButton;
     }
 }
 
