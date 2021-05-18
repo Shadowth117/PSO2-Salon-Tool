@@ -21,6 +21,7 @@ namespace Character_Making_File_Tool
         private List<RadioButton> genderButtons;
         private List<RadioButton> raceButtons;
         private string originalName;
+        private string openedFileName;
 
         public Form1()
         {
@@ -97,6 +98,7 @@ namespace Character_Making_File_Tool
                         versionLabel.Text = "Version: cml";
                     }
                     Text = originalName + " - " + Path.GetFileName(openFileDialog.FileName);
+                    openedFileName = Path.GetFileNameWithoutExtension(openFileDialog.FileName);
                     saveButton.Enabled = true;
 
                 }
@@ -116,7 +118,9 @@ namespace Character_Making_File_Tool
             string letterOne;
             string letterTwo;
 
-            switch(characterHandler.xxpGeneral.baseDOC.gender)
+            saveFileDialog.FileName = openedFileName;
+
+            switch (characterHandler.xxpGeneral.baseDOC.gender)
             {
                 case 0:
                     letterOne = "m";
@@ -172,6 +176,7 @@ namespace Character_Making_File_Tool
                 versionLabel.Text = "Version: " + windowVersion;
             }
             saveFileDialog.FileName = "";
+            openedFileName = "";
         }
 
         private void quitButton_Click(object sender, EventArgs e)
