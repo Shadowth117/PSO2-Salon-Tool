@@ -22,6 +22,8 @@ namespace Character_Making_File_Tool
         private List<RadioButton> raceButtons;
         private string originalName;
         private string openedFileName;
+        private string openInitialDirectory;
+        private string savedInitialDirectory;
 
         public Form1()
         {
@@ -68,6 +70,8 @@ namespace Character_Making_File_Tool
         private void openButton_Click(object sender, EventArgs e)
         {
             showFileSubmenu(fileButtonSubmenu);
+            openFileDialog.InitialDirectory = openInitialDirectory;
+
             if (openFileDialog.ShowDialog() == DialogResult.OK)
             {
                 try
@@ -99,6 +103,7 @@ namespace Character_Making_File_Tool
                     }
                     Text = originalName + " - " + Path.GetFileName(openFileDialog.FileName);
                     openedFileName = Path.GetFileNameWithoutExtension(openFileDialog.FileName);
+                    openInitialDirectory = Path.GetDirectoryName(openFileDialog.FileName);
                     saveButton.Enabled = true;
 
                 }
@@ -118,6 +123,7 @@ namespace Character_Making_File_Tool
             string letterOne;
             string letterTwo;
 
+            saveFileDialog.InitialDirectory = savedInitialDirectory;
             saveFileDialog.FileName = openedFileName;
 
             switch (characterHandler.xxpGeneral.baseDOC.gender)
@@ -175,6 +181,7 @@ namespace Character_Making_File_Tool
                 Text = originalName + " - " + Path.GetFileName(saveFileDialog.FileName);
                 versionLabel.Text = "Version: " + windowVersion;
             }
+            savedInitialDirectory = Path.GetDirectoryName(saveFileDialog.FileName);
             saveFileDialog.FileName = "";
             openedFileName = "";
         }
