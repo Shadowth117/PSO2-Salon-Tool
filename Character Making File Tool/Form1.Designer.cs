@@ -37,12 +37,15 @@
             this.heightNACheckBox = new System.Windows.Forms.CheckBox();
             this.panel1 = new System.Windows.Forms.Panel();
             this.panel7 = new System.Windows.Forms.Panel();
+            this.debugEncryptButton = new System.Windows.Forms.Button();
+            this.debugBatchButton = new System.Windows.Forms.Button();
             this.label2 = new System.Windows.Forms.Label();
             this.panel2 = new System.Windows.Forms.Panel();
             this.fileButton = new System.Windows.Forms.Button();
             this.filePanel = new System.Windows.Forms.Panel();
             this.quitButton = new System.Windows.Forms.Button();
             this.fileButtonSubmenu = new System.Windows.Forms.Panel();
+            this.setPathButton = new System.Windows.Forms.Button();
             this.saveButton = new System.Windows.Forms.Button();
             this.openButton = new System.Windows.Forms.Button();
             this.panel4 = new System.Windows.Forms.Panel();
@@ -52,7 +55,7 @@
             this.panel8 = new System.Windows.Forms.Panel();
             this.versionLabel = new System.Windows.Forms.Label();
             this.unencryptCheckBox = new System.Windows.Forms.CheckBox();
-            this.setPathButton = new System.Windows.Forms.Button();
+            this.button1 = new System.Windows.Forms.Button();
             this.panel1.SuspendLayout();
             this.panel7.SuspendLayout();
             this.filePanel.SuspendLayout();
@@ -164,6 +167,7 @@
             // panel1
             // 
             this.panel1.Controls.Add(this.panel7);
+            this.panel1.Controls.Add(this.button1);
             this.panel1.Controls.Add(this.deumanButton);
             this.panel1.Controls.Add(this.castButton);
             this.panel1.Controls.Add(this.panel2);
@@ -178,12 +182,34 @@
             // panel7
             // 
             this.panel7.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(60)))), ((int)(((byte)(60)))), ((int)(((byte)(67)))));
+            this.panel7.Controls.Add(this.debugEncryptButton);
+            this.panel7.Controls.Add(this.debugBatchButton);
             this.panel7.Controls.Add(this.label2);
             this.panel7.Dock = System.Windows.Forms.DockStyle.Top;
             this.panel7.Location = new System.Drawing.Point(0, 0);
             this.panel7.Name = "panel7";
             this.panel7.Size = new System.Drawing.Size(223, 37);
             this.panel7.TabIndex = 17;
+            // 
+            // debugEncryptButton
+            // 
+            this.debugEncryptButton.Location = new System.Drawing.Point(77, 14);
+            this.debugEncryptButton.Name = "debugEncryptButton";
+            this.debugEncryptButton.Size = new System.Drawing.Size(75, 23);
+            this.debugEncryptButton.TabIndex = 18;
+            this.debugEncryptButton.Text = "DebugEncrypt";
+            this.debugEncryptButton.UseVisualStyleBackColor = true;
+            this.debugEncryptButton.Click += new System.EventHandler(this.debugEncrypt_Click);
+            // 
+            // debugBatchButton
+            // 
+            this.debugBatchButton.Location = new System.Drawing.Point(-9, 12);
+            this.debugBatchButton.Name = "debugBatchButton";
+            this.debugBatchButton.Size = new System.Drawing.Size(75, 23);
+            this.debugBatchButton.TabIndex = 18;
+            this.debugBatchButton.Text = "DebugBatchConvert";
+            this.debugBatchButton.UseVisualStyleBackColor = true;
+            this.debugBatchButton.Click += new System.EventHandler(this.debugBatchButton_Click);
             // 
             // label2
             // 
@@ -264,6 +290,23 @@
             this.fileButtonSubmenu.Size = new System.Drawing.Size(145, 89);
             this.fileButtonSubmenu.TabIndex = 16;
             this.fileButtonSubmenu.Visible = false;
+            // 
+            // setPathButton
+            // 
+            this.setPathButton.Dock = System.Windows.Forms.DockStyle.Top;
+            this.setPathButton.FlatAppearance.BorderSize = 0;
+            this.setPathButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.setPathButton.Font = new System.Drawing.Font("Calibri", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.setPathButton.ForeColor = System.Drawing.Color.Gainsboro;
+            this.setPathButton.Location = new System.Drawing.Point(0, 59);
+            this.setPathButton.Name = "setPathButton";
+            this.setPathButton.Padding = new System.Windows.Forms.Padding(20, 0, 0, 0);
+            this.setPathButton.Size = new System.Drawing.Size(145, 29);
+            this.setPathButton.TabIndex = 16;
+            this.setPathButton.Text = "Set pso2_bin";
+            this.setPathButton.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.setPathButton.UseVisualStyleBackColor = true;
+            this.setPathButton.Click += new System.EventHandler(this.setPathButton_Click);
             // 
             // saveButton
             // 
@@ -371,22 +414,15 @@
             this.unencryptCheckBox.Text = "Save Unencrypted File (Unusable ingame)";
             this.unencryptCheckBox.UseVisualStyleBackColor = true;
             // 
-            // setPathButton
+            // button1
             // 
-            this.setPathButton.Dock = System.Windows.Forms.DockStyle.Top;
-            this.setPathButton.FlatAppearance.BorderSize = 0;
-            this.setPathButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.setPathButton.Font = new System.Drawing.Font("Calibri", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.setPathButton.ForeColor = System.Drawing.Color.Gainsboro;
-            this.setPathButton.Location = new System.Drawing.Point(0, 59);
-            this.setPathButton.Name = "setPathButton";
-            this.setPathButton.Padding = new System.Windows.Forms.Padding(20, 0, 0, 0);
-            this.setPathButton.Size = new System.Drawing.Size(145, 29);
-            this.setPathButton.TabIndex = 16;
-            this.setPathButton.Text = "Set pso2_bin";
-            this.setPathButton.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.setPathButton.UseVisualStyleBackColor = true;
-            this.setPathButton.Click += new System.EventHandler(this.setPathButton_Click);
+            this.button1.Location = new System.Drawing.Point(-9, 35);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(75, 23);
+            this.button1.TabIndex = 18;
+            this.button1.Text = "DebugBatchConvert";
+            this.button1.UseVisualStyleBackColor = true;
+            this.button1.Click += new System.EventHandler(this.debugDecrypt_Click);
             // 
             // Form1
             // 
@@ -450,6 +486,9 @@
         private System.Windows.Forms.Label versionLabel;
         private System.Windows.Forms.CheckBox unencryptCheckBox;
         private System.Windows.Forms.Button setPathButton;
+        private System.Windows.Forms.Button debugBatchButton;
+        private System.Windows.Forms.Button debugEncryptButton;
+        private System.Windows.Forms.Button button1;
     }
 }
 

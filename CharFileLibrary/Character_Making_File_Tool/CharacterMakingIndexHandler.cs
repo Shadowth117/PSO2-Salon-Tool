@@ -9,202 +9,189 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using static AquaModelLibrary.VTBFMethods;
+using AquaModelLibrary;
 
 namespace Character_Making_File_Tool
 {
     public class CharacterMakingIndexHandler
     {
-        private string cmxFilename = "1c5f7a7fbcdd873336048eaf6e26cd87";
-        private string iceExeName = "ice_ext.exe";
+        public bool NAInstall = false;
         public bool invalid = false;
-        public PartsCMX parts;
-        public Dictionary<int, List<Dictionary<int, object>>> acceTags;
+        public CharacterMakingIndex cmx = null;
+        public PSO2Text partsText = null;
+        public PSO2Text acceText = null;
+        public PSO2Text commonText = null;
+        public Dictionary<int, string> faceIds = null;
 
+        public string namePath = null;
+        public string costumeNamePath = null;
+        public string basewearNamePath = null;
+        public string innerwearNamePath = null;
+        public Dictionary<string, int> costumeOuterDict = new Dictionary<string, int>();
+        public Dictionary<string, int> basewearDict = new Dictionary<string, int>();
+        public Dictionary<string, int> innerwearDict = new Dictionary<string, int>();
         public CharacterMakingIndexHandler(string pso2_binPath)
         {
-            try
-            {
-                ExtractCMXIce(pso2_binPath);
-                ReadPartsCMX();
-                ReadAccessoryCMX();
-            }
-            catch
-            {
+
+            //try
+            //{
+                GenerateDictionaries(pso2_binPath);
+            //}
+            //catch
+            //{
                 invalid = true;
-                MessageBox.Show("Unable to read .cmx files. Please check permissions and set an appropriate pso2_bin Path.");
-            }
+                MessageBox.Show("Unable to read .cmx files; parts will not be editable. Please check permissions and set an appropriate pso2_bin Path.");
+            //}
         }
 
-        public class PartsCMX
+        //Generate dictionaries for storing part names and for storing part ids
+        public void GenerateDictionaries(string pso2_binPath)
         {
-            //Bit of an ugly look, but it's a bit of a complex thing to parse.
-            public Dictionary<int, List<Dictionary<int, object>>> bodyTags = new Dictionary<int, List<Dictionary<int, object>>>(); //Costume/Outerwear/Cast Body
-            public Dictionary<int, List<Dictionary<int, object>>> carmTags = new Dictionary<int, List<Dictionary<int, object>>>(); //Cast Arm
-            public Dictionary<int, List<Dictionary<int, object>>> clegTags = new Dictionary<int, List<Dictionary<int, object>>>(); //Cast Leg
-            public Dictionary<int, List<Dictionary<int, object>>> bdp1Tags = new Dictionary<int, List<Dictionary<int, object>>>(); //Body paint
-            public Dictionary<int, List<Dictionary<int, object>>> bdp2Tags = new Dictionary<int, List<Dictionary<int, object>>>(); //Stickers
-            public Dictionary<int, List<Dictionary<int, object>>> faceTags = new Dictionary<int, List<Dictionary<int, object>>>(); //Face models
-            public Dictionary<int, List<Dictionary<int, object>>> fcmnTags = new Dictionary<int, List<Dictionary<int, object>>>(); //Face motions
-            public Dictionary<int, List<Dictionary<int, object>>> fcp1Tags = new Dictionary<int, List<Dictionary<int, object>>>(); //Face Textures
-            public Dictionary<int, List<Dictionary<int, object>>> fcp2Tags = new Dictionary<int, List<Dictionary<int, object>>>(); //Makeup
-            public Dictionary<int, List<Dictionary<int, object>>> eyeTags = new Dictionary<int, List<Dictionary<int, object>>>();  //Eye
-            public Dictionary<int, List<Dictionary<int, object>>> eyeBTags = new Dictionary<int, List<Dictionary<int, object>>>(); //Eyebrow
-            public Dictionary<int, List<Dictionary<int, object>>> eyeLTags = new Dictionary<int, List<Dictionary<int, object>>>(); //Eyelash
-            public Dictionary<int, List<Dictionary<int, object>>> hairTags = new Dictionary<int, List<Dictionary<int, object>>>(); //Hair
-            public Dictionary<int, List<Dictionary<int, object>>> colTags = new Dictionary<int, List<Dictionary<int, object>>>();  //Color slider info
-            public Dictionary<int, List<Dictionary<int, object>>> bblyTags = new Dictionary<int, List<Dictionary<int, object>>>(); //Inner Wear 
-            public Dictionary<int, List<Dictionary<int, object>>> bclnTags = new Dictionary<int, List<Dictionary<int, object>>>(); //Costume/Basewear(/Cast Body?) file index lookup
-            public Dictionary<int, List<Dictionary<int, object>>> lclnTags = new Dictionary<int, List<Dictionary<int, object>>>(); //Cast Leg file index lookup
-            public Dictionary<int, List<Dictionary<int, object>>> aclnTags = new Dictionary<int, List<Dictionary<int, object>>>(); //Cast Arm file index lookup
-            public Dictionary<int, List<Dictionary<int, object>>> iclnTags = new Dictionary<int, List<Dictionary<int, object>>>(); //Inner wear file index lookup
-        }
+            //Generate path strings
+            namePath = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "Names\\");
+            costumeNamePath = Path.Combine(namePath, "costumeOuterNames.txt");
+            basewearNamePath = Path.Combine(namePath, "basewearNames.txt");
+            innerwearNamePath = Path.Combine(namePath, "innerwearNames.txt");
 
-        private void ReadPartsCMX()
-        {
-            parts = new PartsCMX();
-            string filePath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) + @"\cmx\" + cmxFilename + @"_ext\parts.cmx";
-
-            using (Stream stream = (Stream)new FileStream(filePath, FileMode.Open))
-            using (var streamReader = new BufferedStreamReader(stream, 8192))
+            //Check CMX data
+            string cmxPath = Path.Combine(pso2_binPath, CharacterMakingIndex.dataDir, CharacterMakingIndexMethods.GetFileHash(CharacterMakingIndex.classicCMX));
+            string cmxMD5Path = Path.Combine(namePath, "cmxMD5.txt");
+            string currentHash = CharacterMakingIndexMethods.GetFileDataHash(cmxPath);
+            string storedHash = null;
+            if (File.Exists(cmxMD5Path))
             {
-                int type = streamReader.Peek<int>();
-                //Deal with deicer's extra header nonsense
-                if (type.Equals(0x786D63))
-                {
-                    streamReader.Seek(0xC, SeekOrigin.Begin);
-                    //Basically always 0x60, but some deicer files from the Alpha have 0x50... 
-                    int headJunkSize = streamReader.Read<int>();
+                storedHash = File.ReadAllText(cmxMD5Path);
+            }
 
-                    streamReader.Seek(headJunkSize - 0x10, SeekOrigin.Current);
-                    type = streamReader.Peek<int>();
+            //Conditionally generate caches if cmx doesn't match
+            if (storedHash == null || storedHash != currentHash)
+            {
+                //Ensure paths are created and ready
+                Directory.CreateDirectory(namePath);
+
+                //Read the game data
+                cmx = CharacterMakingIndexMethods.ExtractCMX(pso2_binPath);
+                CharacterMakingIndexMethods.ReadCMXText(pso2_binPath, out partsText, out acceText, out commonText);
+                faceIds = CharacterMakingIndexMethods.GetFaceVariationLuaNameDict(pso2_binPath, faceIds);
+                if (Directory.Exists(Path.Combine(pso2_binPath, CharacterMakingIndex.dataNADir)))
+                {
+                    NAInstall = true;
                 }
 
-                //Seek to and read the DOC tag's 
-                streamReader.Seek(0x1C, SeekOrigin.Current);
-                int cmxCount = streamReader.Read<ushort>();
-                streamReader.Seek(0x2, SeekOrigin.Current);
-                //Read tags, get id from subtag 0xFF, and assign to dictionary with that. 
-                for (int i = 0; i < cmxCount; i++)
+                GenerateNameCache();
+
+                //Write the md5 data if we successfully cached.
+                File.WriteAllText(cmxMD5Path, currentHash);
+            }
+
+            //Read cached names
+            ReadCache(costumeNamePath, costumeOuterDict);
+            ReadCache(basewearNamePath, basewearDict);
+            ReadCache(innerwearNamePath, innerwearDict);
+            GC.Collect();
+
+        }
+
+        private void ReadCache(string cachePath, Dictionary<string, int> dict)
+        {
+            string[] cache = File.ReadAllLines(cachePath);
+            for (int i = 0; i < cache.Length - 1; i += 2)
+            {
+                if(!dict.ContainsKey(cache[i]))
                 {
-                    List<Dictionary<int, object>> data = ReadVTBFTag(streamReader, out string tagType, out int entryCount);
-                    switch (tagType)
-                    {
-                        case "BODY":
-                            parts.bodyTags.Add((int)data[0][0xFF], data);
-                            break;
-                        case "CARM":
-                            parts.carmTags.Add((int)data[0][0xFF], data);
-                            break;
-                        case "CLEG":
-                            parts.clegTags.Add((int)data[0][0xFF], data);
-                            break;
-                        case "BDP1":
-                            parts.bdp1Tags.Add((int)data[0][0xFF], data);
-                            break;
-                        case "BDP2":
-                            parts.bdp2Tags.Add((int)data[0][0xFF], data);
-                            break;
-                        case "FACE":
-                            parts.faceTags.Add((int)data[0][0xFF], data);
-                            break;
-                        case "FCMN":
-                            parts.fcmnTags.Add((int)data[0][0xFF], data);
-                            break;
-                        case "FCP1":
-                            parts.fcp1Tags.Add((int)data[0][0xFF], data);
-                            break;
-                        case "FCP2":
-                            parts.fcp2Tags.Add((int)data[0][0xFF], data);
-                            break;
-                        case "EYE ":
-                            parts.eyeTags.Add((int)data[0][0xFF], data);
-                            break;
-                        case "EYEB":
-                            parts.eyeBTags.Add((int)data[0][0xFF], data);
-                            break;
-                        case "EYEL":
-                            parts.eyeLTags.Add((int)data[0][0xFF], data);
-                            break;
-                        case "HAIR":
-                            parts.hairTags.Add((int)data[0][0xFF], data);
-                            break;
-                        case "COL ":
-                            parts.colTags.Add((int)data[0][0xFF], data);
-                            break;
-                        case "BBLY":
-                            parts.bblyTags.Add((int)data[0][0xFF], data);
-                            break;
-                        case "BCLN":
-                            parts.bclnTags.Add((int)data[0][0xFF], data);
-                            break;
-                        case "LCLN":
-                            parts.lclnTags.Add((int)data[0][0xFF], data);
-                            break;
-                        case "ACLN":
-                            parts.aclnTags.Add((int)data[0][0xFF], data);
-                            break;
-                        case "ICLN":
-                            parts.iclnTags.Add((int)data[0][0xFF], data);
-                            break;
-                        default:
-                            throw new Exception($"Unexpected tag type {tagType}");
-                            break;
-                    }
+                    dict[cache[i]] = Int32.Parse(cache[i + 1]);
                 }
             }
-
+            cache = null;
         }
 
-        private void ReadAccessoryCMX()
+        private void GenerateNameCache()
         {
-            //Bit of an ugly look, but it's a bit of a complex thing to parse. Thankfully, accessories ONLY have accessories included in them. 
-            acceTags = new Dictionary<int, List<Dictionary<int, object>>>();
+            //Since we have an idea of what should be there and what we're interested in parsing out, throw these into a dictionary and go
+            Dictionary<string, List<List<PSO2Text.textPair>>> textByCat = new Dictionary<string, List<List<PSO2Text.textPair>>>();
+            Dictionary<string, List<List<PSO2Text.textPair>>> commByCat = new Dictionary<string, List<List<PSO2Text.textPair>>>();
+            for (int i = 0; i < partsText.text.Count; i++)
+            {
+                textByCat.Add(partsText.categoryNames[i], partsText.text[i]);
+            }
+            for (int i = 0; i < acceText.text.Count; i++)
+            {
+                //Handle dummy decoy entry in old versions
+                if (textByCat.ContainsKey(acceText.categoryNames[i]) && textByCat[acceText.categoryNames[i]][0].Count == 0)
+                {
+                    textByCat[acceText.categoryNames[i]] = acceText.text[i];
+                }
+                else
+                {
+                    textByCat.Add(acceText.categoryNames[i], acceText.text[i]);
+                }
+            }
+            for (int i = 0; i < commonText.text.Count; i++)
+            {
+                commByCat.Add(commonText.categoryNames[i], commonText.text[i]);
+            }
 
-            //Read tags, get id from subtag 0xFF, and assign to dictionary with that. 
-            //ReadVTBFTag()
+            //***Costumes/Outers
+            //Build text Dict
+            List<int> masterIdList = new List<int>();
+            List<Dictionary<int, string>> nameDicts = new List<Dictionary<int, string>>();
+            StringBuilder nameCache = new StringBuilder();
+            CharacterMakingIndexMethods.GatherTextIds(textByCat, masterIdList, nameDicts, "costume", true);
+            CharacterMakingIndexMethods.GatherTextIds(textByCat, masterIdList, nameDicts, "body", false);
+            Dictionary<int, string> dict = nameDicts[0];
+
+            //Add potential cmx ids that wouldn't be stored with 
+            CharacterMakingIndexMethods.GatherDictKeys(masterIdList, cmx.costumeDict.Keys);
+            CharacterMakingIndexMethods.GatherDictKeys(masterIdList, cmx.outerDict.Keys);
+
+            BuildNameCache(masterIdList, nameCache, dict);
+            File.WriteAllText(costumeNamePath, nameCache.ToString());
+
+            //***Basewear
+            masterIdList.Clear();
+            nameDicts.Clear();
+            nameCache.Clear();
+            CharacterMakingIndexMethods.GatherTextIds(textByCat, masterIdList, nameDicts, "basewear", true);
+            dict = nameDicts[0];
+
+            //Add potential cmx ids that wouldn't be stored with 
+            CharacterMakingIndexMethods.GatherDictKeys(masterIdList, cmx.baseWearDict.Keys);
+
+            BuildNameCache(masterIdList, nameCache, dict);
+            File.WriteAllText(basewearNamePath, nameCache.ToString());
+
+            //***Basewear
+            masterIdList.Clear();
+            nameDicts.Clear();
+            nameCache.Clear();
+            CharacterMakingIndexMethods.GatherTextIds(textByCat, masterIdList, nameDicts, "innerwear", true);
+            dict = nameDicts[0];
+
+            //Add potential cmx ids that wouldn't be stored with 
+            CharacterMakingIndexMethods.GatherDictKeys(masterIdList, cmx.innerWearDict.Keys);
+
+            BuildNameCache(masterIdList, nameCache, dict);
+            File.WriteAllText(innerwearNamePath, nameCache.ToString());
         }
 
-        private string ExtractCMXIce(string pso2_binPath)
+        private static void BuildNameCache(List<int> masterIdList, StringBuilder nameCache, Dictionary<int, string> dict)
         {
-            //Create the path
-            string cmxPath = pso2_binPath + "\\data\\win32\\" + cmxFilename;
-
-            //Copy and extract
-            string cmxFolder = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) + "\\cmx\\";
-
-            Directory.CreateDirectory(cmxFolder);
-
-            //Get rid of the cmx if it exists. We want to use the latest one.
-            if (File.Exists(cmxFolder + cmxFilename))
+            masterIdList.Sort();
+            for (int i = 0; i < masterIdList.Count; i++)
             {
-                File.Delete(cmxFolder + cmxFilename);
+                int id = masterIdList[i];
+                string name;
+                if (dict.TryGetValue(id, out string str) && str != null && str != "" && str.Length > 0)
+                {
+                    name = str;
+                }
+                else
+                {
+                    name = $"[Unnamed {id}]";
+                }
+                nameCache.AppendLine(name);
+                nameCache.AppendLine(id.ToString());
             }
-            File.Copy(cmxPath, cmxFolder + cmxFilename);
-
-            //Since we can't redirect output folders seemingly, copy the repacker to the subfolder
-            if (!File.Exists(cmxFolder + iceExeName))
-            {
-                File.Copy(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) + "\\" + iceExeName, cmxFolder + "\\" + iceExeName);
-            }
-
-            //Extract the files
-            ProcessStartInfo ice = new ProcessStartInfo();
-            ice.FileName = "\"" + Path.Combine(cmxFolder, iceExeName) + "\"";
-            ice.Arguments = "\"" + Path.Combine(cmxFolder, cmxFilename) + "\"";
-            ice.WindowStyle = ProcessWindowStyle.Hidden;
-            ice.UseShellExecute = false;
-            ice.CreateNoWindow = true;
-            ice.RedirectStandardOutput = true;
-            int exitCode;
-
-            using (Process proc = Process.Start(ice))
-            {
-                proc.WaitForExit();
-                exitCode = proc.ExitCode;
-            }
-
-            return cmxFolder + cmxFilename;
         }
-
     }
 }

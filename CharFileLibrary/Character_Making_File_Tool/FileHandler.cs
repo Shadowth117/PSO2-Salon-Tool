@@ -135,25 +135,35 @@ namespace Character_Making_File_Tool
         //The color is stored independently elsewhere. 
         public void GetTrueFileNumbers()
         {
-            if(cmxReader.parts.bclnTags.TryGetValue((int)xxpGeneral.baseSLCT.costumePart, out var linkedCostume))
+            var cmx = cmxReader.cmx;
+            //Costumes, cast bodies, outers
+            if(cmx.costumeIdLink.ContainsKey((int)xxpGeneral.baseSLCT.costumePart))
             {
-                xxpGeneral.baseSLCT.costumePart =  (uint)((int)linkedCostume[0][0x1]);
+                xxpGeneral.baseSLCT.costumePart =  (uint)cmx.costumeIdLink[(int)xxpGeneral.baseSLCT.costumePart].fileId;
             }
-            if (cmxReader.parts.bclnTags.TryGetValue((int)xxpGeneral.baseSLCT2.basewearPart, out var linkedBase))
+            else if (cmx.outerWearIdLink.ContainsKey((int)xxpGeneral.baseSLCT.costumePart))
             {
-                xxpGeneral.baseSLCT2.basewearPart = (uint)((int)linkedBase[0][0x1]);
+                xxpGeneral.baseSLCT.costumePart = (uint)cmx.outerWearIdLink[(int)xxpGeneral.baseSLCT.costumePart].fileId;
             }
-            if (cmxReader.parts.lclnTags.TryGetValue((int)xxpGeneral.baseSLCT.legPart, out var linkedLeg))
+            //Basewear
+            if (cmx.baseWearIdLink.ContainsKey((int)xxpGeneral.baseSLCT2.basewearPart))
             {
-                xxpGeneral.baseSLCT.legPart = (uint)((int)linkedLeg[0][0x1]);
+                xxpGeneral.baseSLCT2.basewearPart = (uint)cmx.baseWearIdLink[(int)xxpGeneral.baseSLCT2.basewearPart].fileId;
             }
-            if (cmxReader.parts.aclnTags.TryGetValue((int)xxpGeneral.baseSLCT.armPart, out var linkedArm))
+            //Leg Parts
+            if (cmx.clegIdLink.ContainsKey((int)xxpGeneral.baseSLCT.legPart))
             {
-                xxpGeneral.baseSLCT.armPart = (uint)((int)linkedArm[0][0x1]);
+                xxpGeneral.baseSLCT.legPart = (uint)cmx.clegIdLink[(int)xxpGeneral.baseSLCT.legPart].fileId;
             }
-            if (cmxReader.parts.iclnTags.TryGetValue((int)xxpGeneral.baseSLCT2.innerwearPart, out var linkedInner))
+            //Arm Parts
+            if (cmx.castArmIdLink.ContainsKey((int)xxpGeneral.baseSLCT.armPart))
             {
-                xxpGeneral.baseSLCT2.innerwearPart = (uint)((int)linkedInner[0][0x1]);
+                xxpGeneral.baseSLCT.armPart = (uint)cmx.castArmIdLink[(int)xxpGeneral.baseSLCT.armPart].fileId;
+            }
+            //InnerWear
+            if (cmx.innerWearIdLink.ContainsKey((int)xxpGeneral.baseSLCT2.innerwearPart))
+            {
+                xxpGeneral.baseSLCT2.innerwearPart = (uint)cmx.innerWearIdLink[(int)xxpGeneral.baseSLCT2.innerwearPart].fileId;
             }
         }
 

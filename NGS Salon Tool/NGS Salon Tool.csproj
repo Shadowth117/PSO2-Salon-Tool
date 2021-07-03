@@ -1,0 +1,47 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net5.0-windows</TargetFramework>
+    <RootNamespace>NGS_Salon_Tool</RootNamespace>
+    <UseWPF>true</UseWPF>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <PlatformTarget>x64</PlatformTarget>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <PlatformTarget>x64</PlatformTarget>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="a.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft-WindowsAPICodePack-ShellExtensions" Version="1.1.4" />
+    <PackageReference Include="Pfim" Version="0.10.0" />
+    <PackageReference Include="System.Drawing.Common" Version="6.0.0-preview.5.21301.5" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\CharFileLibrary\CharFileLibrary.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="AquaModelLibrary">
+      <HintPath>..\CharFileLibrary\Libraries\AquaLib\AquaModelLibrary.dll</HintPath>
+    </Reference>
+    <Reference Include="ZomboniLib">
+      <HintPath>..\CharFileLibrary\Libraries\AquaLib\ZomboniLib.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="a.png" />
+  </ItemGroup>
+
+</Project>

@@ -18,6 +18,11 @@ namespace Character_Making_File_Tool
     public unsafe class CharacterHandler
     {
         private static uint CharacterBlowfishKey = 2588334024;
+        private static int MinSliderNGS = -127;
+        private static int MaxSliderNGS = 127;
+        private static int MinHeightLegSliderNGS = -71;
+        private static int MinSliderClassic = -10000;
+        private static int MaxSliderClassic = 10000;
         private static int MinHeightSlider = -5501;
         private static int MinLegSlider = -5600;
         private static int DeicerCMLType = 0x6C6D63;
@@ -55,13 +60,31 @@ namespace Character_Making_File_Tool
             return version;
         }
 
-        public struct CMLHeader
+        public struct Vec3Int
         {
-            public int vtbf;  //FileType
-            public uint headerSize; //Size of the header data
-            public int vtbfType; //Type of VTBF
-            public short fileCount; //Number of these files stored in this particular file. AQP Vtbfs sometimes have multiple models inside
-            public short unkHeader0; //Always 00 4C for cml
+            public int X;
+            public int Y;
+            public int Z;
+
+            public int[] GetAsArray()
+            {
+                return new int[] { X, Y, Z };
+            }
+
+            public void SetVec3(int x, int y, int z)
+            {
+                X = x;
+                Y = y;
+                Z = z;
+            }
+
+            public static Vec3Int CreateVec3Int(int x, int y, int z)
+            {
+                var vec3 = new Vec3Int();
+                vec3.SetVec3(x, y, z);
+
+                return vec3;
+            }
         }
 
         public struct XXPHeader
@@ -87,10 +110,12 @@ namespace Character_Making_File_Tool
             public fixed int armVerts[3];
             public fixed int legVerts[3];
             public fixed int bustVerts[3];
+
             public fixed int headVerts[3];
             public fixed int faceShapeVerts[3];
             public fixed int eyeShapeVerts[3];
             public fixed int noseHeightVerts[3];
+            
             public fixed int noseShapeVerts[3];
             public fixed int mouthVerts[3];
             public fixed int ear_hornVerts[3];
@@ -103,6 +128,7 @@ namespace Character_Making_File_Tool
             public fixed int waistVerts[3];
             public fixed int body2Verts[3];
             public fixed int arm2Verts[3];
+
             public fixed int leg2Verts[3];
             public fixed int bust2Verts[3];
             public fixed int neck2Verts[3];
@@ -304,6 +330,21 @@ namespace Character_Making_File_Tool
             public long finalPadding;
         }
 
+        //Significant restructure from others.
+        //Assume values that ranged from -10000 to 10000 range from -127 to 127 now, despite being full ints still
+        public struct XXPV10
+        {
+            public BaseSLCT baseSLCT;
+            public Vec3Int neckVerts; 
+            public Vec3Int waistVerts;
+
+            //0xBC
+            public Vec3Int hands;
+            public Vec3Int horns;
+            public int eyeSize;
+            public int eyeHorizontalPosition;
+        }
+
         public struct XXPGeneral
         {
             //Naming is based upon equivalent .cml file tag naming
@@ -452,7 +493,7 @@ namespace Character_Making_File_Tool
             }
 
 #if DEBUG
-            DumpData(inFilename, fileData);
+            File.WriteAllBytes(inFilename + "u", fileData);
 #endif
             return fileData;
         }
@@ -630,6 +671,19 @@ namespace Character_Making_File_Tool
 
                 File.WriteAllBytes(filename, xxpMem.ToArray());
             }
+        }
+
+        public void EncryptAndWrite(string fileName)
+        {
+            var file = File.ReadAllBytes(fileName);
+            byte[] body = new byte[file.Length - 0x10];
+            Array.Copy(file, 0x10, body, 0, file.Length - 0x10);
+            File.WriteAllBytes(fileName + "_test", body);
+
+            Array.Copy(EncryptData(body, BitConverter.ToInt32(file, 4), out int hash), 0, file, 0x10, body.Length);
+            Array.Copy(BitConverter.GetBytes(hash), 0, file, 0x8, 0x4);
+
+            File.WriteAllBytes(fileName + "_e", file);
         }
 
         public byte[] EncryptData(byte[] body, int size, out int hashInt)

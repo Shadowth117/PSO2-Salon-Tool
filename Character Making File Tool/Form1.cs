@@ -25,7 +25,17 @@ namespace Character_Making_File_Tool
         public Form1()
         {
             InitializeComponent();
+            debugBatchButton.Visible = false;
+            debugBatchButton.Enabled = false;
+            debugEncryptButton.Visible = false;
+            debugEncryptButton.Enabled = false;
 
+#if DEBUG
+            debugBatchButton.Visible = true;
+            debugBatchButton.Enabled = true;
+            debugEncryptButton.Visible = true;
+            debugEncryptButton.Enabled = true;
+#endif
             originalName = Text;
             saveButton.Enabled = false;
             quitButton.Visible = false;
@@ -229,5 +239,54 @@ namespace Character_Making_File_Tool
             characterHandler.SetPso2BinPath();
         }
 
+        private void debugBatchButton_Click(object sender, EventArgs e)
+        {
+
+            CommonOpenFileDialog goodFolderDialog = new CommonOpenFileDialog()
+            {
+                IsFolderPicker = true,
+                Title = "Select a folder containing pso2 .xxp files",
+            };
+            if (goodFolderDialog.ShowDialog() == CommonFileDialogResult.Ok)
+            {
+                string[] extensions = new string[] { "*.mhp", "*.fhp", "*.mcp", "*.fcp", "*.mnp", "*.fnp", "*.mdp", "*.fdp"};
+                List<string> files = new List<string>();
+                foreach(string ext in extensions)
+                {
+                    files.AddRange(Directory.GetFiles(goodFolderDialog.FileName, ext));
+                }
+
+                foreach(var file in files)
+                {
+                    characterHandler.DecryptFile(file);
+                }
+            }
+        }
+
+        private void debugEncrypt_Click(object sender, EventArgs e)
+        {
+            OpenFileDialog openFileDialog = new OpenFileDialog()
+            {
+                Title = "Select file",
+                Filter = "File |*.*"
+            };
+            if (openFileDialog.ShowDialog() == DialogResult.OK)
+            {
+                characterHandler.EncryptAndWrite(openFileDialog.FileName);
+            }
+        }
+
+        private void debugDecrypt_Click(object sender, EventArgs e)
+        {
+            OpenFileDialog openFileDialog = new OpenFileDialog()
+            {
+                Title = "Select file",
+                Filter = "File |*.*"
+            };
+            if (openFileDialog.ShowDialog() == DialogResult.OK)
+            {
+                characterHandler.DecryptFile(openFileDialog.FileName);
+            }
+        }
     }
 }

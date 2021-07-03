@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PSO2 Salon Tool", "Characte
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CharFileLibrary", "CharFileLibrary\CharFileLibrary.csproj", "{916EE3EF-E220-4938-8299-B8F966C0FE83}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NGS Salon Tool", "NGS Salon Tool\NGS Salon Tool.csproj", "{AEDF0E12-58A3-482F-8369-9080E59A37FB}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{916EE3EF-E220-4938-8299-B8F966C0FE83}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{916EE3EF-E220-4938-8299-B8F966C0FE83}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{916EE3EF-E220-4938-8299-B8F966C0FE83}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AEDF0E12-58A3-482F-8369-9080E59A37FB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AEDF0E12-58A3-482F-8369-9080E59A37FB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AEDF0E12-58A3-482F-8369-9080E59A37FB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AEDF0E12-58A3-482F-8369-9080E59A37FB}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
