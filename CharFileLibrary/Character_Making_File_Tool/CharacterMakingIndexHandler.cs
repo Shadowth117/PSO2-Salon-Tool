@@ -10,6 +10,9 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using static AquaModelLibrary.VTBFMethods;
 using AquaModelLibrary;
+using System.Windows;
+using System.Threading;
+using System.Windows.Threading;
 
 namespace Character_Making_File_Tool
 {
@@ -17,6 +20,7 @@ namespace Character_Making_File_Tool
     {
         public bool NAInstall = false;
         public bool invalid = false;
+        public WIPBox messageBox = null;
         public CharacterMakingIndex cmx = null;
         public PSO2Text partsText = null;
         public PSO2Text acceText = null;
@@ -27,12 +31,30 @@ namespace Character_Making_File_Tool
         public string costumeNamePath = null;
         public string basewearNamePath = null;
         public string innerwearNamePath = null;
+        public string castArmNamePath = null;
+        public string castLegNamePath = null;
         public Dictionary<string, int> costumeOuterDict = new Dictionary<string, int>();
         public Dictionary<string, int> basewearDict = new Dictionary<string, int>();
         public Dictionary<string, int> innerwearDict = new Dictionary<string, int>();
+        public Dictionary<string, int> castArmDict = new Dictionary<string, int>();
+        public Dictionary<string, int> castLegDict = new Dictionary<string, int>();
+
         public CharacterMakingIndexHandler(string pso2_binPath)
         {
+            try
+            {
+                GenerateDictionaries(pso2_binPath);
+            }
+            catch
+            {
+                invalid = true;
+                System.Windows.MessageBox.Show("Unable to read .cmx files; parts will not be editable. Please check permissions and set an appropriate pso2_bin Path.");
+            }
+        }
 
+        public CharacterMakingIndexHandler(string pso2_binPath, WIPBox box)
+        {
+            messageBox = box;
             //try
             //{
                 GenerateDictionaries(pso2_binPath);
@@ -40,7 +62,7 @@ namespace Character_Making_File_Tool
             //catch
             //{
                 invalid = true;
-                MessageBox.Show("Unable to read .cmx files; parts will not be editable. Please check permissions and set an appropriate pso2_bin Path.");
+            //System.Windows.MessageBox.Show("Unable to read .cmx files; parts will not be editable. Please check permissions and set an appropriate pso2_bin Path.");
             //}
         }
 
@@ -48,10 +70,12 @@ namespace Character_Making_File_Tool
         public void GenerateDictionaries(string pso2_binPath)
         {
             //Generate path strings
-            namePath = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "Names\\");
+            namePath = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "names\\");
             costumeNamePath = Path.Combine(namePath, "costumeOuterNames.txt");
             basewearNamePath = Path.Combine(namePath, "basewearNames.txt");
             innerwearNamePath = Path.Combine(namePath, "innerwearNames.txt");
+            castArmNamePath = Path.Combine(namePath, "castArmNames.txt");
+            castLegNamePath = Path.Combine(namePath, "castLegNames.txt");
 
             //Check CMX data
             string cmxPath = Path.Combine(pso2_binPath, CharacterMakingIndex.dataDir, CharacterMakingIndexMethods.GetFileHash(CharacterMakingIndex.classicCMX));
@@ -66,8 +90,11 @@ namespace Character_Making_File_Tool
             //Conditionally generate caches if cmx doesn't match
             if (storedHash == null || storedHash != currentHash)
             {
-                //Ensure paths are created and ready
-                Directory.CreateDirectory(namePath);
+                if(messageBox != null)
+                {
+                    messageBox.CenterWindowOnScreen();
+                    messageBox.Show();
+                }
 
                 //Read the game data
                 cmx = CharacterMakingIndexMethods.ExtractCMX(pso2_binPath);
@@ -88,6 +115,8 @@ namespace Character_Making_File_Tool
             ReadCache(costumeNamePath, costumeOuterDict);
             ReadCache(basewearNamePath, basewearDict);
             ReadCache(innerwearNamePath, innerwearDict);
+            ReadCache(castArmNamePath, castArmDict);
+            ReadCache(castLegNamePath, castLegDict);
             GC.Collect();
 
         }
@@ -148,30 +177,39 @@ namespace Character_Making_File_Tool
             File.WriteAllText(costumeNamePath, nameCache.ToString());
 
             //***Basewear
+            dict = WriteNames(textByCat, masterIdList, nameDicts, nameCache, "basewear", basewearNamePath, cmx.baseWearDict);
+
+            //***Innerwear
+            dict = WriteNames(textByCat, masterIdList, nameDicts, nameCache, "innerwear", innerwearNamePath, cmx.innerWearDict);
+
+            //***Cast Arms
+            dict = WriteNames(textByCat, masterIdList, nameDicts, nameCache, "arm", castArmNamePath, cmx.carmDict);
+
+            //***Cast Legs
+            dict = WriteNames(textByCat, masterIdList, nameDicts, nameCache, "Leg", castLegNamePath, cmx.clegDict);
+
+            if(messageBox != null)
+            {
+                messageBox.Hide();
+            }
+        }
+
+        private Dictionary<int, string> WriteNames<T>(Dictionary<string, List<List<PSO2Text.textPair>>> textByCat, List<int> masterIdList, 
+            List<Dictionary<int, string>> nameDicts, StringBuilder nameCache, string category, string outPath, Dictionary<int, T> cmxDict)
+        {
+            Dictionary<int, string> dict;
             masterIdList.Clear();
             nameDicts.Clear();
             nameCache.Clear();
-            CharacterMakingIndexMethods.GatherTextIds(textByCat, masterIdList, nameDicts, "basewear", true);
+            CharacterMakingIndexMethods.GatherTextIds(textByCat, masterIdList, nameDicts, category, true);
             dict = nameDicts[0];
 
             //Add potential cmx ids that wouldn't be stored with 
-            CharacterMakingIndexMethods.GatherDictKeys(masterIdList, cmx.baseWearDict.Keys);
+            CharacterMakingIndexMethods.GatherDictKeys(masterIdList, cmxDict.Keys);
 
             BuildNameCache(masterIdList, nameCache, dict);
-            File.WriteAllText(basewearNamePath, nameCache.ToString());
-
-            //***Basewear
-            masterIdList.Clear();
-            nameDicts.Clear();
-            nameCache.Clear();
-            CharacterMakingIndexMethods.GatherTextIds(textByCat, masterIdList, nameDicts, "innerwear", true);
-            dict = nameDicts[0];
-
-            //Add potential cmx ids that wouldn't be stored with 
-            CharacterMakingIndexMethods.GatherDictKeys(masterIdList, cmx.innerWearDict.Keys);
-
-            BuildNameCache(masterIdList, nameCache, dict);
-            File.WriteAllText(innerwearNamePath, nameCache.ToString());
+            File.WriteAllText(outPath, nameCache.ToString());
+            return dict;
         }
 
         private static void BuildNameCache(List<int> masterIdList, StringBuilder nameCache, Dictionary<int, string> dict)

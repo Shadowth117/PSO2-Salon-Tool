@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -31,12 +32,17 @@ namespace NGS_Salon_Tool
             IsFolderPicker = true,
             Title = "Select pso2_bin",
         };
-        string pso2BinCachePath = System.IO.Path.Combine(System.IO.Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "Names\\pso2Bin.txt");
+        string namesPath = System.IO.Path.Combine(System.IO.Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "names\\");
+        string pso2BinCachePath = System.IO.Path.Combine(System.IO.Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "names\\pso2Bin.txt");
         string pso2_binDir = null;
+        WIPBox wipBox = null;
+        ColorPicker colorPicker = null;
         public MainWindow()
         {
             InitializeComponent();
-            if(File.Exists(pso2BinCachePath))
+            colorPicker = new ColorPicker();
+            colorPicker.Hide();
+            if (File.Exists(pso2BinCachePath))
             {
                 LoadGameData();
             }
@@ -51,22 +57,41 @@ namespace NGS_Salon_Tool
         private void LoadGameData()
         {
             pso2_binDir = File.ReadAllText(pso2BinCachePath);
-            cmxHandler = new CharacterMakingIndexHandler(pso2_binDir);
-            costumeCB.Items.Clear();
+            if(wipBox == null)
+            {
+                wipBox = new WIPBox("Generating name cache. This will be\n" +
+                                    "done any time the .cmx is patched.\n" +
+                                    "It may take a moment.");
+            }
+            cmxHandler = new CharacterMakingIndexHandler(pso2_binDir, wipBox);
             costumeCB.ItemsSource = cmxHandler.costumeOuterDict.Keys;
-            basewearCB.Items.Clear();
             basewearCB.ItemsSource = cmxHandler.basewearDict.Keys;
-            innerwearCB.Items.Clear();
             innerwearCB.ItemsSource = cmxHandler.innerwearDict.Keys;
+            castArmCB.ItemsSource = cmxHandler.castArmDict.Keys;
+            castLegCB.ItemsSource = cmxHandler.castLegDict.Keys;
+            //bodyPaintCB.ItemsSource = cmxHandler.bodyPaintDict.Keys;
+            //bodyPaint2CB.ItemsSource = cmxHandler.bodyPaintDict.Keys;
+            //hairCB.ItemsSource = cmxHandler.hairDict.Keys;
+            //stickerCB.ItemsSource = cmxHandler.stickerDict.Keys;
+            colorPicker.Show();
         }
 
         private void SetPSO2Bin(object sender, RoutedEventArgs e)
         {
             if(pso2BinSelect.ShowDialog() == CommonFileDialogResult.Ok)
             {
+                //Ensure paths are created and ready
+                Directory.CreateDirectory(namesPath);
+
                 File.WriteAllText(pso2BinCachePath, pso2BinSelect.FileName);
                 LoadGameData();
             }
+        }
+
+        public void OnWindowClosing(object sender, CancelEventArgs e)
+        {
+            wipBox.Close();
+            colorPicker.Close();
         }
 
         private void CostumeSelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -85,6 +110,18 @@ namespace NGS_Salon_Tool
         {
             string text = (sender as ComboBox).SelectedItem as string;
             innerwearIcon.Source = IceHandler.GetIconFromIce(pso2_binDir, cmxHandler.innerwearDict[text], CharacterMakingIndex.innerwearIcon);
+        }
+
+        private void CastArmSelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            string text = (sender as ComboBox).SelectedItem as string;
+            castArmIcon.Source = IceHandler.GetIconFromIce(pso2_binDir, cmxHandler.castArmDict[text], CharacterMakingIndex.castArmIcon);
+        }
+
+        private void CastLegSelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            string text = (sender as ComboBox).SelectedItem as string;
+            castLegIcon.Source = IceHandler.GetIconFromIce(pso2_binDir, cmxHandler.castLegDict[text], CharacterMakingIndex.castLegIcon);
         }
     }
 }

@@ -1,0 +1,40 @@
+﻿<Window x:Class="NGS_Salon_Tool.ColorPicker"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:NGS_Salon_Tool"
+        xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
+        mc:Ignorable="d"
+        Title="Color Picker" Height="415" Width="402" HorizontalAlignment="Center" VerticalAlignment="Center">
+    <Grid Background="#FFE5E5E5" HorizontalAlignment="Left" VerticalAlignment="Top">
+        <Rectangle x:Name="colorBox" HorizontalAlignment="Left" Height="40" Margin="45,278,0,0" Stroke="Black" VerticalAlignment="Top" Width="40" Fill="{Binding SelColor}"/>
+        <Canvas Name="ColorCanvas" Background="Black" Width="200" Height="200" Grid.ColumnSpan="3" Margin="106,98,106,98" >
+            <Rectangle Width="200" Height="200" HorizontalAlignment="Left" >
+                <Rectangle.Fill>
+                    <LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
+                        <LinearGradientBrush.GradientStops>
+                            <GradientStop Color="White" Offset="0" />
+                            <GradientStop Color="{Binding RectColor}" Offset="1" />
+                        </LinearGradientBrush.GradientStops>
+                    </LinearGradientBrush>
+                </Rectangle.Fill>
+                <Rectangle.OpacityMask>
+                    <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+                        <LinearGradientBrush.GradientStops>
+                            <GradientStop Color="#FFFFFFFF" Offset="0"/>
+                            <GradientStop Color="#00FFFFFF" Offset="1"/>
+                        </LinearGradientBrush.GradientStops>
+                    </LinearGradientBrush>
+                </Rectangle.OpacityMask>
+            </Rectangle>
+            <Border x:Name="selector" BorderThickness="1" BorderBrush="#99FFFFFF" Height="3" Canvas.Left="100" Canvas.Top="100" Width="3" Background="Black"/>
+        </Canvas>
+        <Slider x:Name="horizSlider" HorizontalAlignment="Left" Margin="106,75,0,0" VerticalAlignment="Top" Width="200" Value="127" TickPlacement="None" Maximum="255" ValueChanged="UpdateHorizSlider"/>
+        <Slider x:Name="vertSlider" HorizontalAlignment="Left" Margin="83,98,0,0" VerticalAlignment="Top" Width="18" Orientation="Vertical" Height="200" Value="127" Grid.ColumnSpan="2" Maximum="255" ValueChanged="UpdateVertSlider"/>
+        <Label x:Name="alphaLabel" Content="Alpha" HorizontalAlignment="Left" Margin="222,24,0,0" VerticalAlignment="Top" Width="64" Height="27" FontSize="10"/>
+        <xctk:IntegerUpDown x:Name="myUpDownControl" Margin="222,45,16,261" Maximum="255" Minimum="0" Value="0" HorizontalAlignment="Stretch" VerticalAlignment="Top" />
+        <Image x:Name="pack__hueSlider" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="106,299,64,36" Stretch="Fill" Source="/ColorWindow/hueSlider.png" Width="200" Height="20"/>
+        <Slider x:Name="hueSlider" HorizontalAlignment="Left" Margin="101,299,0,0" VerticalAlignment="Top" Width="210" TickPlacement="None" Maximum="360" ValueChanged="UpdateHueSlider"/>
+    </Grid>
+</Window>

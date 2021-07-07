@@ -12,7 +12,7 @@ using AquaModelLibrary;
 using System.Windows.Media.Imaging;
 using System.Diagnostics;
 
-namespace NGS_Salon_Tool
+namespace Character_Making_File_Tool
 {
     public static class IceHandler
     {
@@ -31,6 +31,12 @@ namespace NGS_Salon_Tool
                     break;
                 case "innerwear01_":
                     typeString = CharacterMakingIndexMethods.GetInnerwearIconString(finalId);
+                    break;
+                case "arm_":
+                    typeString = CharacterMakingIndexMethods.GetCastArmIconString(finalId);
+                    break;
+                case "leg_":
+                    typeString = CharacterMakingIndexMethods.GetCastLegIconString(finalId);
                     break;
                 default:
                     throw new Exception("Unexpected icon type!");
