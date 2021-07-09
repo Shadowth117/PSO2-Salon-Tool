@@ -32,8 +32,8 @@
         </Canvas>
         <Slider x:Name="horizSlider" HorizontalAlignment="Left" Margin="106,75,0,0" VerticalAlignment="Top" Width="200" Value="127" TickPlacement="None" Maximum="255" ValueChanged="UpdateHorizSlider"/>
         <Slider x:Name="vertSlider" HorizontalAlignment="Left" Margin="83,98,0,0" VerticalAlignment="Top" Width="18" Orientation="Vertical" Height="200" Value="127" Grid.ColumnSpan="2" Maximum="255" ValueChanged="UpdateVertSlider"/>
-        <Label x:Name="alphaLabel" Content="Alpha" HorizontalAlignment="Left" Margin="222,24,0,0" VerticalAlignment="Top" Width="64" Height="27" FontSize="10"/>
-        <xctk:IntegerUpDown x:Name="myUpDownControl" Margin="222,45,16,261" Maximum="255" Minimum="0" Value="0" HorizontalAlignment="Stretch" VerticalAlignment="Top" />
+        <Label x:Name="alphaLabel" Content="Alpha" HorizontalAlignment="Left" Margin="321,24,0,0" VerticalAlignment="Top" Width="64" Height="27" FontSize="10"/>
+        <xctk:IntegerUpDown x:Name="myUpDownControl" Margin="323,45,16,0" Maximum="255" Minimum="0" Value="0" VerticalAlignment="Top" />
         <Image x:Name="pack__hueSlider" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="106,299,64,36" Stretch="Fill" Source="/ColorWindow/hueSlider.png" Width="200" Height="20"/>
         <Slider x:Name="hueSlider" HorizontalAlignment="Left" Margin="101,299,0,0" VerticalAlignment="Top" Width="210" TickPlacement="None" Maximum="360" ValueChanged="UpdateHueSlider"/>
     </Grid>

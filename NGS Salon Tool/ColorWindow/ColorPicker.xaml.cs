@@ -30,16 +30,15 @@ namespace NGS_Salon_Tool
             RectColor = Color.FromArgb(0xFF, 0xFF, 0, 0);
             SelColor.Color = ColorLogic.ColorFromHSV(hueSlider.Value, horizSlider.Value / horizSlider.Maximum, vertSlider.Value / vertSlider.Maximum);
         }
-        private SolidColorBrush m_SelectedColor;
         public SolidColorBrush SelColor
         {
             get
             {
-                return m_SelectedColor;
+                return trueColor;
             }
             set
             {
-                m_SelectedColor = value;
+                trueColor = value;
                 OnPropertyChanged("SelColor");
             }
         }

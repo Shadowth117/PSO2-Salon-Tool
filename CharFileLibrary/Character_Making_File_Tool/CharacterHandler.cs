@@ -155,14 +155,17 @@ namespace Character_Making_File_Tool
             public uint bodyPaintPart;
             public uint stickerPart;
             public uint eyePart;     //In files prior to v9, assume byte 0 and byte 1 are right and left eye respectively for dumans 
+
             public uint eyebrowPart;
             public uint eyelashPart;
             public uint faceTypePart;
             public uint faceTexPart;
+
             public uint makeup1Part;
             public uint hairPart;
             public uint acc1Part;
             public uint acc2Part;
+
             public uint acc3Part;
             public uint makeup2Part;
             public uint legPart;
@@ -334,7 +337,7 @@ namespace Character_Making_File_Tool
         //Assume values that ranged from -10000 to 10000 range from -127 to 127 now, despite being full ints still
         public struct XXPV10
         {
-            public BaseSLCT baseSLCT;
+            public BaseFIGR baseFIGR;
             public Vec3Int neckVerts; 
             public Vec3Int waistVerts;
 
@@ -343,6 +346,76 @@ namespace Character_Making_File_Tool
             public Vec3Int horns;
             public int eyeSize;
             public int eyeHorizontalPosition;
+            public int neckAngle;
+
+            //0xE0 COLR - These are just standard RGBA in NGS
+            public int outerColor1;
+            public int baseColor1; //Also used for costume colors?
+            public int mainColor;
+            public int subColor1;
+
+            public int subColor2;
+            public int subColor3;
+            public int rightEyeColor;
+            public int hairColor1;
+
+            public int eyebrowColor;
+            public int eyelashColor;
+            public int skinColor1;
+            public int skinColor2;
+
+            public int baseColor2;
+            public int outerColor2;
+            public int innerColor1;
+            public int innerColor2;
+
+            public int leftEyeColor;
+            public int hairColor2;
+
+            //0x128 SLCT
+            public BaseSLCT baseSLCT;
+            public BaseSLCT2 baseSLCT2;
+            public uint leftEyePart;
+            public uint skinTextureSet;
+
+            //0x180 SLCT continued
+            public uint earsPart;
+            public uint teethPart;
+            public uint hornPart;
+            public uint acc5Part;
+
+            public uint acc6Part;
+            public uint acc7Part;
+            public uint acc8Part;
+            public uint acc9Part;
+
+            public uint acc10Part;
+            public uint acc11Part;
+            public uint acc12Part;
+
+            //0x1AC Padding?
+            public uint padding0;
+
+            public uint padding1;
+            public uint padding2;
+            public uint padding3;
+            public uint padding4;
+
+            //Accessory sliders
+            public fixed sbyte positionSliders[36];
+            public fixed sbyte scaleSliders[36];
+            public fixed sbyte rotationSliders[36];
+
+            /*Remaining data
+            -Ornament display
+            -Facial Expressions
+            -Change Motion
+            -?? Random new ngs stuff
+            -Second slider set? If that even exists still...
+            */
+
+            //0x3A4
+            public fixed byte accessoryColorChoices[24]; //Each accessory has choice 1 and choice 2 next to each other
         }
 
         public struct XXPGeneral
