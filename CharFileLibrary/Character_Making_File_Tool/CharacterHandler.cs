@@ -190,6 +190,32 @@ namespace Character_Making_File_Tool
             public ushort priority3;
         }
 
+        public struct FaceExpression
+        {
+            public sbyte irisSize;
+            public sbyte leftEyebrowVertical;
+            public sbyte leftMouthVertical;
+            public sbyte rightEyebrowVertical;
+
+            public sbyte rightMouthVertical;
+            public sbyte eyeCorner;
+            public sbyte leftEyelidVertical;
+            public sbyte leftEyebrowExpression;
+
+            public sbyte rightEyelidVertical;
+            public sbyte rightEyebrowExpression;
+            public sbyte mouthA;
+            public sbyte mouthI;
+
+            public sbyte mouthU;
+            public sbyte mouthE;
+            public sbyte mouthO;
+            public sbyte leftEyebrowVerticalUnused;
+
+            public sbyte rightEyebrowVerticalUnused;
+            public sbyte tongue;
+        }
+
         public struct XXPV2
         {
             //Naming is based upon equivalent .cml file tag naming
@@ -337,6 +363,13 @@ namespace Character_Making_File_Tool
         //Assume values that ranged from -10000 to 10000 range from -127 to 127 now, despite being full ints still
         public struct XXPV10
         {
+            //DOC 0x10
+            public BaseDOC baseDOC;
+            public byte skinVariant; //0 or above 3 for default, 1 for human, 2 for dewman, 3 for cast. This decides the color map used for the skin. 
+            public sbyte eyebrowDensity; //-100 to 100 
+            public short cmlVariant;
+
+            //0x20
             public BaseFIGR baseFIGR;
             public Vec3Int neckVerts; 
             public Vec3Int waistVerts;
@@ -406,13 +439,103 @@ namespace Character_Making_File_Tool
             public fixed sbyte scaleSliders[36];
             public fixed sbyte rotationSliders[36];
 
-            /*Remaining data
-            -Ornament display
-            -Facial Expressions
-            -Change Motion
-            -?? Random new ngs stuff
-            -Second slider set? If that even exists still...
-            */
+            //0x22C
+            public FaceExpression faceNatural;
+            public FaceExpression faceSmile;
+            public FaceExpression faceAngry;
+            public FaceExpression faceSad;
+
+            public FaceExpression faceSus;
+            public FaceExpression faceEyesClosed;
+            public FaceExpression faceSmile2;
+            public FaceExpression faceWink;
+
+            //0x2BC Padding? Might contain an extra expression slot since editing it lights up the expressoin changed highlight, but there's no way to verify this
+            public uint padding5;
+
+            public uint padding6;
+            public uint padding7;
+            public uint padding8;
+            public uint padding9;
+
+            public uint padding10;
+            public uint padding11;
+            public uint padding12;
+            public uint padding13;
+
+            //0x2E0
+            public PaintPriority paintPriority;
+            public ushort padding14;
+            public uint padding15;
+            public uint padding16;
+
+            //0x2F0 NGS extra slider data
+            public int int_2F0; //Unknown, possibly unused
+            public int shoulderSize;
+            public int hairAdjust;
+            public int skinGloss;
+
+            public int mouthVertical;
+            public int eyebrowHoriz;
+            public int irisVertical;
+            public int facePaint1Opacity;
+
+            public int facePaint2Opacity;
+            public int shoulderVertical;
+            public int thighsAdjust;
+            public int calvesAdjust;
+
+            public int forearmsAdjust;
+            public int handThickness;
+            public int footSize;
+            public int int_32C;
+
+            //0x330 - Motion change unused? 
+            public int int_330;
+
+            //0x334 - Motion Change
+            public int walkRunMotion;
+            public int swimMotion;
+            public int dashMotion;
+
+            public int glideMotion;
+            public int landingMotion;
+            public int idleMotion;
+            public int jumpMotion;
+
+            //0x350 - Costume ornament hiding leftover?
+            public int int_350;
+            public int int_354;
+
+            //0x358 Ornament Display - Seemingly all just boolean int true or false. 1 is true
+            public int hideBasewearOrnament1;
+            public int hideBasewearOrnament2;
+
+            public int hideHeadPartOrnament;
+            public int hideBodyPartOrnament;
+            public int hideArmPartOrnament;
+            public int hideLegPartOrnament;
+
+            public int hideOuterwearOrnament;
+
+            //0x374
+            public uint padding17;
+            public uint padding18;
+            public uint padding19;
+
+            public uint padding20;
+            public uint padding21;
+            public uint padding22;
+            public uint padding23;
+
+            public uint padding24;
+            public uint padding25;
+            public uint padding26;
+            public uint padding27;
+
+            public uint padding28;
+            public uint padding29;
+            public uint padding30;
 
             //0x3A4
             public fixed byte accessoryColorChoices[24]; //Each accessory has choice 1 and choice 2 next to each other
@@ -751,7 +874,6 @@ namespace Character_Making_File_Tool
             var file = File.ReadAllBytes(fileName);
             byte[] body = new byte[file.Length - 0x10];
             Array.Copy(file, 0x10, body, 0, file.Length - 0x10);
-            File.WriteAllBytes(fileName + "_test", body);
 
             Array.Copy(EncryptData(body, BitConverter.ToInt32(file, 4), out int hash), 0, file, 0x10, body.Length);
             Array.Copy(BitConverter.GetBytes(hash), 0, file, 0x8, 0x4);
