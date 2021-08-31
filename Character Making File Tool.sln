@@ -3,11 +3,16 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.30225.117
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PSO2 Salon Tool", "Character Making File Tool\PSO2 Salon Tool.csproj", "{8D9FAAF9-1438-4FD8-B229-98B494E236FB}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PSO2 Salon Tool", "Character Making File Tool\PSO2 Salon Tool.csproj", "{8D9FAAF9-1438-4FD8-B229-98B494E236FB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CharFileLibrary", "CharFileLibrary\CharFileLibrary.csproj", "{916EE3EF-E220-4938-8299-B8F966C0FE83}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CharFileLibrary", "CharFileLibrary\CharFileLibrary.csproj", "{916EE3EF-E220-4938-8299-B8F966C0FE83}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NGS Salon Tool", "NGS Salon Tool\NGS Salon Tool.csproj", "{AEDF0E12-58A3-482F-8369-9080E59A37FB}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{60026F3B-674E-49BC-BA3C-44574BCF80E0}"
+	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

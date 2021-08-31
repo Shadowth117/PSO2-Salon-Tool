@@ -9,6 +9,8 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Windows.Forms;
 using zamboni;
+using static Character_Making_File_Tool.CharacterHandlerUtilityMethods;
+using static Character_Making_File_Tool.Vector3Int;
 
 namespace Character_Making_File_Tool
 {
@@ -18,17 +20,21 @@ namespace Character_Making_File_Tool
     public unsafe class CharacterHandler
     {
         private static uint CharacterBlowfishKey = 2588334024;
-        private static int MinSliderNGS = -127;
-        private static int MaxSliderNGS = 127;
-        private static int MinHeightLegSliderNGS = -71;
-        private static int MinSliderClassic = -10000;
-        private static int MaxSliderClassic = 10000;
-        private static int MinHeightSlider = -5501;
-        private static int MinLegSlider = -5600;
-        private static int DeicerCMLType = 0x6C6D63;
-        private static byte[] ConstantCMLHeader = { 0x56, 0x54, 0x42, 0x46, 0x10, 0, 0, 0, 0x43, 0x4D, 0x4C, 0x50, 0x1, 0, 0, 0x4C };
-        private int version;
-        private string pso2_binPathFile = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "pso2_binPath.txt");
+        public static int MinSliderNGS = -127;
+        public static int MaxSliderNGS = 127;
+        public static int MinHeightLegSliderNGS = -71;
+        public static int MinSliderClassic = -10000;
+        public static int MaxSliderClassic = 10000;
+        public static int MaxSliderClassicHue = 60000; //Range 0-60000
+        public static int MaxSliderClassicLightness = 50000; //Range 0-50000 //Note, 0 is up, 50000 is down.
+        public static int MaxSliderClassicSaturation = 10000; //Range 0-10000
+        public static int LightnessThreshold = 10000; //The threshold after which saturation is 0ed. Classic PSO2 had a black to white area above the colored range's white
+        public static int MinHeightSlider = -5501;
+        public static int MinLegSlider = -5600;
+        public static int DeicerCMLType = 0x6C6D63;
+        public static byte[] ConstantCMLHeader = { 0x56, 0x54, 0x42, 0x46, 0x10, 0, 0, 0, 0x43, 0x4D, 0x4C, 0x50, 0x1, 0, 0, 0x4C };
+        public int version;
+        public string pso2_binPathFile = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "pso2_binPath.txt");
 
         private Dictionary<int, int> fileSizes = new Dictionary<int, int>()
         {
@@ -45,10 +51,6 @@ namespace Character_Making_File_Tool
         private byte[] ColrText = { 0x43, 0x4F, 0x4C, 0x52 };
         private byte[] SlctText = { 0x53, 0x4C, 0x43, 0x54 };
 
-        public XXPV2 xxpv2;
-        public XXPV5 xxpv5;
-        public XXPV6 xxpv6;
-        public XXPV9 xxpv9;
         public XXPGeneral xxpGeneral;
         public FileHandler fh = null;
         public int fileLoadRace;
@@ -58,33 +60,6 @@ namespace Character_Making_File_Tool
         public int getVersion()
         {
             return version;
-        }
-
-        public struct Vec3Int
-        {
-            public int X;
-            public int Y;
-            public int Z;
-
-            public int[] GetAsArray()
-            {
-                return new int[] { X, Y, Z };
-            }
-
-            public void SetVec3(int x, int y, int z)
-            {
-                X = x;
-                Y = y;
-                Z = z;
-            }
-
-            public static Vec3Int CreateVec3Int(int x, int y, int z)
-            {
-                var vec3 = new Vec3Int();
-                vec3.SetVec3(x, y, z);
-
-                return vec3;
-            }
         }
 
         public struct XXPHeader
@@ -106,46 +81,46 @@ namespace Character_Making_File_Tool
         public struct BaseFIGR
         {
             //Slider vertex positions. 10000 to -10000. Center Vert Y, Side Vert X, Side Vert Y
-            public fixed int bodyVerts[3];
-            public fixed int armVerts[3];
-            public fixed int legVerts[3];
-            public fixed int bustVerts[3];
+            public Vec3Int bodyVerts;
+            public Vec3Int armVerts;
+            public Vec3Int legVerts;
+            public Vec3Int bustVerts;
 
-            public fixed int headVerts[3];
-            public fixed int faceShapeVerts[3];
-            public fixed int eyeShapeVerts[3];
-            public fixed int noseHeightVerts[3];
+            public Vec3Int headVerts;
+            public Vec3Int faceShapeVerts;
+            public Vec3Int eyeShapeVerts;
+            public Vec3Int noseHeightVerts;
             
-            public fixed int noseShapeVerts[3];
-            public fixed int mouthVerts[3];
-            public fixed int ear_hornVerts[3];
+            public Vec3Int noseShapeVerts;
+            public Vec3Int mouthVerts;
+            public Vec3Int ear_hornVerts;
         }
 
         public struct BaseFIGR2
         {
             //FIGR values added in ep4 to increase customization and add separate fleshy and cast sliders
-            public fixed int neckVerts[3]; //?
-            public fixed int waistVerts[3];
-            public fixed int body2Verts[3];
-            public fixed int arm2Verts[3];
+            public Vec3Int neckVerts; 
+            public Vec3Int waistVerts;
+            public Vec3Int body2Verts;
+            public Vec3Int arm2Verts;
 
-            public fixed int leg2Verts[3];
-            public fixed int bust2Verts[3];
-            public fixed int neck2Verts[3];
-            public fixed int waist2Verts[3];
+            public Vec3Int leg2Verts;
+            public Vec3Int bust2Verts;
+            public Vec3Int neck2Verts;
+            public Vec3Int waist2Verts;
         }
 
         public struct BaseCOLR
         {
             //Color vertex positions. 0 to 60000 or 10000 to -10000. X, Y, and Saturation
-            public fixed int outer_MainColorVerts[3]; //Changed to copy of Main Color on changing body part allegedly as well as Ou color
-            public fixed int costumeColorVerts[3];
-            public fixed int mainColor_hair2Verts[3];
-            public fixed int subColor1Verts[3];
-            public fixed int skinSubColor2Verts[3];
-            public fixed int subColor3_leftEye_castHair2Verts[3];
-            public fixed int rightEye_EyesVerts[3];
-            public fixed int hairVerts[3];
+            public Vec3Int outer_MainColorVerts; //Changed to copy of Main Color on changing body part allegedly as well as Ou color
+            public Vec3Int costumeColorVerts;
+            public Vec3Int mainColor_hair2Verts;
+            public Vec3Int subColor1Verts;
+            public Vec3Int skinSubColor2Verts;
+            public Vec3Int subColor3_leftEye_castHair2Verts;
+            public Vec3Int rightEye_EyesVerts;
+            public Vec3Int hairVerts;
         }
 
         public struct BaseSLCT
@@ -359,188 +334,6 @@ namespace Character_Making_File_Tool
             public long finalPadding;
         }
 
-        //Significant restructure from others.
-        //Assume values that ranged from -10000 to 10000 range from -127 to 127 now, despite being full ints still
-        public struct XXPV10
-        {
-            //DOC 0x10
-            public BaseDOC baseDOC;
-            public byte skinVariant; //0 or above 3 for default, 1 for human, 2 for dewman, 3 for cast. This decides the color map used for the skin. 
-            public sbyte eyebrowDensity; //-100 to 100 
-            public short cmlVariant;
-
-            //0x20
-            public BaseFIGR baseFIGR;
-            public Vec3Int neckVerts; 
-            public Vec3Int waistVerts;
-
-            //0xBC
-            public Vec3Int hands;
-            public Vec3Int horns;
-            public int eyeSize;
-            public int eyeHorizontalPosition;
-            public int neckAngle;
-
-            //0xE0 COLR - These are just standard RGBA in NGS
-            public int outerColor1;
-            public int baseColor1; //Also used for costume colors?
-            public int mainColor;
-            public int subColor1;
-
-            public int subColor2;
-            public int subColor3;
-            public int rightEyeColor;
-            public int hairColor1;
-
-            public int eyebrowColor;
-            public int eyelashColor;
-            public int skinColor1;
-            public int skinColor2;
-
-            public int baseColor2;
-            public int outerColor2;
-            public int innerColor1;
-            public int innerColor2;
-
-            public int leftEyeColor;
-            public int hairColor2;
-
-            //0x128 SLCT
-            public BaseSLCT baseSLCT;
-            public BaseSLCT2 baseSLCT2;
-            public uint leftEyePart;
-            public uint skinTextureSet;
-
-            //0x180 SLCT continued
-            public uint earsPart;
-            public uint teethPart;
-            public uint hornPart;
-            public uint acc5Part;
-
-            public uint acc6Part;
-            public uint acc7Part;
-            public uint acc8Part;
-            public uint acc9Part;
-
-            public uint acc10Part;
-            public uint acc11Part;
-            public uint acc12Part;
-
-            //0x1AC Padding?
-            public uint padding0;
-
-            public uint padding1;
-            public uint padding2;
-            public uint padding3;
-            public uint padding4;
-
-            //Accessory sliders
-            public fixed sbyte positionSliders[36];
-            public fixed sbyte scaleSliders[36];
-            public fixed sbyte rotationSliders[36];
-
-            //0x22C
-            public FaceExpression faceNatural;
-            public FaceExpression faceSmile;
-            public FaceExpression faceAngry;
-            public FaceExpression faceSad;
-
-            public FaceExpression faceSus;
-            public FaceExpression faceEyesClosed;
-            public FaceExpression faceSmile2;
-            public FaceExpression faceWink;
-
-            //0x2BC Padding? Might contain an extra expression slot since editing it lights up the expressoin changed highlight, but there's no way to verify this
-            public uint padding5;
-
-            public uint padding6;
-            public uint padding7;
-            public uint padding8;
-            public uint padding9;
-
-            public uint padding10;
-            public uint padding11;
-            public uint padding12;
-            public uint padding13;
-
-            //0x2E0
-            public PaintPriority paintPriority;
-            public ushort padding14;
-            public uint padding15;
-            public uint padding16;
-
-            //0x2F0 NGS extra slider data
-            public int int_2F0; //Unknown, possibly unused
-            public int shoulderSize;
-            public int hairAdjust;
-            public int skinGloss;
-
-            public int mouthVertical;
-            public int eyebrowHoriz;
-            public int irisVertical;
-            public int facePaint1Opacity;
-
-            public int facePaint2Opacity;
-            public int shoulderVertical;
-            public int thighsAdjust;
-            public int calvesAdjust;
-
-            public int forearmsAdjust;
-            public int handThickness;
-            public int footSize;
-            public int int_32C;
-
-            //0x330 - Motion change unused? 
-            public int int_330;
-
-            //0x334 - Motion Change
-            public int walkRunMotion;
-            public int swimMotion;
-            public int dashMotion;
-
-            public int glideMotion;
-            public int landingMotion;
-            public int idleMotion;
-            public int jumpMotion;
-
-            //0x350 - Costume ornament hiding leftover?
-            public int int_350;
-            public int int_354;
-
-            //0x358 Ornament Display - Seemingly all just boolean int true or false. 1 is true
-            public int hideBasewearOrnament1;
-            public int hideBasewearOrnament2;
-
-            public int hideHeadPartOrnament;
-            public int hideBodyPartOrnament;
-            public int hideArmPartOrnament;
-            public int hideLegPartOrnament;
-
-            public int hideOuterwearOrnament;
-
-            //0x374
-            public uint padding17;
-            public uint padding18;
-            public uint padding19;
-
-            public uint padding20;
-            public uint padding21;
-            public uint padding22;
-            public uint padding23;
-
-            public uint padding24;
-            public uint padding25;
-            public uint padding26;
-            public uint padding27;
-
-            public uint padding28;
-            public uint padding29;
-            public uint padding30;
-
-            //0x3A4
-            public fixed byte accessoryColorChoices[24]; //Each accessory has choice 1 and choice 2 next to each other
-        }
-
         public struct XXPGeneral
         {
             //Naming is based upon equivalent .cml file tag naming
@@ -575,6 +368,13 @@ namespace Character_Making_File_Tool
         public CharacterHandler()
         {
             LoadCMXData();
+        }
+
+        public void Vec3IntSwap(ref Vec3Int vec3A, ref Vec3Int vec3B)
+        {
+            var temp = Vec3Int.CreateVec3Int(vec3A);
+            vec3A.SetVec3(vec3B);
+            vec3B.SetVec3(temp);
         }
 
         private void LoadCMXData()
@@ -750,25 +550,13 @@ namespace Character_Making_File_Tool
             //Fix cast hair color 2 nonsense
             if ((fileLoadRace == 2 && xxpGeneral.baseDOC.race != 2) || (fileLoadRace != 2 && xxpGeneral.baseDOC.race == 2))
             {
-                fixed (int* pointer = xxpGeneral.baseCOLR.mainColor_hair2Verts)
-                {
-                    fixed (int* pointer2 = xxpGeneral.baseCOLR.subColor3_leftEye_castHair2Verts)
-                    {
-                        ArrayOfIntsSwap(pointer, pointer2, 3);
-                    }
-                }
+                Vec3IntSwap(ref xxpGeneral.baseCOLR.mainColor_hair2Verts, ref xxpGeneral.baseCOLR.subColor3_leftEye_castHair2Verts);
             }
 
             //Fix deuman eye color
             if ((fileLoadRace != 3 && xxpGeneral.baseDOC.race == 3))
             {
-                fixed (int* pointer = xxpGeneral.baseCOLR.rightEye_EyesVerts)
-                {
-                    fixed (int* pointer2 = xxpGeneral.baseCOLR.subColor3_leftEye_castHair2Verts)
-                    {
-                        ArrayOfIntsSwap(pointer, pointer2, 3);
-                    }
-                }
+                Vec3IntSwap(ref xxpGeneral.baseCOLR.rightEye_EyesVerts, ref xxpGeneral.baseCOLR.subColor3_leftEye_castHair2Verts);
             }
 
             fileLoadRace = (int)xxpGeneral.baseDOC.race;
@@ -776,21 +564,21 @@ namespace Character_Making_File_Tool
             //Set heights that are too low to NA's minimum
             if (fixNAHeight == true)
             {
-                if (xxpGeneral.baseFIGR.bodyVerts[0] < MinHeightSlider)
+                if (xxpGeneral.baseFIGR.bodyVerts.X < MinHeightSlider)
                 {
-                    xxpGeneral.baseFIGR.bodyVerts[0] = MinHeightSlider;
+                    xxpGeneral.baseFIGR.bodyVerts.X = MinHeightSlider;
                 }
-                if (xxpGeneral.baseFIGR2.body2Verts[0] < MinHeightSlider)
+                if (xxpGeneral.baseFIGR2.body2Verts.X < MinHeightSlider)
                 {
-                    xxpGeneral.baseFIGR2.body2Verts[0] = MinHeightSlider;
+                    xxpGeneral.baseFIGR2.body2Verts.X = MinHeightSlider;
                 }
-                if (xxpGeneral.baseFIGR.legVerts[0] < MinLegSlider)
+                if (xxpGeneral.baseFIGR.legVerts.X < MinLegSlider)
                 {
-                    xxpGeneral.baseFIGR.legVerts[0] = MinLegSlider;
+                    xxpGeneral.baseFIGR.legVerts.X = MinLegSlider;
                 }
-                if (xxpGeneral.baseFIGR2.leg2Verts[0] < MinLegSlider)
+                if (xxpGeneral.baseFIGR2.leg2Verts.X < MinLegSlider)
                 {
-                    xxpGeneral.baseFIGR2.leg2Verts[0] = MinLegSlider;
+                    xxpGeneral.baseFIGR2.leg2Verts.X = MinLegSlider;
                 }
             }
 
@@ -798,23 +586,11 @@ namespace Character_Making_File_Tool
             if (version != -1 && cmlSave && (xxpGeneral.baseDOC.race == 3))
             {
                 version = -1;
-                fixed (int* pointer = xxpGeneral.baseCOLR.rightEye_EyesVerts)
-                {
-                    fixed (int* pointer2 = xxpGeneral.baseCOLR.subColor3_leftEye_castHair2Verts)
-                    {
-                        ArrayOfIntsSwap(pointer, pointer2, 3);
-                    }
-                }
+                Vec3IntSwap(ref xxpGeneral.baseCOLR.rightEye_EyesVerts, ref xxpGeneral.baseCOLR.subColor3_leftEye_castHair2Verts);
             } else if (version == -1 && !cmlSave && (xxpGeneral.baseDOC.race == 3))
             {
                 version = 9;
-                fixed (int* pointer = xxpGeneral.baseCOLR.rightEye_EyesVerts)
-                {
-                    fixed (int* pointer2 = xxpGeneral.baseCOLR.subColor3_leftEye_castHair2Verts)
-                    {
-                        ArrayOfIntsSwap(pointer, pointer2, 3);
-                    }
-                }
+                Vec3IntSwap(ref xxpGeneral.baseCOLR.rightEye_EyesVerts, ref xxpGeneral.baseCOLR.subColor3_leftEye_castHair2Verts);
             }
 
             using (MemoryStream xxpMem = new MemoryStream())
@@ -896,6 +672,11 @@ namespace Character_Making_File_Tool
             return encryptedData;
         }
 
+        /*Deprecated parsing method. In old PSO2, these ids wouldn't overlap. However due to NGS's implementation, now they can.
+        
+            TODO: Reimplment with AquaModelLibrary VTBF Parser
+        
+         */
         public void ParseCML(string inFilename)
         {
             this.version = -1;
@@ -961,25 +742,25 @@ namespace Character_Making_File_Tool
             ArrayGetValue(tagStructs, 0x75, out value); xxpGeneral.eyebrowDensity = (sbyte)value[0];
 
             //FIGR
-            ArrayGetValue(tagStructs, 0x0, out value); for (int i = 0; i < 3; i++) { xxpGeneral.baseFIGR.bodyVerts[i] = TryGetIndex(value, i); }
-            ArrayGetValue(tagStructs, 0x1, out value); for (int i = 0; i < 3; i++) { xxpGeneral.baseFIGR.armVerts[i] = TryGetIndex(value, i); }
-            ArrayGetValue(tagStructs, 0x2, out value); for (int i = 0; i < 3; i++) { xxpGeneral.baseFIGR.legVerts[i] = TryGetIndex(value, i); }
-            ArrayGetValue(tagStructs, 0x3, out value); for (int i = 0; i < 3; i++) { xxpGeneral.baseFIGR.bustVerts[i] = TryGetIndex(value, i); }
-            ArrayGetValue(tagStructs, 0x4, out value); for (int i = 0; i < 3; i++) { xxpGeneral.baseFIGR.headVerts[i] = TryGetIndex(value, i); }
-            ArrayGetValue(tagStructs, 0x5, out value); for (int i = 0; i < 3; i++) { xxpGeneral.baseFIGR.faceShapeVerts[i] = TryGetIndex(value, i); }
-            ArrayGetValue(tagStructs, 0x6, out value); for (int i = 0; i < 3; i++) { xxpGeneral.baseFIGR.eyeShapeVerts[i] = TryGetIndex(value, i); }
-            ArrayGetValue(tagStructs, 0x7, out value); for (int i = 0; i < 3; i++) { xxpGeneral.baseFIGR.noseHeightVerts[i] = TryGetIndex(value, i); }
-            ArrayGetValue(tagStructs, 0x8, out value); for (int i = 0; i < 3; i++) { xxpGeneral.baseFIGR.noseShapeVerts[i] = TryGetIndex(value, i); }
-            ArrayGetValue(tagStructs, 0x9, out value); for (int i = 0; i < 3; i++) { xxpGeneral.baseFIGR.mouthVerts[i] = TryGetIndex(value, i); }
-            ArrayGetValue(tagStructs, 0xA, out value); for (int i = 0; i < 3; i++) { xxpGeneral.baseFIGR.ear_hornVerts[i] = TryGetIndex(value, i); }
-            ArrayGetValue(tagStructs, 0xC, out value); for (int i = 0; i < 3; i++) { xxpGeneral.baseFIGR2.neckVerts[i] = TryGetIndex(value, i); }
-            ArrayGetValue(tagStructs, 0xD, out value); for (int i = 0; i < 3; i++) { xxpGeneral.baseFIGR2.waistVerts[i] = TryGetIndex(value, i); }
-            ArrayGetValue(tagStructs, 0x10, out value); for (int i = 0; i < 3; i++) { xxpGeneral.baseFIGR2.body2Verts[i] = TryGetIndex(value, i); }
-            ArrayGetValue(tagStructs, 0x11, out value); for (int i = 0; i < 3; i++) { xxpGeneral.baseFIGR2.arm2Verts[i] = TryGetIndex(value, i); }
-            ArrayGetValue(tagStructs, 0x12, out value); for (int i = 0; i < 3; i++) { xxpGeneral.baseFIGR2.leg2Verts[i] = TryGetIndex(value, i); }
-            ArrayGetValue(tagStructs, 0x13, out value); for (int i = 0; i < 3; i++) { xxpGeneral.baseFIGR2.bust2Verts[i] = TryGetIndex(value, i); }
-            ArrayGetValue(tagStructs, 0x14, out value); for (int i = 0; i < 3; i++) { xxpGeneral.baseFIGR2.neck2Verts[i] = TryGetIndex(value, i); }
-            ArrayGetValue(tagStructs, 0x15, out value); for (int i = 0; i < 3; i++) { xxpGeneral.baseFIGR2.waist2Verts[i] = TryGetIndex(value, i); }
+            ArrayGetValue(tagStructs, 0x0, out value); xxpGeneral.baseFIGR.bodyVerts = Vec3Int.CreateVec3Int(value);
+            ArrayGetValue(tagStructs, 0x1, out value); xxpGeneral.baseFIGR.armVerts = Vec3Int.CreateVec3Int(value);
+            ArrayGetValue(tagStructs, 0x2, out value); xxpGeneral.baseFIGR.legVerts = Vec3Int.CreateVec3Int(value);
+            ArrayGetValue(tagStructs, 0x3, out value); xxpGeneral.baseFIGR.bustVerts = Vec3Int.CreateVec3Int(value);
+            ArrayGetValue(tagStructs, 0x4, out value); xxpGeneral.baseFIGR.headVerts = Vec3Int.CreateVec3Int(value);
+            ArrayGetValue(tagStructs, 0x5, out value); xxpGeneral.baseFIGR.faceShapeVerts = Vec3Int.CreateVec3Int(value);
+            ArrayGetValue(tagStructs, 0x6, out value); xxpGeneral.baseFIGR.eyeShapeVerts = Vec3Int.CreateVec3Int(value);
+            ArrayGetValue(tagStructs, 0x7, out value); xxpGeneral.baseFIGR.noseHeightVerts = Vec3Int.CreateVec3Int(value);
+            ArrayGetValue(tagStructs, 0x8, out value); xxpGeneral.baseFIGR.noseShapeVerts = Vec3Int.CreateVec3Int(value);
+            ArrayGetValue(tagStructs, 0x9, out value); xxpGeneral.baseFIGR.mouthVerts = Vec3Int.CreateVec3Int(value);
+            ArrayGetValue(tagStructs, 0xA, out value); xxpGeneral.baseFIGR.ear_hornVerts = Vec3Int.CreateVec3Int(value);
+            ArrayGetValue(tagStructs, 0xC, out value); xxpGeneral.baseFIGR2.neckVerts = Vec3Int.CreateVec3Int(value);
+            ArrayGetValue(tagStructs, 0xD, out value); xxpGeneral.baseFIGR2.waistVerts = Vec3Int.CreateVec3Int(value);
+            ArrayGetValue(tagStructs, 0x10, out value); xxpGeneral.baseFIGR2.body2Verts = Vec3Int.CreateVec3Int(value);
+            ArrayGetValue(tagStructs, 0x11, out value); xxpGeneral.baseFIGR2.arm2Verts = Vec3Int.CreateVec3Int(value);
+            ArrayGetValue(tagStructs, 0x12, out value); xxpGeneral.baseFIGR2.leg2Verts = Vec3Int.CreateVec3Int(value);
+            ArrayGetValue(tagStructs, 0x13, out value); xxpGeneral.baseFIGR2.bust2Verts = Vec3Int.CreateVec3Int(value);
+            ArrayGetValue(tagStructs, 0x14, out value); xxpGeneral.baseFIGR2.neck2Verts = Vec3Int.CreateVec3Int(value);
+            ArrayGetValue(tagStructs, 0x15, out value); xxpGeneral.baseFIGR2.waist2Verts = Vec3Int.CreateVec3Int(value);
 
             //Fill in accessory values
             for (int i = 0; i < 36; i++)
@@ -1034,16 +815,16 @@ namespace Character_Making_File_Tool
             }
 
             //COLR
-            ArrayGetValue(tagStructs, 0x27, out value); for (int i = 0; i < 3; i++) { xxpGeneral.baseCOLR.outer_MainColorVerts[i] = TryGetIndex(value, i); }
-            ArrayGetValue(tagStructs, 0x20, out value); for (int i = 0; i < 3; i++) { xxpGeneral.baseCOLR.costumeColorVerts[i] = TryGetIndex(value, i); }
-            ArrayGetValue(tagStructs, 0x21, out value); for (int i = 0; i < 3; i++) { xxpGeneral.baseCOLR.mainColor_hair2Verts[i] = TryGetIndex(value, i); }
-            ArrayGetValue(tagStructs, 0x22, out value); for (int i = 0; i < 3; i++) { xxpGeneral.baseCOLR.subColor1Verts[i] = TryGetIndex(value, i); }
-            ArrayGetValue(tagStructs, 0x23, out value); for (int i = 0; i < 3; i++) { xxpGeneral.baseCOLR.skinSubColor2Verts[i] = TryGetIndex(value, i); }
-            ArrayGetValue(tagStructs, 0x24, out value); for (int i = 0; i < 3; i++) { xxpGeneral.baseCOLR.subColor3_leftEye_castHair2Verts[i] = TryGetIndex(value, i); }
-            ArrayGetValue(tagStructs, 0x25, out value); for (int i = 0; i < 3; i++) { xxpGeneral.baseCOLR.rightEye_EyesVerts[i] = TryGetIndex(value, i); }
+            ArrayGetValue(tagStructs, 0x27, out value); xxpGeneral.baseCOLR.outer_MainColorVerts = Vec3Int.CreateVec3Int(value);
+            ArrayGetValue(tagStructs, 0x20, out value); xxpGeneral.baseCOLR.costumeColorVerts = Vec3Int.CreateVec3Int(value);
+            ArrayGetValue(tagStructs, 0x21, out value); xxpGeneral.baseCOLR.mainColor_hair2Verts = Vec3Int.CreateVec3Int(value);
+            ArrayGetValue(tagStructs, 0x22, out value); xxpGeneral.baseCOLR.subColor1Verts = Vec3Int.CreateVec3Int(value);
+            ArrayGetValue(tagStructs, 0x23, out value); xxpGeneral.baseCOLR.skinSubColor2Verts = Vec3Int.CreateVec3Int(value);
+            ArrayGetValue(tagStructs, 0x24, out value); xxpGeneral.baseCOLR.subColor3_leftEye_castHair2Verts = Vec3Int.CreateVec3Int(value);
+            ArrayGetValue(tagStructs, 0x25, out value); xxpGeneral.baseCOLR.rightEye_EyesVerts = Vec3Int.CreateVec3Int(value);
 
             //Technically in the data twice, but we only read it once. It's copy pasted in all observed instances
-            ArrayGetValue(tagStructs, 0x26, out value); for (int i = 0; i < 3; i++) { xxpGeneral.baseCOLR.hairVerts[i] = TryGetIndex(value, i); }
+            ArrayGetValue(tagStructs, 0x26, out value); xxpGeneral.baseCOLR.hairVerts = Vec3Int.CreateVec3Int(value);
 
             //SLCT
             ArrayGetValue(tagStructs, 0x40, out value); xxpGeneral.baseSLCT.costumePart = (uint)value[0];
@@ -1215,37 +996,37 @@ namespace Character_Making_File_Tool
                 file.WriteLine("");
 
                 file.WriteLine("FIGR (Output in slider vertex positions. Vertex 1 Y, vertex 2 X, vertex 2 Y)");
-                file.Write($"Body verts: "); for (int i = 0; i < 3; i++) { file.Write(xxpGeneral.baseFIGR.bodyVerts[i] + " "); } file.WriteLine("");
-                file.Write($"Arm verts: "); for (int i = 0; i < 3; i++) { file.Write(xxpGeneral.baseFIGR.armVerts[i] + " "); } file.WriteLine("");
-                file.Write($"Leg verts: "); for (int i = 0; i < 3; i++) { file.Write(xxpGeneral.baseFIGR.legVerts[i] + " "); } file.WriteLine("");
-                file.Write($"Bust verts: "); for (int i = 0; i < 3; i++) { file.Write(xxpGeneral.baseFIGR.bustVerts[i] + " "); } file.WriteLine("");
-                file.Write($"Head verts: "); for (int i = 0; i < 3; i++) { file.Write(xxpGeneral.baseFIGR.headVerts[i] + " "); } file.WriteLine("");
-                file.Write($"Face shape verts: "); for (int i = 0; i < 3; i++) { file.Write(xxpGeneral.baseFIGR.faceShapeVerts[i] + " "); } file.WriteLine("");
-                file.Write($"Eye shape verts: "); for (int i = 0; i < 3; i++) { file.Write(xxpGeneral.baseFIGR.eyeShapeVerts[i] + " "); } file.WriteLine("");
-                file.Write($"Nose height verts: "); for (int i = 0; i < 3; i++) { file.Write(xxpGeneral.baseFIGR.noseHeightVerts[i] + " "); } file.WriteLine("");
-                file.Write($"Nose shape verts: "); for (int i = 0; i < 3; i++) { file.Write(xxpGeneral.baseFIGR.noseShapeVerts[i] + " "); } file.WriteLine("");
-                file.Write($"Mouth verts: "); for (int i = 0; i < 3; i++) { file.Write(xxpGeneral.baseFIGR.mouthVerts[i] + " "); } file.WriteLine("");
-                file.Write($"Ear/horn verts: "); for (int i = 0; i < 3; i++) { file.Write(xxpGeneral.baseFIGR.ear_hornVerts[i] + " "); } file.WriteLine("");
+                file.Write($"Body verts: "); foreach (int i in xxpGeneral.baseFIGR.bodyVerts.GetAsArray()) { file.Write(i + " "); } file.WriteLine("");
+                file.Write($"Arm verts: "); foreach (int i in xxpGeneral.baseFIGR.armVerts.GetAsArray()) { file.Write(i + " "); } file.WriteLine("");
+                file.Write($"Leg verts: "); foreach (int i in xxpGeneral.baseFIGR.legVerts.GetAsArray()) { file.Write(i + " "); } file.WriteLine("");
+                file.Write($"Bust verts: "); foreach (int i in xxpGeneral.baseFIGR.bustVerts.GetAsArray()) { file.Write(i + " "); } file.WriteLine("");
+                file.Write($"Head verts: "); foreach (int i in xxpGeneral.baseFIGR.headVerts.GetAsArray()) { file.Write(i + " "); } file.WriteLine("");
+                file.Write($"Face shape verts: "); foreach (int i in xxpGeneral.baseFIGR.faceShapeVerts.GetAsArray()) { file.Write(i + " "); } file.WriteLine("");
+                file.Write($"Eye shape verts: "); foreach (int i in xxpGeneral.baseFIGR.eyeShapeVerts.GetAsArray()) { file.Write(i + " "); } file.WriteLine("");
+                file.Write($"Nose height verts: "); foreach (int i in xxpGeneral.baseFIGR.noseHeightVerts.GetAsArray()) { file.Write(i + " "); } file.WriteLine("");
+                file.Write($"Nose shape verts: "); foreach (int i in xxpGeneral.baseFIGR.noseShapeVerts.GetAsArray()) { file.Write(i + " "); } file.WriteLine("");
+                file.Write($"Mouth verts: "); foreach (int i in xxpGeneral.baseFIGR.mouthVerts.GetAsArray()) { file.Write(i + " "); } file.WriteLine("");
+                file.Write($"Ear/horn verts: "); foreach (int i in xxpGeneral.baseFIGR.ear_hornVerts.GetAsArray()) { file.Write(i + " "); } file.WriteLine("");
 
-                file.Write($"Neck verts: "); for (int i = 0; i < 3; i++) { file.Write(xxpGeneral.baseFIGR2.neckVerts[i] + " "); } file.WriteLine("");
-                file.Write($"Waist verts: "); for (int i = 0; i < 3; i++) { file.Write(xxpGeneral.baseFIGR2.waistVerts[i] + " "); } file.WriteLine("");
-                file.Write($"Body2 verts: "); for (int i = 0; i < 3; i++) { file.Write(xxpGeneral.baseFIGR2.body2Verts[i] + " "); } file.WriteLine(" (Thse are cast body proportions)");
-                file.Write($"Arm2 verts: "); for (int i = 0; i < 3; i++) { file.Write(xxpGeneral.baseFIGR2.arm2Verts[i] + " "); } file.WriteLine("");
-                file.Write($"Leg2 verts: "); for (int i = 0; i < 3; i++) { file.Write(xxpGeneral.baseFIGR2.leg2Verts[i] + " "); } file.WriteLine("");
-                file.Write($"Bust2 verts: "); for (int i = 0; i < 3; i++) { file.Write(xxpGeneral.baseFIGR2.bust2Verts[i] + " "); } file.WriteLine("");
-                file.Write($"Neck2 verts: "); for (int i = 0; i < 3; i++) { file.Write(xxpGeneral.baseFIGR2.neck2Verts[i] + " "); } file.WriteLine("");
-                file.Write($"Waist2 verts: "); for (int i = 0; i < 3; i++) { file.Write(xxpGeneral.baseFIGR2.waist2Verts[i] + " "); } file.WriteLine(""); 
+                file.Write($"Neck verts: "); foreach (int i in xxpGeneral.baseFIGR2.neckVerts.GetAsArray()) { file.Write(i + " "); } file.WriteLine("");
+                file.Write($"Waist verts: "); foreach (int i in xxpGeneral.baseFIGR2.waistVerts.GetAsArray()) { file.Write(i + " "); } file.WriteLine("");
+                file.Write($"Body2 verts: "); foreach (int i in xxpGeneral.baseFIGR2.body2Verts.GetAsArray()) { file.Write(i + " "); } file.WriteLine(" (These are cast body proportions)");
+                file.Write($"Arm2 verts: "); foreach (int i in xxpGeneral.baseFIGR2.arm2Verts.GetAsArray()) { file.Write(i + " "); } file.WriteLine("");
+                file.Write($"Leg2 verts: "); foreach (int i in xxpGeneral.baseFIGR2.leg2Verts.GetAsArray()) { file.Write(i + " "); } file.WriteLine("");
+                file.Write($"Bust2 verts: "); foreach (int i in xxpGeneral.baseFIGR2.bust2Verts.GetAsArray()) { file.Write(i + " "); } file.WriteLine("");
+                file.Write($"Neck2 verts: "); foreach (int i in xxpGeneral.baseFIGR2.neck2Verts.GetAsArray()) { file.Write(i + " "); } file.WriteLine("");
+                file.Write($"Waist2 verts: "); foreach (int i in xxpGeneral.baseFIGR2.waist2Verts.GetAsArray()) { file.Write(i + " "); } file.WriteLine("");
                 file.WriteLine("");
 
                 file.WriteLine("COLR (Output in slider vertex positions. Vertex 1 Y, vertex 2 X, vertex 2 Y)");
-                file.Write($"Outer/main color verts: "); for (int i = 0; i < 3; i++) { file.Write(xxpGeneral.baseCOLR.outer_MainColorVerts[i] + " "); } file.WriteLine("");
-                file.Write($"Costume color verts: "); for (int i = 0; i < 3; i++) { file.Write(xxpGeneral.baseCOLR.costumeColorVerts[i] + " "); } file.WriteLine("");
-                file.Write($"Main/hair2 color verts: "); for (int i = 0; i < 3; i++) { file.Write(xxpGeneral.baseCOLR.mainColor_hair2Verts[i] + " "); } file.WriteLine("");
-                file.Write($"Sub color 1 verts: "); for (int i = 0; i < 3; i++) { file.Write(xxpGeneral.baseCOLR.subColor1Verts[i] + " "); } file.WriteLine("");
-                file.Write($"Skin color/sub color 2 verts: "); for (int i = 0; i < 3; i++) { file.Write(xxpGeneral.baseCOLR.skinSubColor2Verts[i] + " "); } file.WriteLine("");
-                file.Write($"Left eye color/ cast hair color/sub color 3 verts: "); for (int i = 0; i < 3; i++) { file.Write(xxpGeneral.baseCOLR.subColor3_leftEye_castHair2Verts[i] + " "); } file.WriteLine("");
-                file.Write($"Eyes/right eye color verts: "); for (int i = 0; i < 3; i++) { file.Write(xxpGeneral.baseCOLR.rightEye_EyesVerts[i] + " "); } file.WriteLine("");
-                file.Write($"Hair color verts: "); for (int i = 0; i < 3; i++) { file.Write(xxpGeneral.baseCOLR.hairVerts[i] + " "); } file.WriteLine("");
+                file.Write($"Outer/main color verts: "); foreach (int i in xxpGeneral.baseCOLR.outer_MainColorVerts.GetAsArray()) { file.Write(i + " "); } file.WriteLine("");
+                file.Write($"Costume color verts: "); foreach (int i in xxpGeneral.baseCOLR.costumeColorVerts.GetAsArray()) { file.Write(i + " "); } file.WriteLine("");
+                file.Write($"Main/hair2 color verts: "); foreach (int i in xxpGeneral.baseCOLR.mainColor_hair2Verts.GetAsArray()) { file.Write(i + " "); } file.WriteLine("");
+                file.Write($"Sub color 1 verts: "); foreach (int i in xxpGeneral.baseCOLR.subColor1Verts.GetAsArray()) { file.Write(i + " "); } file.WriteLine("");
+                file.Write($"Skin color/sub color 2 verts: "); foreach (int i in xxpGeneral.baseCOLR.skinSubColor2Verts.GetAsArray()) { file.Write(i + " "); } file.WriteLine("");
+                file.Write($"Left eye color/ cast hair color/sub color 3 verts: "); foreach (int i in xxpGeneral.baseCOLR.subColor3_leftEye_castHair2Verts.GetAsArray()) { file.Write(i + " "); } file.WriteLine("");
+                file.Write($"Eyes/right eye color verts: "); foreach (int i in xxpGeneral.baseCOLR.rightEye_EyesVerts.GetAsArray()) { file.Write(i + " "); } file.WriteLine("");
+                file.Write($"Hair color verts: "); foreach (int i in xxpGeneral.baseCOLR.hairVerts.GetAsArray()) { file.Write(i + " "); } file.WriteLine("");
                 file.WriteLine("");
 
                 file.WriteLine("SLCT (Id per tag type in .cmx)");
@@ -1371,84 +1152,27 @@ namespace Character_Making_File_Tool
                 //xxpGeneral.skinVariant =
 
                 xxpGeneral.baseFIGR = new BaseFIGR();
-                for (int i = 0; i < 3; i++)
-                {
-                    xxpGeneral.baseFIGR.bodyVerts[i] = streamReader.Read<short>();
-                }
-                for (int i = 0; i < 3; i++)
-                {
-                    xxpGeneral.baseFIGR.armVerts[i] = streamReader.Read<short>();
-                }
-                for (int i = 0; i < 3; i++)
-                {
-                    xxpGeneral.baseFIGR.legVerts[i] = streamReader.Read<short>();
-                }
-                for (int i = 0; i < 3; i++)
-                {
-                    xxpGeneral.baseFIGR.bustVerts[i] = streamReader.Read<short>();
-                }
-                for (int i = 0; i < 3; i++)
-                {
-                    xxpGeneral.baseFIGR.headVerts[i] = streamReader.Read<short>();
-                }
-                for (int i = 0; i < 3; i++)
-                {
-                    xxpGeneral.baseFIGR.faceShapeVerts[i] = streamReader.Read<short>();
-                }
-                for (int i = 0; i < 3; i++)
-                {
-                    xxpGeneral.baseFIGR.eyeShapeVerts[i] = streamReader.Read<short>();
-                }
-                for (int i = 0; i < 3; i++)
-                {
-                    xxpGeneral.baseFIGR.noseHeightVerts[i] = streamReader.Read<short>();
-                }
-                for (int i = 0; i < 3; i++)
-                {
-                    xxpGeneral.baseFIGR.noseShapeVerts[i] = streamReader.Read<short>();
-                }
-                for (int i = 0; i < 3; i++)
-                {
-                    xxpGeneral.baseFIGR.mouthVerts[i] = streamReader.Read<short>();
-                }
-                for (int i = 0; i < 3; i++)
-                {
-                    xxpGeneral.baseFIGR.ear_hornVerts[i] = streamReader.Read<short>();
-                }
+                xxpGeneral.baseFIGR.bodyVerts = Vec3IntFromStreamShorts(streamReader);
+                xxpGeneral.baseFIGR.armVerts = Vec3IntFromStreamShorts(streamReader);
+                xxpGeneral.baseFIGR.legVerts = Vec3IntFromStreamShorts(streamReader);
+                xxpGeneral.baseFIGR.bustVerts = Vec3IntFromStreamShorts(streamReader);
+                xxpGeneral.baseFIGR.headVerts = Vec3IntFromStreamShorts(streamReader);
+                xxpGeneral.baseFIGR.faceShapeVerts = Vec3IntFromStreamShorts(streamReader);
+                xxpGeneral.baseFIGR.eyeShapeVerts = Vec3IntFromStreamShorts(streamReader);
+                xxpGeneral.baseFIGR.noseHeightVerts = Vec3IntFromStreamShorts(streamReader);
+                xxpGeneral.baseFIGR.noseShapeVerts = Vec3IntFromStreamShorts(streamReader);
+                xxpGeneral.baseFIGR.mouthVerts = Vec3IntFromStreamShorts(streamReader);
+                xxpGeneral.baseFIGR.ear_hornVerts = Vec3IntFromStreamShorts(streamReader);
 
                 xxpGeneral.baseFIGR2 = new BaseFIGR2();
-                for (int i = 0; i < 3; i++)
-                {
-                    xxpGeneral.baseFIGR2.neckVerts[i] = streamReader.Read<short>();
-                }
-                for (int i = 0; i < 3; i++)
-                {
-                    xxpGeneral.baseFIGR2.waistVerts[i] = streamReader.Read<short>();
-                }
-                for (int i = 0; i < 3; i++)
-                {
-                    xxpGeneral.baseFIGR2.body2Verts[i] = streamReader.Read<short>();
-                }
-                for (int i = 0; i < 3; i++)
-                {
-                    xxpGeneral.baseFIGR2.arm2Verts[i] = streamReader.Read<short>();
-                }
-                for (int i = 0; i < 3; i++)
-                {
-                    xxpGeneral.baseFIGR2.leg2Verts[i] = streamReader.Read<short>();
-                }
-                for (int i = 0; i < 3; i++)
-                {
-                    xxpGeneral.baseFIGR2.bust2Verts[i] = streamReader.Read<short>();
-                }
-                for (int i = 0; i < 3; i++)
-                {
-                    xxpGeneral.baseFIGR2.neck2Verts[i] = streamReader.Read<short>();
-                }
-                for (int i = 0; i < 3; i++)
-                {
-                    xxpGeneral.baseFIGR2.neck2Verts[i] = streamReader.Read<short>();
-                }
+                xxpGeneral.baseFIGR2.neckVerts = Vec3IntFromStreamShorts(streamReader);
+                xxpGeneral.baseFIGR2.waistVerts = Vec3IntFromStreamShorts(streamReader);
+                xxpGeneral.baseFIGR2.body2Verts = Vec3IntFromStreamShorts(streamReader);
+                xxpGeneral.baseFIGR2.arm2Verts = Vec3IntFromStreamShorts(streamReader);
+                xxpGeneral.baseFIGR2.leg2Verts = Vec3IntFromStreamShorts(streamReader);
+                xxpGeneral.baseFIGR2.bust2Verts = Vec3IntFromStreamShorts(streamReader);
+                xxpGeneral.baseFIGR2.neck2Verts = Vec3IntFromStreamShorts(streamReader);
+                xxpGeneral.baseFIGR2.waist2Verts = Vec3IntFromStreamShorts(streamReader);
 
                 streamReader.Seek(0x2A, SeekOrigin.Current);
 
@@ -1458,38 +1182,14 @@ namespace Character_Making_File_Tool
                 }
 
                 xxpGeneral.baseCOLR = new BaseCOLR();
-                for (int i = 0; i < 3; i++)
-                {
-                    xxpGeneral.baseCOLR.outer_MainColorVerts[i] = streamReader.Read<ushort>();
-                }
-                for (int i = 0; i < 3; i++)
-                {
-                    xxpGeneral.baseCOLR.costumeColorVerts[i] = streamReader.Read<ushort>();
-                }
-                for (int i = 0; i < 3; i++)
-                {
-                    xxpGeneral.baseCOLR.mainColor_hair2Verts[i] = streamReader.Read<ushort>();
-                }
-                for (int i = 0; i < 3; i++)
-                {
-                    xxpGeneral.baseCOLR.subColor1Verts[i] = streamReader.Read<ushort>();
-                }
-                for (int i = 0; i < 3; i++)
-                {
-                    xxpGeneral.baseCOLR.skinSubColor2Verts[i] = streamReader.Read<ushort>();
-                }
-                for (int i = 0; i < 3; i++)
-                {
-                    xxpGeneral.baseCOLR.subColor3_leftEye_castHair2Verts[i] = streamReader.Read<ushort>();
-                }
-                for (int i = 0; i < 3; i++)
-                {
-                    xxpGeneral.baseCOLR.rightEye_EyesVerts[i] = streamReader.Read<ushort>();
-                }
-                for (int i = 0; i < 3; i++)
-                {
-                    xxpGeneral.baseCOLR.hairVerts[i] = streamReader.Read<ushort>();
-                }
+                xxpGeneral.baseCOLR.outer_MainColorVerts = Vec3IntFromStreamUshorts(streamReader);
+                xxpGeneral.baseCOLR.costumeColorVerts = Vec3IntFromStreamUshorts(streamReader);
+                xxpGeneral.baseCOLR.mainColor_hair2Verts = Vec3IntFromStreamUshorts(streamReader);
+                xxpGeneral.baseCOLR.subColor1Verts = Vec3IntFromStreamUshorts(streamReader);
+                xxpGeneral.baseCOLR.skinSubColor2Verts = Vec3IntFromStreamUshorts(streamReader);
+                xxpGeneral.baseCOLR.subColor3_leftEye_castHair2Verts = Vec3IntFromStreamUshorts(streamReader);
+                xxpGeneral.baseCOLR.rightEye_EyesVerts = Vec3IntFromStreamUshorts(streamReader);
+                xxpGeneral.baseCOLR.hairVerts = Vec3IntFromStreamUshorts(streamReader);
 
                 streamReader.Seek(0x30, SeekOrigin.Current);
 
@@ -1547,22 +1247,39 @@ namespace Character_Making_File_Tool
             }
         }
 
+        private Vec3Int Vec3IntFromStreamShorts(BufferedStreamReader streamReader)
+        {
+            var vec3 = new Vec3Int();
+            vec3.X = streamReader.Read<short>();
+            vec3.Y = streamReader.Read<short>();
+            vec3.Z = streamReader.Read<short>();
+
+            return vec3;
+        }
+
+        private Vec3Int Vec3IntFromStreamUshorts(BufferedStreamReader streamReader)
+        {
+            var vec3 = new Vec3Int();
+            vec3.X = streamReader.Read<ushort>();
+            vec3.Y = streamReader.Read<ushort>();
+            vec3.Z = streamReader.Read<ushort>();
+
+            return vec3;
+        }
+
         public void ReadV2(BufferedStreamReader streamReader)
         {
             xxpGeneral.baseDOC = streamReader.Read<BaseDOC>();
             xxpGeneral.baseFIGR = streamReader.Read<BaseFIGR>();
             xxpGeneral.baseFIGR2 = new BaseFIGR2();
-            for (int i = 0; i < 3; i++)
-            {
-                xxpGeneral.baseFIGR2.arm2Verts[i] = xxpGeneral.baseFIGR.armVerts[i];
-                xxpGeneral.baseFIGR2.body2Verts[i] = xxpGeneral.baseFIGR.bodyVerts[i];
-                xxpGeneral.baseFIGR2.leg2Verts[i] = xxpGeneral.baseFIGR.legVerts[i];
-                xxpGeneral.baseFIGR2.bust2Verts[i] = xxpGeneral.baseFIGR.headVerts[i];
-                xxpGeneral.baseFIGR2.neckVerts[i] = 0;
-                xxpGeneral.baseFIGR2.neck2Verts[i] = 0;
-                xxpGeneral.baseFIGR2.waistVerts[i] = 0;
-                xxpGeneral.baseFIGR2.waist2Verts[i] = 0;
-            }
+            xxpGeneral.baseFIGR2.arm2Verts = xxpGeneral.baseFIGR.armVerts;
+            xxpGeneral.baseFIGR2.body2Verts = xxpGeneral.baseFIGR.bodyVerts;
+            xxpGeneral.baseFIGR2.leg2Verts = xxpGeneral.baseFIGR.legVerts;
+            xxpGeneral.baseFIGR2.bust2Verts = xxpGeneral.baseFIGR.headVerts;
+            xxpGeneral.baseFIGR2.neckVerts = new Vec3Int();
+            xxpGeneral.baseFIGR2.neck2Verts = new Vec3Int();
+            xxpGeneral.baseFIGR2.waistVerts = new Vec3Int();
+            xxpGeneral.baseFIGR2.waist2Verts = new Vec3Int();
             streamReader.Seek(0x24, SeekOrigin.Current);
 
             xxpGeneral.baseCOLR = streamReader.Read<BaseCOLR>();
@@ -1590,17 +1307,14 @@ namespace Character_Making_File_Tool
             xxpGeneral.baseDOC = streamReader.Read<BaseDOC>();
             xxpGeneral.baseFIGR = streamReader.Read<BaseFIGR>();
             xxpGeneral.baseFIGR2 = new BaseFIGR2();
-            for (int i = 0; i < 3; i++)
-            {
-                xxpGeneral.baseFIGR2.arm2Verts[i] = xxpGeneral.baseFIGR.armVerts[i];
-                xxpGeneral.baseFIGR2.body2Verts[i] = xxpGeneral.baseFIGR.bodyVerts[i];
-                xxpGeneral.baseFIGR2.leg2Verts[i] = xxpGeneral.baseFIGR.legVerts[i];
-                xxpGeneral.baseFIGR2.bust2Verts[i] = xxpGeneral.baseFIGR.headVerts[i];
-                xxpGeneral.baseFIGR2.neckVerts[i] = 0;
-                xxpGeneral.baseFIGR2.neck2Verts[i] = 0;
-                xxpGeneral.baseFIGR2.waistVerts[i] = 0;
-                xxpGeneral.baseFIGR2.waist2Verts[i] = 0;
-            }
+            xxpGeneral.baseFIGR2.arm2Verts = xxpGeneral.baseFIGR.armVerts;
+            xxpGeneral.baseFIGR2.body2Verts = xxpGeneral.baseFIGR.bodyVerts;
+            xxpGeneral.baseFIGR2.leg2Verts = xxpGeneral.baseFIGR.legVerts;
+            xxpGeneral.baseFIGR2.bust2Verts = xxpGeneral.baseFIGR.headVerts;
+            xxpGeneral.baseFIGR2.neckVerts = new Vec3Int();
+            xxpGeneral.baseFIGR2.neck2Verts = new Vec3Int();
+            xxpGeneral.baseFIGR2.waistVerts = new Vec3Int();
+            xxpGeneral.baseFIGR2.waist2Verts = new Vec3Int();
 
             streamReader.Seek(0x24, SeekOrigin.Current);
 
@@ -1749,44 +1463,44 @@ namespace Character_Making_File_Tool
                 cml.Write(BitConverter.GetBytes(0x125), 0, 4);
                 cml.Write(FigrText, 0, 4);
                 cml.Write(BitConverter.GetBytes(0), 0, 2); cml.Write(BitConverter.GetBytes(0x13), 0, 2);
-                cml.WriteByte(0); cml.WriteByte(0x48); cml.WriteByte(0x1); //Second byte here in these is data type probably? DOC technically probably uses this too
-                for (int i = 0; i < 3; i++){cml.Write(BitConverter.GetBytes(xxpGeneral.baseFIGR.bodyVerts[i]), 0, 4);}
+                cml.WriteByte(0); cml.WriteByte(0x48); cml.WriteByte(0x1); //Second byte here in these is data type
+                foreach (int i in xxpGeneral.baseFIGR.bodyVerts.GetAsArray()) { cml.Write(BitConverter.GetBytes(i), 0, 4); }
                 cml.WriteByte(0x1); cml.WriteByte(0x48); cml.WriteByte(0x1);
-                for (int i = 0; i < 3; i++) { cml.Write(BitConverter.GetBytes(xxpGeneral.baseFIGR.armVerts[i]), 0, 4); }
+                foreach (int i in xxpGeneral.baseFIGR.armVerts.GetAsArray()) { cml.Write(BitConverter.GetBytes(i), 0, 4); }
                 cml.WriteByte(0x2); cml.WriteByte(0x48); cml.WriteByte(0x1);
-                for (int i = 0; i < 3; i++) { cml.Write(BitConverter.GetBytes(xxpGeneral.baseFIGR.legVerts[i]), 0, 4); }
+                foreach (int i in xxpGeneral.baseFIGR.legVerts.GetAsArray()) { cml.Write(BitConverter.GetBytes(i), 0, 4); }
                 cml.WriteByte(0x3); cml.WriteByte(0x48); cml.WriteByte(0x1);
-                for (int i = 0; i < 3; i++) { cml.Write(BitConverter.GetBytes(xxpGeneral.baseFIGR.bustVerts[i]), 0, 4); }
+                foreach (int i in xxpGeneral.baseFIGR.bustVerts.GetAsArray()) { cml.Write(BitConverter.GetBytes(i), 0, 4); }
                 cml.WriteByte(0x4); cml.WriteByte(0x48); cml.WriteByte(0x1);
-                for (int i = 0; i < 3; i++) { cml.Write(BitConverter.GetBytes(xxpGeneral.baseFIGR.headVerts[i]), 0, 4); }
+                foreach (int i in xxpGeneral.baseFIGR.headVerts.GetAsArray()) { cml.Write(BitConverter.GetBytes(i), 0, 4); }
                 cml.WriteByte(0x5); cml.WriteByte(0x48); cml.WriteByte(0x1);
-                for (int i = 0; i < 3; i++) { cml.Write(BitConverter.GetBytes(xxpGeneral.baseFIGR.faceShapeVerts[i]), 0, 4); }
+                foreach (int i in xxpGeneral.baseFIGR.faceShapeVerts.GetAsArray()) { cml.Write(BitConverter.GetBytes(i), 0, 4); }
                 cml.WriteByte(0x6); cml.WriteByte(0x48); cml.WriteByte(0x1);
-                for (int i = 0; i < 3; i++) { cml.Write(BitConverter.GetBytes(xxpGeneral.baseFIGR.eyeShapeVerts[i]), 0, 4); }
+                foreach (int i in xxpGeneral.baseFIGR.eyeShapeVerts.GetAsArray()) { cml.Write(BitConverter.GetBytes(i), 0, 4); }
                 cml.WriteByte(0x7); cml.WriteByte(0x48); cml.WriteByte(0x1);
-                for (int i = 0; i < 3; i++) { cml.Write(BitConverter.GetBytes(xxpGeneral.baseFIGR.noseHeightVerts[i]), 0, 4); }
+                foreach (int i in xxpGeneral.baseFIGR.noseHeightVerts.GetAsArray()) { cml.Write(BitConverter.GetBytes(i), 0, 4); }
                 cml.WriteByte(0x8); cml.WriteByte(0x48); cml.WriteByte(0x1);
-                for (int i = 0; i < 3; i++) { cml.Write(BitConverter.GetBytes(xxpGeneral.baseFIGR.noseShapeVerts[i]), 0, 4); }
+                foreach (int i in xxpGeneral.baseFIGR.noseShapeVerts.GetAsArray()) { cml.Write(BitConverter.GetBytes(i), 0, 4); }
                 cml.WriteByte(0x9); cml.WriteByte(0x48); cml.WriteByte(0x1);
-                for (int i = 0; i < 3; i++) { cml.Write(BitConverter.GetBytes(xxpGeneral.baseFIGR.mouthVerts[i]), 0, 4); }
+                foreach (int i in xxpGeneral.baseFIGR.mouthVerts.GetAsArray()) { cml.Write(BitConverter.GetBytes(i), 0, 4); }
                 cml.WriteByte(0xA); cml.WriteByte(0x48); cml.WriteByte(0x1);
-                for (int i = 0; i < 3; i++) { cml.Write(BitConverter.GetBytes(xxpGeneral.baseFIGR.ear_hornVerts[i]), 0, 4); }
+                foreach (int i in xxpGeneral.baseFIGR.ear_hornVerts.GetAsArray()) { cml.Write(BitConverter.GetBytes(i), 0, 4); }
                 cml.WriteByte(0xC); cml.WriteByte(0x48); cml.WriteByte(0x1);
-                for (int i = 0; i < 3; i++) { cml.Write(BitConverter.GetBytes(xxpGeneral.baseFIGR2.neckVerts[i]), 0, 4); }
+                foreach (int i in xxpGeneral.baseFIGR2.neckVerts.GetAsArray()) { cml.Write(BitConverter.GetBytes(i), 0, 4); }
                 cml.WriteByte(0xD); cml.WriteByte(0x48); cml.WriteByte(0x1);
-                for (int i = 0; i < 3; i++) { cml.Write(BitConverter.GetBytes(xxpGeneral.baseFIGR2.waistVerts[i]), 0, 4); }
+                foreach (int i in xxpGeneral.baseFIGR2.waistVerts.GetAsArray()) { cml.Write(BitConverter.GetBytes(i), 0, 4); }
                 cml.WriteByte(0x10); cml.WriteByte(0x48); cml.WriteByte(0x1);
-                for (int i = 0; i < 3; i++) { cml.Write(BitConverter.GetBytes(xxpGeneral.baseFIGR2.body2Verts[i]), 0, 4); }
+                foreach (int i in xxpGeneral.baseFIGR2.body2Verts.GetAsArray()) { cml.Write(BitConverter.GetBytes(i), 0, 4); }
                 cml.WriteByte(0x11); cml.WriteByte(0x48); cml.WriteByte(0x1);
-                for (int i = 0; i < 3; i++) { cml.Write(BitConverter.GetBytes(xxpGeneral.baseFIGR2.arm2Verts[i]), 0, 4); }
+                foreach (int i in xxpGeneral.baseFIGR2.arm2Verts.GetAsArray()) { cml.Write(BitConverter.GetBytes(i), 0, 4); }
                 cml.WriteByte(0x12); cml.WriteByte(0x48); cml.WriteByte(0x1);
-                for (int i = 0; i < 3; i++) { cml.Write(BitConverter.GetBytes(xxpGeneral.baseFIGR2.leg2Verts[i]), 0, 4); }
+                foreach (int i in xxpGeneral.baseFIGR2.leg2Verts.GetAsArray()) { cml.Write(BitConverter.GetBytes(i), 0, 4); }
                 cml.WriteByte(0x13); cml.WriteByte(0x48); cml.WriteByte(0x1);
-                for (int i = 0; i < 3; i++) { cml.Write(BitConverter.GetBytes(xxpGeneral.baseFIGR2.bust2Verts[i]), 0, 4); }
+                foreach (int i in xxpGeneral.baseFIGR2.bust2Verts.GetAsArray()) { cml.Write(BitConverter.GetBytes(i), 0, 4); }
                 cml.WriteByte(0x14); cml.WriteByte(0x48); cml.WriteByte(0x1);
-                for (int i = 0; i < 3; i++) { cml.Write(BitConverter.GetBytes(xxpGeneral.baseFIGR2.neck2Verts[i]), 0, 4); }
+                foreach (int i in xxpGeneral.baseFIGR2.neck2Verts.GetAsArray()) { cml.Write(BitConverter.GetBytes(i), 0, 4); }
                 cml.WriteByte(0x15); cml.WriteByte(0x48); cml.WriteByte(0x1);
-                for (int i = 0; i < 3; i++) { cml.Write(BitConverter.GetBytes(xxpGeneral.baseFIGR2.waist2Verts[i]), 0, 4); }
+                foreach (int i in xxpGeneral.baseFIGR2.waist2Verts.GetAsArray()) { cml.Write(BitConverter.GetBytes(i), 0, 4); }
 
                 //Either OFST or SLCT format can go here for accessory sliders. SLCT offers less range.
                 //OFST - Accessory Position 
@@ -1838,23 +1552,23 @@ namespace Character_Making_File_Tool
                 cml.Write(BitConverter.GetBytes(0), 0, 2); cml.Write(BitConverter.GetBytes(0x9), 0, 2);
 
                 cml.WriteByte(0x27); cml.WriteByte(0x48); cml.WriteByte(0x1);
-                for (int i = 0; i < 3; i++) { cml.Write(BitConverter.GetBytes(xxpGeneral.baseCOLR.outer_MainColorVerts[i]), 0, 4); }
+                foreach (int i in xxpGeneral.baseCOLR.outer_MainColorVerts.GetAsArray()) { cml.Write(BitConverter.GetBytes(i), 0, 4); }
                 cml.WriteByte(0x20); cml.WriteByte(0x48); cml.WriteByte(0x1);
-                for (int i = 0; i < 3; i++) { cml.Write(BitConverter.GetBytes(xxpGeneral.baseCOLR.costumeColorVerts[i]), 0, 4); }
+                foreach (int i in xxpGeneral.baseCOLR.costumeColorVerts.GetAsArray()) { cml.Write(BitConverter.GetBytes(i), 0, 4); }
                 cml.WriteByte(0x21); cml.WriteByte(0x48); cml.WriteByte(0x1);
-                for (int i = 0; i < 3; i++) { cml.Write(BitConverter.GetBytes(xxpGeneral.baseCOLR.mainColor_hair2Verts[i]), 0, 4); }
+                foreach (int i in xxpGeneral.baseCOLR.mainColor_hair2Verts.GetAsArray()) { cml.Write(BitConverter.GetBytes(i), 0, 4); }
                 cml.WriteByte(0x22); cml.WriteByte(0x48); cml.WriteByte(0x1);
-                for (int i = 0; i < 3; i++) { cml.Write(BitConverter.GetBytes(xxpGeneral.baseCOLR.subColor1Verts[i]), 0, 4); }
+                foreach (int i in xxpGeneral.baseCOLR.subColor1Verts.GetAsArray()) { cml.Write(BitConverter.GetBytes(i), 0, 4); }
                 cml.WriteByte(0x23); cml.WriteByte(0x48); cml.WriteByte(0x1);
-                for (int i = 0; i < 3; i++) { cml.Write(BitConverter.GetBytes(xxpGeneral.baseCOLR.skinSubColor2Verts[i]), 0, 4); }
+                foreach (int i in xxpGeneral.baseCOLR.skinSubColor2Verts.GetAsArray()) { cml.Write(BitConverter.GetBytes(i), 0, 4); }
                 cml.WriteByte(0x24); cml.WriteByte(0x48); cml.WriteByte(0x1);
-                for (int i = 0; i < 3; i++) { cml.Write(BitConverter.GetBytes(xxpGeneral.baseCOLR.subColor3_leftEye_castHair2Verts[i]), 0, 4); }
+                foreach (int i in xxpGeneral.baseCOLR.subColor3_leftEye_castHair2Verts.GetAsArray()) { cml.Write(BitConverter.GetBytes(i), 0, 4); }
                 cml.WriteByte(0x25); cml.WriteByte(0x48); cml.WriteByte(0x1);
-                for (int i = 0; i < 3; i++) { cml.Write(BitConverter.GetBytes(xxpGeneral.baseCOLR.rightEye_EyesVerts[i]), 0, 4); }
+                foreach (int i in xxpGeneral.baseCOLR.rightEye_EyesVerts.GetAsArray()) { cml.Write(BitConverter.GetBytes(i), 0, 4); }
                 cml.WriteByte(0x26); cml.WriteByte(0x48); cml.WriteByte(0x1);
-                for (int i = 0; i < 3; i++) { cml.Write(BitConverter.GetBytes(xxpGeneral.baseCOLR.hairVerts[i]), 0, 4); }
+                foreach (int i in xxpGeneral.baseCOLR.hairVerts.GetAsArray()) { cml.Write(BitConverter.GetBytes(i), 0, 4); }
                 cml.WriteByte(0x26); cml.WriteByte(0x48); cml.WriteByte(0x1);                                               //Yes, they actually write it twice _(:3/
-                for (int i = 0; i < 3; i++) { cml.Write(BitConverter.GetBytes(xxpGeneral.baseCOLR.hairVerts[i]), 0, 4); }
+                foreach (int i in xxpGeneral.baseCOLR.hairVerts.GetAsArray()) { cml.Write(BitConverter.GetBytes(i), 0, 4); }
 
                 //SLCT
                 cml.Write(Vtc0.ToArray(), 0, 4);
@@ -2142,53 +1856,6 @@ namespace Character_Making_File_Tool
             xxp.Write(zeroLong, 0, 8);
 
             return xxp.ToArray();
-        }
-
-        public byte SignednibblePack(sbyte left, sbyte right)
-        {
-            return (byte)(SetupXXPnibble(left) * 0x10 + SetupXXPnibble(right));
-        }
-
-        //XXP V5 and V6 store accessory sliders in nibbles. 1-7 is postive while 8-E is negative, but 8-E's magnitude goes up going from 8, -1, to E, -7
-        //Therefore, we must convert from a normal signed value to suit this format.
-        public int SetupXXPnibble(int nyb)
-        {
-            if (nyb < 0)
-            {
-                nyb = Math.Max(nyb, -126);
-                nyb = Math.Abs(nyb) + 126;
-                //Correct potential underflow to max positive on division and round appropriately
-                if (nyb < 135)
-                {
-                    nyb = 0;
-                } else if(nyb < 144)
-                {
-                    nyb = 144;
-                }
-            }
-            nyb /= 18;
-
-            return nyb;
-        }
-
-        public int SetupIntFromXXPnibble(int nyb)
-        {
-            if (nyb > 7)
-            {
-                nyb = (nyb - 7) * -1;
-            }
-            nyb *= 18;
-
-            return nyb;
-        }
-
-        public void SignednibbleUnpack(byte signednibbles, out sbyte left, out sbyte right)
-        {
-            int tempLeft = signednibbles / 0x10;
-            int tempRight = signednibbles % 0x10;
-
-            left = Convert.ToSByte(SetupIntFromXXPnibble(tempLeft));
-            right = Convert.ToSByte(SetupIntFromXXPnibble(tempRight));
         }
 
         public int TryGetIndex(int[] arr, int index)
