@@ -3,57 +3,32 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static Character_Making_File_Tool.Vector3Int;
+using static Character_Making_File_Tool.CharacterConstants;
 
 namespace Character_Making_File_Tool
 {
     public static class CharacterHandlerUtilityMethods
     {
-        public static byte SignednibblePack(sbyte left, sbyte right)
+        public static void ToNGSSliders(this Vec3Int vec3)
         {
-            return (byte)(SetupXXPnibble(left) * 0x10 + SetupXXPnibble(right));
+            vec3.X = (int)((double)vec3.X / MaxSliderClassic * MaxSliderNGS);
+            vec3.Y = (int)((double)vec3.Y / MaxSliderClassic * MaxSliderNGS);
+            vec3.Z = (int)((double)vec3.Z / MaxSliderClassic * MaxSliderNGS);
         }
 
-        public static void SignednibbleUnpack(byte signednibbles, out sbyte left, out sbyte right)
+        public static void ToOldSliders(this Vec3Int vec3)
         {
-            int tempLeft = signednibbles / 0x10;
-            int tempRight = signednibbles % 0x10;
-
-            left = Convert.ToSByte(SetupIntFromXXPnibble(tempLeft));
-            right = Convert.ToSByte(SetupIntFromXXPnibble(tempRight));
+            vec3.X = (int)((double)vec3.X / MaxSliderNGS * MaxSliderClassic);
+            vec3.Y = (int)((double)vec3.Y / MaxSliderNGS * MaxSliderClassic);
+            vec3.Z = (int)((double)vec3.Z / MaxSliderNGS * MaxSliderClassic);
         }
 
-        //XXP V5 and V6 store accessory sliders in nibbles. 1-7 is postive while 8-E is negative, but 8-E's magnitude goes up going from 8, -1, to E, -7
-        //Therefore, we must convert from a normal signed value to suit this format.
-        public static int SetupXXPnibble(int nyb)
+        public static void Vec3IntSwap(ref Vec3Int vec3A, ref Vec3Int vec3B)
         {
-            if (nyb < 0)
-            {
-                nyb = Math.Max(nyb, -126);
-                nyb = Math.Abs(nyb) + 126;
-                //Correct potential underflow to max positive on division and round appropriately
-                if (nyb < 135)
-                {
-                    nyb = 0;
-                }
-                else if (nyb < 144)
-                {
-                    nyb = 144;
-                }
-            }
-            nyb /= 18;
-
-            return nyb;
-        }
-
-        public static int SetupIntFromXXPnibble(int nyb)
-        {
-            if (nyb > 7)
-            {
-                nyb = (nyb - 7) * -1;
-            }
-            nyb *= 18;
-
-            return nyb;
+            var temp = Vec3Int.CreateVec3Int(vec3A);
+            vec3A.SetVec3(vec3B);
+            vec3B.SetVec3(temp);
         }
     }
 }

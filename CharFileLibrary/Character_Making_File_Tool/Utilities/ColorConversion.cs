@@ -5,6 +5,9 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Runtime.InteropServices;
 using static Character_Making_File_Tool.Vector3Int;
+using static Character_Making_File_Tool.CharacterConstants;
+using static Character_Making_File_Tool.CharacterDataStructs;
+using static Character_Making_File_Tool.CharacterDataStructsReboot;
 using System.Windows;
 using System.Drawing;
 
@@ -12,308 +15,68 @@ namespace Character_Making_File_Tool
 {
     public class ColorConversion
     {
-        //Stores palette colors [column, row]
-        //Each palette has 7 columns and 6 rows. Overall they mirror the slider backdrop, but with some differences due to it not matching what the game uses
-        //All palette data was recreated frrom the .cmx file(s) except for skin. Skin is handled a bit differently than other colors, and so I have recreated it a different way.
-
-        public static byte[,][] skinPalette = new byte[,][]
+        public static BaseCOLR COL2ToCOLR(COL2 colr, int race)
         {
+
+        }
+
+        public static COL2 COLRToCOL2(BaseCOLR colr, int race)
+        {
+            COL2 col = new COL2();
+            col.outerColor1 = BitConverter.ToInt32(GetPSO2CharColor(colr.outer_MainColorVerts, castPalette));
+            col.baseColor1 = BitConverter.ToInt32(GetPSO2CharColor(colr.costumeColorVerts, castPalette));
+            col.mainColor = BitConverter.ToInt32(GetPSO2CharColor(colr.mainColor_hair2Verts, castPalette));
+            col.subColor1 = BitConverter.ToInt32(GetPSO2CharColor(colr.subColor1Verts, castPalette));
+
+            col.subColor2 = BitConverter.ToInt32(GetPSO2CharColor(colr.skinSubColor2Verts, castPalette));
+            col.subColor3 = BitConverter.ToInt32(GetPSO2CharColor(colr.subColor3_leftEye_castHair2Verts, castPalette));
+            col.rightEyeColor = BitConverter.ToInt32(GetPSO2CharColor(colr.rightEye_EyesVerts, eyePalette));
+            col.hairColor1 = BitConverter.ToInt32(GetPSO2CharColor(colr.hairVerts, hairPalette));
+
+            col.eyebrowColor = BitConverter.ToInt32(new byte[] { 0, 0, 0, 0xFF });
+            col.eyelashColor = BitConverter.ToInt32(new byte[] { 0, 0, 0, 0xFF });
+            
+            //Handle skin conditionally
+            switch(race)
             {
-                new byte[] { 94, 69, 53, 255},
-                new byte[] { 201, 160, 99, 255},
-                new byte[] { 244, 210, 165, 255},
-                new byte[] { 247, 201, 176, 255},
-                new byte[] { 208, 143, 117, 255},
-                new byte[] { 94, 69, 53, 255}
-            },
-            {
-                new byte[] { 90, 69, 53, 255},
-                new byte[] { 195, 160, 96, 255},
-                new byte[] { 244, 210, 165, 255},
-                new byte[] { 247, 201, 176, 255},
-                new byte[] { 207, 144, 117, 255},
-                new byte[] { 94, 69, 53, 255}
-            },
-            {
-                new byte[] { 86, 69, 53, 255},
-                new byte[] { 192, 157, 102, 255},
-                new byte[] { 239, 210, 170, 255},
-                new byte[] { 242, 202, 179, 255},
-                new byte[] { 202, 145, 123, 255},
-                new byte[] { 87, 68, 54, 255}
-            },
-            {
-                new byte[] { 86, 69, 61, 255},
-                new byte[] { 185, 156, 111, 255},
-                new byte[] { 234, 208, 176, 255},
-                new byte[] { 238, 203, 183, 255},
-                new byte[] { 196, 148, 130, 255},
-                new byte[] { 86, 69, 57, 255}
-            },
-            {
-                new byte[] { 82, 69, 61, 255},
-                new byte[] { 176, 156, 118, 255},
-                new byte[] { 226, 207, 181, 255},
-                new byte[] { 231, 204, 189, 255},
-                new byte[] { 190, 150, 134, 255},
-                new byte[] { 79, 69, 61, 255}
-            },
-            {
-                new byte[] { 78, 70, 62, 255},
-                new byte[] { 172, 153, 123, 255},
-                new byte[] { 223, 208, 189, 255},
-                new byte[] { 228, 206, 195, 255},
-                new byte[] { 184, 153, 140, 255},
-                new byte[] { 79, 69, 61, 255}
-            },
-            {
-                new byte[] { 78, 70, 62, 255},
-                new byte[] { 170, 152, 123, 255},
-                new byte[] { 223, 208, 189, 255},
-                new byte[] { 231, 204, 189, 255},
-                new byte[] { 183, 153, 140, 255},
-                new byte[] { 78, 69, 61, 255}
+                case 0:
+                case 1:
+                    col.skinColor1 = BitConverter.ToInt32(GetPSO2CharColor(colr.skinSubColor2Verts, skinPalette));
+                    break;
+                case 2:
+                    col.skinColor1 = BitConverter.ToInt32(GetPSO2CharColor(colr.skinSubColor2Verts, castPalette));
+                    break;
+                case 3:
+                    col.skinColor1 = BitConverter.ToInt32(GetPSO2CharColor(colr.skinSubColor2Verts, deumanSkinPalette));
+                    break;
             }
-        };
+            col.skinColor2 = BitConverter.ToInt32(new byte[] { 0xFF, 0, 0, 0xFF });
 
-        public static byte[,][] deumanSkinPalette = new byte[,][]
-        {
+            col.baseColor2 = BitConverter.ToInt32(new byte[] { 0, 0, 0, 0xFF });
+            col.outerColor2 = BitConverter.ToInt32(new byte[] { 0, 0, 0, 0xFF });
+            col.innerColor1 = BitConverter.ToInt32(new byte[] { 0, 0, 0, 0xFF });
+            col.innerColor2 = BitConverter.ToInt32(new byte[] { 0, 0, 0, 0xFF });
+
+            //If deuman, use eye 2 color
+            if (race == 3)
             {
-                new byte[] { 49, 49, 76, 255},
-                new byte[] { 95, 106, 127, 255},
-                new byte[] { 214, 215, 216, 255},
-                new byte[] { 216, 188, 184, 255},
-                new byte[] { 173, 126, 123, 255},
-                new byte[] { 86, 45, 43, 255}
-            },
+                col.leftEyeColor = BitConverter.ToInt32(GetPSO2CharColor(colr.subColor3_leftEye_castHair2Verts, eyePalette));
+            } else
             {
-                new byte[] { 53, 53, 79, 255},
-                new byte[] { 101, 110, 130, 255},
-                new byte[] { 217, 218, 219, 255},
-                new byte[] { 216, 192, 188, 255},
-                new byte[] { 173, 132, 130, 255},
-                new byte[] { 86, 49, 47, 255}
-            },
-            {
-                new byte[] { 56, 56, 79, 255},
-                new byte[] { 106, 114, 130, 255},
-                new byte[] { 217, 218, 219, 255},
-                new byte[] { 216, 194, 190, 255},
-                new byte[] { 173, 137, 135, 255},
-                new byte[] { 86, 54, 52, 255}
-            },
-            {
-                new byte[] { 61, 61, 81, 255},
-                new byte[] { 112, 119, 132, 255},
-                new byte[] { 219, 220, 221, 255},
-                new byte[] { 216, 197, 195, 255},
-                new byte[] { 173, 144, 142, 255},
-                new byte[] { 86, 58, 57, 255}
-            },
-            {
-                new byte[] { 63, 63, 81, 255},
-                new byte[] { 118, 124, 135, 255},
-                new byte[] { 222, 223, 224, 255},
-                new byte[] { 216, 201, 199, 255},
-                new byte[] { 173, 150, 149, 255},
-                new byte[] { 86, 63, 62, 255}
-            },
-            {
-                new byte[] { 68, 68, 84, 255},
-                new byte[] { 125, 129, 137, 255},
-                new byte[] { 224, 225, 226, 255},
-                new byte[] { 216, 205, 203, 255},
-                new byte[] { 173, 157, 156, 255},
-                new byte[] { 86, 67, 66, 255}
-            },
-            {
-                new byte[] { 76, 76, 86, 255},
-                new byte[] { 137, 138, 140, 255},
-                new byte[] { 227, 228, 229, 255},
-                new byte[] { 216, 211, 210, 255},
-                new byte[] { 173, 168, 168, 255},
-                new byte[] { 86, 76, 76, 255}
+                col.leftEyeColor = BitConverter.ToInt32(GetPSO2CharColor(colr.rightEye_EyesVerts, eyePalette));
             }
-        };
 
-        public static byte[,][] hairPalette = new byte[,][]
-        {
+            //If cast, get hair 2 differently
+            if(race == 2)
             {
-                new byte[] { 25, 25, 25, 255},
-                new byte[] { 242, 248, 255, 255},
-                new byte[] { 178, 121, 121, 255},
-                new byte[] { 178, 19, 19, 255},
-                new byte[] { 127, 14, 14, 255},
-                new byte[] { 25, 2, 2, 255}
-            },
+                col.hairColor2 = BitConverter.ToInt32(GetPSO2CharColor(colr.subColor3_leftEye_castHair2Verts, castPalette));
+            } else
             {
-                new byte[] { 25, 25, 25, 255},
-                new byte[] { 242, 248, 255, 255},
-                new byte[] { 178, 168, 121, 255},
-                new byte[] { 204, 177, 61, 255},
-                new byte[] { 127, 111, 38, 255},
-                new byte[] { 25, 22, 7, 255}
-            },
-            {
-                new byte[] { 25, 25, 25, 255},
-                new byte[] { 242, 248, 255, 255},
-                new byte[] { 122, 178, 121, 255},
-                new byte[] { 63, 204, 61, 255},
-                new byte[] { 39, 127, 38, 255},
-                new byte[] { 7, 25, 7, 255}
-            },
-            {
-                new byte[] { 25, 25, 25, 255},
-                new byte[] { 242, 248, 255, 255},
-                new byte[] { 121, 178, 178, 255},
-                new byte[] { 19, 178, 178, 255},
-                new byte[] { 14, 127, 127, 255},
-                new byte[] { 2, 25, 25, 255}
-            },
-            {
-                new byte[] { 25, 25, 25, 255},
-                new byte[] { 242, 248, 255, 255},
-                new byte[] { 119, 120, 175, 255},
-                new byte[] { 19, 22, 178, 255},
-                new byte[] { 19, 22, 178, 255},
-                new byte[] { 2, 3, 25, 255}
-            },
-            {
-                new byte[] { 25, 25, 25, 255},
-                new byte[] { 242, 248, 255, 255},
-                new byte[] { 178, 121, 178, 255},
-                new byte[] { 175, 19, 178, 255},
-                new byte[] { 127, 14, 127, 255},
-                new byte[] { 25, 2, 25, 255}
-            },
-            {
-                new byte[] { 25, 25, 25, 255},
-                new byte[] { 242, 248, 255, 255},
-                new byte[] { 178, 121, 121, 255},
-                new byte[] { 178, 19, 19, 255},
-                new byte[] { 127, 14, 14, 255},
-                new byte[] { 25, 10, 10, 255}
-            },
-        };
+                col.hairColor2 = BitConverter.ToInt32(GetPSO2CharColor(colr.mainColor_hair2Verts, hairPalette));
+            }
 
-        public static byte[,][] eyePalette = new byte[,][]
-        {
-            {
-                new byte[] { 25, 25, 25, 255},
-                new byte[] { 242, 248, 255, 255},
-                new byte[] { 178, 121, 121, 255},
-                new byte[] { 255, 0, 0, 255},
-                new byte[] { 127, 0, 0, 255},
-                new byte[] { 25, 0, 0, 255}
-            },
-            {
-                new byte[] { 25, 25, 25, 255},
-                new byte[] { 242, 248, 255, 255},
-                new byte[] { 178, 168, 121, 255},
-                new byte[] { 255, 208, 0, 255},
-                new byte[] { 127, 104, 0, 255},
-                new byte[] { 25, 20, 0, 255}
-            },
-            {
-                new byte[] { 25, 25, 25, 255},
-                new byte[] { 242, 248, 255, 255},
-                new byte[] { 122, 178, 121, 255},
-                new byte[] { 4, 255, 0, 255},
-                new byte[] { 2, 127, 0, 255},
-                new byte[] { 0, 25, 0, 255}
-            },
-            {
-                new byte[] { 25, 25, 25, 255},
-                new byte[] { 242, 248, 255, 255},
-                new byte[] { 121, 178, 178, 255},
-                new byte[] { 0, 255, 255, 255},
-                new byte[] { 0, 127, 127, 255},
-                new byte[] { 0, 25, 25, 255}
-            },
-            {
-                new byte[] { 25, 25, 25, 255},
-                new byte[] { 242, 248, 255, 255},
-                new byte[] { 119, 120, 175, 255},
-                new byte[] { 0, 4, 255, 255},
-                new byte[] { 0, 2, 127, 255},
-                new byte[] { 0, 0, 25, 255}
-            },
-            {
-                new byte[] { 25, 25, 25, 255},
-                new byte[] { 242, 248, 255, 255},
-                new byte[] { 178, 121, 178, 255},
-                new byte[] { 250, 0, 255, 255},
-                new byte[] { 127, 0, 127, 255},
-                new byte[] { 25, 0, 25, 255}
-            },
-            {
-                new byte[] { 25, 25, 25, 255},
-                new byte[] { 242, 248, 255, 255},
-                new byte[] { 178, 121, 121, 255},
-                new byte[] { 255, 0, 0, 255},
-                new byte[] { 127, 0, 0, 255},
-                new byte[] { 25, 0, 0, 255}
-            },
-        };
-
-        public static byte[,][] castPalette = new byte[,][]
-        {            {
-                new byte[] { 25, 25, 25, 255},
-                new byte[] { 242, 248, 255, 255},
-                new byte[] { 255, 173, 173, 255},
-                new byte[] { 255, 0, 0, 255},
-                new byte[] { 127, 0, 0, 255},
-                new byte[] { 25, 0, 0, 255}
-            },
-            {
-                new byte[] { 25, 25, 25, 255},
-                new byte[] { 242, 248, 255, 255},
-                new byte[] { 255, 240, 173, 255},
-                new byte[] { 255, 208, 0, 255},
-                new byte[] { 127, 104, 0, 255},
-                new byte[] { 25, 20, 0, 255}
-            },
-            {
-                new byte[] { 25, 25, 25, 255},
-                new byte[] { 242, 248, 255, 255},
-                new byte[] { 174, 255, 173, 255},
-                new byte[] { 4, 255, 0, 255},
-                new byte[] { 2, 127, 0, 255},
-                new byte[] { 0, 25, 0, 255}
-            },
-            {
-                new byte[] { 25, 25, 25, 255},
-                new byte[] { 242, 248, 255, 255},
-                new byte[] { 173, 255, 255, 255},
-                new byte[] { 0, 255, 255, 255},
-                new byte[] { 0, 127, 127, 255},
-                new byte[] { 0, 25, 25, 255}
-            },
-            {
-                new byte[] { 25, 25, 25, 255},
-                new byte[] { 242, 248, 255, 255},
-                new byte[] { 173, 174, 255, 255},
-                new byte[] { 0, 4, 255, 255},
-                new byte[] { 0, 2, 127, 255},
-                new byte[] { 0, 0, 25, 255}
-            },
-            {
-                new byte[] { 25, 25, 25, 255},
-                new byte[] { 242, 248, 255, 255},
-                new byte[] { 255, 173, 255, 255},
-                new byte[] { 250, 0, 255, 255},
-                new byte[] { 127, 0, 127, 255},
-                new byte[] { 25, 0, 25, 255}
-            },
-            {
-                new byte[] { 25, 25, 25, 255},
-                new byte[] { 242, 248, 255, 255},
-                new byte[] { 255, 173, 173, 255},
-                new byte[] { 255, 0, 0, 255},
-                new byte[] { 127, 0, 0, 255},
-                new byte[] { 25, 0, 0, 255}
-            },
-        };
+            return col;
+        }
 
         //Linear interpolation between two colors
         public static byte[] LerpRGBA(byte[] a, byte[] b, double t, bool roundDown = false)
@@ -335,8 +98,8 @@ namespace Character_Making_File_Tool
 
         public static byte[] GetPSO2CharColor(Vec3Int vec3, byte[,][] palette)
         {
-            double horizontalSlider = (double)vec3.X / CharacterHandler.MaxSliderClassicHue * 6;
-            double verticalSlider = (double)vec3.Y / CharacterHandler.MaxSliderClassicLightness * 5;
+            double horizontalSlider = (double)vec3.X / MaxSliderClassicHue * 6;
+            double verticalSlider = (double)vec3.Y / MaxSliderClassicLightness * 5;
             int leftColumn = (int)Math.Floor(horizontalSlider);
             int rightColumn = (int)Math.Ceiling(horizontalSlider);
             int topRow = (int)Math.Floor(verticalSlider);
@@ -373,20 +136,20 @@ namespace Character_Making_File_Tool
             //The grayscale of a pso2 color is the average of r, g, and b applied to r, g, and b on a color.
             //Saturation is handled by interpolating between the color and this grayscale color
             byte average = (byte)Math.Round(((double)baseColor[0] + baseColor[1] + baseColor[2]) / 3);
-            double tSat = (double)vec3.Z / CharacterHandler.MaxSliderClassicSaturation;
+            double tSat = (double)vec3.Z / MaxSliderClassicSaturation;
 
             return LerpRGBA(baseColor, new byte[] { average, average, average, 255 }, tSat);
         }
 
-        //Idea for HSL color space interpretation of PSO2 COLR values. Only reasonable for cast colors, as it turns out
+        //Idea for HSL color space interpretation of PSO2 COLR values. Only reasonable for cast colors due to variations between other palettes.
         public static byte[] RGBAFromCOLRHSL(Vec3Int vec3)
         {
-            int trueHue = (int)((double)vec3.X / CharacterHandler.MaxSliderClassicHue * 240);
-            int trueLightness = (int)((CharacterHandler.MaxSliderClassicLightness - (double)vec3.Y) / CharacterHandler.MaxSliderClassicLightness * 240);
+            int trueHue = (int)((double)vec3.X / MaxSliderClassicHue * 240);
+            int trueLightness = (int)((MaxSliderClassicLightness - (double)vec3.Y) / MaxSliderClassicLightness * 240);
             int trueSaturation = 0;
-            if(vec3.Y > CharacterHandler.LightnessThreshold)
+            if(vec3.Y > LightnessThreshold)
             {
-                trueSaturation = (int)(((double)vec3.Z) / CharacterHandler.MaxSliderClassicSaturation * 240);
+                trueSaturation = (int)(((double)vec3.Z) / MaxSliderClassicSaturation * 240);
             }
             var newColor = (System.Drawing.Color)new HSLColor(trueHue, trueLightness, trueSaturation);
             
@@ -425,9 +188,9 @@ namespace Character_Making_File_Tool
         {
             Vec3Int vec3 = new Vec3Int();
             System.Drawing.Color color = System.Drawing.Color.FromArgb(colorRGBA[3], colorRGBA[0], colorRGBA[1], colorRGBA[2]);
-            vec3.X = (int)(color.GetHue() / 360 * CharacterHandler.MaxSliderClassicHue);
-            vec3.Y = CharacterHandler.MaxSliderClassicLightness - (int)(color.GetBrightness() * (CharacterHandler.MaxSliderClassicLightness - CharacterHandler.LightnessThreshold));
-            vec3.Z = (int)(color.GetSaturation() * CharacterHandler.MaxSliderClassicSaturation);
+            vec3.X = (int)(color.GetHue() / 360 * MaxSliderClassicHue);
+            vec3.Y = MaxSliderClassicLightness - (int)(color.GetBrightness() * (MaxSliderClassicLightness - LightnessThreshold));
+            vec3.Z = (int)(color.GetSaturation() * MaxSliderClassicSaturation);
 #if DEBUG
             HSLColor hsl = new HSLColor(colorRGBA[0], colorRGBA[1], colorRGBA[2]);
             MessageBox.Show($"{hsl.Hue / 240.0 * 100} {hsl.Saturation / 240.0 * 100} {hsl.Luminosity / 240.0 * 100} {hsl.ToRGBString()}");

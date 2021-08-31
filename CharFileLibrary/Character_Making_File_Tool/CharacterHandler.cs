@@ -10,7 +10,10 @@ using System.Text;
 using System.Windows.Forms;
 using zamboni;
 using static Character_Making_File_Tool.CharacterHandlerUtilityMethods;
+using static Character_Making_File_Tool.NibbleUtility;
 using static Character_Making_File_Tool.Vector3Int;
+using static Character_Making_File_Tool.CharacterConstants;
+using static Character_Making_File_Tool.CharacterDataStructs;
 
 namespace Character_Making_File_Tool
 {
@@ -20,36 +23,8 @@ namespace Character_Making_File_Tool
     public unsafe class CharacterHandler
     {
         private static uint CharacterBlowfishKey = 2588334024;
-        public static int MinSliderNGS = -127;
-        public static int MaxSliderNGS = 127;
-        public static int MinHeightLegSliderNGS = -71;
-        public static int MinSliderClassic = -10000;
-        public static int MaxSliderClassic = 10000;
-        public static int MaxSliderClassicHue = 60000; //Range 0-60000
-        public static int MaxSliderClassicLightness = 50000; //Range 0-50000 //Note, 0 is up, 50000 is down.
-        public static int MaxSliderClassicSaturation = 10000; //Range 0-10000
-        public static int LightnessThreshold = 10000; //The threshold after which saturation is 0ed. Classic PSO2 had a black to white area above the colored range's white
-        public static int MinHeightSlider = -5501;
-        public static int MinLegSlider = -5600;
-        public static int DeicerCMLType = 0x6C6D63;
-        public static byte[] ConstantCMLHeader = { 0x56, 0x54, 0x42, 0x46, 0x10, 0, 0, 0, 0x43, 0x4D, 0x4C, 0x50, 0x1, 0, 0, 0x4C };
         public int version;
         public string pso2_binPathFile = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "pso2_binPath.txt");
-
-        private Dictionary<int, int> fileSizes = new Dictionary<int, int>()
-        {
-            //Numbers correlate to save dialog selection numbers
-            { 3, 0x15C}, //v2
-            { 2, 0x170}, //v5
-            { 1, 0x2DC}, //v6
-            { 0, 0x2F0}  //v9
-        };
-        private byte[] Vtc0 = { 0x76, 0x74, 0x63, 0x30 };
-        private byte[] DocText = { 0x44, 0x4F, 0x43, 0x20 };
-        private byte[] FigrText = { 0x46, 0x49, 0x47, 0x52 };
-        private byte[] OfstText = { 0x4F, 0x46, 0x53, 0x54 };
-        private byte[] ColrText = { 0x43, 0x4F, 0x4C, 0x52 };
-        private byte[] SlctText = { 0x53, 0x4C, 0x43, 0x54 };
 
         public XXPGeneral xxpGeneral;
         public FileHandler fh = null;
@@ -60,135 +35,6 @@ namespace Character_Making_File_Tool
         public int getVersion()
         {
             return version;
-        }
-
-        public struct XXPHeader
-        {
-            public uint xxpVersion;  //Version of the xxp
-            public uint bodySize; //Size of the data after the header
-            public uint fileHash; //Crc32 hash of the encrypted file contents after the header
-            public uint headerEnd; //0 in all known instances
-        }
-
-        public struct BaseDOC
-        {
-            //Contains important info regarding the type of character.Also has random info that doesn't use int or uint data types. 
-            public uint race;
-            public uint gender;
-            public float muscleMass; //float from 0 to 60000 
-        }
-
-        public struct BaseFIGR
-        {
-            //Slider vertex positions. 10000 to -10000. Center Vert Y, Side Vert X, Side Vert Y
-            public Vec3Int bodyVerts;
-            public Vec3Int armVerts;
-            public Vec3Int legVerts;
-            public Vec3Int bustVerts;
-
-            public Vec3Int headVerts;
-            public Vec3Int faceShapeVerts;
-            public Vec3Int eyeShapeVerts;
-            public Vec3Int noseHeightVerts;
-            
-            public Vec3Int noseShapeVerts;
-            public Vec3Int mouthVerts;
-            public Vec3Int ear_hornVerts;
-        }
-
-        public struct BaseFIGR2
-        {
-            //FIGR values added in ep4 to increase customization and add separate fleshy and cast sliders
-            public Vec3Int neckVerts; 
-            public Vec3Int waistVerts;
-            public Vec3Int body2Verts;
-            public Vec3Int arm2Verts;
-
-            public Vec3Int leg2Verts;
-            public Vec3Int bust2Verts;
-            public Vec3Int neck2Verts;
-            public Vec3Int waist2Verts;
-        }
-
-        public struct BaseCOLR
-        {
-            //Color vertex positions. 0 to 60000 or 10000 to -10000. X, Y, and Saturation
-            public Vec3Int outer_MainColorVerts; //Changed to copy of Main Color on changing body part allegedly as well as Ou color
-            public Vec3Int costumeColorVerts;
-            public Vec3Int mainColor_hair2Verts;
-            public Vec3Int subColor1Verts;
-            public Vec3Int skinSubColor2Verts;
-            public Vec3Int subColor3_leftEye_castHair2Verts;
-            public Vec3Int rightEye_EyesVerts;
-            public Vec3Int hairVerts;
-        }
-
-        public struct BaseSLCT
-        {
-            //.cmx (Character Making Index) piece references.
-            public uint costumePart;
-            public uint bodyPaintPart;
-            public uint stickerPart;
-            public uint eyePart;     //In files prior to v9, assume byte 0 and byte 1 are right and left eye respectively for dumans 
-
-            public uint eyebrowPart;
-            public uint eyelashPart;
-            public uint faceTypePart;
-            public uint faceTexPart;
-
-            public uint makeup1Part;
-            public uint hairPart;
-            public uint acc1Part;
-            public uint acc2Part;
-
-            public uint acc3Part;
-            public uint makeup2Part;
-            public uint legPart;
-            public uint armPart;
-        }
-
-        public struct BaseSLCT2
-        {
-            // .cmx bits added for EP4
-            public uint acc4Part;
-            public uint basewearPart;
-            public uint innerwearPart;
-            public uint bodypaint2Part;
-        }
-
-        public struct PaintPriority
-        {
-            //Body Paint Priority order
-            //Innerwear is 0x0, bodypaint1 is 0x1, bodypaint2 is 0x2
-            public ushort priority1;
-            public ushort priority2;
-            public ushort priority3;
-        }
-
-        public struct FaceExpression
-        {
-            public sbyte irisSize;
-            public sbyte leftEyebrowVertical;
-            public sbyte leftMouthVertical;
-            public sbyte rightEyebrowVertical;
-
-            public sbyte rightMouthVertical;
-            public sbyte eyeCorner;
-            public sbyte leftEyelidVertical;
-            public sbyte leftEyebrowExpression;
-
-            public sbyte rightEyelidVertical;
-            public sbyte rightEyebrowExpression;
-            public sbyte mouthA;
-            public sbyte mouthI;
-
-            public sbyte mouthU;
-            public sbyte mouthE;
-            public sbyte mouthO;
-            public sbyte leftEyebrowVerticalUnused;
-
-            public sbyte rightEyebrowVerticalUnused;
-            public sbyte tongue;
         }
 
         public struct XXPV2
@@ -368,13 +214,6 @@ namespace Character_Making_File_Tool
         public CharacterHandler()
         {
             LoadCMXData();
-        }
-
-        public void Vec3IntSwap(ref Vec3Int vec3A, ref Vec3Int vec3B)
-        {
-            var temp = Vec3Int.CreateVec3Int(vec3A);
-            vec3A.SetVec3(vec3B);
-            vec3B.SetVec3(temp);
         }
 
         private void LoadCMXData()
@@ -564,21 +403,21 @@ namespace Character_Making_File_Tool
             //Set heights that are too low to NA's minimum
             if (fixNAHeight == true)
             {
-                if (xxpGeneral.baseFIGR.bodyVerts.X < MinHeightSlider)
+                if (xxpGeneral.baseFIGR.bodyVerts.X < MinHeightBodySlider)
                 {
-                    xxpGeneral.baseFIGR.bodyVerts.X = MinHeightSlider;
+                    xxpGeneral.baseFIGR.bodyVerts.X = MinHeightBodySlider;
                 }
-                if (xxpGeneral.baseFIGR2.body2Verts.X < MinHeightSlider)
+                if (xxpGeneral.baseFIGR2.body2Verts.X < MinHeightBodySlider)
                 {
-                    xxpGeneral.baseFIGR2.body2Verts.X = MinHeightSlider;
+                    xxpGeneral.baseFIGR2.body2Verts.X = MinHeightBodySlider;
                 }
-                if (xxpGeneral.baseFIGR.legVerts.X < MinLegSlider)
+                if (xxpGeneral.baseFIGR.legVerts.X < MinHeightLegSlider)
                 {
-                    xxpGeneral.baseFIGR.legVerts.X = MinLegSlider;
+                    xxpGeneral.baseFIGR.legVerts.X = MinHeightLegSlider;
                 }
-                if (xxpGeneral.baseFIGR2.leg2Verts.X < MinLegSlider)
+                if (xxpGeneral.baseFIGR2.leg2Verts.X < MinHeightLegSlider)
                 {
-                    xxpGeneral.baseFIGR2.leg2Verts.X = MinLegSlider;
+                    xxpGeneral.baseFIGR2.leg2Verts.X = MinHeightLegSlider;
                 }
             }
 
