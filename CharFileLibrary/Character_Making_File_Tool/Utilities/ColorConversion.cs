@@ -333,7 +333,6 @@ namespace Character_Making_File_Tool
             };
         }
 
-        //TODO - handle saturation. Only ever simple ramp from max to none.
         public static byte[] GetPSO2CharColor(Vec3Int vec3, byte[,][] palette)
         {
             double horizontalSlider = (double)vec3.X / CharacterHandler.MaxSliderClassicHue * 6;
@@ -363,13 +362,20 @@ namespace Character_Making_File_Tool
                 tVert = verticalSlider;
             }
 
-            //Return the interpolation of the 4 colors we get from these values
-            return LerpRGBA(
-                       LerpRGBA(palette[leftColumn, topRow], palette[rightColumn, topRow], tHoriz),
-                       LerpRGBA(palette[leftColumn, bottomRow], palette[rightColumn, bottomRow], tHoriz),
-                       tVert,
-                       true
-                       );
+            //Get base color from the interpolation of the 4 colors we get from these values
+            byte[] baseColor =  LerpRGBA(
+                                   LerpRGBA(palette[leftColumn, topRow], palette[rightColumn, topRow], tHoriz),
+                                   LerpRGBA(palette[leftColumn, bottomRow], palette[rightColumn, bottomRow], tHoriz),
+                                   tVert,
+                                   true
+                                   );
+
+            //The grayscale of a pso2 color is the average of r, g, and b applied to r, g, and b on a color.
+            //Saturation is handled by interpolating between the color and this grayscale color
+            byte average = (byte)Math.Round(((double)baseColor[0] + baseColor[1] + baseColor[2]) / 3);
+            double tSat = (double)vec3.Z / CharacterHandler.MaxSliderClassicSaturation;
+
+            return LerpRGBA(baseColor, new byte[] { average, average, average, 255 }, tSat);
         }
 
         //Idea for HSL color space interpretation of PSO2 COLR values. Only reasonable for cast colors, as it turns out
