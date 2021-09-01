@@ -12,7 +12,7 @@ using static Character_Making_File_Tool.CharacterHandlerUtilityMethods;
 using static Character_Making_File_Tool.CharacterDataStructs;
 using static Character_Making_File_Tool.CharacterDataStructsReboot;
 
-namespace CharFileLibrary
+namespace Character_Making_File_Tool
 {
     public unsafe class CharacterHandlerReboot
     {
@@ -70,7 +70,6 @@ namespace CharFileLibrary
             public fixed byte paddingC[0x8];
         }
 
-        /*
         //XXPV6, but adds the newer accessory slider format
         public struct XXPV7
         {
@@ -92,7 +91,7 @@ namespace CharFileLibrary
             public PaintPriority paintPriority;
 
             public fixed byte paddingC[0x8];
-        }*/
+        }
 
         //XXPV8, XXPV9. V8 as V9, but ignores some fields. Adds dedicated eye part uint
         public struct XXPV9
@@ -298,6 +297,11 @@ namespace CharFileLibrary
 
             public AccessoryMisc accessoryMiscData;
 
+            public xxpGeneralReboot(XXPV2 temXXP)
+            {
+
+            }
+
             public xxpGeneralReboot(XXPV10 tempXXP)
             {
                 xxpVersion = 10;
@@ -368,10 +372,86 @@ namespace CharFileLibrary
                 xxpv2.baseDOC = baseDOC;
                 xxpv2.baseFIGR = baseFIGR;
                 xxpv2.baseFIGR.ToOld();
-                //xxpv2.baseCOLR = 
+                xxpv2.baseCOLR = ColorConversion.COL2ToCOLR(ngsCOL2, baseDOC.race);
                 xxpv2.baseSLCT = baseSLCT;
 
                 return xxpv2;
+            }
+
+            public XXPV5 GetXXPV5()
+            {
+                XXPV5 xxpv5 = new XXPV5();
+
+                xxpv5.baseDOC = baseDOC;
+                xxpv5.baseFIGR = baseFIGR;
+                xxpv5.baseFIGR.ToOld();
+                xxpv5.baseCOLR = ColorConversion.COL2ToCOLR(ngsCOL2, baseDOC.race);
+                xxpv5.baseSLCT = baseSLCT;
+                xxpv5.baseSLCT2 = baseSLCT2;
+                xxpv5.oldPosSliders = accessorySliders.GetOldAccessoryPositionSliders();
+
+                return xxpv5;
+            }
+
+            public XXPV6 GetXXPV6()
+            {
+                XXPV6 xxpv6 = new XXPV6();
+
+                xxpv6.baseDOC = baseDOC;
+                xxpv6.baseFIGR = baseFIGR;
+                xxpv6.baseFIGR.ToOld();
+
+                xxpv6.baseFIGR2 = new BaseFIGR2();
+                xxpv6.baseFIGR2.neckVerts = neckVerts;
+                xxpv6.baseFIGR2.waistVerts = waistVerts;
+                xxpv6.baseFIGR2.neck2Verts = neckVerts;
+                xxpv6.baseFIGR2.waist2Verts = waistVerts;
+                xxpv6.baseFIGR2.arm2Verts = baseFIGR.armVerts;
+                xxpv6.baseFIGR2.body2Verts = baseFIGR.bodyVerts;
+                xxpv6.baseFIGR2.bust2Verts = baseFIGR.bustVerts;
+                xxpv6.baseFIGR2.leg2Verts = baseFIGR.legVerts;
+                xxpv6.baseFIGR2.ToOld();
+
+                xxpv6.baseCOLR = ColorConversion.COL2ToCOLR(ngsCOL2, baseDOC.race);
+                xxpv6.baseSLCT = baseSLCT;
+                xxpv6.baseSLCT2 = baseSLCT2;
+                xxpv6.oldAccessorySliders = accessorySliders.GetOldAccessorySliders();
+                xxpv6.paintPriority = paintPriority;
+
+                return xxpv6;
+            }
+
+            public XXPV9 GetXXPV9()
+            {
+                XXPV9 xxpv9 = new XXPV9();
+
+                xxpv9.baseDOC = baseDOC;
+                xxpv9.skinVariant = 3; //Hack to deal with limitations of backwards conversion
+                xxpv9.eyebrowDensity = eyebrowDensity;
+                xxpv9.cmlVariant = cmlVariant;
+                
+                xxpv9.baseFIGR = baseFIGR;
+                xxpv9.baseFIGR.ToOld();
+
+                xxpv9.baseFIGR2 = new BaseFIGR2();
+                xxpv9.baseFIGR2.neckVerts = neckVerts;
+                xxpv9.baseFIGR2.waistVerts = waistVerts;
+                xxpv9.baseFIGR2.neck2Verts = neckVerts;
+                xxpv9.baseFIGR2.waist2Verts = waistVerts;
+                xxpv9.baseFIGR2.arm2Verts = baseFIGR.armVerts;
+                xxpv9.baseFIGR2.body2Verts = baseFIGR.bodyVerts;
+                xxpv9.baseFIGR2.bust2Verts = baseFIGR.bustVerts;
+                xxpv9.baseFIGR2.leg2Verts = baseFIGR.legVerts;
+                xxpv9.baseFIGR2.ToOld();
+
+                xxpv9.baseCOLR = ColorConversion.COL2ToCOLR(ngsCOL2, baseDOC.race);
+                xxpv9.baseSLCT = baseSLCT;
+                xxpv9.baseSLCT2 = baseSLCT2;
+                xxpv9.leftEyePart = leftEyePart;
+                xxpv9.accessorySliders = accessorySliders;
+                xxpv9.paintPriority = paintPriority;
+
+                return xxpv9;
             }
 
             public XXPV10 GetXXPV10()
@@ -429,19 +509,13 @@ namespace CharFileLibrary
                 switch(xxpVersion)
                 {
                     case 2:
-                        throw new NotImplementedException();
-                        break;
+                        return Reloaded.Memory.Struct.GetBytes(GetXXPV2());
                     case 5:
-                        throw new NotImplementedException();
-                        break;
+                        return Reloaded.Memory.Struct.GetBytes(GetXXPV5());
                     case 6:
-                    case 7:
-                        throw new NotImplementedException();
-                        break;
-                    case 8:
+                        return Reloaded.Memory.Struct.GetBytes(GetXXPV6());
                     case 9:
-                        throw new NotImplementedException();
-                        break;
+                        return Reloaded.Memory.Struct.GetBytes(GetXXPV9());
                     case 10:
                         return Reloaded.Memory.Struct.GetBytes(GetXXPV10());
                 }

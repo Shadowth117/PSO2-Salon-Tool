@@ -15,12 +15,51 @@ namespace Character_Making_File_Tool
 {
     public class ColorConversion
     {
-        public static BaseCOLR COL2ToCOLR(COL2 colr, int race)
+        public static BaseCOLR COL2ToCOLR(COL2 colr, uint race)
         {
+            BaseCOLR col = new BaseCOLR();
+            col.outer_MainColorVerts = COLRFromRGBA(BitConverter.GetBytes(colr.outerColor1));
+            col.costumeColorVerts = COLRFromRGBA(BitConverter.GetBytes(colr.baseColor1));
 
+            //Handle hair 2 and cast main color
+            if(race == 2)
+            {
+                col.mainColor_hair2Verts = COLRFromRGBA(BitConverter.GetBytes(colr.mainColor));
+            } else
+            {
+                col.mainColor_hair2Verts = COLRFromRGBA(BitConverter.GetBytes(colr.hairColor2));
+            }
+
+            col.subColor1Verts = COLRFromRGBA(BitConverter.GetBytes(colr.subColor1));
+            
+            //Handle skin
+            if(race == 2)
+            {
+                col.skinSubColor2Verts = COLRFromRGBA(BitConverter.GetBytes(colr.subColor2));
+            } else
+            {
+                col.skinSubColor2Verts = COLRFromRGBA(BitConverter.GetBytes(colr.skinColor1));
+            }
+
+            //Handle subcolor 3 and deuman eye
+            switch (race)
+            {
+                case 0:
+                case 1:
+                case 3:
+                    col.subColor3_leftEye_castHair2Verts = COLRFromRGBA(BitConverter.GetBytes(colr.leftEyeColor));
+                    break;
+                case 2:
+                    col.subColor3_leftEye_castHair2Verts = COLRFromRGBA(BitConverter.GetBytes(colr.subColor3));
+                    break;
+            }
+            col.rightEye_EyesVerts = COLRFromRGBA(BitConverter.GetBytes(colr.rightEyeColor));
+            col.hairVerts = COLRFromRGBA(BitConverter.GetBytes(colr.hairColor1));
+
+            return col;
         }
 
-        public static COL2 COLRToCOL2(BaseCOLR colr, int race)
+        public static COL2 COLRToCOL2(BaseCOLR colr, uint race)
         {
             COL2 col = new COL2();
             col.outerColor1 = BitConverter.ToInt32(GetPSO2CharColor(colr.outer_MainColorVerts, castPalette));

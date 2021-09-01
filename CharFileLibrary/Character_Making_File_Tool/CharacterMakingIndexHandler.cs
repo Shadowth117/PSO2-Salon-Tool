@@ -55,15 +55,15 @@ namespace Character_Making_File_Tool
         public CharacterMakingIndexHandler(string pso2_binPath, WIPBox box)
         {
             messageBox = box;
-            //try
-            //{
+            try
+            {
                 GenerateDictionaries(pso2_binPath);
-            //}
-            //catch
-            //{
+            }
+            catch
+            {
                 invalid = true;
-            //System.Windows.MessageBox.Show("Unable to read .cmx files; parts will not be editable. Please check permissions and set an appropriate pso2_bin Path.");
-            //}
+                System.Windows.MessageBox.Show("Unable to read .cmx files; parts will not be editable. Please check permissions and set an appropriate pso2_bin Path.");
+            }
         }
 
         //Generate dictionaries for storing part names and for storing part ids

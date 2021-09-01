@@ -286,6 +286,16 @@ namespace Character_Making_File_Tool
         public byte[] DecryptFile(string inFilename)
         {
             byte[] fileVersion = new byte[4];
+            using (Stream stream = (Stream)new FileStream(inFilename, FileMode.Open))
+            {
+                stream.Read(fileVersion, 0, 4);
+                this.version = BitConverter.ToInt32(fileVersion, 0);
+            }
+            return DecryptXXP(inFilename);
+        }
+
+        public static byte[] DecryptXXP(string inFilename)
+        {
             byte[] header;
             byte[] sizeBuffer = new byte[4];
             byte[] encryptedData;
@@ -296,8 +306,7 @@ namespace Character_Making_File_Tool
 
             using (Stream stream = (Stream)new FileStream(inFilename, FileMode.Open))
             {
-                stream.Read(fileVersion, 0, 4);
-                this.version = BitConverter.ToInt32(fileVersion, 0);
+                stream.Seek(4, SeekOrigin.Begin);
 
                 stream.Read(sizeBuffer, 0, 4);
                 key = BitConverter.ToUInt32(((IEnumerable<byte>)sizeBuffer).Reverse<byte>().ToArray<byte>(), 0);
@@ -327,9 +336,6 @@ namespace Character_Making_File_Tool
                 fileData = memoryStream.ToArray();
             }
 
-#if DEBUG
-            File.WriteAllBytes(inFilename + "u", fileData);
-#endif
             return fileData;
         }
 
@@ -484,7 +490,7 @@ namespace Character_Making_File_Tool
             }
         }
 
-        public void EncryptAndWrite(string fileName)
+        public static void EncryptAndWrite(string fileName)
         {
             var file = File.ReadAllBytes(fileName);
             byte[] body = new byte[file.Length - 0x10];
@@ -496,7 +502,7 @@ namespace Character_Making_File_Tool
             File.WriteAllBytes(fileName + "_e", file);
         }
 
-        public byte[] EncryptData(byte[] body, int size, out int hashInt)
+        public static byte[] EncryptData(byte[] body, int size, out int hashInt)
         {
             byte[] encryptedData;
             byte[] hash;

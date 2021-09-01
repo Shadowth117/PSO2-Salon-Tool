@@ -36,6 +36,26 @@ namespace Character_Making_File_Tool
 
                 return oldSliders;
             }
+            public OldAccessoryPositionSliders GetOldAccessoryPositionSliders()
+            {
+                OldAccessoryPositionSliders oldSliders = new OldAccessoryPositionSliders();
+                //Accessory 1 Y+Z
+                oldSliders.oldSliders[0] = SignednibblePack(sliders[0 + 1], sliders[0 + 2]);
+                //Accessory 4 X + Accessory 1 X
+                oldSliders.oldSliders[0 + 1] = SignednibblePack(sliders[0 + 9], sliders[0]);
+
+                //Accessory 2 Y+Z
+                oldSliders.oldSliders[0 + 2] = SignednibblePack(sliders[0 + 4], sliders[0 + 5]);
+                //Accessory 4 Y + Accessory 2 X
+                oldSliders.oldSliders[0 + 3] = SignednibblePack(sliders[0 + 10], sliders[0 + 3]);
+
+                //Accessory 3 Y+Z
+                oldSliders.oldSliders[0 + 4] = SignednibblePack(sliders[0 + 7], sliders[0 + 8]);
+                //Accessory 4 Y + Accessory 3 X
+                oldSliders.oldSliders[0 + 5] = SignednibblePack(sliders[0 + 11], sliders[0 + 6]);
+
+                return oldSliders;
+            }
         }
 
         public struct OldAccessorySliders

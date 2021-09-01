@@ -123,5 +123,39 @@ namespace NGS_Salon_Tool
             string text = (sender as ComboBox).SelectedItem as string;
             castLegIcon.Source = IceHandler.GetIconFromIce(pso2_binDir, cmxHandler.castLegDict[text], CharacterMakingIndex.castLegIcon);
         }
+
+        private void DecryptXXPs(object sender, SelectionChangedEventArgs e)
+        {
+            System.Windows.Forms.OpenFileDialog openFileDialog = new System.Windows.Forms.OpenFileDialog()
+            {
+                Title = "Select file",
+                Filter = "File |*.*p",
+                Multiselect = true
+            };
+            if (openFileDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            {
+                foreach(var file in openFileDialog.FileNames)
+                {
+                    File.WriteAllBytes(file + "u", CharacterHandler.DecryptXXP(file));
+                }
+            }
+        }
+
+        private void EncryptXXPs(object sender, SelectionChangedEventArgs e)
+        {
+            System.Windows.Forms.OpenFileDialog openFileDialog = new System.Windows.Forms.OpenFileDialog()
+            {
+                Title = "Select file",
+                Filter = "File |*.*",
+                Multiselect = true
+            };
+            if (openFileDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            {
+                foreach (var file in openFileDialog.FileNames)
+                {
+                    CharacterHandler.EncryptAndWrite(file);
+                }
+            }
+        }
     }
 }

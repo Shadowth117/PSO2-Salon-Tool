@@ -277,14 +277,18 @@ namespace Character_Making_File_Tool
 
         private void debugEncrypt_Click(object sender, EventArgs e)
         {
-            OpenFileDialog openFileDialog = new OpenFileDialog()
+            System.Windows.Forms.OpenFileDialog openFileDialog = new System.Windows.Forms.OpenFileDialog()
             {
                 Title = "Select file",
-                Filter = "File |*.*"
+                Filter = "File |*.*",
+                Multiselect = true
             };
-            if (openFileDialog.ShowDialog() == DialogResult.OK)
+            if (openFileDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
             {
-                characterHandler.EncryptAndWrite(openFileDialog.FileName);
+                foreach (var file in openFileDialog.FileNames)
+                {
+                    CharacterHandler.EncryptAndWrite(file);
+                }
             }
         }
 
@@ -293,11 +297,15 @@ namespace Character_Making_File_Tool
             OpenFileDialog openFileDialog = new OpenFileDialog()
             {
                 Title = "Select file",
-                Filter = "File |*.*"
+                Filter = "File |*.*p",
+                Multiselect = true
             };
-            if (openFileDialog.ShowDialog() == DialogResult.OK)
+            if (openFileDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
             {
-                characterHandler.DecryptFile(openFileDialog.FileName);
+                foreach (var file in openFileDialog.FileNames)
+                {
+                    File.WriteAllBytes(file + "u", CharacterHandler.DecryptXXP(file));
+                }
             }
         }
     }

@@ -17,7 +17,6 @@
             <Menu x:Name="menu" Height="18" Margin="0,0,0,0" VerticalAlignment="Top">
                 <MenuItem Header="File">
                     <MenuItem Header="Open"/>
-                    <MenuItem Header="Decrypt xxp and save"/>
                     <MenuItem Header="Set pso2_bin directory" Click="SetPSO2Bin"/>
                     <MenuItem Header="Save As"/>
                     <MenuItem Header="Close"/>
@@ -25,6 +24,10 @@
                 <MenuItem Header="Batch">
                     <MenuItem Header="Folder to CML"/>
                     <MenuItem Header="Folder to xxp"/>
+                </MenuItem>
+                <MenuItem Header="Extra">
+                    <MenuItem Header="Decrypt xxp(s) and save" Click="DecryptXXPs"/>
+                    <MenuItem Header="Encrypt xxpu(s) and save" Click="EncryptXXPs"/>
                 </MenuItem>
             </Menu>
         </Grid>

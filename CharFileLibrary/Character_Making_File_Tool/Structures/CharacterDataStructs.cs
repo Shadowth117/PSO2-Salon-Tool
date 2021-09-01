@@ -169,6 +169,16 @@ namespace Character_Making_File_Tool
             public ushort priority1;
             public ushort priority2;
             public ushort priority3;
+
+            public PaintPriority GetDefault()
+            {
+                PaintPriority paintPriority = new PaintPriority();
+                paintPriority.priority1 = 0;
+                paintPriority.priority2 = 1;
+                paintPriority.priority3 = 2;
+
+                return paintPriority;
+            }
         }
 
         public struct FaceExpression
