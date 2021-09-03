@@ -11,6 +11,7 @@ using static Character_Making_File_Tool.Vector3Int;
 using static Character_Making_File_Tool.CharacterHandlerUtilityMethods;
 using static Character_Making_File_Tool.CharacterDataStructs;
 using static Character_Making_File_Tool.CharacterDataStructsReboot;
+using static Character_Making_File_Tool.CharacterStructConstants;
 
 namespace Character_Making_File_Tool
 {
@@ -230,7 +231,6 @@ namespace Character_Making_File_Tool
         {
             public int xxpVersion; 
 
-
             public BaseDOC baseDOC;
             public byte skinVariant; //0 or above 3 for default, 1 for human, 2 for dewman, 3 for cast. This decides the color map used for the skin. 
             public sbyte eyebrowDensity; //-100 to 100 
@@ -297,9 +297,143 @@ namespace Character_Making_File_Tool
 
             public AccessoryMisc accessoryMiscData;
 
-            public xxpGeneralReboot(XXPV2 temXXP)
+            public xxpGeneralReboot(XXPV2 tempXXP)
             {
+                xxpVersion = 10;
 
+                baseDOC = tempXXP.baseDOC;
+                skinVariant = 0;
+                eyebrowDensity = 0;
+                cmlVariant = 0;
+
+                baseFIGR = tempXXP.baseFIGR;
+                baseFIGR.ToNGS();
+
+                ngsCOL2 = ColorConversion.COLRToCOL2(tempXXP.baseCOLR, baseDOC.race);
+
+                baseSLCT = tempXXP.baseSLCT;
+                leftEyePart = baseSLCT.eyePart;
+
+                //Conditionally assign premade expressions based on gender
+                SetDefaultExpressions();
+
+                paintPriority = PaintPriority.GetDefault();
+            }
+
+            public xxpGeneralReboot(XXPV5 tempXXP)
+            {
+                xxpVersion = 10;
+
+                baseDOC = tempXXP.baseDOC;
+                skinVariant = 0;
+                eyebrowDensity = 0;
+                cmlVariant = 0;
+
+                baseFIGR = tempXXP.baseFIGR;
+                baseFIGR.ToNGS();
+
+                ngsCOL2 = ColorConversion.COLRToCOL2(tempXXP.baseCOLR, baseDOC.race);
+
+                baseSLCT = tempXXP.baseSLCT;
+                baseSLCT2 = tempXXP.baseSLCT2;
+                leftEyePart = baseSLCT.eyePart;
+
+                //Conditionally assign premade expressions based on gender
+                SetDefaultExpressions();
+
+                accessorySliders = tempXXP.oldPosSliders.GetAccessorySliders();
+
+                paintPriority = PaintPriority.GetDefault();
+            }
+
+            public xxpGeneralReboot(XXPV6 tempXXP)
+            {
+                xxpVersion = 10;
+
+                baseDOC = tempXXP.baseDOC;
+                skinVariant = 0;
+                eyebrowDensity = 0;
+                cmlVariant = 0;
+
+                baseFIGR = tempXXP.baseFIGR;
+                baseFIGR.ToNGS();
+                neckVerts = tempXXP.baseFIGR2.neckVerts;
+                neckVerts.ToNGSSliders();
+                waistVerts = tempXXP.baseFIGR2.waistVerts;
+                waistVerts.ToNGSSliders();
+
+                ngsCOL2 = ColorConversion.COLRToCOL2(tempXXP.baseCOLR, baseDOC.race);
+
+                baseSLCT = tempXXP.baseSLCT;
+                baseSLCT2 = tempXXP.baseSLCT2;
+                leftEyePart = baseSLCT.eyePart;
+
+                //Conditionally assign premade expressions based on gender
+                SetDefaultExpressions();
+
+                accessorySliders = tempXXP.oldAccessorySliders.GetAccessorySliders();
+
+                paintPriority = PaintPriority.GetDefault();
+            }
+
+            public xxpGeneralReboot(XXPV7 tempXXP)
+            {
+                xxpVersion = 10;
+
+                baseDOC = tempXXP.baseDOC;
+                skinVariant = 0;
+                eyebrowDensity = 0;
+                cmlVariant = 0;
+
+                baseFIGR = tempXXP.baseFIGR;
+                baseFIGR.ToNGS();
+                neckVerts = tempXXP.baseFIGR2.neckVerts;
+                neckVerts.ToNGSSliders();
+                waistVerts = tempXXP.baseFIGR2.waistVerts;
+                waistVerts.ToNGSSliders();
+
+                ngsCOL2 = ColorConversion.COLRToCOL2(tempXXP.baseCOLR, baseDOC.race);
+
+                baseSLCT = tempXXP.baseSLCT;
+                baseSLCT2 = tempXXP.baseSLCT2;
+                leftEyePart = baseSLCT.eyePart;
+
+                //Conditionally assign premade expressions based on gender
+                SetDefaultExpressions();
+
+                accessorySliders = tempXXP.accessorySliders;
+
+                paintPriority = PaintPriority.GetDefault();
+            }
+
+            public xxpGeneralReboot(XXPV9 tempXXP)
+            {
+                xxpVersion = 10;
+
+                baseDOC = tempXXP.baseDOC;
+                skinVariant = tempXXP.skinVariant;
+                eyebrowDensity = tempXXP.eyebrowDensity;
+                cmlVariant = tempXXP.cmlVariant;
+
+                baseFIGR = tempXXP.baseFIGR;
+                baseFIGR.ToNGS();
+                neckVerts = tempXXP.baseFIGR2.neckVerts;
+                neckVerts.ToNGSSliders();
+                waistVerts = tempXXP.baseFIGR2.waistVerts;
+                waistVerts.ToNGSSliders();
+
+                ngsCOL2 = ColorConversion.COLRToCOL2(tempXXP.baseCOLR, baseDOC.race);
+
+                baseSLCT = tempXXP.baseSLCT;
+                baseSLCT2 = tempXXP.baseSLCT2;
+                leftEyePart = tempXXP.leftEyePart;
+
+                //Conditionally assign premade expressions based on gender
+                SetDefaultExpressions();
+
+                accessorySliders = tempXXP.accessorySliders;
+
+                paintPriority = PaintPriority.GetDefault();
             }
 
             public xxpGeneralReboot(XXPV10 tempXXP)
@@ -502,6 +636,40 @@ namespace Character_Making_File_Tool
                 tempXXP.accessoryMiscData = accessoryMiscData;
 
                 return tempXXP;
+            }
+
+            private void SetDefaultExpressions()
+            {
+                if (baseDOC.gender == 0)
+                {
+                    faceNatural = defaultMaleExpressions[0];
+                    faceSmile = defaultMaleExpressions[1];
+                    faceAngry = defaultMaleExpressions[2];
+                    faceSad = defaultMaleExpressions[3];
+
+                    faceSus = defaultMaleExpressions[4];
+                    faceEyesClosed = defaultMaleExpressions[5];
+                    faceSmile2 = defaultMaleExpressions[6];
+                    faceWink = defaultMaleExpressions[7];
+
+                    faceUnused1 = defaultMaleExpressions[8];
+                    faceUnused2 = defaultMaleExpressions[9];
+                }
+                else
+                {
+                    faceNatural = defaultFemaleExpressions[0];
+                    faceSmile = defaultFemaleExpressions[1];
+                    faceAngry = defaultFemaleExpressions[2];
+                    faceSad = defaultFemaleExpressions[3];
+
+                    faceSus = defaultFemaleExpressions[4];
+                    faceEyesClosed = defaultFemaleExpressions[5];
+                    faceSmile2 = defaultFemaleExpressions[6];
+                    faceWink = defaultFemaleExpressions[7];
+
+                    faceUnused1 = defaultFemaleExpressions[8];
+                    faceUnused2 = defaultFemaleExpressions[9];
+                }
             }
 
             public byte[] GetBytes()
