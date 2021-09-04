@@ -227,17 +227,76 @@ namespace Character_Making_File_Tool
             //***Accessories
             accessoryDict = ProcessNames(textByCat, masterIdList, nameDicts, nameCache, "decoy", null, cmx.accessoryDict, writeToDisk);
 
+            //***Face - Stored a bit oddly and needs its own special method for id retrieval
+            faceDict = ProcessNamesFaces(textByCat, masterIdList, nameDicts, nameCache, "face", null, cmx.faceDict, writeToDisk);
+
             //***Face paint
             facePaintDict = ProcessNames(textByCat, masterIdList, nameDicts, nameCache, "facepaint1", null, cmx.fcpDict, writeToDisk);
 
-            //***Face - Stored a bit oddly and needs its own special method for id retrieval
-            //faceDict = ProcessNames(textByCat, masterIdList, nameDicts, nameCache, "face", null, cmx.faceDict, writeToDisk);
+            //***Ear
+
+            //***Horn
+
+            //***Teeth
+
+
+            //Motion Change Motions
 
 
             if (messageBox != null)
             {
                 messageBox.Hide();
             }
+        }
+        private Dictionary<string, int> ProcessNamesFaces<T>(Dictionary<string, List<List<PSO2Text.textPair>>> textByCat, List<int> masterIdList,
+            List<Dictionary<int, string>> nameDicts, StringBuilder nameCache, string category, string outPath, Dictionary<int, T> cmxDict, bool writeToDisk = false)
+        {
+            Dictionary<string, string> dict;
+            List<Dictionary<string, string>> strNameDicts = new List<Dictionary<string, string>>();
+            CharacterMakingIndexMethods.GatherTextIdsStringRef(textByCat, new List<string>(), strNameDicts, "facevariation", true);
+            dict = strNameDicts[0];
+
+            //Add potential cmx ids that wouldn't be stored in
+            CharacterMakingIndexMethods.GatherDictKeys(masterIdList, cmxDict.Keys);
+            masterIdList.Sort();
+
+            return BuildNameCacheFaces(masterIdList, nameCache, dict);
+        }
+
+        private Dictionary<string, int> BuildNameCacheFaces(List<int> masterIdList, StringBuilder nameCache, Dictionary<string, string> dict, bool writeToDisk = false)
+        {
+            Dictionary<string, int> finalNameDict = new();
+
+            masterIdList.Sort();
+            for (int i = 0; i < masterIdList.Count; i++)
+            {
+                int id = masterIdList[i]; 
+                
+                string realId = "";
+                if (!faceIds.TryGetValue(id, out realId))
+                {
+                    realId = "No" + id;
+                }
+
+                string name;
+                if (dict.TryGetValue(realId, out string str) && str != null && str != "" && str.Length > 0)
+                {
+                    name = str;
+                }
+                else
+                {
+                    name = $"[Unnamed {id}]";
+                }
+                finalNameDict[name] = id;
+
+                if (writeToDisk == true)
+                {
+                    nameCache.AppendLine(name);
+                    nameCache.AppendLine(id.ToString());
+                }
+            }
+
+            return finalNameDict;
         }
 
         private Dictionary<string, int> ProcessNames<T>(Dictionary<string, List<List<PSO2Text.textPair>>> textByCat, List<int> masterIdList, 
