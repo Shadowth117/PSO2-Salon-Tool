@@ -25,6 +25,8 @@ namespace Character_Making_File_Tool
         public PSO2Text partsText = null;
         public PSO2Text acceText = null;
         public PSO2Text commonText = null;
+        public PSO2Text commonTextReboot = null;
+        public PSO2Text actorNameTextReboot = null;
         public Dictionary<int, string> faceIds = null;
 
         public string namePath = null;
@@ -33,11 +35,32 @@ namespace Character_Making_File_Tool
         public string innerwearNamePath = null;
         public string castArmNamePath = null;
         public string castLegNamePath = null;
-        public Dictionary<string, int> costumeOuterDict = new Dictionary<string, int>();
-        public Dictionary<string, int> basewearDict = new Dictionary<string, int>();
-        public Dictionary<string, int> innerwearDict = new Dictionary<string, int>();
-        public Dictionary<string, int> castArmDict = new Dictionary<string, int>();
-        public Dictionary<string, int> castLegDict = new Dictionary<string, int>();
+
+        public Dictionary<string, int> costumeOuterDict = new();
+        public Dictionary<string, int> basewearDict = new();
+        public Dictionary<string, int> innerwearDict = new();
+        public Dictionary<string, int> castArmDict = new();
+        public Dictionary<string, int> castLegDict = new();
+        public Dictionary<string, int> bodyPaintDict = new();
+        public Dictionary<string, int> stickerDict = new();
+        public Dictionary<string, int> hairDict = new();
+        public Dictionary<string, int> eyeDict = new();
+        public Dictionary<string, int> eyebrowDict = new();
+        public Dictionary<string, int> eyelashDict = new();
+        public Dictionary<string, int> accessoryDict = new();
+        public Dictionary<string, int> faceDict = new();
+        public Dictionary<string, int> facePaintDict = new();
+        public Dictionary<string, int> earDict = new();
+        public Dictionary<string, int> hornDict = new();
+        public Dictionary<string, int> toothDict = new();
+
+        public Dictionary<string, int> swimDict = new();
+        public Dictionary<string, int> glideDict = new();
+        public Dictionary<string, int> jumpDict = new();
+        public Dictionary<string, int> landingDict = new();
+        public Dictionary<string, int> movDict = new();
+        public Dictionary<string, int> sprintDict = new();
+        public Dictionary<string, int> idleDict = new();
 
         public CharacterMakingIndexHandler(string pso2_binPath)
         {
@@ -70,53 +93,43 @@ namespace Character_Making_File_Tool
         public void GenerateDictionaries(string pso2_binPath)
         {
             //Generate path strings
+            /*
             namePath = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "names\\");
             costumeNamePath = Path.Combine(namePath, "costumeOuterNames.txt");
             basewearNamePath = Path.Combine(namePath, "basewearNames.txt");
             innerwearNamePath = Path.Combine(namePath, "innerwearNames.txt");
             castArmNamePath = Path.Combine(namePath, "castArmNames.txt");
-            castLegNamePath = Path.Combine(namePath, "castLegNames.txt");
+            castLegNamePath = Path.Combine(namePath, "castLegNames.txt");*/
 
             //Check CMX data
             string cmxPath = Path.Combine(pso2_binPath, CharacterMakingIndex.dataDir, CharacterMakingIndexMethods.GetFileHash(CharacterMakingIndex.classicCMX));
-            string cmxMD5Path = Path.Combine(namePath, "cmxMD5.txt");
-            string currentHash = CharacterMakingIndexMethods.GetFileDataHash(cmxPath);
-            string storedHash = null;
-            if (File.Exists(cmxMD5Path))
-            {
-                storedHash = File.ReadAllText(cmxMD5Path);
-            }
 
             //Conditionally generate caches if cmx doesn't match
-            if (storedHash == null || storedHash != currentHash)
+
+            if(messageBox != null)
             {
-                if(messageBox != null)
-                {
-                    messageBox.CenterWindowOnScreen();
-                    messageBox.Show();
-                }
-
-                //Read the game data
-                cmx = CharacterMakingIndexMethods.ExtractCMX(pso2_binPath);
-                CharacterMakingIndexMethods.ReadCMXText(pso2_binPath, out partsText, out acceText, out commonText);
-                faceIds = CharacterMakingIndexMethods.GetFaceVariationLuaNameDict(pso2_binPath, faceIds);
-                if (Directory.Exists(Path.Combine(pso2_binPath, CharacterMakingIndex.dataNADir)))
-                {
-                    NAInstall = true;
-                }
-
-                GenerateNameCache();
-
-                //Write the md5 data if we successfully cached.
-                File.WriteAllText(cmxMD5Path, currentHash);
+                messageBox.CenterWindowOnScreen();
+                messageBox.Show();
             }
 
-            //Read cached names
+            //Read the game data
+            cmx = CharacterMakingIndexMethods.ExtractCMX(pso2_binPath);
+            CharacterMakingIndexMethods.ReadCMXText(pso2_binPath, out partsText, out acceText, out commonText, out commonTextReboot, out actorNameTextReboot);
+            faceIds = CharacterMakingIndexMethods.GetFaceVariationLuaNameDict(pso2_binPath, faceIds);
+            if (Directory.Exists(Path.Combine(pso2_binPath, CharacterMakingIndex.dataNADir)))
+            {
+                NAInstall = true;
+            }
+
+            GenerateNameCache();
+
+            //Read stored cached names
+            /*
             ReadCache(costumeNamePath, costumeOuterDict);
             ReadCache(basewearNamePath, basewearDict);
             ReadCache(innerwearNamePath, innerwearDict);
             ReadCache(castArmNamePath, castArmDict);
-            ReadCache(castLegNamePath, castLegDict);
+            ReadCache(castLegNamePath, castLegDict);*/
             GC.Collect();
 
         }
@@ -134,11 +147,11 @@ namespace Character_Making_File_Tool
             cache = null;
         }
 
-        private void GenerateNameCache()
+        private void GenerateNameCache(bool writeToDisk = false)
         {
             //Since we have an idea of what should be there and what we're interested in parsing out, throw these into a dictionary and go
-            Dictionary<string, List<List<PSO2Text.textPair>>> textByCat = new Dictionary<string, List<List<PSO2Text.textPair>>>();
-            Dictionary<string, List<List<PSO2Text.textPair>>> commByCat = new Dictionary<string, List<List<PSO2Text.textPair>>>();
+            Dictionary<string, List<List<PSO2Text.textPair>>> textByCat = new();
+            Dictionary<string, List<List<PSO2Text.textPair>>> commByCat = new();
             for (int i = 0; i < partsText.text.Count; i++)
             {
                 textByCat.Add(partsText.categoryNames[i], partsText.text[i]);
@@ -173,29 +186,62 @@ namespace Character_Making_File_Tool
             CharacterMakingIndexMethods.GatherDictKeys(masterIdList, cmx.costumeDict.Keys);
             CharacterMakingIndexMethods.GatherDictKeys(masterIdList, cmx.outerDict.Keys);
 
-            BuildNameCache(masterIdList, nameCache, dict);
-            File.WriteAllText(costumeNamePath, nameCache.ToString());
+            costumeOuterDict = BuildNameCache(masterIdList, nameCache, dict);
+
+            //Somewhat vestigial. Not needed with faster .text reading
+            if (writeToDisk == true)
+            {
+                File.WriteAllText(costumeNamePath, nameCache.ToString());
+            }
 
             //***Basewear
-            dict = WriteNames(textByCat, masterIdList, nameDicts, nameCache, "basewear", basewearNamePath, cmx.baseWearDict);
+            basewearDict = ProcessNames(textByCat, masterIdList, nameDicts, nameCache, "basewear", basewearNamePath, cmx.baseWearDict, writeToDisk);
 
             //***Innerwear
-            dict = WriteNames(textByCat, masterIdList, nameDicts, nameCache, "innerwear", innerwearNamePath, cmx.innerWearDict);
+            innerwearDict = ProcessNames(textByCat, masterIdList, nameDicts, nameCache, "innerwear", innerwearNamePath, cmx.innerWearDict, writeToDisk);
 
             //***Cast Arms
-            dict = WriteNames(textByCat, masterIdList, nameDicts, nameCache, "arm", castArmNamePath, cmx.carmDict);
+            castArmDict = ProcessNames(textByCat, masterIdList, nameDicts, nameCache, "arm", castArmNamePath, cmx.carmDict, writeToDisk);
 
             //***Cast Legs
-            dict = WriteNames(textByCat, masterIdList, nameDicts, nameCache, "Leg", castLegNamePath, cmx.clegDict);
+            castLegDict = ProcessNames(textByCat, masterIdList, nameDicts, nameCache, "Leg", castLegNamePath, cmx.clegDict, writeToDisk);
 
-            if(messageBox != null)
+            //***Body paint
+            bodyPaintDict = ProcessNames(textByCat, masterIdList, nameDicts, nameCache, "bodypaint1", null, cmx.bodyPaintDict, writeToDisk);
+
+            //***Stickers
+            stickerDict = ProcessNames(textByCat, masterIdList, nameDicts, nameCache, "bodypaint2", null, cmx.stickerDict, writeToDisk);
+
+            //***Hair
+            hairDict = ProcessNames(textByCat, masterIdList, nameDicts, nameCache, "hair", null, cmx.hairDict, writeToDisk);
+
+            //***Eye
+            eyeDict = ProcessNames(textByCat, masterIdList, nameDicts, nameCache, "eye", null, cmx.eyeDict, writeToDisk);
+
+            //***Eyebrow
+            eyebrowDict = ProcessNames(textByCat, masterIdList, nameDicts, nameCache, "eyebrows", null, cmx.eyebrowDict, writeToDisk);
+
+            //***Eyelash
+            eyelashDict = ProcessNames(textByCat, masterIdList, nameDicts, nameCache, "eyelashes", null, cmx.eyelashDict, writeToDisk);
+
+            //***Accessories
+            accessoryDict = ProcessNames(textByCat, masterIdList, nameDicts, nameCache, "decoy", null, cmx.accessoryDict, writeToDisk);
+
+            //***Face paint
+            facePaintDict = ProcessNames(textByCat, masterIdList, nameDicts, nameCache, "facepaint1", null, cmx.fcpDict, writeToDisk);
+
+            //***Face - Stored a bit oddly and needs its own special method for id retrieval
+            //faceDict = ProcessNames(textByCat, masterIdList, nameDicts, nameCache, "face", null, cmx.faceDict, writeToDisk);
+
+
+            if (messageBox != null)
             {
                 messageBox.Hide();
             }
         }
 
-        private Dictionary<int, string> WriteNames<T>(Dictionary<string, List<List<PSO2Text.textPair>>> textByCat, List<int> masterIdList, 
-            List<Dictionary<int, string>> nameDicts, StringBuilder nameCache, string category, string outPath, Dictionary<int, T> cmxDict)
+        private Dictionary<string, int> ProcessNames<T>(Dictionary<string, List<List<PSO2Text.textPair>>> textByCat, List<int> masterIdList, 
+            List<Dictionary<int, string>> nameDicts, StringBuilder nameCache, string category, string outPath, Dictionary<int, T> cmxDict, bool writeToDisk = false)
         {
             Dictionary<int, string> dict;
             masterIdList.Clear();
@@ -207,13 +253,21 @@ namespace Character_Making_File_Tool
             //Add potential cmx ids that wouldn't be stored with 
             CharacterMakingIndexMethods.GatherDictKeys(masterIdList, cmxDict.Keys);
 
-            BuildNameCache(masterIdList, nameCache, dict);
-            File.WriteAllText(outPath, nameCache.ToString());
-            return dict;
+            var finalNameDict = BuildNameCache(masterIdList, nameCache, dict);
+
+            //Somewhat vestigial. Not needed with faster .text reading
+            if(writeToDisk == true)
+            {
+                File.WriteAllText(outPath, nameCache.ToString());
+            }
+
+            return finalNameDict;
         }
 
-        private static void BuildNameCache(List<int> masterIdList, StringBuilder nameCache, Dictionary<int, string> dict)
+        private static Dictionary<string, int> BuildNameCache(List<int> masterIdList, StringBuilder nameCache, Dictionary<int, string> dict, bool writeToDisk = false)
         {
+            Dictionary<string, int> finalNameDict = new();
+
             masterIdList.Sort();
             for (int i = 0; i < masterIdList.Count; i++)
             {
@@ -227,9 +281,16 @@ namespace Character_Making_File_Tool
                 {
                     name = $"[Unnamed {id}]";
                 }
-                nameCache.AppendLine(name);
-                nameCache.AppendLine(id.ToString());
+                finalNameDict[name] = id;
+
+                if(writeToDisk == true)
+                {
+                    nameCache.AppendLine(name);
+                    nameCache.AppendLine(id.ToString());
+                }
             }
+
+            return finalNameDict;
         }
     }
 }
