@@ -6,25 +6,22 @@
         xmlns:local="clr-namespace:NGS_Salon_Tool"
         xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
         mc:Ignorable="d"
-        Title="Color Picker" Height="415" Width="402" HorizontalAlignment="Center" VerticalAlignment="Center">
+        Title="Color Picker" Height="382" Width="402" HorizontalAlignment="Center" VerticalAlignment="Center">
     <Grid Background="#FFE5E5E5" HorizontalAlignment="Left" VerticalAlignment="Top">
+        <Image x:Name="SelectionBG" Margin="45,278,0,0" Source="/ColorWindow/selectionBackground.png" HorizontalAlignment="Left" VerticalAlignment="Top" Width="40" Height="40"/>
         <Rectangle x:Name="colorBox" HorizontalAlignment="Left" Height="40" Margin="45,278,0,0" Stroke="Black" VerticalAlignment="Top" Width="40" Fill="{Binding SelColor}"/>
-        <Canvas Name="ColorCanvas" Background="Black" Width="200" Height="200" Grid.ColumnSpan="3" Margin="106,98,106,98" >
-            <Rectangle Width="200" Height="200" HorizontalAlignment="Left" >
+        <Canvas x:Name="ColorCanvas" Background="Black" Width="200" Height="200" Grid.ColumnSpan="3" Margin="106,98,106,98" >
+            <Rectangle Name ="mainBox" Width="200" Height="200" HorizontalAlignment="Left" MouseDown="MoveSelector">
                 <Rectangle.Fill>
                     <LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
-                        <LinearGradientBrush.GradientStops>
-                            <GradientStop Color="White" Offset="0" />
-                            <GradientStop Color="{Binding RectColor}" Offset="1" />
-                        </LinearGradientBrush.GradientStops>
+                        <GradientStop Color="White" Offset="0" />
+                        <GradientStop Color="{Binding RectColor}" Offset="1" />
                     </LinearGradientBrush>
                 </Rectangle.Fill>
                 <Rectangle.OpacityMask>
                     <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
-                        <LinearGradientBrush.GradientStops>
-                            <GradientStop Color="#FFFFFFFF" Offset="0"/>
-                            <GradientStop Color="#00FFFFFF" Offset="1"/>
-                        </LinearGradientBrush.GradientStops>
+                        <GradientStop Color="#FFFFFFFF" Offset="0"/>
+                        <GradientStop Color="#00FFFFFF" Offset="1"/>
                     </LinearGradientBrush>
                 </Rectangle.OpacityMask>
             </Rectangle>
@@ -32,9 +29,15 @@
         </Canvas>
         <Slider x:Name="horizSlider" HorizontalAlignment="Left" Margin="106,75,0,0" VerticalAlignment="Top" Width="200" Value="127" TickPlacement="None" Maximum="255" ValueChanged="UpdateHorizSlider"/>
         <Slider x:Name="vertSlider" HorizontalAlignment="Left" Margin="83,98,0,0" VerticalAlignment="Top" Width="18" Orientation="Vertical" Height="200" Value="127" Grid.ColumnSpan="2" Maximum="255" ValueChanged="UpdateVertSlider"/>
-        <Label x:Name="alphaLabel" Content="Alpha" HorizontalAlignment="Left" Margin="321,24,0,0" VerticalAlignment="Top" Width="64" Height="27" FontSize="10"/>
-        <xctk:IntegerUpDown x:Name="myUpDownControl" Margin="323,45,16,0" Maximum="255" Minimum="0" Value="0" VerticalAlignment="Top" />
-        <Image x:Name="pack__hueSlider" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="106,299,64,36" Stretch="Fill" Source="/ColorWindow/hueSlider.png" Width="200" Height="20"/>
+        <Label x:Name="alphaLabel" Content="Alpha" HorizontalAlignment="Left" Margin="285,24,0,0" VerticalAlignment="Top" Width="64" Height="27" FontSize="10"/>
+        <xctk:IntegerUpDown x:Name="alphaUD" Margin="287,45,52,0" Maximum="255" Minimum="0" Value="0" VerticalAlignment="Top" ValueChanged="AlphaChanged"/>
+        <Image x:Name="pack__hueSlider" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="106,299,0,0" Stretch="Fill" Source="/ColorWindow/hueSlider.png" Width="200" Height="18"/>
         <Slider x:Name="hueSlider" HorizontalAlignment="Left" Margin="101,299,0,0" VerticalAlignment="Top" Width="210" TickPlacement="None" Maximum="360" ValueChanged="UpdateHueSlider"/>
+        <Label x:Name="blueLabel" Content="Blue" HorizontalAlignment="Left" Margin="210,24,0,0" VerticalAlignment="Top" Width="64" Height="27" FontSize="10"/>
+        <xctk:IntegerUpDown x:Name="blueUD" Margin="212,45,127,0" Maximum="255" Minimum="0" Value="0" VerticalAlignment="Top" ValueChanged="BlueChanged"/>
+        <Label x:Name="greenLabel" Content="Green" Margin="135,24,203,0" VerticalAlignment="Top" Width="64" Height="27" FontSize="10"/>
+        <xctk:IntegerUpDown x:Name="greenUD" Margin="137,45,202,0" Maximum="255" Minimum="0" Value="0" VerticalAlignment="Top" ValueChanged="GreenChanged"/>
+        <Label x:Name="redLabel" Content="Red" Margin="60,24,278,0" VerticalAlignment="Top" Width="64" Height="27" FontSize="10"/>
+        <xctk:IntegerUpDown x:Name="redUD" Margin="62,45,277,0" Maximum="255" Minimum="0" Value="0" VerticalAlignment="Top" ValueChanged="RedChanged"/>
     </Grid>
 </Window>

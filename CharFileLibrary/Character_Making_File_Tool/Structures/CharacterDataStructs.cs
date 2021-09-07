@@ -123,6 +123,7 @@ namespace Character_Making_File_Tool
             public Vec3Int costumeColorVerts;
             public Vec3Int mainColor_hair2Verts;
             public Vec3Int subColor1Verts;
+
             public Vec3Int skinSubColor2Verts;
             public Vec3Int subColor3_leftEye_castHair2Verts;
             public Vec3Int rightEye_EyesVerts;

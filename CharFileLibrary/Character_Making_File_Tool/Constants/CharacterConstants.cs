@@ -29,7 +29,7 @@ namespace Character_Making_File_Tool
         public static byte[] ColrText = { 0x43, 0x4F, 0x4C, 0x52 };
         public static byte[] SlctText = { 0x53, 0x4C, 0x43, 0x54 };
 
-        public static Dictionary<int, int> fileSizes = new Dictionary<int, int>()
+        public static Dictionary<int, int> classicSalonToolFileSizes = new Dictionary<int, int>()
         {
             //Numbers correlate to save dialog selection numbers
             { 3, 0x15C}, //v2
@@ -37,6 +37,12 @@ namespace Character_Making_File_Tool
             { 1, 0x2DC}, //v6
             { 0, 0x2F0}  //v9
         };
+
+        public static int v2Size = 0x15C;
+        public static int v5Size = 0x170;
+        public static int v6Size = 0x2DC;
+        public static int v9Size = 0x2F0;
+        public static int v10Size = 0x3AC;
 
         //Stores palette colors [column, row]
         //Each palette has 7 columns and 6 rows. Overall they mirror the slider backdrop, but with some differences due to it not matching what the game uses

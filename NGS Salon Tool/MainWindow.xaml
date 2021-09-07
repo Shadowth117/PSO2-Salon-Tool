@@ -6,7 +6,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:NGS_Salon_Tool"
         mc:Ignorable="d"
-        Title="NGS Salon Tool" Height="329" Width="902">
+        Title="NGS Salon Tool" Height="313" Width="898">
 
     <Grid Margin="0,0,0,0" VerticalAlignment="Top">
         <Grid.ColumnDefinitions>
@@ -16,14 +16,14 @@
         <Grid Margin="0,0,0,0" Height="18" VerticalAlignment="Top" Grid.ColumnSpan="2">
             <Menu x:Name="menu" Height="18" Margin="0,0,0,0" VerticalAlignment="Top">
                 <MenuItem Header="File">
-                    <MenuItem Header="Open"/>
+                    <MenuItem Header="Open" Click="OpenCharacterFile"/>
                     <MenuItem Header="Set pso2_bin directory" Click="SetPSO2Bin"/>
                     <MenuItem Header="Save As"/>
                     <MenuItem Header="Close"/>
                 </MenuItem>
                 <MenuItem Header="Batch">
-                    <MenuItem Header="Folder to CML"/>
-                    <MenuItem Header="Folder to xxp"/>
+                    <MenuItem Header="XXP Folder to CML"/>
+                    <MenuItem Header="CML Folder to xxp"/>
                 </MenuItem>
                 <MenuItem Header="Extra">
                     <MenuItem Header="Decrypt xxp(s) and save" Click="DecryptXXPs"/>
@@ -33,18 +33,25 @@
         </Grid>
         <Grid Margin="0,18,0,0" VerticalAlignment="Top" Height="auto" Grid.ColumnSpan="2">
             <TabControl x:Name="tabControl">
-                <TabItem Header="Basic Settings">
+                <TabItem Name="basicSettingsTab" Header="Basic Settings">
                     <Grid Background="#FFE5E5E5"/>
                 </TabItem>
-                <TabItem Header="Proportions">
+                <TabItem Name="proportionsTab" Header="Proportions">
                     <Grid Background="#FFE5E5E5"/>
                 </TabItem>
-                <TabItem Header="Colors">
+                <TabItem Name="colorsTab" Header="Colors">
                     <Grid Background="#FFE5E5E5">
-      
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="235*"/>
+                            <ColumnDefinition Width="657*"/>
+                        </Grid.ColumnDefinitions>
+                        <Button x:Name="outerColorButton" Content="" HorizontalAlignment="Left" Margin="83,16,0,0" VerticalAlignment="Top" Height="48" Width="48" Click="SetOuterColor" Background="#FFE60000"/>
+                        <Label x:Name="outerColorLabel" Content="Outerwear" HorizontalAlignment="Left" Margin="16,0,0,0" VerticalAlignment="Center"/>
+                        <Button x:Name="baseColorButton" Content="" HorizontalAlignment="Left" Margin="221,16,0,0" VerticalAlignment="Top" Height="48" Width="48" Click="SetBaseColor" Background="#FF00FF00" Grid.ColumnSpan="2"/>
+                        <Label x:Name="baseColorLabel" Content="Basewear" VerticalAlignment="Center" Margin="157,0,14,0"/>
                     </Grid>
                 </TabItem>
-                <TabItem Header="Part Selection">
+                <TabItem Name="partSelectionTab" Header="Part Selection">
                     <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
                         <Grid Background="#FFE5E5E5">
                             <ComboBox x:Name="costumeCB" HorizontalAlignment="Left" Margin="5,30,0,0" VerticalAlignment="Top" Width="200" SelectedIndex="0" SelectionChanged="CostumeSelectionChanged">
@@ -87,7 +94,7 @@
                                     </ItemsPanelTemplate>
                                 </ComboBox.ItemsPanel>
                             </ComboBox>
-                            <ComboBox x:Name="bodyPaintCB" HorizontalAlignment="Left" Margin="565,100,0,0" VerticalAlignment="Top" Width="200" SelectedIndex="0" SelectionChanged="InnerwearSelectionChanged">
+                            <ComboBox x:Name="bodyPaintCB" HorizontalAlignment="Left" Margin="565,100,0,0" VerticalAlignment="Top" Width="200" SelectedIndex="0" SelectionChanged="BodyPaint1SelectionChanged">
                                 <ComboBox.ItemsPanel>
                                     <ItemsPanelTemplate>
                                         <VirtualizingStackPanel />
@@ -95,7 +102,7 @@
                                 </ComboBox.ItemsPanel>
                             </ComboBox>
                             <Image x:Name="bodyPaintIcon" HorizontalAlignment="Left" Height="64" Margin="770,78,0,0" VerticalAlignment="Top" Width="64"/>
-                            <ComboBox x:Name="stickerCB" HorizontalAlignment="Left" Margin="5,170,0,0" VerticalAlignment="Top" Width="200" SelectedIndex="0" SelectionChanged="InnerwearSelectionChanged">
+                            <ComboBox x:Name="stickerCB" HorizontalAlignment="Left" Margin="5,170,0,0" VerticalAlignment="Top" Width="200" SelectedIndex="0" SelectionChanged="StickerSelectionChanged">
                                 <ComboBox.ItemsPanel>
                                     <ItemsPanelTemplate>
                                         <VirtualizingStackPanel />
@@ -103,7 +110,7 @@
                                 </ComboBox.ItemsPanel>
                             </ComboBox>
                             <Image x:Name="stickerIcon" HorizontalAlignment="Left" Height="64" Margin="210,148,0,0" VerticalAlignment="Top" Width="64"/>
-                            <ComboBox x:Name="hairCB" HorizontalAlignment="Left" Margin="285,170,0,0" VerticalAlignment="Top" Width="200" SelectedIndex="0" SelectionChanged="CastLegSelectionChanged">
+                            <ComboBox x:Name="hairCB" HorizontalAlignment="Left" Margin="285,170,0,0" VerticalAlignment="Top" Width="200" SelectedIndex="0" SelectionChanged="HairSelectionChanged">
                                 <ComboBox.ItemsPanel>
                                     <ItemsPanelTemplate>
                                         <VirtualizingStackPanel />
@@ -111,7 +118,7 @@
                                 </ComboBox.ItemsPanel>
                             </ComboBox>
                             <Image x:Name="hairIcon" HorizontalAlignment="Left" Height="64" Margin="490,148,0,0" VerticalAlignment="Top" Width="64"/>
-                            <ComboBox x:Name="bodyPaint2CB" HorizontalAlignment="Left" Margin="565,170,0,0" VerticalAlignment="Top" Width="200" SelectedIndex="0" SelectionChanged="InnerwearSelectionChanged">
+                            <ComboBox x:Name="bodyPaint2CB" HorizontalAlignment="Left" Margin="565,170,0,0" VerticalAlignment="Top" Width="200" SelectedIndex="0" SelectionChanged="BodyPaint2SelectionChanged">
                                 <ComboBox.ItemsPanel>
                                     <ItemsPanelTemplate>
                                         <VirtualizingStackPanel />
@@ -119,13 +126,273 @@
                                 </ComboBox.ItemsPanel>
                             </ComboBox>
                             <Image x:Name="bodyPaint2Icon" HorizontalAlignment="Left" Height="64" Margin="770,148,0,0" VerticalAlignment="Top" Width="64"/>
+                            <Label x:Name="costumeLabel" Content="Costume/Outerwear" HorizontalAlignment="Left" Margin="5,4,0,0" VerticalAlignment="Top"/>
+                            <Label x:Name="basewearLabel" Content="Basewear" HorizontalAlignment="Left" Margin="285,4,0,0" VerticalAlignment="Top"/>
+                            <Label x:Name="innerwearLabel" Content="Innerwear" HorizontalAlignment="Left" Margin="565,4,0,0" VerticalAlignment="Top"/>
+                            <Label x:Name="bodypaintLabel" Content="Bodypaint 1" HorizontalAlignment="Left" Margin="565,74,0,0" VerticalAlignment="Top"/>
+                            <Label x:Name="bodypaint2Label" Content="Bodypaint 2" HorizontalAlignment="Left" Margin="565,144,0,0" VerticalAlignment="Top"/>
+                            <Label x:Name="legLabel" Content="Cast Legs" HorizontalAlignment="Left" Margin="285,74,0,0" VerticalAlignment="Top"/>
+                            <Label x:Name="armLabel" Content="Cast Arms" HorizontalAlignment="Left" Margin="5,74,0,0" VerticalAlignment="Top"/>
+                            <Label x:Name="stickerLabel" Content="Sticker" HorizontalAlignment="Left" Margin="5,144,0,0" VerticalAlignment="Top"/>
+                            <Label x:Name="hairLabel" Content="Hair" HorizontalAlignment="Left" Margin="285,144,0,0" VerticalAlignment="Top"/>
+                            <ComboBox x:Name="rightEyeCB" HorizontalAlignment="Left" Margin="5,243,0,0" VerticalAlignment="Top" Width="200" SelectedIndex="0" SelectionChanged="RightEyeSelectionChanged">
+                                <ComboBox.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <VirtualizingStackPanel />
+                                    </ItemsPanelTemplate>
+                                </ComboBox.ItemsPanel>
+                            </ComboBox>
+                            <Image x:Name="rightEyeIcon" HorizontalAlignment="Left" Height="64" Margin="210,221,0,0" VerticalAlignment="Top" Width="64"/>
+                            <Label x:Name="eyeLabel" Content="Right Eye" HorizontalAlignment="Left" Margin="5,217,0,0" VerticalAlignment="Top"/>
+                            <ComboBox x:Name="eyebrowsCB" HorizontalAlignment="Left" Margin="285,243,0,0" VerticalAlignment="Top" Width="200" SelectedIndex="0" SelectionChanged="EyebrowsSelectionChanged">
+                                <ComboBox.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <VirtualizingStackPanel />
+                                    </ItemsPanelTemplate>
+                                </ComboBox.ItemsPanel>
+                            </ComboBox>
+                            <Image x:Name="eyebrowsIcon" HorizontalAlignment="Left" Height="64" Margin="490,221,0,0" VerticalAlignment="Top" Width="64"/>
+                            <Label x:Name="eyebrowsLabel" Content="Eyebrows" HorizontalAlignment="Left" Margin="285,217,0,0" VerticalAlignment="Top"/>
+                            <ComboBox x:Name="eyelashesCB" HorizontalAlignment="Left" Margin="565,243,0,0" VerticalAlignment="Top" Width="200" SelectedIndex="0" SelectionChanged="EyelashesSelectionChanged">
+                                <ComboBox.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <VirtualizingStackPanel />
+                                    </ItemsPanelTemplate>
+                                </ComboBox.ItemsPanel>
+                            </ComboBox>
+                            <Image x:Name="eyelashesIcon" HorizontalAlignment="Left" Height="64" Margin="770,221,0,0" VerticalAlignment="Top" Width="64"/>
+                            <Label x:Name="eyelashesLabel" Content="Eyelashes" HorizontalAlignment="Left" Margin="565,217,0,0" VerticalAlignment="Top"/>
+                            <ComboBox x:Name="leftEyeCB" HorizontalAlignment="Left" Margin="5,317,0,0" VerticalAlignment="Top" Width="200" SelectedIndex="0" SelectionChanged="LeftEyeSelectionChanged">
+                                <ComboBox.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <VirtualizingStackPanel />
+                                    </ItemsPanelTemplate>
+                                </ComboBox.ItemsPanel>
+                            </ComboBox>
+                            <Image x:Name="leftEyeIcon" HorizontalAlignment="Left" Height="64" Margin="210,295,0,0" VerticalAlignment="Top" Width="64"/>
+                            <Label x:Name="leftEyeLabel" Content="Left Eye" HorizontalAlignment="Left" Margin="5,291,0,0" VerticalAlignment="Top"/>
+                            <ComboBox x:Name="faceModelCB" HorizontalAlignment="Left" Margin="285,317,0,0" VerticalAlignment="Top" Width="200" SelectedIndex="0" SelectionChanged="FaceModelSelectionChanged">
+                                <ComboBox.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <VirtualizingStackPanel />
+                                    </ItemsPanelTemplate>
+                                </ComboBox.ItemsPanel>
+                            </ComboBox>
+                            <Image x:Name="faceModelIcon" HorizontalAlignment="Left" Height="64" Margin="490,295,0,0" VerticalAlignment="Top" Width="64"/>
+                            <Label x:Name="faceModelLabel" Content="Face Model" HorizontalAlignment="Left" Margin="285,291,0,0" VerticalAlignment="Top"/>
+                            <ComboBox x:Name="faceTexCB" HorizontalAlignment="Left" Margin="565,317,0,0" VerticalAlignment="Top" Width="200" SelectedIndex="0" SelectionChanged="FaceTexSelectionChanged">
+                                <ComboBox.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <VirtualizingStackPanel />
+                                    </ItemsPanelTemplate>
+                                </ComboBox.ItemsPanel>
+                            </ComboBox>
+                            <Image x:Name="faceTexIcon" HorizontalAlignment="Left" Height="64" Margin="770,295,0,0" VerticalAlignment="Top" Width="64"/>
+                            <Label x:Name="faceTexLabel" Content="Face Textures" HorizontalAlignment="Left" Margin="565,291,0,0" VerticalAlignment="Top"/>
+                            <ComboBox x:Name="earsCB" HorizontalAlignment="Left" Margin="5,393,0,0" VerticalAlignment="Top" Width="200" SelectedIndex="0" SelectionChanged="EarsSelectionChanged">
+                                <ComboBox.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <VirtualizingStackPanel />
+                                    </ItemsPanelTemplate>
+                                </ComboBox.ItemsPanel>
+                            </ComboBox>
+                            <Image x:Name="earsIcon" HorizontalAlignment="Left" Height="64" Margin="210,371,0,0" VerticalAlignment="Top" Width="64"/>
+                            <Label x:Name="earsLabel" Content="Ears" HorizontalAlignment="Left" Margin="5,367,0,0" VerticalAlignment="Top"/>
+                            <ComboBox x:Name="hornsCB" HorizontalAlignment="Left" Margin="285,393,0,0" VerticalAlignment="Top" Width="200" SelectedIndex="0" SelectionChanged="HornsSelectionChanged">
+                                <ComboBox.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <VirtualizingStackPanel />
+                                    </ItemsPanelTemplate>
+                                </ComboBox.ItemsPanel>
+                            </ComboBox>
+                            <Image x:Name="hornsIcon" HorizontalAlignment="Left" Height="64" Margin="490,371,0,0" VerticalAlignment="Top" Width="64"/>
+                            <Label x:Name="hornsLabel" Content="Horns" HorizontalAlignment="Left" Margin="285,367,0,0" VerticalAlignment="Top"/>
+                            <ComboBox x:Name="teethCB" HorizontalAlignment="Left" Margin="565,393,0,0" VerticalAlignment="Top" Width="200" SelectedIndex="0" SelectionChanged="TeethSelectionChanged">
+                                <ComboBox.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <VirtualizingStackPanel />
+                                    </ItemsPanelTemplate>
+                                </ComboBox.ItemsPanel>
+                            </ComboBox>
+                            <Image x:Name="teethIcon" HorizontalAlignment="Left" Height="64" Margin="770,371,0,0" VerticalAlignment="Top" Width="64"/>
+                            <Label x:Name="teethLabel" Content="Teeth/Tongue" HorizontalAlignment="Left" Margin="565,367,0,0" VerticalAlignment="Top"/>
+                            <ComboBox x:Name="acce1CB" HorizontalAlignment="Left" Margin="5,469,0,0" VerticalAlignment="Top" Width="200" SelectedIndex="0" SelectionChanged="Acce1SelectionChanged">
+                                <ComboBox.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <VirtualizingStackPanel />
+                                    </ItemsPanelTemplate>
+                                </ComboBox.ItemsPanel>
+                            </ComboBox>
+                            <Image x:Name="acce1Icon" HorizontalAlignment="Left" Height="64" Margin="210,447,0,0" VerticalAlignment="Top" Width="64"/>
+                            <Label x:Name="acce1Label" Content="Accessory 1" HorizontalAlignment="Left" Margin="5,443,0,0" VerticalAlignment="Top"/>
+                            <ComboBox x:Name="acce2CB" HorizontalAlignment="Left" Margin="285,469,0,0" VerticalAlignment="Top" Width="200" SelectedIndex="0" SelectionChanged="Acce2SelectionChanged">
+                                <ComboBox.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <VirtualizingStackPanel />
+                                    </ItemsPanelTemplate>
+                                </ComboBox.ItemsPanel>
+                            </ComboBox>
+                            <Image x:Name="acce2Icon" HorizontalAlignment="Left" Height="64" Margin="490,447,0,0" VerticalAlignment="Top" Width="64"/>
+                            <Label x:Name="acce2Label" Content="Accessory 2" HorizontalAlignment="Left" Margin="285,443,0,0" VerticalAlignment="Top"/>
+                            <ComboBox x:Name="acce3CB" HorizontalAlignment="Left" Margin="565,469,0,0" VerticalAlignment="Top" Width="200" SelectedIndex="0" SelectionChanged="Acce3SelectionChanged">
+                                <ComboBox.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <VirtualizingStackPanel />
+                                    </ItemsPanelTemplate>
+                                </ComboBox.ItemsPanel>
+                            </ComboBox>
+                            <Image x:Name="acce3Icon" HorizontalAlignment="Left" Height="64" Margin="770,447,0,0" VerticalAlignment="Top" Width="64"/>
+                            <Label x:Name="acce3Label" Content="Accessory 3" HorizontalAlignment="Left" Margin="565,443,0,0" VerticalAlignment="Top"/>
+                            <ComboBox x:Name="acce4CB" HorizontalAlignment="Left" Margin="5,545,0,0" VerticalAlignment="Top" Width="200" SelectedIndex="0" SelectionChanged="Acce4SelectionChanged">
+                                <ComboBox.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <VirtualizingStackPanel />
+                                    </ItemsPanelTemplate>
+                                </ComboBox.ItemsPanel>
+                            </ComboBox>
+                            <Image x:Name="acce4Icon" HorizontalAlignment="Left" Height="64" Margin="210,523,0,0" VerticalAlignment="Top" Width="64"/>
+                            <Label x:Name="acce4Label" Content="Accessory 4" HorizontalAlignment="Left" Margin="5,519,0,0" VerticalAlignment="Top"/>
+                            <ComboBox x:Name="acce5CB" HorizontalAlignment="Left" Margin="285,545,0,0" VerticalAlignment="Top" Width="200" SelectedIndex="0" SelectionChanged="Acce5SelectionChanged">
+                                <ComboBox.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <VirtualizingStackPanel />
+                                    </ItemsPanelTemplate>
+                                </ComboBox.ItemsPanel>
+                            </ComboBox>
+                            <Image x:Name="acce5Icon" HorizontalAlignment="Left" Height="64" Margin="490,523,0,0" VerticalAlignment="Top" Width="64"/>
+                            <Label x:Name="acce5Label" Content="Accessory 5" HorizontalAlignment="Left" Margin="285,519,0,0" VerticalAlignment="Top"/>
+                            <ComboBox x:Name="acce6CB" HorizontalAlignment="Left" Margin="565,545,0,0" VerticalAlignment="Top" Width="200" SelectedIndex="0" SelectionChanged="Acce6SelectionChanged">
+                                <ComboBox.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <VirtualizingStackPanel />
+                                    </ItemsPanelTemplate>
+                                </ComboBox.ItemsPanel>
+                            </ComboBox>
+                            <Image x:Name="acce6Icon" HorizontalAlignment="Left" Height="64" Margin="770,523,0,0" VerticalAlignment="Top" Width="64"/>
+                            <Label x:Name="acce6Label" Content="Accessory 6" HorizontalAlignment="Left" Margin="565,519,0,0" VerticalAlignment="Top"/>
+                            <ComboBox x:Name="acce7CB" HorizontalAlignment="Left" Margin="5,621,0,0" VerticalAlignment="Top" Width="200" SelectedIndex="0" SelectionChanged="Acce7SelectionChanged">
+                                <ComboBox.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <VirtualizingStackPanel />
+                                    </ItemsPanelTemplate>
+                                </ComboBox.ItemsPanel>
+                            </ComboBox>
+                            <Image x:Name="acce7Icon" HorizontalAlignment="Left" Height="64" Margin="210,599,0,0" VerticalAlignment="Top" Width="64"/>
+                            <Label x:Name="acce7Label" Content="Accessory 7" HorizontalAlignment="Left" Margin="5,595,0,0" VerticalAlignment="Top"/>
+                            <ComboBox x:Name="acce8CB" HorizontalAlignment="Left" Margin="285,621,0,0" VerticalAlignment="Top" Width="200" SelectedIndex="0" SelectionChanged="Acce8SelectionChanged">
+                                <ComboBox.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <VirtualizingStackPanel />
+                                    </ItemsPanelTemplate>
+                                </ComboBox.ItemsPanel>
+                            </ComboBox>
+                            <Image x:Name="acce8Icon" HorizontalAlignment="Left" Height="64" Margin="490,599,0,0" VerticalAlignment="Top" Width="64"/>
+                            <Label x:Name="acce8Label" Content="Accessory 8" HorizontalAlignment="Left" Margin="285,595,0,0" VerticalAlignment="Top"/>
+                            <ComboBox x:Name="acce9CB" HorizontalAlignment="Left" Margin="565,621,0,0" VerticalAlignment="Top" Width="200" SelectedIndex="0" SelectionChanged="Acce9SelectionChanged">
+                                <ComboBox.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <VirtualizingStackPanel />
+                                    </ItemsPanelTemplate>
+                                </ComboBox.ItemsPanel>
+                            </ComboBox>
+                            <Image x:Name="acce9Icon" HorizontalAlignment="Left" Height="64" Margin="770,599,0,0" VerticalAlignment="Top" Width="64"/>
+                            <Label x:Name="acce9Label" Content="Accessory 9" HorizontalAlignment="Left" Margin="565,595,0,0" VerticalAlignment="Top"/>
+                            <ComboBox x:Name="acce10CB" HorizontalAlignment="Left" Margin="5,697,0,0" VerticalAlignment="Top" Width="200" SelectedIndex="0" SelectionChanged="Acce10SelectionChanged">
+                                <ComboBox.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <VirtualizingStackPanel />
+                                    </ItemsPanelTemplate>
+                                </ComboBox.ItemsPanel>
+                            </ComboBox>
+                            <Image x:Name="acce10Icon" HorizontalAlignment="Left" Height="64" Margin="210,675,0,0" VerticalAlignment="Top" Width="64"/>
+                            <Label x:Name="acce10Label" Content="Accessory 10" HorizontalAlignment="Left" Margin="5,671,0,0" VerticalAlignment="Top"/>
+                            <ComboBox x:Name="acce11CB" HorizontalAlignment="Left" Margin="285,697,0,0" VerticalAlignment="Top" Width="200" SelectedIndex="0" SelectionChanged="Acce11SelectionChanged">
+                                <ComboBox.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <VirtualizingStackPanel />
+                                    </ItemsPanelTemplate>
+                                </ComboBox.ItemsPanel>
+                            </ComboBox>
+                            <Image x:Name="acce11Icon" HorizontalAlignment="Left" Height="64" Margin="490,675,0,0" VerticalAlignment="Top" Width="64"/>
+                            <Label x:Name="acce11Label" Content="Accessory 11" HorizontalAlignment="Left" Margin="285,671,0,0" VerticalAlignment="Top"/>
+                            <ComboBox x:Name="acce12CB" HorizontalAlignment="Left" Margin="565,697,0,0" VerticalAlignment="Top" Width="200" SelectedIndex="0" SelectionChanged="Acce12SelectionChanged">
+                                <ComboBox.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <VirtualizingStackPanel />
+                                    </ItemsPanelTemplate>
+                                </ComboBox.ItemsPanel>
+                            </ComboBox>
+                            <Image x:Name="acce12Icon" HorizontalAlignment="Left" Height="64" Margin="770,675,0,0" VerticalAlignment="Top" Width="64"/>
+                            <Label x:Name="acce12Label" Content="Accessory 12" HorizontalAlignment="Left" Margin="565,671,0,0" VerticalAlignment="Top"/>
                         </Grid>
                     </ScrollViewer>
                 </TabItem>
-                <TabItem Header="Motion Change">
+                <TabItem Name="motionChangeTab" Header="Motion Change">
+                    <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
+                        <Grid Background="#FFE5E5E5">
+                            <ComboBox x:Name="swimCB" HorizontalAlignment="Left" Margin="5,30,0,0" VerticalAlignment="Top" Width="200" SelectedIndex="0" SelectionChanged="SwimSelectionChanged">
+                                <ComboBox.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <VirtualizingStackPanel />
+                                    </ItemsPanelTemplate>
+                                </ComboBox.ItemsPanel>
+                            </ComboBox>
+                            <Label x:Name="swimLabel" Content="Swim Motion" HorizontalAlignment="Left" Margin="5,4,0,0" VerticalAlignment="Top"/>
+                            <ComboBox x:Name="glideCB" HorizontalAlignment="Left" Margin="285,30,0,0" VerticalAlignment="Top" Width="200" SelectedIndex="0" SelectionChanged="GlideSelectionChanged">
+                                <ComboBox.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <VirtualizingStackPanel />
+                                    </ItemsPanelTemplate>
+                                </ComboBox.ItemsPanel>
+                            </ComboBox>
+                            <Label x:Name="glideLabel" Content="Photon Glide Motion" HorizontalAlignment="Left" Margin="285,4,0,0" VerticalAlignment="Top"/>
+                            <ComboBox x:Name="jumpCB" HorizontalAlignment="Left" Margin="565,30,0,0" VerticalAlignment="Top" Width="200" SelectedIndex="0" SelectionChanged="JumpSelectionChanged">
+                                <ComboBox.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <VirtualizingStackPanel />
+                                    </ItemsPanelTemplate>
+                                </ComboBox.ItemsPanel>
+                            </ComboBox>
+                            <Label x:Name="jumpLabel" Content="Jump Motion" HorizontalAlignment="Left" Margin="565,4,0,0" VerticalAlignment="Top"/>
+                            <ComboBox x:Name="landingCB" HorizontalAlignment="Left" Margin="5,79,0,0" VerticalAlignment="Top" Width="200" SelectedIndex="0" SelectionChanged="LandingSelectionChanged">
+                                <ComboBox.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <VirtualizingStackPanel />
+                                    </ItemsPanelTemplate>
+                                </ComboBox.ItemsPanel>
+                            </ComboBox>
+                            <Label x:Name="landingLabel" Content="Landing Motion" HorizontalAlignment="Left" Margin="5,55,0,0" VerticalAlignment="Top"/>
+                            <ComboBox x:Name="movCB" HorizontalAlignment="Left" Margin="285,79,0,0" VerticalAlignment="Top" Width="200" SelectedIndex="0" SelectionChanged="MovSelectionChanged">
+                                <ComboBox.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <VirtualizingStackPanel />
+                                    </ItemsPanelTemplate>
+                                </ComboBox.ItemsPanel>
+                            </ComboBox>
+                            <Label x:Name="movLabel" Content="Run/Walk Motion" HorizontalAlignment="Left" Margin="285,55,0,0" VerticalAlignment="Top"/>
+                            <ComboBox x:Name="sprintCB" HorizontalAlignment="Left" Margin="565,79,0,0" VerticalAlignment="Top" Width="200" SelectedIndex="0" SelectionChanged="SprintSelectionChanged">
+                                <ComboBox.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <VirtualizingStackPanel />
+                                    </ItemsPanelTemplate>
+                                </ComboBox.ItemsPanel>
+                            </ComboBox>
+                            <Label x:Name="sprintLabel" Content="Photon Dash Motion" HorizontalAlignment="Left" Margin="565,55,0,0" VerticalAlignment="Top"/>
+                            <ComboBox x:Name="idleCB" HorizontalAlignment="Left" Margin="5,128,0,0" VerticalAlignment="Top" Width="200" SelectedIndex="0" SelectionChanged="IdleSelectionChanged">
+                                <ComboBox.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <VirtualizingStackPanel />
+                                    </ItemsPanelTemplate>
+                                </ComboBox.ItemsPanel>
+                            </ComboBox>
+                            <Label x:Name="idleLabel" Content="Standby Pose Motion" HorizontalAlignment="Left" Margin="5,104,0,0" VerticalAlignment="Top"/>
+                        </Grid>
+                    </ScrollViewer>
+                </TabItem>
+                <TabItem Name="customizeExpressionsTab" Header="Customize Expressions">
                     <Grid Background="#FFE5E5E5"/>
                 </TabItem>
-                <TabItem Header="Customize Expressions">
+                <TabItem Name="startupTab" Header="StartupTab" IsSelected="True" Visibility="Hidden">
                     <Grid Background="#FFE5E5E5"/>
                 </TabItem>
             </TabControl>

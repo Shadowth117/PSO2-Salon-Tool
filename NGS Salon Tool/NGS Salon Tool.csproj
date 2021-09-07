@@ -19,12 +19,14 @@
 
   <ItemGroup>
     <None Remove="ColorWindow\hueSlider.png" />
+    <None Remove="ColorWindow\selectionBackground.png" />
   </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Extended.Wpf.Toolkit" Version="4.1.0" />
     <PackageReference Include="Microsoft-WindowsAPICodePack-ShellExtensions" Version="1.1.4" />
     <PackageReference Include="Pfim" Version="0.10.0" />
+    <PackageReference Include="Reloaded.Memory" Version="4.1.2" />
     <PackageReference Include="System.Drawing.Common" Version="6.0.0-preview.5.21301.5" />
   </ItemGroup>
 
@@ -43,6 +45,7 @@
 
   <ItemGroup>
     <Resource Include="ColorWindow\hueSlider.png" />
+    <Resource Include="ColorWindow\selectionBackground.png" />
   </ItemGroup>
 
 </Project>

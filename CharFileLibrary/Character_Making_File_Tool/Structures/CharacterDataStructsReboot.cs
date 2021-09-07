@@ -9,10 +9,122 @@ namespace Character_Making_File_Tool
 {
     public unsafe class CharacterDataStructsReboot
     {
+        public struct AccessorySlidersReboot
+        {
+            public fixed sbyte scaleSliders[0x24];
+            public fixed sbyte rotSliders[0x24];
+            public fixed sbyte posSliders[0x24];
+            
+            public AccessorySliders GetClassicAccessorySliders()
+            {
+                AccessorySliders acceSl = new();
+                for(int i = 0; i < 0xC; i++)
+                {
+                    acceSl.sliders[i] = posSliders[i];
+                    acceSl.sliders[i + 0xC] = scaleSliders[i];
+                    acceSl.sliders[i + 0x18] = rotSliders[i];
+                }
+
+                return acceSl;
+            }
+
+            public OldAccessorySliders GetOldAccessorySliders()
+            {
+                OldAccessorySliders oldSliders = new();
+
+                //Position
+                //Accessory 1 Y+Z
+                oldSliders.oldSliders[0] = SignednibblePack(posSliders[1], posSliders[2]);
+                //Accessory 4 X + Accessory 1 X
+                oldSliders.oldSliders[1] = SignednibblePack(posSliders[9], posSliders[0]);
+
+                //Accessory 2 Y+Z
+                oldSliders.oldSliders[2] = SignednibblePack(posSliders[4], posSliders[5]);
+                //Accessory 4 Y + Accessory 2 X
+                oldSliders.oldSliders[3] = SignednibblePack(posSliders[10], posSliders[3]);
+
+                //Accessory 3 Y+Z
+                oldSliders.oldSliders[4] = SignednibblePack(posSliders[7], posSliders[8]);
+                //Accessory 4 Y + Accessory 3 X
+                oldSliders.oldSliders[5] = SignednibblePack(posSliders[11], posSliders[6]);
+
+                //Scale
+                //Accessory 1 Y+Z
+                oldSliders.oldSliders[6] = SignednibblePack(scaleSliders[1], scaleSliders[2]);
+                //Accessory 4 X + Accessory 1 X
+                oldSliders.oldSliders[7] = SignednibblePack(scaleSliders[9], scaleSliders[0]);
+
+                //Accessory 2 Y+Z
+                oldSliders.oldSliders[8] = SignednibblePack(scaleSliders[4], scaleSliders[5]);
+                //Accessory 4 Y + Accessory 2 X
+                oldSliders.oldSliders[9] = SignednibblePack(scaleSliders[10], scaleSliders[3]);
+
+                //Accessory 3 Y+Z
+                oldSliders.oldSliders[10] = SignednibblePack(scaleSliders[7], scaleSliders[8]);
+                //Accessory 4 Y + Accessory 3 X
+                oldSliders.oldSliders[11] = SignednibblePack(scaleSliders[11], scaleSliders[6]);
+
+                //Rotation
+                //Accessory 1 Y+Z
+                oldSliders.oldSliders[12] = SignednibblePack(rotSliders[1], rotSliders[2]);
+                //Accessory 4 X + Accessory 1 X
+                oldSliders.oldSliders[13] = SignednibblePack(rotSliders[9], rotSliders[0]);
+
+                //Accessory 2 Y+Z
+                oldSliders.oldSliders[14] = SignednibblePack(rotSliders[4], rotSliders[5]);
+                //Accessory 4 Y + Accessory 2 X
+                oldSliders.oldSliders[15] = SignednibblePack(rotSliders[10], rotSliders[3]);
+
+                //Accessory 3 Y+Z
+                oldSliders.oldSliders[16] = SignednibblePack(rotSliders[7], rotSliders[8]);
+                //Accessory 4 Y + Accessory 3 X
+                oldSliders.oldSliders[17] = SignednibblePack(rotSliders[11], rotSliders[6]);
+
+                return oldSliders;
+            }
+
+            public OldAccessoryPositionSliders GetOldAccessoryPositionSliders()
+            {
+                OldAccessoryPositionSliders oldSliders = new();
+
+                //Accessory 1 Y+Z
+                oldSliders.oldSliders[0] = SignednibblePack(posSliders[1], posSliders[2]);
+                //Accessory 4 X + Accessory 1 X
+                oldSliders.oldSliders[1] = SignednibblePack(posSliders[9], posSliders[0]);
+
+                //Accessory 2 Y+Z
+                oldSliders.oldSliders[2] = SignednibblePack(posSliders[4], posSliders[5]);
+                //Accessory 4 Y + Accessory 2 X
+                oldSliders.oldSliders[3] = SignednibblePack(posSliders[10], posSliders[3]);
+
+                //Accessory 3 Y+Z
+                oldSliders.oldSliders[4] = SignednibblePack(posSliders[7], posSliders[8]);
+                //Accessory 4 Y + Accessory 3 X
+                oldSliders.oldSliders[5] = SignednibblePack(posSliders[11], posSliders[6]);
+
+
+                return oldSliders;
+            }
+        }
+
         public struct AccessorySliders
         {
             //Position, Scale, and Rotation arrays 0xC bytes each, in that order.
             public fixed sbyte sliders[0x24];
+
+            public AccessorySlidersReboot GetAccessorySlidersReboot()
+            {
+                AccessorySlidersReboot acceSl = new AccessorySlidersReboot();
+                for(int i = 0; i < 0xC; i++)
+                {
+                    acceSl.posSliders[i] = sliders[i];
+                    acceSl.scaleSliders[i] = sliders[i + 0xC];
+                    acceSl.rotSliders[i] = sliders[i + 0x18];
+                }
+
+                return acceSl;
+            }
+
             public OldAccessorySliders GetOldAccessorySliders()
             {
                 OldAccessorySliders oldSliders = new OldAccessorySliders();
@@ -40,19 +152,19 @@ namespace Character_Making_File_Tool
             {
                 OldAccessoryPositionSliders oldSliders = new OldAccessoryPositionSliders();
                 //Accessory 1 Y+Z
-                oldSliders.oldSliders[0] = SignednibblePack(sliders[0 + 1], sliders[0 + 2]);
+                oldSliders.oldSliders[0] = SignednibblePack(sliders[1], sliders[2]);
                 //Accessory 4 X + Accessory 1 X
-                oldSliders.oldSliders[0 + 1] = SignednibblePack(sliders[0 + 9], sliders[0]);
+                oldSliders.oldSliders[1] = SignednibblePack(sliders[9], sliders[0]);
 
                 //Accessory 2 Y+Z
-                oldSliders.oldSliders[0 + 2] = SignednibblePack(sliders[0 + 4], sliders[0 + 5]);
+                oldSliders.oldSliders[2] = SignednibblePack(sliders[4], sliders[5]);
                 //Accessory 4 Y + Accessory 2 X
-                oldSliders.oldSliders[0 + 3] = SignednibblePack(sliders[0 + 10], sliders[0 + 3]);
+                oldSliders.oldSliders[3] = SignednibblePack(sliders[10], sliders[3]);
 
                 //Accessory 3 Y+Z
-                oldSliders.oldSliders[0 + 4] = SignednibblePack(sliders[0 + 7], sliders[0 + 8]);
+                oldSliders.oldSliders[4] = SignednibblePack(sliders[7], sliders[8]);
                 //Accessory 4 Y + Accessory 3 X
-                oldSliders.oldSliders[0 + 5] = SignednibblePack(sliders[0 + 11], sliders[0 + 6]);
+                oldSliders.oldSliders[5] = SignednibblePack(sliders[11], sliders[6]);
 
                 return oldSliders;
             }
@@ -62,9 +174,59 @@ namespace Character_Making_File_Tool
         {
             public fixed byte oldSliders[0x12];
 
+            public AccessorySlidersReboot GetAccessorySlidersReboot()
+            {
+                AccessorySlidersReboot acceSL = new();
+
+                //Position
+                //Accessory 1 Y+Z
+                SignednibbleUnpack(oldSliders[0], out acceSL.posSliders[1], out acceSL.posSliders[2]);
+                //Accessory 4 X + Accessory 1 X
+                SignednibbleUnpack(oldSliders[1], out acceSL.posSliders[9], out acceSL.posSliders[0]);
+                //Accessory 2 Y+Z
+                SignednibbleUnpack(oldSliders[2], out acceSL.posSliders[4], out acceSL.posSliders[5]);
+                //Accessory 4 Y + Accessory 2 X
+                SignednibbleUnpack(oldSliders[3], out acceSL.posSliders[10], out acceSL.posSliders[3]);
+                //Accessory 3 Y+Z
+                SignednibbleUnpack(oldSliders[4], out acceSL.posSliders[7], out acceSL.posSliders[8]);
+                //Accessory 4 Y + Accessory 3 X
+                SignednibbleUnpack(oldSliders[5], out acceSL.posSliders[11], out acceSL.posSliders[6]);
+
+                //Scale
+                //Accessory 1 Y+Z
+                SignednibbleUnpack(oldSliders[6], out acceSL.scaleSliders[1], out acceSL.scaleSliders[2]);
+                //Accessory 4 X + Accessory 1 X
+                SignednibbleUnpack(oldSliders[7], out acceSL.scaleSliders[9], out acceSL.scaleSliders[0]);
+                //Accessory 2 Y+Z
+                SignednibbleUnpack(oldSliders[8], out acceSL.scaleSliders[4], out acceSL.scaleSliders[5]);
+                //Accessory 4 Y + Accessory 2 X
+                SignednibbleUnpack(oldSliders[9], out acceSL.scaleSliders[10], out acceSL.scaleSliders[3]);
+                //Accessory 3 Y+Z
+                SignednibbleUnpack(oldSliders[10], out acceSL.scaleSliders[7], out acceSL.scaleSliders[8]);
+                //Accessory 4 Y + Accessory 3 X
+                SignednibbleUnpack(oldSliders[11], out acceSL.scaleSliders[11], out acceSL.scaleSliders[6]);
+
+                //Rotation
+                //Accessory 1 Y+Z
+                SignednibbleUnpack(oldSliders[12], out acceSL.rotSliders[1], out acceSL.rotSliders[2]);
+                //Accessory 4 X + Accessory 1 X
+                SignednibbleUnpack(oldSliders[13], out acceSL.rotSliders[9], out acceSL.rotSliders[0]);
+                //Accessory 2 Y+Z
+                SignednibbleUnpack(oldSliders[14], out acceSL.rotSliders[4], out acceSL.rotSliders[5]);
+                //Accessory 4 Y + Accessory 2 X
+                SignednibbleUnpack(oldSliders[15], out acceSL.rotSliders[10], out acceSL.rotSliders[3]);
+                //Accessory 3 Y+Z
+                SignednibbleUnpack(oldSliders[16], out acceSL.rotSliders[7], out acceSL.rotSliders[8]);
+                //Accessory 4 Y + Accessory 3 X
+                SignednibbleUnpack(oldSliders[17], out acceSL.rotSliders[11], out acceSL.rotSliders[6]);
+
+                return acceSL;
+            }
+
+
             public AccessorySliders GetAccessorySliders()
             {
-                AccessorySliders accessorySliders = new AccessorySliders();
+                AccessorySliders accessorySliders = new();
 
                 for (int i = 0; i < 3; i++)
                 {
@@ -89,9 +251,30 @@ namespace Character_Making_File_Tool
         public struct OldAccessoryPositionSliders
         {
             public fixed byte oldSliders[0x6];
+
+            public AccessorySlidersReboot GetAccessorySlidersReboot()
+            {
+                AccessorySlidersReboot acceSL = new();
+
+                //Accessory 1 Y+Z
+                SignednibbleUnpack(oldSliders[0], out acceSL.posSliders[1], out acceSL.posSliders[2]);
+                //Accessory 4 X + Accessory 1 X
+                SignednibbleUnpack(oldSliders[1], out acceSL.posSliders[9], out acceSL.posSliders[0]);
+                //Accessory 2 Y+Z
+                SignednibbleUnpack(oldSliders[2], out acceSL.posSliders[4], out acceSL.posSliders[5]);
+                //Accessory 4 Y + Accessory 2 X
+                SignednibbleUnpack(oldSliders[3], out acceSL.posSliders[10], out acceSL.posSliders[3]);
+                //Accessory 3 Y+Z
+                SignednibbleUnpack(oldSliders[4], out acceSL.posSliders[7], out acceSL.posSliders[8]);
+                //Accessory 4 Y + Accessory 3 X
+                SignednibbleUnpack(oldSliders[5], out acceSL.posSliders[11], out acceSL.posSliders[6]);
+
+                return acceSL;
+            }
+
             public AccessorySliders GetAccessorySliders()
             {
-                AccessorySliders accessorySliders = new AccessorySliders();
+                AccessorySliders accessorySliders = new();
 
                 //Accessory 1 Y+Z
                 SignednibbleUnpack(oldSliders[0], out accessorySliders.sliders[1], out accessorySliders.sliders[2]);

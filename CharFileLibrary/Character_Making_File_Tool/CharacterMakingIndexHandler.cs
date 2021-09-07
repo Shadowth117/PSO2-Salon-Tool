@@ -18,7 +18,7 @@ namespace Character_Making_File_Tool
 {
     public class CharacterMakingIndexHandler
     {
-        public bool NAInstall = false;
+        public int language = 0;
         public bool invalid = false;
         public WIPBox messageBox = null;
         public CharacterMakingIndex cmx = null;
@@ -49,10 +49,11 @@ namespace Character_Making_File_Tool
         public Dictionary<string, int> eyelashDict = new();
         public Dictionary<string, int> accessoryDict = new();
         public Dictionary<string, int> faceDict = new();
+        public Dictionary<string, int> faceTexDict = new();
         public Dictionary<string, int> facePaintDict = new();
         public Dictionary<string, int> earDict = new();
         public Dictionary<string, int> hornDict = new();
-        public Dictionary<string, int> toothDict = new();
+        public Dictionary<string, int> teethDict = new();
 
         public Dictionary<string, int> swimDict = new();
         public Dictionary<string, int> glideDict = new();
@@ -70,6 +71,10 @@ namespace Character_Making_File_Tool
             }
             catch
             {
+                if (messageBox != null)
+                {
+                    messageBox.Hide();
+                }
                 invalid = true;
                 System.Windows.MessageBox.Show("Unable to read .cmx files; parts will not be editable. Please check permissions and set an appropriate pso2_bin Path.");
             }
@@ -84,6 +89,10 @@ namespace Character_Making_File_Tool
             }
             catch
             {
+                if (messageBox != null)
+                {
+                    messageBox.Hide();
+                }
                 invalid = true;
                 System.Windows.MessageBox.Show("Unable to read .cmx files; parts will not be editable. Please check permissions and set an appropriate pso2_bin Path.");
             }
@@ -118,7 +127,7 @@ namespace Character_Making_File_Tool
             faceIds = CharacterMakingIndexMethods.GetFaceVariationLuaNameDict(pso2_binPath, faceIds);
             if (Directory.Exists(Path.Combine(pso2_binPath, CharacterMakingIndex.dataNADir)))
             {
-                NAInstall = true;
+                language = 1;
             }
 
             GenerateNameCache();
@@ -152,6 +161,7 @@ namespace Character_Making_File_Tool
             //Since we have an idea of what should be there and what we're interested in parsing out, throw these into a dictionary and go
             Dictionary<string, List<List<PSO2Text.textPair>>> textByCat = new();
             Dictionary<string, List<List<PSO2Text.textPair>>> commByCat = new();
+            Dictionary<string, List<List<PSO2Text.textPair>>> commRebootByCat = new();
             for (int i = 0; i < partsText.text.Count; i++)
             {
                 textByCat.Add(partsText.categoryNames[i], partsText.text[i]);
@@ -172,6 +182,14 @@ namespace Character_Making_File_Tool
             {
                 commByCat.Add(commonText.categoryNames[i], commonText.text[i]);
             }
+            if (commonTextReboot != null)
+            {
+                for (int i = 0; i < commonTextReboot.text.Count; i++)
+                {
+                    commRebootByCat.Add(commonTextReboot.categoryNames[i], commonTextReboot.text[i]);
+                }
+            }
+            Dictionary<string, Dictionary<int, List<string>>> subByCat = CharacterMakingIndexMethods.GatherSubCategories(commRebootByCat);
 
             //***Costumes/Outers
             //Build text Dict
@@ -180,7 +198,7 @@ namespace Character_Making_File_Tool
             StringBuilder nameCache = new StringBuilder();
             CharacterMakingIndexMethods.GatherTextIds(textByCat, masterIdList, nameDicts, "costume", true);
             CharacterMakingIndexMethods.GatherTextIds(textByCat, masterIdList, nameDicts, "body", false);
-            Dictionary<int, string> dict = nameDicts[0];
+            Dictionary<int, string> dict = nameDicts[language];
 
             //Add potential cmx ids that wouldn't be stored with 
             CharacterMakingIndexMethods.GatherDictKeys(masterIdList, cmx.costumeDict.Keys);
@@ -227,34 +245,58 @@ namespace Character_Making_File_Tool
             //***Accessories
             accessoryDict = ProcessNames(textByCat, masterIdList, nameDicts, nameCache, "decoy", null, cmx.accessoryDict, writeToDisk);
 
-            //***Face - Stored a bit oddly and needs its own special method for id retrieval
-            faceDict = ProcessNamesFaces(textByCat, masterIdList, nameDicts, nameCache, "face", null, cmx.faceDict, writeToDisk);
+            //***Face Models
+            faceDict = ProcessNames(textByCat, masterIdList, nameDicts, nameCache, "", null, cmx.faceDict, writeToDisk);
+
+            //***Face Textures
+            faceTexDict = ProcessNames(textByCat, masterIdList, nameDicts, nameCache, "", null, cmx.faceTextureDict, writeToDisk);
 
             //***Face paint
             facePaintDict = ProcessNames(textByCat, masterIdList, nameDicts, nameCache, "facepaint1", null, cmx.fcpDict, writeToDisk);
 
             //***Ear
+            earDict = ProcessNames(textByCat, masterIdList, nameDicts, nameCache, "ears", null, cmx.ngsEarDict, writeToDisk);
 
             //***Horn
+            hornDict = ProcessNames(textByCat, masterIdList, nameDicts, nameCache, "horn", null, cmx.ngsHornDict, writeToDisk);
 
             //***Teeth
-
+            teethDict = ProcessNames(textByCat, masterIdList, nameDicts, nameCache, "dental", null, cmx.ngsTeethDict, writeToDisk);
 
             //Motion Change Motions
-
+            swimDict = ProcessMotion(subByCat, CharacterMakingIndex.subSwim);
+            glideDict = ProcessMotion(subByCat, CharacterMakingIndex.subGlide);
+            jumpDict = ProcessMotion(subByCat, CharacterMakingIndex.subJump);
+            landingDict = ProcessMotion(subByCat, CharacterMakingIndex.subLanding);
+            movDict = ProcessMotion(subByCat, CharacterMakingIndex.subMove);
+            sprintDict = ProcessMotion(subByCat, CharacterMakingIndex.subSprint);
+            idleDict = ProcessMotion(subByCat, CharacterMakingIndex.subIdle);
 
             if (messageBox != null)
             {
                 messageBox.Hide();
             }
         }
+
+        private Dictionary<string, int> ProcessMotion(Dictionary<string, Dictionary<int, List<string>>> subByCat, string category)
+        {
+            Dictionary<string, int> motions = new();
+            
+            foreach(int id in subByCat[category].Keys)
+            {
+                motions[subByCat[category][id][language]] = id;
+            }
+
+            return motions;
+        }
+
         private Dictionary<string, int> ProcessNamesFaces<T>(Dictionary<string, List<List<PSO2Text.textPair>>> textByCat, List<int> masterIdList,
             List<Dictionary<int, string>> nameDicts, StringBuilder nameCache, string category, string outPath, Dictionary<int, T> cmxDict, bool writeToDisk = false)
         {
             Dictionary<string, string> dict;
-            List<Dictionary<string, string>> strNameDicts = new List<Dictionary<string, string>>();
+            List<Dictionary<string, string>> strNameDicts = new();
             CharacterMakingIndexMethods.GatherTextIdsStringRef(textByCat, new List<string>(), strNameDicts, "facevariation", true);
-            dict = strNameDicts[0];
+            dict = strNameDicts[language];
 
             //Add potential cmx ids that wouldn't be stored in
             CharacterMakingIndexMethods.GatherDictKeys(masterIdList, cmxDict.Keys);
@@ -307,7 +349,13 @@ namespace Character_Making_File_Tool
             nameDicts.Clear();
             nameCache.Clear();
             CharacterMakingIndexMethods.GatherTextIds(textByCat, masterIdList, nameDicts, category, true);
-            dict = nameDicts[0];
+            
+            //Ensure we can use empty strings
+            while(nameDicts.Count < language + 1)
+            {
+                nameDicts.Add(new Dictionary<int, string>());
+            }
+            dict = nameDicts[language];
 
             //Add potential cmx ids that wouldn't be stored with 
             CharacterMakingIndexMethods.GatherDictKeys(masterIdList, cmxDict.Keys);

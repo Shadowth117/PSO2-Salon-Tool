@@ -471,7 +471,7 @@ namespace Character_Making_File_Tool
                         MessageBox.Show("Huh... that's not supposed to happen. Sorry about that!");
                         return;
                 }
-                int fileSize = fileSizes[saveVersion];
+                int fileSize = classicSalonToolFileSizes[saveVersion];
 
                 windowVersion = ingameVersion.ToString();
                 xxpMem.Write(Reloaded.Memory.Struct.GetBytes(ingameVersion), 0, 4);

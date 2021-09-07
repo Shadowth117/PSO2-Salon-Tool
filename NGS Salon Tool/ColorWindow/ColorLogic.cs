@@ -20,6 +20,13 @@ namespace NGS_Salon_Tool
             value = max / 255d;
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="hue">Range 0-360</param>
+        /// <param name="saturation">Range 0-1</param>
+        /// <param name="value">Range 0-1</param>
+        /// <returns>Color value</returns>
         public static Color ColorFromHSV(double hue, double saturation, double value)
         {
             int hi = Convert.ToInt32(Math.Floor(hue / 60)) % 6;

@@ -165,7 +165,8 @@ namespace Character_Making_File_Tool
             public uint padding3;
             public uint padding4;
 
-            public AccessorySliders accessorySliders;
+            //0x1C0
+            public AccessorySlidersReboot accessorySlidersReboot;
 
             //0x22C
             public FaceExpression faceNatural;
@@ -258,7 +259,7 @@ namespace Character_Making_File_Tool
             //SLCT continued
             public BaseSLCTNGS baseSLCTNGS;
 
-            public AccessorySliders accessorySliders;
+            public AccessorySlidersReboot accessorySlidersReboot;
 
             public FaceExpression faceNatural;
             public FaceExpression faceSmile;
@@ -273,7 +274,7 @@ namespace Character_Making_File_Tool
             public FaceExpression faceUnused1;
             public FaceExpression faceUnused2;
 
-            public PaintPriority paintPriority;
+            public PaintPriority paintPriority = PaintPriority.GetDefault();
 
             //NGS extra slider data
             public NGSSLID ngsSLID;
@@ -297,6 +298,10 @@ namespace Character_Making_File_Tool
 
             public AccessoryMisc accessoryMiscData;
 
+            public xxpGeneralReboot()
+            {
+            }
+
             public xxpGeneralReboot(XXPV2 tempXXP)
             {
                 xxpVersion = 10;
@@ -312,7 +317,17 @@ namespace Character_Making_File_Tool
                 ngsCOL2 = ColorConversion.COLRToCOL2(tempXXP.baseCOLR, baseDOC.race);
 
                 baseSLCT = tempXXP.baseSLCT;
-                leftEyePart = baseSLCT.eyePart;
+
+                //Eye parts 
+                byte[] eyes = BitConverter.GetBytes(baseSLCT.eyePart);
+                baseSLCT.eyePart = eyes[0];
+                if(baseDOC.race == 3)
+                {
+                    leftEyePart = eyes[1];
+                } else
+                {
+                    leftEyePart = eyes[0];
+                }
 
                 //Conditionally assign premade expressions based on gender
                 SetDefaultExpressions();
@@ -336,12 +351,23 @@ namespace Character_Making_File_Tool
 
                 baseSLCT = tempXXP.baseSLCT;
                 baseSLCT2 = tempXXP.baseSLCT2;
-                leftEyePart = baseSLCT.eyePart;
+
+                //Eye parts 
+                byte[] eyes = BitConverter.GetBytes(baseSLCT.eyePart);
+                baseSLCT.eyePart = eyes[0];
+                if (baseDOC.race == 3)
+                {
+                    leftEyePart = eyes[1];
+                }
+                else
+                {
+                    leftEyePart = eyes[0];
+                }
 
                 //Conditionally assign premade expressions based on gender
                 SetDefaultExpressions();
 
-                accessorySliders = tempXXP.oldPosSliders.GetAccessorySliders();
+                accessorySlidersReboot = tempXXP.oldPosSliders.GetAccessorySlidersReboot();
 
                 paintPriority = PaintPriority.GetDefault();
             }
@@ -366,12 +392,23 @@ namespace Character_Making_File_Tool
 
                 baseSLCT = tempXXP.baseSLCT;
                 baseSLCT2 = tempXXP.baseSLCT2;
-                leftEyePart = baseSLCT.eyePart;
+
+                //Eye parts 
+                byte[] eyes = BitConverter.GetBytes(baseSLCT.eyePart);
+                baseSLCT.eyePart = eyes[0];
+                if (baseDOC.race == 3)
+                {
+                    leftEyePart = eyes[1];
+                }
+                else
+                {
+                    leftEyePart = eyes[0];
+                }
 
                 //Conditionally assign premade expressions based on gender
                 SetDefaultExpressions();
 
-                accessorySliders = tempXXP.oldAccessorySliders.GetAccessorySliders();
+                accessorySlidersReboot = tempXXP.oldAccessorySliders.GetAccessorySlidersReboot();
 
                 paintPriority = PaintPriority.GetDefault();
             }
@@ -396,12 +433,23 @@ namespace Character_Making_File_Tool
 
                 baseSLCT = tempXXP.baseSLCT;
                 baseSLCT2 = tempXXP.baseSLCT2;
-                leftEyePart = baseSLCT.eyePart;
+
+                //Eye parts 
+                byte[] eyes = BitConverter.GetBytes(baseSLCT.eyePart);
+                baseSLCT.eyePart = eyes[0];
+                if (baseDOC.race == 3)
+                {
+                    leftEyePart = eyes[1];
+                }
+                else
+                {
+                    leftEyePart = eyes[0];
+                }
 
                 //Conditionally assign premade expressions based on gender
                 SetDefaultExpressions();
 
-                accessorySliders = tempXXP.accessorySliders;
+                accessorySlidersReboot = tempXXP.accessorySliders.GetAccessorySlidersReboot();
 
                 paintPriority = PaintPriority.GetDefault();
             }
@@ -426,12 +474,21 @@ namespace Character_Making_File_Tool
 
                 baseSLCT = tempXXP.baseSLCT;
                 baseSLCT2 = tempXXP.baseSLCT2;
-                leftEyePart = tempXXP.leftEyePart;
+
+                //Eye parts 
+                if (baseDOC.race == 3)
+                {
+                    leftEyePart = tempXXP.leftEyePart;
+                }
+                else
+                {
+                    leftEyePart = tempXXP.baseSLCT.eyePart;
+                }
 
                 //Conditionally assign premade expressions based on gender
                 SetDefaultExpressions();
 
-                accessorySliders = tempXXP.accessorySliders;
+                accessorySlidersReboot = tempXXP.accessorySliders.GetAccessorySlidersReboot();
 
                 paintPriority = PaintPriority.GetDefault();
             }
@@ -464,7 +521,7 @@ namespace Character_Making_File_Tool
 
                 baseSLCTNGS = tempXXP.baseSLCTNGS;
 
-                accessorySliders = tempXXP.accessorySliders;
+                accessorySlidersReboot = tempXXP.accessorySlidersReboot;
 
                 faceNatural = tempXXP.faceNatural;
                 faceSmile = tempXXP.faceSmile;
@@ -522,7 +579,7 @@ namespace Character_Making_File_Tool
                 xxpv5.baseCOLR = ColorConversion.COL2ToCOLR(ngsCOL2, baseDOC.race);
                 xxpv5.baseSLCT = baseSLCT;
                 xxpv5.baseSLCT2 = baseSLCT2;
-                xxpv5.oldPosSliders = accessorySliders.GetOldAccessoryPositionSliders();
+                xxpv5.oldPosSliders = accessorySlidersReboot.GetOldAccessoryPositionSliders();
 
                 return xxpv5;
             }
@@ -547,9 +604,9 @@ namespace Character_Making_File_Tool
                 xxpv6.baseFIGR2.ToOld();
 
                 xxpv6.baseCOLR = ColorConversion.COL2ToCOLR(ngsCOL2, baseDOC.race);
-                xxpv6.baseSLCT = baseSLCT;
+                xxpv6.baseSLCT = baseSLCT; 
                 xxpv6.baseSLCT2 = baseSLCT2;
-                xxpv6.oldAccessorySliders = accessorySliders.GetOldAccessorySliders();
+                xxpv6.oldAccessorySliders = accessorySlidersReboot.GetOldAccessorySliders();
                 xxpv6.paintPriority = paintPriority;
 
                 return xxpv6;
@@ -582,7 +639,7 @@ namespace Character_Making_File_Tool
                 xxpv9.baseSLCT = baseSLCT;
                 xxpv9.baseSLCT2 = baseSLCT2;
                 xxpv9.leftEyePart = leftEyePart;
-                xxpv9.accessorySliders = accessorySliders;
+                xxpv9.accessorySliders = accessorySlidersReboot.GetClassicAccessorySliders();
                 xxpv9.paintPriority = paintPriority;
 
                 return xxpv9;
@@ -610,7 +667,7 @@ namespace Character_Making_File_Tool
                 tempXXP.leftEyePart = leftEyePart;
                 tempXXP.skinTextureSet = skinTextureSet;
                 tempXXP.baseSLCTNGS = baseSLCTNGS;
-                tempXXP.accessorySliders = accessorySliders;
+                tempXXP.accessorySlidersReboot = accessorySlidersReboot;
                 tempXXP.faceNatural = faceNatural;
                 tempXXP.faceSmile = faceSmile;
                 tempXXP.faceAngry = faceAngry;

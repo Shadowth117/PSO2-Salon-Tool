@@ -16,24 +16,77 @@ namespace Character_Making_File_Tool
 {
     public static class IceHandler
     {
-        public unsafe static BitmapSource GetIconFromIce(string pso2_bin, int fileNum, string type)
+        public unsafe static BitmapSource GetIconFromIce(string pso2_bin, int fileNum, string type, int gender = -1)
         {
             string typeString;
             string finalId = GetFinalId(fileNum);
             switch (type)
             {
-                //case CharacterMakingIndex.costumeIcon: //Preview feature only. Maybe in .NET 6...
-                case "costume01_":
-                    typeString = CharacterMakingIndexMethods.GetCostumeOuterIconString(pso2_bin, finalId);
+                case "arm_":
+                    typeString = CharacterMakingIndexMethods.GetCastArmIconString(finalId);
                     break;
                 case "basewear01_":
                     typeString = CharacterMakingIndexMethods.GetBasewearIconString(finalId);
                     break;
+                case "bodypaint01_":
+                    typeString = CharacterMakingIndexMethods.GetBodyPaintIconString(finalId);
+                    break;
+                case "bodypaint02_":
+                    typeString = CharacterMakingIndexMethods.GetStickerIconString(finalId);
+                    break;
+                //case CharacterMakingIndex.costumeIcon: //Preview feature only. Maybe in .NET 6...
+                case "costume01_":
+                    typeString = CharacterMakingIndexMethods.GetCostumeOuterIconString(pso2_bin, finalId);
+                    break;
+                case "decoy01_":
+                    typeString = CharacterMakingIndexMethods.GetAccessoryIconString(finalId);
+                    break;
+                case "dental01_":
+                    typeString = CharacterMakingIndexMethods.GetTeethIconString(finalId);
+                    break;
+                case "ears01_":
+                    typeString = CharacterMakingIndexMethods.GetEarIconString(finalId);
+                    break;
+                case "eye01_":
+                    typeString = CharacterMakingIndexMethods.GetEyeIconString(finalId);
+                    break;
+                case "eyebrows01_":
+                    typeString = CharacterMakingIndexMethods.GetEyebrowsIconString(finalId);
+                    break;
+                case "eyelashes01_":
+                    typeString = CharacterMakingIndexMethods.GetEyelashesIconString(finalId);
+                    break;
+                case "face01_":
+                    typeString = CharacterMakingIndexMethods.GetFaceIconString(finalId);
+                    break;
+                case "facepaint02_":
+                    typeString = CharacterMakingIndexMethods.GetFacePaintIconString(finalId);
+                    break;
+                case "hair01_":
+                    //Hair is a bit odd to handle as intended
+                    if (fileNum >= 40000 && fileNum < 100000)
+                    {
+                        typeString = CharacterMakingIndexMethods.GetHairCastIconString(finalId);
+                    } else
+                    {
+                        string hairMaleFileName = Path.Combine(pso2_bin, CharacterMakingIndex.dataDir, CharacterMakingIndexMethods.GetHairManIconString(finalId));
+                        string hairFemaleFileName = Path.Combine(pso2_bin, CharacterMakingIndex.dataDir, CharacterMakingIndexMethods.GetHairWomanIconString(finalId));
+                        hairMaleFileName = DefaultIfNonexistant(pso2_bin, hairMaleFileName, out bool foundMale);
+                        hairFemaleFileName = DefaultIfNonexistant(pso2_bin, hairFemaleFileName, out bool foundFemale);
+                        if((gender == 0 || foundFemale == false) && foundMale == true)
+                        {
+                            return GetFirstImageFromIce(hairMaleFileName);
+                        } else
+                        {
+                            return GetFirstImageFromIce(hairFemaleFileName);
+                        }
+                    }
+                    break;
+                case "horn01_":
+                    typeString = CharacterMakingIndexMethods.GetHornIconString(finalId);
+                    break;
                 case "innerwear01_":
                     typeString = CharacterMakingIndexMethods.GetInnerwearIconString(finalId);
-                    break;
-                case "arm_":
-                    typeString = CharacterMakingIndexMethods.GetCastArmIconString(finalId);
                     break;
                 case "leg_":
                     typeString = CharacterMakingIndexMethods.GetCastLegIconString(finalId);
@@ -42,7 +95,7 @@ namespace Character_Making_File_Tool
                     throw new Exception("Unexpected icon type!");
             }
             string fileName = Path.Combine(pso2_bin, CharacterMakingIndex.dataDir, typeString);
-            fileName = DefaultIfNonexistant(pso2_bin, fileName);
+            fileName = DefaultIfNonexistant(pso2_bin, fileName, out bool found);
             return GetFirstImageFromIce(fileName);
         }
 
@@ -61,11 +114,15 @@ namespace Character_Making_File_Tool
             return finalId;
         }
 
-        private static unsafe string DefaultIfNonexistant(string pso2_bin, string fileName)
+        private static unsafe string DefaultIfNonexistant(string pso2_bin, string fileName, out bool found)
         {
+            found = false;
             if (!File.Exists(fileName))
             {
                 fileName = Path.Combine(pso2_bin, CharacterMakingIndex.dataDir, CharacterMakingIndexMethods.GetCostumeOuterIconString(pso2_bin, "00001"));
+            } else
+            {
+                found = true;
             }
 
             return fileName;
