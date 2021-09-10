@@ -40,8 +40,10 @@ namespace NGS_Salon_Tool
         string pso2BinCachePath = System.IO.Path.Combine(System.IO.Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "names\\pso2Bin.txt");
         string pso2_binDir = null;
         WIPBox wipBox = null;
-
         ColorPicker colorPicker = null;
+
+        private bool motionWait = false; //Used to avoid loops when changing motion controls
+
         public MainWindow()
         {
             InitializeComponent();
@@ -109,6 +111,8 @@ namespace NGS_Salon_Tool
                                 break;
                         }
                     }
+
+                    ColorButtons();
                     SetEnabledState(true);
                 /*}
                 catch
@@ -148,15 +152,29 @@ namespace NGS_Salon_Tool
                     MessageBox.Show("Error: File version unknown. If this is a proper salon file, please report this!");
                     return;
             }
-
-            ColorButtons();
         }
 
         private unsafe void ColorButtons()
         {
             //Colors
             fixed (byte* localArr = xxpHandler.ngsCOL2.outerColor1) { outerColorButton.Background = new SolidColorBrush(ColorConversion.ColorFromRGBA(ColorConversion.BytesFromFixed(localArr))); };
+            fixed (byte* localArr = xxpHandler.ngsCOL2.outerColor2) { outerColor2Button.Background = new SolidColorBrush(ColorConversion.ColorFromRGBA(ColorConversion.BytesFromFixed(localArr))); };
             fixed (byte* localArr = xxpHandler.ngsCOL2.baseColor1) { baseColorButton.Background = new SolidColorBrush(ColorConversion.ColorFromRGBA(ColorConversion.BytesFromFixed(localArr))); };
+            fixed (byte* localArr = xxpHandler.ngsCOL2.baseColor2) { baseColor2Button.Background = new SolidColorBrush(ColorConversion.ColorFromRGBA(ColorConversion.BytesFromFixed(localArr))); };
+            fixed (byte* localArr = xxpHandler.ngsCOL2.innerColor1) { innerColorButton.Background = new SolidColorBrush(ColorConversion.ColorFromRGBA(ColorConversion.BytesFromFixed(localArr))); };
+            fixed (byte* localArr = xxpHandler.ngsCOL2.innerColor2) { innerColor2Button.Background = new SolidColorBrush(ColorConversion.ColorFromRGBA(ColorConversion.BytesFromFixed(localArr))); };
+            fixed (byte* localArr = xxpHandler.ngsCOL2.hairColor1) { hairColorButton.Background = new SolidColorBrush(ColorConversion.ColorFromRGBA(ColorConversion.BytesFromFixed(localArr))); };
+            fixed (byte* localArr = xxpHandler.ngsCOL2.hairColor2) { hairColor2Button.Background = new SolidColorBrush(ColorConversion.ColorFromRGBA(ColorConversion.BytesFromFixed(localArr))); };
+            fixed (byte* localArr = xxpHandler.ngsCOL2.skinColor1) { skinColorButton.Background = new SolidColorBrush(ColorConversion.ColorFromRGBA(ColorConversion.BytesFromFixed(localArr))); };
+            fixed (byte* localArr = xxpHandler.ngsCOL2.skinColor2) { skinColor2Button.Background = new SolidColorBrush(ColorConversion.ColorFromRGBA(ColorConversion.BytesFromFixed(localArr))); };
+            fixed (byte* localArr = xxpHandler.ngsCOL2.leftEyeColor) { leftEyeColorButton.Background = new SolidColorBrush(ColorConversion.ColorFromRGBA(ColorConversion.BytesFromFixed(localArr))); };
+            fixed (byte* localArr = xxpHandler.ngsCOL2.rightEyeColor) { rightEyeColorButton.Background = new SolidColorBrush(ColorConversion.ColorFromRGBA(ColorConversion.BytesFromFixed(localArr))); };
+            fixed (byte* localArr = xxpHandler.ngsCOL2.eyebrowColor) { eyebrowsColorButton.Background = new SolidColorBrush(ColorConversion.ColorFromRGBA(ColorConversion.BytesFromFixed(localArr))); };
+            fixed (byte* localArr = xxpHandler.ngsCOL2.eyelashColor) { eyelashesColorButton.Background = new SolidColorBrush(ColorConversion.ColorFromRGBA(ColorConversion.BytesFromFixed(localArr))); };
+            fixed (byte* localArr = xxpHandler.ngsCOL2.mainColor) { mainColorButton.Background = new SolidColorBrush(ColorConversion.ColorFromRGBA(ColorConversion.BytesFromFixed(localArr))); };
+            fixed (byte* localArr = xxpHandler.ngsCOL2.subColor1) { subcolor1Button.Background = new SolidColorBrush(ColorConversion.ColorFromRGBA(ColorConversion.BytesFromFixed(localArr))); };
+            fixed (byte* localArr = xxpHandler.ngsCOL2.subColor2) { subcolor2Button.Background = new SolidColorBrush(ColorConversion.ColorFromRGBA(ColorConversion.BytesFromFixed(localArr))); };
+            fixed (byte* localArr = xxpHandler.ngsCOL2.subColor3) { subcolor3Button.Background = new SolidColorBrush(ColorConversion.ColorFromRGBA(ColorConversion.BytesFromFixed(localArr))); };
         }
 
         private void LoadGameData()
@@ -208,37 +226,6 @@ namespace NGS_Salon_Tool
             movCB.ItemsSource = cmxHandler.movDict.Keys;
             sprintCB.ItemsSource = cmxHandler.sprintDict.Keys;
             idleCB.ItemsSource = cmxHandler.idleDict.Keys;
-        }
-
-        private unsafe void SetOuterColor(object sender, RoutedEventArgs e)
-        {
-            fixed(byte* col2 = xxpHandler.ngsCOL2.outerColor1)
-            {
-                if(colorPicker != null && colorPicker.IsLoaded == true)
-                {
-                    colorPicker.LinkExternalColor(col2, (Button)sender);
-                } else
-                {
-                    colorPicker = new ColorPicker(col2, (Button)sender);
-                }
-            }
-            colorPicker.Show();
-        }
-
-        private unsafe void SetBaseColor(object sender, RoutedEventArgs e)
-        {
-            fixed (byte* col2 = xxpHandler.ngsCOL2.baseColor1)
-            {
-                if (colorPicker != null && colorPicker.IsLoaded == true)
-                {
-                    colorPicker.LinkExternalColor(col2, (Button)sender);
-                }
-                else
-                {
-                    colorPicker = new ColorPicker(col2, (Button)sender);
-                }
-            }
-            colorPicker.Show();
         }
         private void SetPSO2Bin(object sender, RoutedEventArgs e)
         {
@@ -447,31 +434,448 @@ namespace NGS_Salon_Tool
         }
         private void SwimSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            string text = (sender as ComboBox).SelectedItem as string;
+            if(motionWait == false && cmxHandler != null && cmxHandler.swimDict.Count > 0 && swimCB.SelectedIndex != -1)
+            {
+                motionWait = true;
+                swimUD.Value = cmxHandler.swimDict[(string)swimCB.SelectedItem];
+                motionWait = false;
+            }
+        }
+        private void SwimUDChanged(object sender, RoutedEventArgs e)
+        {
+            if (motionWait == false && cmxHandler != null && cmxHandler.swimDict.Count > 0)
+            {
+                motionWait = true;
+                if(cmxHandler.swimDictReverse.TryGetValue((int)swimUD.Value, out string nameKey))
+                {
+                    swimCB.SelectedIndex = swimCB.Items.IndexOf(nameKey);
+                } else
+                {
+                    swimCB.SelectedIndex = -1;
+                }
+                motionWait = false;
+            }
         }
         private void GlideSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            string text = (sender as ComboBox).SelectedItem as string;
+            if (motionWait == false && cmxHandler != null && cmxHandler.glideDict.Count > 0 && glideCB.SelectedIndex != -1)
+            {
+                motionWait = true;
+                glideUD.Value = cmxHandler.glideDict[(string)glideCB.SelectedItem];
+                motionWait = false;
+            }
+        }
+        private void GlideUDChanged(object sender, RoutedEventArgs e)
+        {
+            if (motionWait == false && cmxHandler != null && cmxHandler.glideDict.Count > 0)
+            {
+                motionWait = true;
+                if (cmxHandler.glideDictReverse.TryGetValue((int)glideUD.Value, out string nameKey))
+                {
+                    glideCB.SelectedIndex = glideCB.Items.IndexOf(nameKey);
+                }
+                else
+                {
+                    glideCB.SelectedIndex = -1;
+                }
+                motionWait = false;
+            }
         }
         private void JumpSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            string text = (sender as ComboBox).SelectedItem as string;
+            if (motionWait == false && cmxHandler != null && cmxHandler.jumpDict.Count > 0 && jumpCB.SelectedIndex != -1)
+            {
+                motionWait = true;
+                jumpUD.Value = cmxHandler.jumpDict[(string)jumpCB.SelectedItem];
+                motionWait = false;
+            }
+        }
+        private void JumpUDChanged(object sender, RoutedEventArgs e)
+        {
+            if (motionWait == false && cmxHandler != null && cmxHandler.jumpDict.Count > 0)
+            {
+                motionWait = true;
+                if (cmxHandler.jumpDictReverse.TryGetValue((int)jumpUD.Value, out string nameKey))
+                {
+                    jumpCB.SelectedIndex = jumpCB.Items.IndexOf(nameKey);
+                }
+                else
+                {
+                    jumpCB.SelectedIndex = -1;
+                }
+                motionWait = false;
+            }
         }
         private void LandingSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            string text = (sender as ComboBox).SelectedItem as string;
+            if (motionWait == false && cmxHandler != null && cmxHandler.landingDict.Count > 0 && landingCB.SelectedIndex != -1)
+            {
+                motionWait = true;
+                landingUD.Value = cmxHandler.landingDict[(string)landingCB.SelectedItem];
+                motionWait = false;
+            }
+        }
+        private void LandingUDChanged(object sender, RoutedEventArgs e)
+        {
+            if (motionWait == false && cmxHandler != null && cmxHandler.landingDict.Count > 0)
+            {
+                motionWait = true;
+                if (cmxHandler.landingDictReverse.TryGetValue((int)landingUD.Value, out string nameKey))
+                {
+                    landingCB.SelectedIndex = landingCB.Items.IndexOf(nameKey);
+                }
+                else
+                {
+                    landingCB.SelectedIndex = -1;
+                }
+                motionWait = false;
+            }
         }
         private void MovSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            string text = (sender as ComboBox).SelectedItem as string;
+            if (motionWait == false && cmxHandler != null && cmxHandler.movDict.Count > 0 && movCB.SelectedIndex != -1)
+            {
+                motionWait = true;
+                movUD.Value = cmxHandler.movDict[(string)movCB.SelectedItem];
+                motionWait = false;
+            }
+        }
+        private void MovUDChanged(object sender, RoutedEventArgs e)
+        {
+            if (motionWait == false && cmxHandler != null && cmxHandler.movDict.Count > 0)
+            {
+                motionWait = true;
+                if (cmxHandler.movDictReverse.TryGetValue((int)movUD.Value, out string nameKey))
+                {
+                    movCB.SelectedIndex = movCB.Items.IndexOf(nameKey);
+                }
+                else
+                {
+                    movCB.SelectedIndex = -1;
+                }
+                motionWait = false;
+            }
         }
         private void SprintSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            string text = (sender as ComboBox).SelectedItem as string;
+            if (motionWait == false && cmxHandler != null && cmxHandler.sprintDict.Count > 0 && sprintCB.SelectedIndex != -1)
+            {
+                motionWait = true;
+                sprintUD.Value = cmxHandler.sprintDict[(string)sprintCB.SelectedItem];
+                motionWait = false;
+            }
+        }
+        private void SprintUDChanged(object sender, RoutedEventArgs e)
+        {
+            if (motionWait == false && cmxHandler != null && cmxHandler.sprintDict.Count > 0)
+            {
+                motionWait = true;
+                if (cmxHandler.sprintDictReverse.TryGetValue((int)sprintUD.Value, out string nameKey))
+                {
+                    sprintCB.SelectedIndex = sprintCB.Items.IndexOf(nameKey);
+                }
+                else
+                {
+                    sprintCB.SelectedIndex = -1;
+                }
+                motionWait = false;
+            }
         }
         private void IdleSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            string text = (sender as ComboBox).SelectedItem as string;
+            if (motionWait == false && cmxHandler != null && cmxHandler.idleDict.Count > 0 && idleCB.SelectedIndex != -1)
+            {
+                motionWait = true;
+                idleUD.Value = cmxHandler.idleDict[(string)idleCB.SelectedItem];
+                motionWait = false;
+            }
+        }
+        private void IdleUDChanged(object sender, RoutedEventArgs e)
+        {
+            if (motionWait == false && cmxHandler != null && cmxHandler.idleDict.Count > 0)
+            {
+                motionWait = true;
+                if (cmxHandler.idleDictReverse.TryGetValue((int)idleUD.Value, out string nameKey))
+                {
+                    idleCB.SelectedIndex = idleCB.Items.IndexOf(nameKey);
+                }
+                else
+                {
+                    idleCB.SelectedIndex = -1;
+                }
+                motionWait = false;
+            }
+        }
+
+        private unsafe void SetOuterColor(object sender, RoutedEventArgs e)
+        {
+            fixed (byte* col2 = xxpHandler.ngsCOL2.outerColor1)
+            {
+                if (colorPicker != null && colorPicker.IsLoaded == true)
+                {
+                    colorPicker.LinkExternalColor(col2, (Button)sender);
+                }
+                else
+                {
+                    colorPicker = new ColorPicker(col2, (Button)sender);
+                }
+            }
+            colorPicker.Show();
+        }
+        private unsafe void SetOuterColor2(object sender, RoutedEventArgs e)
+        {
+            fixed (byte* col2 = xxpHandler.ngsCOL2.outerColor2)
+            {
+                if (colorPicker != null && colorPicker.IsLoaded == true)
+                {
+                    colorPicker.LinkExternalColor(col2, (Button)sender);
+                }
+                else
+                {
+                    colorPicker = new ColorPicker(col2, (Button)sender);
+                }
+            }
+            colorPicker.Show();
+        }
+        private unsafe void SetBaseColor(object sender, RoutedEventArgs e)
+        {
+            fixed (byte* col2 = xxpHandler.ngsCOL2.baseColor1)
+            {
+                if (colorPicker != null && colorPicker.IsLoaded == true)
+                {
+                    colorPicker.LinkExternalColor(col2, (Button)sender);
+                }
+                else
+                {
+                    colorPicker = new ColorPicker(col2, (Button)sender);
+                }
+            }
+            colorPicker.Show();
+        }
+        private unsafe void SetBaseColor2(object sender, RoutedEventArgs e)
+        {
+            fixed (byte* col2 = xxpHandler.ngsCOL2.baseColor2)
+            {
+                if (colorPicker != null && colorPicker.IsLoaded == true)
+                {
+                    colorPicker.LinkExternalColor(col2, (Button)sender);
+                }
+                else
+                {
+                    colorPicker = new ColorPicker(col2, (Button)sender);
+                }
+            }
+            colorPicker.Show();
+        }
+        private unsafe void SetInnerColor(object sender, RoutedEventArgs e)
+        {
+            fixed (byte* col2 = xxpHandler.ngsCOL2.innerColor1)
+            {
+                if (colorPicker != null && colorPicker.IsLoaded == true)
+                {
+                    colorPicker.LinkExternalColor(col2, (Button)sender);
+                }
+                else
+                {
+                    colorPicker = new ColorPicker(col2, (Button)sender);
+                }
+            }
+            colorPicker.Show();
+        }
+        private unsafe void SetInnerColor2(object sender, RoutedEventArgs e)
+        {
+            fixed (byte* col2 = xxpHandler.ngsCOL2.innerColor2)
+            {
+                if (colorPicker != null && colorPicker.IsLoaded == true)
+                {
+                    colorPicker.LinkExternalColor(col2, (Button)sender);
+                }
+                else
+                {
+                    colorPicker = new ColorPicker(col2, (Button)sender);
+                }
+            }
+            colorPicker.Show();
+        }
+        private unsafe void SetSkinColor(object sender, RoutedEventArgs e)
+        {
+            fixed (byte* col2 = xxpHandler.ngsCOL2.skinColor1)
+            {
+                if (colorPicker != null && colorPicker.IsLoaded == true)
+                {
+                    colorPicker.LinkExternalColor(col2, (Button)sender);
+                }
+                else
+                {
+                    colorPicker = new ColorPicker(col2, (Button)sender);
+                }
+            }
+            colorPicker.Show();
+        }
+        private unsafe void SetSkinColor2(object sender, RoutedEventArgs e)
+        {
+            fixed (byte* col2 = xxpHandler.ngsCOL2.skinColor2)
+            {
+                if (colorPicker != null && colorPicker.IsLoaded == true)
+                {
+                    colorPicker.LinkExternalColor(col2, (Button)sender);
+                }
+                else
+                {
+                    colorPicker = new ColorPicker(col2, (Button)sender);
+                }
+            }
+            colorPicker.Show();
+        }
+        private unsafe void SetHairColor(object sender, RoutedEventArgs e)
+        {
+            fixed (byte* col2 = xxpHandler.ngsCOL2.hairColor1)
+            {
+                if (colorPicker != null && colorPicker.IsLoaded == true)
+                {
+                    colorPicker.LinkExternalColor(col2, (Button)sender);
+                }
+                else
+                {
+                    colorPicker = new ColorPicker(col2, (Button)sender);
+                }
+            }
+            colorPicker.Show();
+        }
+        private unsafe void SetHairColor2(object sender, RoutedEventArgs e)
+        {
+            fixed (byte* col2 = xxpHandler.ngsCOL2.hairColor2)
+            {
+                if (colorPicker != null && colorPicker.IsLoaded == true)
+                {
+                    colorPicker.LinkExternalColor(col2, (Button)sender);
+                }
+                else
+                {
+                    colorPicker = new ColorPicker(col2, (Button)sender);
+                }
+            }
+            colorPicker.Show();
+        }
+        private unsafe void SetLeftEyeColor(object sender, RoutedEventArgs e)
+        {
+            fixed (byte* col2 = xxpHandler.ngsCOL2.leftEyeColor)
+            {
+                if (colorPicker != null && colorPicker.IsLoaded == true)
+                {
+                    colorPicker.LinkExternalColor(col2, (Button)sender);
+                }
+                else
+                {
+                    colorPicker = new ColorPicker(col2, (Button)sender);
+                }
+            }
+            colorPicker.Show();
+        }
+        private unsafe void SetRightEyeColor(object sender, RoutedEventArgs e)
+        {
+            fixed (byte* col2 = xxpHandler.ngsCOL2.rightEyeColor)
+            {
+                if (colorPicker != null && colorPicker.IsLoaded == true)
+                {
+                    colorPicker.LinkExternalColor(col2, (Button)sender);
+                }
+                else
+                {
+                    colorPicker = new ColorPicker(col2, (Button)sender);
+                }
+            }
+            colorPicker.Show();
+        }
+        private unsafe void EyelashColor(object sender, RoutedEventArgs e)
+        {
+            fixed (byte* col2 = xxpHandler.ngsCOL2.eyelashColor)
+            {
+                if (colorPicker != null && colorPicker.IsLoaded == true)
+                {
+                    colorPicker.LinkExternalColor(col2, (Button)sender);
+                }
+                else
+                {
+                    colorPicker = new ColorPicker(col2, (Button)sender);
+                }
+            }
+            colorPicker.Show();
+        }
+        private unsafe void SetEyebrowColor(object sender, RoutedEventArgs e)
+        {
+            fixed (byte* col2 = xxpHandler.ngsCOL2.eyebrowColor)
+            {
+                if (colorPicker != null && colorPicker.IsLoaded == true)
+                {
+                    colorPicker.LinkExternalColor(col2, (Button)sender);
+                }
+                else
+                {
+                    colorPicker = new ColorPicker(col2, (Button)sender);
+                }
+            }
+            colorPicker.Show();
+        }
+        private unsafe void SetMainColor(object sender, RoutedEventArgs e)
+        {
+            fixed (byte* col2 = xxpHandler.ngsCOL2.mainColor)
+            {
+                if (colorPicker != null && colorPicker.IsLoaded == true)
+                {
+                    colorPicker.LinkExternalColor(col2, (Button)sender);
+                }
+                else
+                {
+                    colorPicker = new ColorPicker(col2, (Button)sender);
+                }
+            }
+            colorPicker.Show();
+        }
+        private unsafe void SetSubColor1(object sender, RoutedEventArgs e)
+        {
+            fixed (byte* col2 = xxpHandler.ngsCOL2.subColor1)
+            {
+                if (colorPicker != null && colorPicker.IsLoaded == true)
+                {
+                    colorPicker.LinkExternalColor(col2, (Button)sender);
+                }
+                else
+                {
+                    colorPicker = new ColorPicker(col2, (Button)sender);
+                }
+            }
+            colorPicker.Show();
+        }
+        private unsafe void SetSubColor2(object sender, RoutedEventArgs e)
+        {
+            fixed (byte* col2 = xxpHandler.ngsCOL2.subColor2)
+            {
+                if (colorPicker != null && colorPicker.IsLoaded == true)
+                {
+                    colorPicker.LinkExternalColor(col2, (Button)sender);
+                }
+                else
+                {
+                    colorPicker = new ColorPicker(col2, (Button)sender);
+                }
+            }
+            colorPicker.Show();
+        }
+        private unsafe void SetSubColor3(object sender, RoutedEventArgs e)
+        {
+            fixed (byte* col2 = xxpHandler.ngsCOL2.subColor3)
+            {
+                if (colorPicker != null && colorPicker.IsLoaded == true)
+                {
+                    colorPicker.LinkExternalColor(col2, (Button)sender);
+                }
+                else
+                {
+                    colorPicker = new ColorPicker(col2, (Button)sender);
+                }
+            }
+            colorPicker.Show();
         }
     }
 }

@@ -63,6 +63,33 @@ namespace Character_Making_File_Tool
         public Dictionary<string, int> sprintDict = new();
         public Dictionary<string, int> idleDict = new();
 
+        public Dictionary<int, string> costumeOuterDictReverse = new();
+        public Dictionary<int, string> basewearDictReverse = new();
+        public Dictionary<int, string> innerwearDictReverse = new();
+        public Dictionary<int, string> castArmDictReverse = new();
+        public Dictionary<int, string> castLegDictReverse = new();
+        public Dictionary<int, string> bodyPaintDictReverse = new();
+        public Dictionary<int, string> stickerDictReverse = new();
+        public Dictionary<int, string> hairDictReverse = new();
+        public Dictionary<int, string> eyeDictReverse = new();
+        public Dictionary<int, string> eyebrowDictReverse = new();
+        public Dictionary<int, string> eyelashDictReverse = new();
+        public Dictionary<int, string> accessoryDictReverse = new();
+        public Dictionary<int, string> faceDictReverse = new();
+        public Dictionary<int, string> faceTexDictReverse = new();
+        public Dictionary<int, string> facePaintDictReverse = new();
+        public Dictionary<int, string> earDictReverse = new();
+        public Dictionary<int, string> hornDictReverse = new();
+        public Dictionary<int, string> teethDictReverse = new();
+
+        public Dictionary<int, string> swimDictReverse = new();
+        public Dictionary<int, string> glideDictReverse = new();
+        public Dictionary<int, string> jumpDictReverse = new();
+        public Dictionary<int, string> landingDictReverse = new();
+        public Dictionary<int, string> movDictReverse = new();
+        public Dictionary<int, string> sprintDictReverse = new();
+        public Dictionary<int, string> idleDictReverse = new();
+
         public CharacterMakingIndexHandler(string pso2_binPath)
         {
             try
@@ -204,7 +231,7 @@ namespace Character_Making_File_Tool
             CharacterMakingIndexMethods.GatherDictKeys(masterIdList, cmx.costumeDict.Keys);
             CharacterMakingIndexMethods.GatherDictKeys(masterIdList, cmx.outerDict.Keys);
 
-            costumeOuterDict = BuildNameCache(masterIdList, nameCache, dict);
+            costumeOuterDict = BuildNameCache(masterIdList, nameCache, dict, out costumeOuterDictReverse);
 
             //Somewhat vestigial. Not needed with faster .text reading
             if (writeToDisk == true)
@@ -213,64 +240,64 @@ namespace Character_Making_File_Tool
             }
 
             //***Basewear
-            basewearDict = ProcessNames(textByCat, masterIdList, nameDicts, nameCache, "basewear", basewearNamePath, cmx.baseWearDict, writeToDisk);
+            basewearDict = ProcessNames(textByCat, masterIdList, nameDicts, nameCache, "basewear", basewearNamePath, cmx.baseWearDict, out basewearDictReverse, writeToDisk);
 
             //***Innerwear
-            innerwearDict = ProcessNames(textByCat, masterIdList, nameDicts, nameCache, "innerwear", innerwearNamePath, cmx.innerWearDict, writeToDisk);
+            innerwearDict = ProcessNames(textByCat, masterIdList, nameDicts, nameCache, "innerwear", innerwearNamePath, cmx.innerWearDict, out innerwearDictReverse, writeToDisk);
 
             //***Cast Arms
-            castArmDict = ProcessNames(textByCat, masterIdList, nameDicts, nameCache, "arm", castArmNamePath, cmx.carmDict, writeToDisk);
+            castArmDict = ProcessNames(textByCat, masterIdList, nameDicts, nameCache, "arm", castArmNamePath, cmx.carmDict, out castArmDictReverse, writeToDisk);
 
             //***Cast Legs
-            castLegDict = ProcessNames(textByCat, masterIdList, nameDicts, nameCache, "Leg", castLegNamePath, cmx.clegDict, writeToDisk);
+            castLegDict = ProcessNames(textByCat, masterIdList, nameDicts, nameCache, "Leg", castLegNamePath, cmx.clegDict, out castLegDictReverse, writeToDisk);
 
             //***Body paint
-            bodyPaintDict = ProcessNames(textByCat, masterIdList, nameDicts, nameCache, "bodypaint1", null, cmx.bodyPaintDict, writeToDisk);
+            bodyPaintDict = ProcessNames(textByCat, masterIdList, nameDicts, nameCache, "bodypaint1", null, cmx.bodyPaintDict, out bodyPaintDictReverse, writeToDisk);
 
             //***Stickers
-            stickerDict = ProcessNames(textByCat, masterIdList, nameDicts, nameCache, "bodypaint2", null, cmx.stickerDict, writeToDisk);
+            stickerDict = ProcessNames(textByCat, masterIdList, nameDicts, nameCache, "bodypaint2", null, cmx.stickerDict, out stickerDictReverse, writeToDisk);
 
             //***Hair
-            hairDict = ProcessNames(textByCat, masterIdList, nameDicts, nameCache, "hair", null, cmx.hairDict, writeToDisk);
+            hairDict = ProcessNames(textByCat, masterIdList, nameDicts, nameCache, "hair", null, cmx.hairDict, out hairDictReverse, writeToDisk);
 
             //***Eye
-            eyeDict = ProcessNames(textByCat, masterIdList, nameDicts, nameCache, "eye", null, cmx.eyeDict, writeToDisk);
+            eyeDict = ProcessNames(textByCat, masterIdList, nameDicts, nameCache, "eye", null, cmx.eyeDict, out eyeDictReverse, writeToDisk);
 
             //***Eyebrow
-            eyebrowDict = ProcessNames(textByCat, masterIdList, nameDicts, nameCache, "eyebrows", null, cmx.eyebrowDict, writeToDisk);
+            eyebrowDict = ProcessNames(textByCat, masterIdList, nameDicts, nameCache, "eyebrows", null, cmx.eyebrowDict, out eyebrowDictReverse, writeToDisk);
 
             //***Eyelash
-            eyelashDict = ProcessNames(textByCat, masterIdList, nameDicts, nameCache, "eyelashes", null, cmx.eyelashDict, writeToDisk);
+            eyelashDict = ProcessNames(textByCat, masterIdList, nameDicts, nameCache, "eyelashes", null, cmx.eyelashDict, out eyelashDictReverse, writeToDisk);
 
             //***Accessories
-            accessoryDict = ProcessNames(textByCat, masterIdList, nameDicts, nameCache, "decoy", null, cmx.accessoryDict, writeToDisk);
+            accessoryDict = ProcessNames(textByCat, masterIdList, nameDicts, nameCache, "decoy", null, cmx.accessoryDict, out accessoryDictReverse, writeToDisk);
 
             //***Face Models
-            faceDict = ProcessNames(textByCat, masterIdList, nameDicts, nameCache, "", null, cmx.faceDict, writeToDisk);
+            faceDict = ProcessNames(textByCat, masterIdList, nameDicts, nameCache, "", null, cmx.faceDict, out faceDictReverse, writeToDisk);
 
             //***Face Textures
-            faceTexDict = ProcessNames(textByCat, masterIdList, nameDicts, nameCache, "", null, cmx.faceTextureDict, writeToDisk);
+            faceTexDict = ProcessNames(textByCat, masterIdList, nameDicts, nameCache, "", null, cmx.faceTextureDict, out faceTexDictReverse, writeToDisk);
 
             //***Face paint
-            facePaintDict = ProcessNames(textByCat, masterIdList, nameDicts, nameCache, "facepaint1", null, cmx.fcpDict, writeToDisk);
+            facePaintDict = ProcessNames(textByCat, masterIdList, nameDicts, nameCache, "facepaint1", null, cmx.fcpDict, out facePaintDictReverse, writeToDisk);
 
             //***Ear
-            earDict = ProcessNames(textByCat, masterIdList, nameDicts, nameCache, "ears", null, cmx.ngsEarDict, writeToDisk);
+            earDict = ProcessNames(textByCat, masterIdList, nameDicts, nameCache, "ears", null, cmx.ngsEarDict, out earDictReverse, writeToDisk);
 
             //***Horn
-            hornDict = ProcessNames(textByCat, masterIdList, nameDicts, nameCache, "horn", null, cmx.ngsHornDict, writeToDisk);
+            hornDict = ProcessNames(textByCat, masterIdList, nameDicts, nameCache, "horn", null, cmx.ngsHornDict, out hornDictReverse, writeToDisk);
 
             //***Teeth
-            teethDict = ProcessNames(textByCat, masterIdList, nameDicts, nameCache, "dental", null, cmx.ngsTeethDict, writeToDisk);
+            teethDict = ProcessNames(textByCat, masterIdList, nameDicts, nameCache, "dental", null, cmx.ngsTeethDict, out teethDictReverse, writeToDisk);
 
             //Motion Change Motions
-            swimDict = ProcessMotion(subByCat, CharacterMakingIndex.subSwim);
-            glideDict = ProcessMotion(subByCat, CharacterMakingIndex.subGlide);
-            jumpDict = ProcessMotion(subByCat, CharacterMakingIndex.subJump);
-            landingDict = ProcessMotion(subByCat, CharacterMakingIndex.subLanding);
-            movDict = ProcessMotion(subByCat, CharacterMakingIndex.subMove);
-            sprintDict = ProcessMotion(subByCat, CharacterMakingIndex.subSprint);
-            idleDict = ProcessMotion(subByCat, CharacterMakingIndex.subIdle);
+            swimDict = ProcessMotion(subByCat, CharacterMakingIndex.subSwim, out swimDictReverse);
+            glideDict = ProcessMotion(subByCat, CharacterMakingIndex.subGlide, out glideDictReverse);
+            jumpDict = ProcessMotion(subByCat, CharacterMakingIndex.subJump, out jumpDictReverse);
+            landingDict = ProcessMotion(subByCat, CharacterMakingIndex.subLanding, out landingDictReverse);
+            movDict = ProcessMotion(subByCat, CharacterMakingIndex.subMove, out movDictReverse);
+            sprintDict = ProcessMotion(subByCat, CharacterMakingIndex.subSprint, out sprintDictReverse);
+            idleDict = ProcessMotion(subByCat, CharacterMakingIndex.subIdle, out idleDictReverse);
 
             if (messageBox != null)
             {
@@ -278,13 +305,15 @@ namespace Character_Making_File_Tool
             }
         }
 
-        private Dictionary<string, int> ProcessMotion(Dictionary<string, Dictionary<int, List<string>>> subByCat, string category)
+        private Dictionary<string, int> ProcessMotion(Dictionary<string, Dictionary<int, List<string>>> subByCat, string category, out Dictionary<int, string> motionsReverse)
         {
             Dictionary<string, int> motions = new();
-            
-            foreach(int id in subByCat[category].Keys)
+            motionsReverse = new();
+
+            foreach (int id in subByCat[category].Keys)
             {
                 motions[subByCat[category][id][language]] = id;
+                motionsReverse[id] = subByCat[category][id][language];
             }
 
             return motions;
@@ -342,7 +371,7 @@ namespace Character_Making_File_Tool
         }
 
         private Dictionary<string, int> ProcessNames<T>(Dictionary<string, List<List<PSO2Text.textPair>>> textByCat, List<int> masterIdList, 
-            List<Dictionary<int, string>> nameDicts, StringBuilder nameCache, string category, string outPath, Dictionary<int, T> cmxDict, bool writeToDisk = false)
+            List<Dictionary<int, string>> nameDicts, StringBuilder nameCache, string category, string outPath, Dictionary<int, T> cmxDict, out Dictionary<int, string> nameCacheDictReverse, bool writeToDisk = false)
         {
             Dictionary<int, string> dict;
             masterIdList.Clear();
@@ -360,7 +389,7 @@ namespace Character_Making_File_Tool
             //Add potential cmx ids that wouldn't be stored with 
             CharacterMakingIndexMethods.GatherDictKeys(masterIdList, cmxDict.Keys);
 
-            var finalNameDict = BuildNameCache(masterIdList, nameCache, dict);
+            var finalNameDict = BuildNameCache(masterIdList, nameCache, dict, out nameCacheDictReverse);
 
             //Somewhat vestigial. Not needed with faster .text reading
             if(writeToDisk == true)
@@ -371,9 +400,10 @@ namespace Character_Making_File_Tool
             return finalNameDict;
         }
 
-        private static Dictionary<string, int> BuildNameCache(List<int> masterIdList, StringBuilder nameCache, Dictionary<int, string> dict, bool writeToDisk = false)
+        private static Dictionary<string, int> BuildNameCache(List<int> masterIdList, StringBuilder nameCache, Dictionary<int, string> dict, out Dictionary<int, string> nameCacheReverse, bool writeToDisk = false)
         {
             Dictionary<string, int> finalNameDict = new();
+            nameCacheReverse = new();
 
             masterIdList.Sort();
             for (int i = 0; i < masterIdList.Count; i++)
@@ -389,8 +419,9 @@ namespace Character_Making_File_Tool
                     name = $"[Unnamed {id}]";
                 }
                 finalNameDict[name] = id;
+                nameCacheReverse[id] = name;
 
-                if(writeToDisk == true)
+                if (writeToDisk == true)
                 {
                     nameCache.AppendLine(name);
                     nameCache.AppendLine(id.ToString());

@@ -321,7 +321,7 @@ namespace Character_Making_File_Tool
         public struct COL2
         {
             public fixed byte outerColor1[4];
-            public fixed byte baseColor1[4]; //Also used for costume colors?
+            public fixed byte baseColor1[4]; //Also used for costume colors
             public fixed byte mainColor[4];
             public fixed byte subColor1[4];
 

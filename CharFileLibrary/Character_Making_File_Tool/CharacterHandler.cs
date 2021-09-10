@@ -790,7 +790,7 @@ namespace Character_Making_File_Tool
             {
                 this.version = streamReader.Read<int>();
                 streamReader.Seek(0xC
-                    
+
                     , SeekOrigin.Current);
                 fileLoadRace = streamReader.Read<int>();
                 streamReader.Seek(0x10, SeekOrigin.Begin);

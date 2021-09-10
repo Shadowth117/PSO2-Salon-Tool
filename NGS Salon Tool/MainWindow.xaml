@@ -1,12 +1,14 @@
-﻿<Window x:Class="NGS_Salon_Tool.MainWindow"
-        Closing="OnWindowClosing"
+﻿<Window
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:NGS_Salon_Tool"
+        xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit" 
+        x:Class="NGS_Salon_Tool.MainWindow"
+        Closing="OnWindowClosing"
         mc:Ignorable="d"
-        Title="NGS Salon Tool" Height="313" Width="898">
+        Title="NGS Salon Tool" Height="313" Width="930">
 
     <Grid Margin="0,0,0,0" VerticalAlignment="Top">
         <Grid.ColumnDefinitions>
@@ -33,25 +35,57 @@
         </Grid>
         <Grid Margin="0,18,0,0" VerticalAlignment="Top" Height="auto" Grid.ColumnSpan="2">
             <TabControl x:Name="tabControl">
-                <TabItem Name="basicSettingsTab" Header="Basic Settings">
+                <TabItem x:Name="basicSettingsTab" Header="Basic Settings">
                     <Grid Background="#FFE5E5E5"/>
                 </TabItem>
-                <TabItem Name="proportionsTab" Header="Proportions">
+                <TabItem x:Name="proportionsTab" Header="Proportions">
                     <Grid Background="#FFE5E5E5"/>
                 </TabItem>
-                <TabItem Name="colorsTab" Header="Colors">
+                <TabItem x:Name="colorsTab" Header="Colors">
                     <Grid Background="#FFE5E5E5">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="235*"/>
                             <ColumnDefinition Width="657*"/>
                         </Grid.ColumnDefinitions>
-                        <Button x:Name="outerColorButton" Content="" HorizontalAlignment="Left" Margin="83,16,0,0" VerticalAlignment="Top" Height="48" Width="48" Click="SetOuterColor" Background="#FFE60000"/>
-                        <Label x:Name="outerColorLabel" Content="Outerwear" HorizontalAlignment="Left" Margin="16,0,0,0" VerticalAlignment="Center"/>
-                        <Button x:Name="baseColorButton" Content="" HorizontalAlignment="Left" Margin="221,16,0,0" VerticalAlignment="Top" Height="48" Width="48" Click="SetBaseColor" Background="#FF00FF00" Grid.ColumnSpan="2"/>
-                        <Label x:Name="baseColorLabel" Content="Basewear" VerticalAlignment="Center" Margin="157,0,14,0"/>
+                        <Button x:Name="outerColorButton" Content=""  Margin="84,15,103,16" Height="48" Width="48" Click="SetOuterColor" Background="#FFE60000" HorizontalAlignment="Left" VerticalAlignment="Top"/>
+                        <Label x:Name="outerColorLabel" Content="Outerwear 1" Margin="8,19,152,34" HorizontalAlignment="Left" VerticalAlignment="Top"/>
+                        <Button x:Name="baseColorButton" Content=""  Margin="222,15,622,16" Height="48" Width="48" Click="SetBaseColor" Background="#FF00FF00" Grid.ColumnSpan="2" HorizontalAlignment="Left" VerticalAlignment="Top"/>
+                        <Label x:Name="baseColorLabel" Content="Basewear 1" Margin="153,19,14,34" HorizontalAlignment="Left" VerticalAlignment="Top"/>
+                        <Button x:Name="outerColor2Button" Content=""  Margin="84,78,0,0" Height="48" Width="48" Click="SetOuterColor" Background="#FFDE5656" HorizontalAlignment="Left" VerticalAlignment="Top"/>
+                        <Label x:Name="outerColor2Label" Content="Outerwear 2" Margin="8,82,0,0" HorizontalAlignment="Left" VerticalAlignment="Top"/>
+                        <Button x:Name="baseColor2Button" Content=""  Margin="222,78,0,0" Height="48" Width="48" Click="SetBaseColor" Background="#FF71EC71" Grid.ColumnSpan="2" HorizontalAlignment="Left" VerticalAlignment="Top"/>
+                        <Label x:Name="baseColor2Label" Content="Basewear 2" Margin="153,82,0,0" HorizontalAlignment="Left" VerticalAlignment="Top"/>
+                        <Button x:Name="innerColorButton" Content=""  Margin="122,15,0,0" Height="48" Width="48" Click="SetBaseColor" Background="#FF00FFE8" HorizontalAlignment="Left" VerticalAlignment="Top" Grid.Column="1"/>
+                        <Label x:Name="innerColorLabel" Content="Innerwear 1" Margin="49,19,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" Grid.Column="1" Width="73"/>
+                        <Button x:Name="innerColor2Button" Content=""  Margin="122,78,0,0" Height="48" Width="48" Click="SetBaseColor" Background="#FF71ECE6" HorizontalAlignment="Left" VerticalAlignment="Top" Grid.Column="1"/>
+                        <Label x:Name="innerColor2Label" Content="Innerwear 2" Margin="49,0,0,0" HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Column="1" Width="73"/>
+                        <Button x:Name="skinColorButton" Content=""  Margin="250,15,0,0" Height="48" Width="48" Click="SetBaseColor" Background="#FFFFC500" HorizontalAlignment="Left" VerticalAlignment="Top" Grid.Column="1"/>
+                        <Label x:Name="skinColorLabel" Content="Skin 1" Margin="208,19,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" Grid.Column="1"/>
+                        <Button x:Name="skinColor2Button" Content=""  Margin="250,78,0,0" Height="48" Width="48" Click="SetBaseColor" Background="#FFECAE71" HorizontalAlignment="Left" VerticalAlignment="Top" Grid.Column="1"/>
+                        <Label x:Name="skinColor2Label" Content="Skin 2" Margin="208,82,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" Grid.Column="1"/>
+                        <Button x:Name="hairColorButton" Content=""  Margin="373,15,0,0" Height="48" Width="48" Click="SetBaseColor" Background="#FFFF00D1" HorizontalAlignment="Left" VerticalAlignment="Top" Grid.Column="1"/>
+                        <Label x:Name="hairColorLabel" Content="Hair 1" Margin="331,19,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" Grid.Column="1"/>
+                        <Button x:Name="hairColor2Button" Content=""  Margin="373,78,0,0" Height="48" Width="48" Click="SetBaseColor" Background="#FFEC71E6" HorizontalAlignment="Left" VerticalAlignment="Top" Grid.Column="1"/>
+                        <Label x:Name="hairColor2Label" Content="Hair 2" Margin="331,82,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" Grid.Column="1"/>
+                        <Button x:Name="eyebrowsColorButton" Content=""  Margin="491,15,0,0" Height="48" Width="48" Click="SetBaseColor" Background="#FF7A7A7A" HorizontalAlignment="Left" VerticalAlignment="Top" Grid.Column="1"/>
+                        <Label x:Name="eyebrowsColorLabel" Content="Eyebrows" Margin="430,19,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" Grid.Column="1"/>
+                        <Button x:Name="eyelashesColorButton" Content=""  Margin="607,15,0,0" Height="48" Width="48" Click="SetBaseColor" Background="#FF545459" HorizontalAlignment="Left" VerticalAlignment="Top" Grid.Column="1"/>
+                        <Label x:Name="eyelashesColorLabel" Content="Eyelashes" Margin="545,19,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" Grid.Column="1"/>
+                        <Button x:Name="leftEyeColorButton" Content=""  Margin="491,78,0,0" Height="48" Width="48" Click="SetBaseColor" Background="#FFF1F110" HorizontalAlignment="Left" VerticalAlignment="Top" Grid.Column="1"/>
+                        <Label x:Name="leftEyeColorLabel" Content="Left Eye" Margin="430,82,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" Grid.Column="1"/>
+                        <Button x:Name="rightEyeColorButton" Content=""  Margin="607,78,0,0" Height="48" Width="48" Click="SetBaseColor" Background="#FF0000A2" HorizontalAlignment="Left" VerticalAlignment="Top" Grid.Column="1"/>
+                        <Label x:Name="rightEyeColorLabel" Content="Right Eye" Margin="545,82,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" Grid.Column="1"/>
+                        <Button x:Name="mainColorButton" Content=""  Margin="84,141,0,0" Height="48" Width="48" Click="SetOuterColor" Background="#FF0B1EDE" HorizontalAlignment="Left" VerticalAlignment="Top"/>
+                        <Label x:Name="mainColorLabel" Content="Main Color" Margin="8,145,0,0" HorizontalAlignment="Left" VerticalAlignment="Top"/>
+                        <Button x:Name="subcolor1Button" Content=""  Margin="222,141,0,0" Height="48" Width="48" Click="SetBaseColor" Background="#FFFFA80F" Grid.ColumnSpan="2" HorizontalAlignment="Left" VerticalAlignment="Top"/>
+                        <Label x:Name="subcolor1Label" Content="Subcolor 1" Margin="153,145,0,0" HorizontalAlignment="Left" VerticalAlignment="Top"/>
+                        <Button x:Name="subcolor2Button" Content=""  Margin="122,141,0,0" Height="48" Width="48" Click="SetBaseColor" Background="#FF9155F9" HorizontalAlignment="Left" VerticalAlignment="Top" Grid.Column="1"/>
+                        <Label x:Name="subcolor2Label" Content="Subcolor 2" Margin="53,145,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" Grid.Column="1"/>
+                        <Button x:Name="subcolor3Button" Content=""  Margin="250,141,0,0" Height="48" Width="48" Click="SetBaseColor" Background="#FF21B400" HorizontalAlignment="Left" VerticalAlignment="Top" Grid.Column="1"/>
+                        <Label x:Name="subcolor3Label" Content="Subcolor 3" Margin="183,145,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" Grid.Column="1"/>
                     </Grid>
                 </TabItem>
-                <TabItem Name="partSelectionTab" Header="Part Selection">
+                <TabItem x:Name="partSelectionTab" Header="Part Selection">
                     <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
                         <Grid Background="#FFE5E5E5">
                             <ComboBox x:Name="costumeCB" HorizontalAlignment="Left" Margin="5,30,0,0" VerticalAlignment="Top" Width="200" SelectedIndex="0" SelectionChanged="CostumeSelectionChanged">
@@ -327,7 +361,7 @@
                         </Grid>
                     </ScrollViewer>
                 </TabItem>
-                <TabItem Name="motionChangeTab" Header="Motion Change">
+                <TabItem x:Name="motionChangeTab" Header="Motion Change">
                     <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
                         <Grid Background="#FFE5E5E5">
                             <ComboBox x:Name="swimCB" HorizontalAlignment="Left" Margin="5,30,0,0" VerticalAlignment="Top" Width="200" SelectedIndex="0" SelectionChanged="SwimSelectionChanged">
@@ -386,13 +420,20 @@
                                 </ComboBox.ItemsPanel>
                             </ComboBox>
                             <Label x:Name="idleLabel" Content="Standby Pose Motion" HorizontalAlignment="Left" Margin="5,104,0,0" VerticalAlignment="Top"/>
+                            <xctk:IntegerUpDown x:Name="swimUD" Margin="129,8,687,0" Maximum="2147483647" Minimum="0" Value="0" VerticalAlignment="Top" ValueChanged="SwimUDChanged"/>
+                            <xctk:IntegerUpDown x:Name="landingUD" Margin="129,57,687,0" Maximum="2147483647" Minimum="0" Value="0" VerticalAlignment="Top" ValueChanged="LandingUDChanged"/>
+                            <xctk:IntegerUpDown x:Name="idleUD" Margin="129,106,687,0" Maximum="2147483647" Minimum="0" Value="0" VerticalAlignment="Top" ValueChanged="IdleUDChanged"/>
+                            <xctk:IntegerUpDown x:Name="glideUD" Margin="409,8,407,0" Maximum="2147483647" Minimum="0" Value="0" VerticalAlignment="Top" ValueChanged="GlideUDChanged"/>
+                            <xctk:IntegerUpDown x:Name="movUD" Margin="409,57,407,0" Maximum="2147483647" Minimum="0" Value="0" VerticalAlignment="Top" ValueChanged="MovUDChanged"/>
+                            <xctk:IntegerUpDown x:Name="jumpUD" Margin="689,8,127,0" Maximum="2147483647" Minimum="0" Value="0" VerticalAlignment="Top" ValueChanged="JumpUDChanged"/>
+                            <xctk:IntegerUpDown x:Name="sprintUD" Margin="689,57,127,0" Maximum="2147483647" Minimum="0" Value="0" VerticalAlignment="Top" ValueChanged="SprintUDChanged"/>
                         </Grid>
                     </ScrollViewer>
                 </TabItem>
-                <TabItem Name="customizeExpressionsTab" Header="Customize Expressions">
+                <TabItem x:Name="customizeExpressionsTab" Header="Customize Expressions">
                     <Grid Background="#FFE5E5E5"/>
                 </TabItem>
-                <TabItem Name="startupTab" Header="StartupTab" IsSelected="True" Visibility="Hidden">
+                <TabItem x:Name="startupTab" Header="StartupTab" IsSelected="True" Visibility="Hidden">
                     <Grid Background="#FFE5E5E5"/>
                 </TabItem>
             </TabControl>
