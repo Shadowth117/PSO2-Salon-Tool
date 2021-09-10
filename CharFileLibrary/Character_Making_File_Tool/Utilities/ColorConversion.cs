@@ -15,30 +15,30 @@ namespace Character_Making_File_Tool
 {
     public class ColorConversion
     {
-        public static BaseCOLR COL2ToCOLR(COL2 colr, uint race)
+        public unsafe static BaseCOLR COL2ToCOLR(COL2 colr, uint race)
         {
             BaseCOLR col = new BaseCOLR();
-            col.outer_MainColorVerts = COLRFromRGBA(BitConverter.GetBytes(colr.outerColor1));
-            col.costumeColorVerts = COLRFromRGBA(BitConverter.GetBytes(colr.baseColor1));
+            col.outer_MainColorVerts = COLRFromRGBA(BytesFromFixed(colr.outerColor1));
+            col.costumeColorVerts = COLRFromRGBA(BytesFromFixed(colr.baseColor1));
 
             //Handle hair 2 and cast main color
             if(race == 2)
             {
-                col.mainColor_hair2Verts = COLRFromRGBA(BitConverter.GetBytes(colr.mainColor));
+                col.mainColor_hair2Verts = COLRFromRGBA(BytesFromFixed(colr.mainColor));
             } else
             {
-                col.mainColor_hair2Verts = COLRFromRGBA(BitConverter.GetBytes(colr.hairColor2));
+                col.mainColor_hair2Verts = COLRFromRGBA(BytesFromFixed(colr.hairColor2));
             }
 
-            col.subColor1Verts = COLRFromRGBA(BitConverter.GetBytes(colr.subColor1));
+            col.subColor1Verts = COLRFromRGBA(BytesFromFixed(colr.subColor1));
             
             //Handle skin
             if(race == 2)
             {
-                col.skinSubColor2Verts = COLRFromRGBA(BitConverter.GetBytes(colr.subColor2));
+                col.skinSubColor2Verts = COLRFromRGBA(BytesFromFixed(colr.subColor2));
             } else
             {
-                col.skinSubColor2Verts = COLRFromRGBA(BitConverter.GetBytes(colr.skinColor1));
+                col.skinSubColor2Verts = COLRFromRGBA(BytesFromFixed(colr.skinColor1));
             }
 
             //Handle subcolor 3 and deuman eye
@@ -47,74 +47,90 @@ namespace Character_Making_File_Tool
                 case 0:
                 case 1:
                 case 3:
-                    col.subColor3_leftEye_castHair2Verts = COLRFromRGBA(BitConverter.GetBytes(colr.leftEyeColor));
+                    col.subColor3_leftEye_castHair2Verts = COLRFromRGBA(BytesFromFixed(colr.leftEyeColor));
                     break;
                 case 2:
-                    col.subColor3_leftEye_castHair2Verts = COLRFromRGBA(BitConverter.GetBytes(colr.subColor3));
+                    col.subColor3_leftEye_castHair2Verts = COLRFromRGBA(BytesFromFixed(colr.subColor3));
                     break;
             }
-            col.rightEye_EyesVerts = COLRFromRGBA(BitConverter.GetBytes(colr.rightEyeColor));
-            col.hairVerts = COLRFromRGBA(BitConverter.GetBytes(colr.hairColor1));
+            col.rightEye_EyesVerts = COLRFromRGBA(BytesFromFixed(colr.rightEyeColor));
+            col.hairVerts = COLRFromRGBA(BytesFromFixed(colr.hairColor1));
 
             return col;
         }
 
-        public static COL2 COLRToCOL2(BaseCOLR colr, uint race)
+        public unsafe static COL2 COLRToCOL2(BaseCOLR colr, uint race)
         {
             COL2 col = new COL2();
-            col.outerColor1 = BitConverter.ToInt32(GetPSO2CharColor(colr.outer_MainColorVerts, castPalette));
-            col.baseColor1 = BitConverter.ToInt32(GetPSO2CharColor(colr.costumeColorVerts, castPalette));
-            col.mainColor = BitConverter.ToInt32(GetPSO2CharColor(colr.mainColor_hair2Verts, castPalette));
-            col.subColor1 = BitConverter.ToInt32(GetPSO2CharColor(colr.subColor1Verts, castPalette));
+            Marshal.Copy(GetPSO2CharColor(colr.outer_MainColorVerts, castPalette), 0, (IntPtr)col.outerColor1, 4);
+            Marshal.Copy(GetPSO2CharColor(colr.costumeColorVerts, castPalette), 0, (IntPtr)col.baseColor1, 4);
+            Marshal.Copy(GetPSO2CharColor(colr.mainColor_hair2Verts, castPalette), 0, (IntPtr)col.mainColor, 4);
+            Marshal.Copy(GetPSO2CharColor(colr.subColor1Verts, castPalette), 0, (IntPtr)col.subColor1, 4);
 
-            col.subColor2 = BitConverter.ToInt32(GetPSO2CharColor(colr.skinSubColor2Verts, castPalette));
-            col.subColor3 = BitConverter.ToInt32(GetPSO2CharColor(colr.subColor3_leftEye_castHair2Verts, castPalette));
-            col.rightEyeColor = BitConverter.ToInt32(GetPSO2CharColor(colr.rightEye_EyesVerts, eyePalette));
-            col.hairColor1 = BitConverter.ToInt32(GetPSO2CharColor(colr.hairVerts, hairPalette));
+            Marshal.Copy(GetPSO2CharColor(colr.skinSubColor2Verts, castPalette), 0, (IntPtr)col.subColor2, 4);
+            Marshal.Copy(GetPSO2CharColor(colr.subColor3_leftEye_castHair2Verts, castPalette), 0, (IntPtr)col.subColor3, 4);
+            Marshal.Copy(GetPSO2CharColor(colr.rightEye_EyesVerts, castPalette), 0, (IntPtr)col.rightEyeColor, 4);
+            Marshal.Copy(GetPSO2CharColor(colr.hairVerts, hairPalette), 0, (IntPtr)col.hairColor1, 4);
 
-            col.eyebrowColor = BitConverter.ToInt32(new byte[] { 0, 0, 0, 0xFF });
-            col.eyelashColor = BitConverter.ToInt32(new byte[] { 0, 0, 0, 0xFF });
+            Marshal.Copy(new byte[] { 0, 0, 0, 0xFF }, 0, (IntPtr)col.eyebrowColor, 4);
+            Marshal.Copy(new byte[] { 0, 0, 0, 0xFF }, 0, (IntPtr)col.eyelashColor, 4);
             
             //Handle skin conditionally
             switch(race)
             {
                 case 0:
                 case 1:
-                    col.skinColor1 = BitConverter.ToInt32(GetPSO2CharColor(colr.skinSubColor2Verts, skinPalette));
+                    Marshal.Copy(GetPSO2CharColor(colr.skinSubColor2Verts, skinPalette), 0, (IntPtr)col.skinColor1, 4);
                     break;
                 case 2:
-                    col.skinColor1 = BitConverter.ToInt32(GetPSO2CharColor(colr.skinSubColor2Verts, castPalette));
+                    Marshal.Copy(GetPSO2CharColor(colr.skinSubColor2Verts, castPalette), 0, (IntPtr)col.skinColor1, 4);
                     break;
                 case 3:
-                    col.skinColor1 = BitConverter.ToInt32(GetPSO2CharColor(colr.skinSubColor2Verts, deumanSkinPalette));
+                    Marshal.Copy(GetPSO2CharColor(colr.skinSubColor2Verts, deumanSkinPalette), 0, (IntPtr)col.skinColor1, 4);
                     break;
             }
-            col.skinColor2 = BitConverter.ToInt32(new byte[] { 0xFF, 0, 0, 0xFF });
+            Marshal.Copy(new byte[] { 0xFF, 0, 0, 0xFF }, 0, (IntPtr)col.skinColor2, 4);
 
-            col.baseColor2 = BitConverter.ToInt32(new byte[] { 0, 0, 0, 0xFF });
-            col.outerColor2 = BitConverter.ToInt32(new byte[] { 0, 0, 0, 0xFF });
-            col.innerColor1 = BitConverter.ToInt32(new byte[] { 0, 0, 0, 0xFF });
-            col.innerColor2 = BitConverter.ToInt32(new byte[] { 0, 0, 0, 0xFF });
+            Marshal.Copy(new byte[] { 0, 0, 0, 0xFF }, 0, (IntPtr)col.baseColor2, 4);
+            Marshal.Copy(new byte[] { 0, 0, 0, 0xFF }, 0, (IntPtr)col.outerColor2, 4);
+            Marshal.Copy(new byte[] { 0, 0, 0, 0xFF }, 0, (IntPtr)col.innerColor1, 4);
+            Marshal.Copy(new byte[] { 0, 0, 0, 0xFF }, 0, (IntPtr)col.innerColor2, 4);
 
             //If deuman, use eye 2 color
             if (race == 3)
             {
-                col.leftEyeColor = BitConverter.ToInt32(GetPSO2CharColor(colr.subColor3_leftEye_castHair2Verts, eyePalette));
+                Marshal.Copy(GetPSO2CharColor(colr.subColor3_leftEye_castHair2Verts, eyePalette), 0, (IntPtr)col.leftEyeColor, 4);
             } else
             {
-                col.leftEyeColor = BitConverter.ToInt32(GetPSO2CharColor(colr.rightEye_EyesVerts, eyePalette));
+                Marshal.Copy(GetPSO2CharColor(colr.rightEye_EyesVerts, eyePalette), 0, (IntPtr)col.leftEyeColor, 4);
             }
 
             //If cast, get hair 2 differently
             if(race == 2)
             {
-                col.hairColor2 = BitConverter.ToInt32(GetPSO2CharColor(colr.subColor3_leftEye_castHair2Verts, castPalette));
+                Marshal.Copy(GetPSO2CharColor(colr.subColor3_leftEye_castHair2Verts, castPalette), 0, (IntPtr)col.hairColor2, 4);
             } else
             {
-                col.hairColor2 = BitConverter.ToInt32(GetPSO2CharColor(colr.mainColor_hair2Verts, hairPalette));
+                Marshal.Copy(GetPSO2CharColor(colr.mainColor_hair2Verts, hairPalette), 0, (IntPtr)col.hairColor2, 4);
             }
 
             return col;
+        }
+
+        public static System.Windows.Media.Color ColorFromRGBA(byte[] bytes)
+        {
+            return System.Windows.Media.Color.FromArgb(bytes[3], bytes[0], bytes[1], bytes[2]);
+        }
+
+        public unsafe static byte[] BytesFromFixed(byte* fixedArr)
+        {
+            byte[] bytes = new byte[4];
+            bytes[0] = fixedArr[0];
+            bytes[1] = fixedArr[1];
+            bytes[2] = fixedArr[2];
+            bytes[3] = fixedArr[3];
+
+            return bytes;
         }
 
         //Linear interpolation between two colors

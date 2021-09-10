@@ -302,6 +302,8 @@ namespace Character_Making_File_Tool
 
         public struct BaseSLCTNGS
         {
+            public uint skinTextureSet;
+
             public uint earsPart;
             public uint teethPart;
             public uint hornPart;
@@ -318,28 +320,28 @@ namespace Character_Making_File_Tool
         }
         public struct COL2
         {
-            public int outerColor1;
-            public int baseColor1; //Also used for costume colors?
-            public int mainColor;
-            public int subColor1;
+            public fixed byte outerColor1[4];
+            public fixed byte baseColor1[4]; //Also used for costume colors?
+            public fixed byte mainColor[4];
+            public fixed byte subColor1[4];
 
-            public int subColor2;
-            public int subColor3;
-            public int rightEyeColor;
-            public int hairColor1;
+            public fixed byte subColor2[4];
+            public fixed byte subColor3[4];
+            public fixed byte rightEyeColor[4];
+            public fixed byte hairColor1[4];
 
-            public int eyebrowColor;
-            public int eyelashColor;
-            public int skinColor1;
-            public int skinColor2;
+            public fixed byte eyebrowColor[4];
+            public fixed byte eyelashColor[4];
+            public fixed byte skinColor1[4];
+            public fixed byte skinColor2[4];
 
-            public int baseColor2;
-            public int outerColor2;
-            public int innerColor1;
-            public int innerColor2;
+            public fixed byte baseColor2[4];
+            public fixed byte outerColor2[4];
+            public fixed byte innerColor1[4];
+            public fixed byte innerColor2[4];
 
-            public int leftEyeColor;
-            public int hairColor2;
+            public fixed byte leftEyeColor[4];
+            public fixed byte hairColor2[4];
         }
 
         //1 dimensional extra sliders added by NGS
@@ -377,6 +379,19 @@ namespace Character_Making_File_Tool
             public int landingMotion;
             public int idleMotion;
             public int jumpMotion;
+        }
+
+        public struct VISI //VISI, stored as 0 or 1 in xxp. In CML, these are stored as bits in a single byte.
+        {
+            public int hideBasewearOrnament1;
+            public int hideBasewearOrnament2;
+
+            public int hideHeadPartOrnament;
+            public int hideBodyPartOrnament;
+            public int hideArmPartOrnament;
+            public int hideLegPartOrnament;
+
+            public int hideOuterwearOrnament;
         }
     }
 }

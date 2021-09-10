@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Character_Making_File_Tool;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
@@ -18,10 +19,11 @@ namespace NGS_Salon_Tool
     /// <summary>
     /// Interaction logic for Window1.xaml
     /// </summary>
-    public partial class ColorPicker : Window, INotifyPropertyChanged
+    public unsafe partial class ColorPicker : Window, INotifyPropertyChanged
     {
         private SolidColorBrush trueColor;
         private byte[] internalColor = new byte[4];
+        private byte* internalColorPtr = null;
         private Button internalButton = new Button();
         private bool ignoreValueChanges = true;         //Used to control access so that sliders don't interfere with each other
         public ColorPicker()
@@ -60,26 +62,59 @@ namespace NGS_Salon_Tool
             LinkExternalColor(selectedColor, button, alphaEnabled);
         }
 
+        public ColorPicker(byte* selectedColor, Button button, bool alphaEnabled = false)
+        {
+            InitializeComponent();
+            DataContext = this;
+            trueColor = new SolidColorBrush(new Color());
+            SelColor = trueColor;
+            RectColor = new Color();
+            SelColor.Color = ColorLogic.ColorFromHSV(hueSlider.Value, horizSlider.Value / horizSlider.Maximum, vertSlider.Value / vertSlider.Maximum);
+
+            LinkExternalColor(selectedColor, button, alphaEnabled);
+        }
+
+        public void LinkExternalColor(byte* selectedColor, Button button, bool alphaEnabled = false)
+        {
+            internalButton = button;
+            LinkExternalColor(selectedColor, alphaEnabled);
+        }
+
         public void LinkExternalColor(byte[] selectedColor, Button button, bool alphaEnabled = false)
         {
             internalButton = button;
             LinkExternalColor(selectedColor, alphaEnabled);
         }
 
+        public void LinkExternalColor(byte* selectedColor, bool alphaEnabled)
+        {
+            internalColorPtr = null;
+            internalColorPtr = selectedColor;
+            internalColor = ColorConversion.BytesFromFixed(internalColorPtr);
+            LinkColorSetup(alphaEnabled);
+        }
+
         public void LinkExternalColor(byte[] selectedColor, bool alphaEnabled)
+        {
+            internalColorPtr = null;
+            internalColor = selectedColor;
+            LinkColorSetup(alphaEnabled);
+        }
+
+        private void LinkColorSetup(bool alphaEnabled)
         {
             alphaUD.IsEnabled = alphaEnabled;
             Visibility vis;
-            if(alphaEnabled == true)
+            if (alphaEnabled == true)
             {
                 vis = Visibility.Visible;
-            } else
+            }
+            else
             {
                 vis = Visibility.Hidden;
             }
             alphaUD.Visibility = vis;
             alphaLabel.Visibility = vis;
-            internalColor = selectedColor;
             SetColorUDs();
             ForceUpdateSliders();
             SetSliders();
@@ -120,7 +155,22 @@ namespace NGS_Salon_Tool
             internalColor[1] = SelColor.Color.G;
             internalColor[2] = SelColor.Color.B;
             internalColor[3] = SelColor.Color.A;
-            internalButton.Background = SelColor;
+            
+            if(internalColorPtr != null)
+            {
+                internalColorPtr[0] = internalColor[0];
+                internalColorPtr[1] = internalColor[1];
+                internalColorPtr[2] = internalColor[2];
+                internalColorPtr[3] = internalColor[3];
+            }
+            if(internalButton != null && SelColor != null)
+            {
+                if(!(internalButton.Background is SolidColorBrush))
+                {
+                    internalButton.Background = new SolidColorBrush(new Color());
+                }
+                ((SolidColorBrush)internalButton.Background).Color = SelColor.Color;
+            }
         }
 
         public SolidColorBrush SelColor

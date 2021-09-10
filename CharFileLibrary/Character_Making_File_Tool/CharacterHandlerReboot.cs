@@ -152,7 +152,6 @@ namespace Character_Making_File_Tool
             public BaseSLCT baseSLCT;
             public BaseSLCT2 baseSLCT2;
             public uint leftEyePart;
-            public uint skinTextureSet;
 
             //0x180 SLCT continued
             public BaseSLCTNGS baseSLCTNGS;
@@ -198,16 +197,8 @@ namespace Character_Making_File_Tool
             public int int_350;
             public int int_354;
 
-            //0x358 Ornament Display - Seemingly all just boolean int true or false. 1 is true. VISI in cml?
-            public int hideBasewearOrnament1;
-            public int hideBasewearOrnament2;
-
-            public int hideHeadPartOrnament;
-            public int hideBodyPartOrnament;
-            public int hideArmPartOrnament;
-            public int hideLegPartOrnament;
-
-            public int hideOuterwearOrnament;
+            //0x358 Ornament Display - VISI, stored as 0 or 1 in xxp. In CML, these are stored as bits in a single byte.
+            public VISI ngsVISI;
 
             //0x374
             public uint padding17;
@@ -254,7 +245,6 @@ namespace Character_Making_File_Tool
             public BaseSLCT baseSLCT;
             public BaseSLCT2 baseSLCT2;
             public uint leftEyePart;
-            public uint skinTextureSet;
 
             //SLCT continued
             public BaseSLCTNGS baseSLCTNGS;
@@ -286,15 +276,7 @@ namespace Character_Making_File_Tool
             public int int_350;
             public int int_354;
 
-            public int hideBasewearOrnament1;
-            public int hideBasewearOrnament2;
-
-            public int hideHeadPartOrnament;
-            public int hideBodyPartOrnament;
-            public int hideArmPartOrnament;
-            public int hideLegPartOrnament;
-
-            public int hideOuterwearOrnament;
+            public VISI ngsVISI;
 
             public AccessoryMisc accessoryMiscData;
 
@@ -517,7 +499,6 @@ namespace Character_Making_File_Tool
                 baseSLCT = tempXXP.baseSLCT;
                 baseSLCT2 = tempXXP.baseSLCT2;
                 leftEyePart = tempXXP.leftEyePart;
-                skinTextureSet = tempXXP.skinTextureSet;
 
                 baseSLCTNGS = tempXXP.baseSLCTNGS;
 
@@ -543,15 +524,7 @@ namespace Character_Making_File_Tool
 
                 int_350 = tempXXP.int_350;
                 int_354 = tempXXP.int_354;
-                hideBasewearOrnament1 = tempXXP.hideBasewearOrnament1;
-                hideBasewearOrnament2 = tempXXP.hideBasewearOrnament2;
-
-                hideHeadPartOrnament = tempXXP.hideHeadPartOrnament;
-                hideBodyPartOrnament = tempXXP.hideBodyPartOrnament;
-                hideArmPartOrnament = tempXXP.hideArmPartOrnament;
-                hideLegPartOrnament = tempXXP.hideLegPartOrnament;
-
-                hideOuterwearOrnament = tempXXP.hideOuterwearOrnament;
+                ngsVISI = tempXXP.ngsVISI;
 
                 accessoryMiscData = tempXXP.accessoryMiscData;
             }
@@ -665,7 +638,6 @@ namespace Character_Making_File_Tool
                 tempXXP.baseSLCT = baseSLCT;
                 tempXXP.baseSLCT2 = baseSLCT2;
                 tempXXP.leftEyePart = leftEyePart;
-                tempXXP.skinTextureSet = skinTextureSet;
                 tempXXP.baseSLCTNGS = baseSLCTNGS;
                 tempXXP.accessorySlidersReboot = accessorySlidersReboot;
                 tempXXP.faceNatural = faceNatural;
@@ -683,14 +655,7 @@ namespace Character_Making_File_Tool
                 tempXXP.ngsMTON = ngsMTON;
                 tempXXP.int_350 = int_350;
                 tempXXP.int_354 = int_354;
-                tempXXP.hideBasewearOrnament1 = hideBasewearOrnament1;
-                tempXXP.hideBasewearOrnament2 = hideBasewearOrnament2;
-                tempXXP.hideHeadPartOrnament = hideHeadPartOrnament;
-                tempXXP.hideBodyPartOrnament = hideBodyPartOrnament;
-                tempXXP.hideArmPartOrnament = hideArmPartOrnament;
-                tempXXP.hideLegPartOrnament = hideLegPartOrnament;
-                tempXXP.hideOuterwearOrnament = hideOuterwearOrnament;
-                tempXXP.accessoryMiscData = accessoryMiscData;
+                tempXXP.ngsVISI = ngsVISI;
 
                 return tempXXP;
             }

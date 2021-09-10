@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
@@ -29,8 +30,8 @@ namespace NGS_Salon_Tool
         System.Windows.Forms.OpenFileDialog fileOpen = new()
         {
             Filter = "All character files (*.cml,*.xxp,*.xxpu,*.bin)|*.fhp;*.fnp;*.fcp;*.fdp;*.mhp;*.mnp;*.mcp;*.mdp;" +
-                            "*.fhpu;*.fnpu;*.fcpu;*.fdpu;*.mhpu;*.mnpu;*.mcpu;*.mdpu;*.cml|" +
-                            "Character Making files (*.cml)|*.cml|" +
+                            "*.fhpu;*.fnpu;*.fcpu;*.fdpu;*.mhpu;*.mnpu;*.mcpu;*.mdpu;*.cml;*.eml|" +
+                            "Character Making files (*.cml,*.eml)|*.cml;*.eml|" +
                             "Salon files (*.xxp)|*.fhp;*.fnp;*.fcp;*.fdp;*.mhp;*.mnp;*.mcp;*.mdp|" +
                             "Unencrypted Salon files(*.xxpu)| *.fhpu; *.fnpu; *.fcpu; *.fdpu; *.mhpu; *.mnpu; *.mcpu; *.mdpu",
             Title = "Open character file"
@@ -80,8 +81,8 @@ namespace NGS_Salon_Tool
         {
             if (fileOpen.ShowDialog() == System.Windows.Forms.DialogResult.OK)
             {
-                try
-                {
+                //try
+                //{
                     byte[] data;
 
                     //Handle encrypted files
@@ -100,8 +101,8 @@ namespace NGS_Salon_Tool
                         switch (extension)
                         {
                             case ".cml":
-                                //xxpHandler(openFileDialog.FileName);
-                                throw new NotImplementedException();
+                            case ".eml": //Rarely used "enemy" cml. Seemingly just the same format?
+                                xxpHandler = CMLHandler.ParseCML(streamReader);
                                 break;
                             default:
                                 OpenXXP(streamReader);
@@ -109,11 +110,11 @@ namespace NGS_Salon_Tool
                         }
                     }
                     SetEnabledState(true);
-                }
+                /*}
                 catch
                 {
                     MessageBox.Show("Unable to open file. Check permissions and file type.");
-                }
+                }*/
             }
         }
 
@@ -122,7 +123,7 @@ namespace NGS_Salon_Tool
             int version = streamReader.Read<int>();
             streamReader.Seek(0x10, SeekOrigin.Begin);
 
-            switch(version)
+            switch (version)
             {
                 case 2:
                     xxpHandler = new CharacterHandlerReboot.xxpGeneralReboot(streamReader.Read<CharacterHandlerReboot.XXPV2>());
@@ -147,6 +148,15 @@ namespace NGS_Salon_Tool
                     MessageBox.Show("Error: File version unknown. If this is a proper salon file, please report this!");
                     return;
             }
+
+            ColorButtons();
+        }
+
+        private unsafe void ColorButtons()
+        {
+            //Colors
+            fixed (byte* localArr = xxpHandler.ngsCOL2.outerColor1) { outerColorButton.Background = new SolidColorBrush(ColorConversion.ColorFromRGBA(ColorConversion.BytesFromFixed(localArr))); };
+            fixed (byte* localArr = xxpHandler.ngsCOL2.baseColor1) { baseColorButton.Background = new SolidColorBrush(ColorConversion.ColorFromRGBA(ColorConversion.BytesFromFixed(localArr))); };
         }
 
         private void LoadGameData()
@@ -198,34 +208,35 @@ namespace NGS_Salon_Tool
             movCB.ItemsSource = cmxHandler.movDict.Keys;
             sprintCB.ItemsSource = cmxHandler.sprintDict.Keys;
             idleCB.ItemsSource = cmxHandler.idleDict.Keys;
-
         }
 
-        private void SetOuterColor(object sender, RoutedEventArgs e)
+        private unsafe void SetOuterColor(object sender, RoutedEventArgs e)
         {
-            byte[] placeHolderColor = new byte[] { 0xFF, 0x7F, 0x7F, 0xFF };
-
-            if(colorPicker != null && colorPicker.IsLoaded == true)
+            fixed(byte* col2 = xxpHandler.ngsCOL2.outerColor1)
             {
-                colorPicker.LinkExternalColor(placeHolderColor, outerColorButton);
-            } else
-            {
-                colorPicker = new ColorPicker(placeHolderColor, outerColorButton);
+                if(colorPicker != null && colorPicker.IsLoaded == true)
+                {
+                    colorPicker.LinkExternalColor(col2, (Button)sender);
+                } else
+                {
+                    colorPicker = new ColorPicker(col2, (Button)sender);
+                }
             }
             colorPicker.Show();
         }
 
-        private void SetBaseColor(object sender, RoutedEventArgs e)
+        private unsafe void SetBaseColor(object sender, RoutedEventArgs e)
         {
-            byte[] placeHolderColor = new byte[] { 0, 0xFF, 0, 0xFF };
-
-            if (colorPicker != null && colorPicker.IsLoaded == true)
+            fixed (byte* col2 = xxpHandler.ngsCOL2.baseColor1)
             {
-                colorPicker.LinkExternalColor(placeHolderColor, baseColorButton);
-            }
-            else
-            {
-                colorPicker = new ColorPicker(placeHolderColor, baseColorButton);
+                if (colorPicker != null && colorPicker.IsLoaded == true)
+                {
+                    colorPicker.LinkExternalColor(col2, (Button)sender);
+                }
+                else
+                {
+                    colorPicker = new ColorPicker(col2, (Button)sender);
+                }
             }
             colorPicker.Show();
         }
