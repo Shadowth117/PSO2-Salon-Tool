@@ -20,8 +20,7 @@
                 <MenuItem Header="File">
                     <MenuItem Header="Open" Click="OpenCharacterFile"/>
                     <MenuItem Header="Set pso2_bin directory" Click="SetPSO2Bin"/>
-                    <MenuItem Header="Save As"/>
-                    <MenuItem Header="Close"/>
+                    <MenuItem Name="saveAsButton" Header="Save As" Click="SaveCharFileAs"/>
                 </MenuItem>
                 <MenuItem Header="Batch">
                     <MenuItem Header="XXP Folder to CML"/>
@@ -36,7 +35,20 @@
         <Grid Margin="0,18,0,0" VerticalAlignment="Top" Height="auto" Grid.ColumnSpan="2">
             <TabControl x:Name="tabControl">
                 <TabItem x:Name="basicSettingsTab" Header="Basic Settings">
-                    <Grid Background="#FFE5E5E5"/>
+                    <Grid Background="#FFE5E5E5">
+                        <Label x:Name="raceLabel" Content="Race" Margin="10,10,0,0" HorizontalAlignment="Left" VerticalAlignment="Top"/>
+                        <Label x:Name="genderLabel" Content="Gender" Margin="122,10,0,0" HorizontalAlignment="Left" VerticalAlignment="Top"/>
+                        <Label x:Name="muscleMassLabel" Content="Muscle Mass" Margin="228,10,0,0" HorizontalAlignment="Left" VerticalAlignment="Top"/>
+                        <Label x:Name="skinVariantLabel" Content="Skin Variant" Margin="375,10,0,0" HorizontalAlignment="Left" VerticalAlignment="Top"/>
+                        <Label x:Name="eyebrowDensityLabel" Content="Eyebrow Density" Margin="504,10,0,0" HorizontalAlignment="Left" VerticalAlignment="Top"/>
+                        <Label x:Name="cmlVariableLabel" Content="Cml Variable" Margin="664,10,0,0" HorizontalAlignment="Left" VerticalAlignment="Top"/>
+                        <xctk:IntegerUpDown x:Name="raceUD" Margin="50,13,807,0" Maximum="3" Minimum="0" Value="0" VerticalAlignment="Top" ValueChanged="RaceUDChanged"/>
+                        <xctk:IntegerUpDown x:Name="muscleUD" Margin="306,13,554,0" Maximum="60000" Minimum="0" Value="0" VerticalAlignment="Top" ValueChanged="MuscleUDChanged"/>
+                        <xctk:IntegerUpDown x:Name="skinVariantUD" Margin="446,13,419,0" Maximum="3" Minimum="0" Value="0" VerticalAlignment="Top" ValueChanged="SkinVariantUDChanged"/>
+                        <xctk:IntegerUpDown x:Name="eyebrowDensityUD" Margin="602,13,263,0" Maximum="100" Minimum="-100" Value="0" VerticalAlignment="Top" ValueChanged="EyebrowDensityUDChanged"/>
+                        <xctk:IntegerUpDown x:Name="cmlVariableUD" Margin="740,13,125,0" Maximum="32767" Minimum="-32767" Value="0" VerticalAlignment="Top" ValueChanged="CMLVariableUDChanged"/>
+                        <xctk:IntegerUpDown x:Name="genderUD" Margin="171,13,696,0" Maximum="1" Minimum="0" Value="0" VerticalAlignment="Top" ValueChanged="GenderUDChanged"/>
+                    </Grid>
                 </TabItem>
                 <TabItem x:Name="proportionsTab" Header="Proportions">
                     <Grid Background="#FFE5E5E5"/>

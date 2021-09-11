@@ -160,7 +160,7 @@ namespace Character_Making_File_Tool
             public uint acc4Part;
             public uint basewearPart;
             public uint innerwearPart;
-            public uint bodypaint2Part;
+            public uint bodyPaint2Part;
         }
 
         public struct PaintPriority

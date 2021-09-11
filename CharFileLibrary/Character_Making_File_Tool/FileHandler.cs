@@ -82,7 +82,7 @@ namespace Character_Making_File_Tool
             acc4Part = "character/making/pl_ac_" + ToFive(xxpGeneral.baseSLCT2.acc4Part) + ".ice";
             basewearPart = "character/making/pl_bw_" + ToFive(xxpGeneral.baseSLCT2.basewearPart) + ".ice";
             innerwearPart = "character/making/pl_iw_" + ToFive(xxpGeneral.baseSLCT2.innerwearPart) + ".ice";
-            bodypaint2Part = "character/making/pl_b1_" + ToFive(xxpGeneral.baseSLCT2.bodypaint2Part) + ".ice";
+            bodypaint2Part = "character/making/pl_b1_" + ToFive(xxpGeneral.baseSLCT2.bodyPaint2Part) + ".ice";
             leftEyePart = "character/making/pl_ey_" + ToFive(xxpGeneral.leftEyePart) + ".ice";
         }
 

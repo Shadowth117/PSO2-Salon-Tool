@@ -690,7 +690,7 @@ namespace Character_Making_File_Tool
             ArrayGetValue(tagStructs, 0x56, out value); xxpGeneral.baseSLCT2.acc4Part = (uint)value[0];
             ArrayGetValue(tagStructs, 0x57, out value); xxpGeneral.baseSLCT2.basewearPart = (uint)value[0];
             ArrayGetValue(tagStructs, 0x58, out value); xxpGeneral.baseSLCT2.innerwearPart = (uint)value[0];
-            ArrayGetValue(tagStructs, 0x59, out value); xxpGeneral.baseSLCT2.bodypaint2Part = (uint)value[0];
+            ArrayGetValue(tagStructs, 0x59, out value); xxpGeneral.baseSLCT2.bodyPaint2Part = (uint)value[0];
 
             //Handle eye part
             ArrayGetValue(tagStructs, 0x43, out value);
@@ -896,7 +896,7 @@ namespace Character_Making_File_Tool
                 file.WriteLine($"Accessory 4: {xxpGeneral.baseSLCT2.acc4Part}");
                 file.WriteLine($"Basewear: {xxpGeneral.baseSLCT2.basewearPart}");
                 file.WriteLine($"Innerwear: {xxpGeneral.baseSLCT2.innerwearPart}");
-                file.WriteLine($"Body Paint 2: {xxpGeneral.baseSLCT2.bodypaint2Part}");
+                file.WriteLine($"Body Paint 2: {xxpGeneral.baseSLCT2.bodyPaint2Part}");
                 file.WriteLine("");
 
                 file.WriteLine("OFST (Accessory sliders)");
@@ -1060,7 +1060,7 @@ namespace Character_Making_File_Tool
                 xxpGeneral.baseSLCT2.acc4Part = streamReader.Read<ushort>();
                 xxpGeneral.baseSLCT2.basewearPart = streamReader.Read<ushort>();
                 xxpGeneral.baseSLCT2.innerwearPart = streamReader.Read<ushort>();
-                xxpGeneral.baseSLCT2.bodypaint2Part = streamReader.Read<ushort>();
+                xxpGeneral.baseSLCT2.bodyPaint2Part = streamReader.Read<ushort>();
                 xxpGeneral.leftEyePart = streamReader.Read<ushort>();
 
                 streamReader.Seek(0x14, SeekOrigin.Current);
@@ -1459,7 +1459,7 @@ namespace Character_Making_File_Tool
                 cml.WriteByte(0x58); cml.WriteByte(0x08);
                 cml.Write(BitConverter.GetBytes(xxpGeneral.baseSLCT2.innerwearPart), 0, 4);
                 cml.WriteByte(0x59); cml.WriteByte(0x08);
-                cml.Write(BitConverter.GetBytes(xxpGeneral.baseSLCT2.bodypaint2Part), 0, 4);
+                cml.Write(BitConverter.GetBytes(xxpGeneral.baseSLCT2.bodyPaint2Part), 0, 4);
                 cml.WriteByte(0x63); cml.WriteByte(0x08);                                    //Absent in non deumans normally
                 cml.Write(BitConverter.GetBytes(xxpGeneral.leftEyePart), 0, 4);
 

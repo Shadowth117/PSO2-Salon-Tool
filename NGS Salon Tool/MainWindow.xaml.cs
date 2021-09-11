@@ -36,9 +36,16 @@ namespace NGS_Salon_Tool
                             "Unencrypted Salon files(*.xxpu)| *.fhpu; *.fnpu; *.fcpu; *.fdpu; *.mhpu; *.mnpu; *.mcpu; *.mdpu",
             Title = "Open character file"
         };
+        System.Windows.Forms.SaveFileDialog saveFileDialog = new()
+        {
+            Title = "Save character file"
+        };
         string namesPath = System.IO.Path.Combine(System.IO.Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "names\\");
         string pso2BinCachePath = System.IO.Path.Combine(System.IO.Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "names\\pso2Bin.txt");
         string pso2_binDir = null;
+        private string openInitialDirectory;
+        private string savedInitialDirectory;
+        private string openedFileName;
         WIPBox wipBox = null;
         ColorPicker colorPicker = null;
 
@@ -47,6 +54,12 @@ namespace NGS_Salon_Tool
         public MainWindow()
         {
             InitializeComponent();
+
+            //Disable unused items
+            tabControl.Items.Remove(proportionsTab);
+            tabControl.Items.Remove(customizeExpressionsTab);
+            saveAsButton.IsEnabled = false;
+
             colorPicker = new ColorPicker();
             colorPicker.Hide();
             if (File.Exists(pso2BinCachePath))
@@ -81,10 +94,11 @@ namespace NGS_Salon_Tool
 
         private void OpenCharacterFile(object sender, RoutedEventArgs e)
         {
+            fileOpen.InitialDirectory = openInitialDirectory;
             if (fileOpen.ShowDialog() == System.Windows.Forms.DialogResult.OK)
             {
-                //try
-                //{
+                try
+                {
                     byte[] data;
 
                     //Handle encrypted files
@@ -112,14 +126,126 @@ namespace NGS_Salon_Tool
                         }
                     }
 
+                    openedFileName = Path.GetFileNameWithoutExtension(fileOpen.FileName);
+                    this.Title = "NGS Salon Tool - " + Path.GetFileName(fileOpen.FileName);
+                    saveAsButton.IsEnabled = true;
+
+                    //Ensure parts exist in the dropdowns if they don't
+                    PartCheck();
+
+                    //Assign data
+                    BasicSettings();
                     ColorButtons();
+                    Proportions();
+                    PartDropdowns();
+                    MotionDropdowns();
+                    ExpressionsData();
                     SetEnabledState(true);
-                /*}
+                }
                 catch
                 {
                     MessageBox.Show("Unable to open file. Check permissions and file type.");
-                }*/
+                }
+                openInitialDirectory = Path.GetDirectoryName(fileOpen.FileName);
+                fileOpen.FileName = "";
             }
+        }
+
+        private void SaveCharFileAs(object sender, RoutedEventArgs e)
+        {
+            string letterOne;
+            string letterTwo;
+            saveFileDialog.InitialDirectory = savedInitialDirectory;
+            saveFileDialog.FileName = openedFileName;
+
+            switch (xxpHandler.baseDOC.gender)
+            {
+                case 0:
+                    letterOne = "m";
+                    break;
+                case 1:
+                    letterOne = "f";
+                    break;
+                default:
+                    letterOne = "m";
+                    break;
+            }
+
+            switch (xxpHandler.baseDOC.race)
+            {
+                case 0:
+                    letterTwo = "h";
+                    break;
+                case 1:
+                    letterTwo = "n";
+                    break;
+                case 2:
+                    letterTwo = "c";
+                    break;
+                case 3:
+                    letterTwo = "d";
+                    break;
+                default:
+                    letterTwo = "h";
+                    break;
+            }
+
+            saveFileDialog.Filter = "V10 Salon files (*." + letterOne + letterTwo + "p)|*." + letterOne + letterTwo + "p";
+
+            /*
+            if (unencryptCheckBox.Checked == true)
+            {
+                saveFileDialog.Filter = "V9 Salon files (*." + letterOne + letterTwo + "pu)|*." + letterOne + letterTwo + "pu";
+                //+ "|V6 (Ep4 Char Creator) Salon files (*." + letterOne + letterTwo + "pu)|*." + letterOne + letterTwo + "pu|" +
+                //"V5 Salon files (*." + letterOne + letterTwo + "pu)|*." + letterOne + letterTwo + "pu|" +
+                //"V2 (Ep1 Char Creator) Salon files (*." + letterOne + letterTwo + "pu)|*." + letterOne + letterTwo + "pu";
+            }
+            else
+            {
+                saveFileDialog.Filter = "V9 Salon files (*." + letterOne + letterTwo + "p)|*." + letterOne + letterTwo + "p|" +
+                "V6 (Ep4 Char Creator) Salon files (*." + letterOne + letterTwo + "p)|*." + letterOne + letterTwo + "p|" +
+                "V5 Salon files (*." + letterOne + letterTwo + "p)|*." + letterOne + letterTwo + "p|" +
+                "V2 (Ep1 Char Creator) Salon files (*." + letterOne + letterTwo + "p)|*." + letterOne + letterTwo + "p";
+
+            }*/
+
+            //saveFileDialog.Filter += "|Character Markup Language files (*.cml)|*.cml";
+               //+ "|Data Dump (*.txt)|*.txt";
+
+            if (saveFileDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            {
+                switch(saveFileDialog.FilterIndex)
+                {
+                    case 1:
+                        SaveXXP();
+                        break;
+                    case 2:
+                        //SaveCML();
+                        break;
+                    default:
+                        break;
+                }
+            }
+            saveFileDialog.FileName = "";
+            openedFileName = "";
+            
+        }
+
+        private void SaveXXP()
+        {
+            List<byte> fileData = new List<byte>();
+            int fileSize = CharacterConstants.v10Size;
+            var body = Reloaded.Memory.Struct.GetBytes(xxpHandler.GetXXPV10());
+            body = CharacterHandler.EncryptData(body, fileSize, out int hash);
+
+            fileData.AddRange(BitConverter.GetBytes((int)0xA));
+            fileData.AddRange(BitConverter.GetBytes(fileSize));
+            fileData.AddRange(BitConverter.GetBytes(hash));
+            fileData.AddRange(new byte[] { 0, 0, 0, 0 });
+            fileData.AddRange(body);
+
+            File.WriteAllBytes(saveFileDialog.FileName, fileData.ToArray());
+            savedInitialDirectory = Path.GetDirectoryName(saveFileDialog.FileName);
         }
 
         private void OpenXXP(BufferedStreamReader streamReader)
@@ -154,6 +280,95 @@ namespace NGS_Salon_Tool
             }
         }
 
+        private void PartCheck()
+        {
+            int costPart = (int)xxpHandler.baseSLCT.costumePart;
+            int basePart = (int)xxpHandler.baseSLCT2.basewearPart;
+            int innerPart = (int)xxpHandler.baseSLCT2.innerwearPart;
+            int armPart = (int)xxpHandler.baseSLCT.armPart;
+            int legPart = (int)xxpHandler.baseSLCT.legPart;
+            int bodyPaint = (int)xxpHandler.baseSLCT.bodyPaintPart;
+            int bodyPaint2 = (int)xxpHandler.baseSLCT2.bodyPaint2Part;
+            int stickerPart = (int)xxpHandler.baseSLCT.stickerPart;
+            int hairPart = (int)xxpHandler.baseSLCT.hairPart;
+            int rightEyePart = (int)xxpHandler.baseSLCT.eyePart;
+            int leftEyePart = (int)xxpHandler.leftEyePart;
+            int eyebrowPart = (int)xxpHandler.baseSLCT.eyebrowPart;
+            int eyelashPart = (int)xxpHandler.baseSLCT.eyelashPart;
+            int facePart = (int)xxpHandler.baseSLCT.faceTypePart;
+            int faceTexPart = (int)xxpHandler.baseSLCT.faceTexPart;
+            int earPart = (int)xxpHandler.baseSLCTNGS.earsPart;
+            int hornPart = (int)xxpHandler.baseSLCTNGS.hornPart;
+            int teethPart = (int)xxpHandler.baseSLCTNGS.teethPart;
+            int acc1Part = (int)xxpHandler.baseSLCT.acc1Part;
+            int acc2Part = (int)xxpHandler.baseSLCT.acc2Part;
+            int acc3Part = (int)xxpHandler.baseSLCT.acc3Part;
+            int acc4Part = (int)xxpHandler.baseSLCT2.acc4Part;
+            int acc5Part = (int)xxpHandler.baseSLCTNGS.acc5Part;
+            int acc6Part = (int)xxpHandler.baseSLCTNGS.acc6Part;
+            int acc7Part = (int)xxpHandler.baseSLCTNGS.acc7Part;
+            int acc8Part = (int)xxpHandler.baseSLCTNGS.acc8Part;
+            int acc9Part = (int)xxpHandler.baseSLCTNGS.acc9Part;
+            int acc10Part = (int)xxpHandler.baseSLCTNGS.acc10Part;
+            int acc11Part = (int)xxpHandler.baseSLCTNGS.acc11Part;
+            int acc12Part = (int)xxpHandler.baseSLCTNGS.acc12Part;
+            AddPartIfMissing(costPart, cmxHandler.costumeOuterDict, cmxHandler.costumeOuterDictReverse);
+            AddPartIfMissing(basePart, cmxHandler.basewearDict, cmxHandler.basewearDictReverse);
+            AddPartIfMissing(innerPart, cmxHandler.innerwearDict, cmxHandler.innerwearDictReverse);
+            AddPartIfMissing(armPart, cmxHandler.castArmDict, cmxHandler.castArmDictReverse);
+            AddPartIfMissing(legPart, cmxHandler.castLegDict, cmxHandler.castLegDictReverse);
+            AddPartIfMissing(bodyPaint, cmxHandler.bodyPaintDict, cmxHandler.bodyPaintDictReverse);
+            AddPartIfMissing(bodyPaint2, cmxHandler.bodyPaintDict, cmxHandler.bodyPaintDictReverse);
+            AddPartIfMissing(stickerPart, cmxHandler.stickerDict, cmxHandler.stickerDictReverse);
+            AddPartIfMissing(hairPart, cmxHandler.hairDict, cmxHandler.hairDictReverse);
+            AddPartIfMissing(rightEyePart, cmxHandler.eyeDict, cmxHandler.eyeDictReverse);
+            AddPartIfMissing(leftEyePart, cmxHandler.eyeDict, cmxHandler.eyeDictReverse);
+            AddPartIfMissing(eyebrowPart, cmxHandler.eyebrowDict, cmxHandler.eyebrowDictReverse);
+            AddPartIfMissing(eyelashPart, cmxHandler.eyelashDict, cmxHandler.eyelashDictReverse);
+            AddPartIfMissing(facePart, cmxHandler.faceDict, cmxHandler.faceDictReverse);
+            AddPartIfMissing(faceTexPart, cmxHandler.faceTexDict, cmxHandler.faceTexDictReverse);
+            AddPartIfMissing(earPart, cmxHandler.earDict, cmxHandler.earDictReverse);
+            AddPartIfMissing(hornPart, cmxHandler.hornDict, cmxHandler.hornDictReverse);
+            AddPartIfMissing(teethPart, cmxHandler.teethDict, cmxHandler.teethDictReverse);
+            AddPartIfMissing(acc1Part, cmxHandler.accessoryDict, cmxHandler.accessoryDictReverse);
+            AddPartIfMissing(acc2Part, cmxHandler.accessoryDict, cmxHandler.accessoryDictReverse);
+            AddPartIfMissing(acc3Part, cmxHandler.accessoryDict, cmxHandler.accessoryDictReverse);
+            AddPartIfMissing(acc4Part, cmxHandler.accessoryDict, cmxHandler.accessoryDictReverse);
+            AddPartIfMissing(acc5Part, cmxHandler.accessoryDict, cmxHandler.accessoryDictReverse);
+            AddPartIfMissing(acc6Part, cmxHandler.accessoryDict, cmxHandler.accessoryDictReverse);
+            AddPartIfMissing(acc7Part, cmxHandler.accessoryDict, cmxHandler.accessoryDictReverse);
+            AddPartIfMissing(acc8Part, cmxHandler.accessoryDict, cmxHandler.accessoryDictReverse);
+            AddPartIfMissing(acc9Part, cmxHandler.accessoryDict, cmxHandler.accessoryDictReverse);
+            AddPartIfMissing(acc10Part, cmxHandler.accessoryDict, cmxHandler.accessoryDictReverse);
+            AddPartIfMissing(acc11Part, cmxHandler.accessoryDict, cmxHandler.accessoryDictReverse);
+            AddPartIfMissing(acc12Part, cmxHandler.accessoryDict, cmxHandler.accessoryDictReverse);
+        }
+
+        private void AddPartIfMissing(int key, Dictionary<string, int> dict, Dictionary<int, string> dictReverse)
+        {
+            if(!dictReverse.ContainsKey(key))
+            {
+                string name = $"[Unnamed {key}]";
+                dictReverse[key] = name;
+                dict[name] = key;
+
+            }
+        }
+
+        private void BasicSettings()
+        {
+            raceUD.Value = (int?)xxpHandler.baseDOC.race;
+            genderUD.Value = (int?)xxpHandler.baseDOC.gender;
+            muscleUD.Value = (int?)xxpHandler.baseDOC.muscleMass;
+            skinVariantUD.Value = xxpHandler.skinVariant;
+            cmlVariableUD.Value = xxpHandler.cmlVariant;
+            eyebrowDensityUD.Value = xxpHandler.eyebrowDensity;
+        }
+        
+        private void Proportions()
+        {
+        }
+
         private unsafe void ColorButtons()
         {
             //Colors
@@ -177,14 +392,63 @@ namespace NGS_Salon_Tool
             fixed (byte* localArr = xxpHandler.ngsCOL2.subColor3) { subcolor3Button.Background = new SolidColorBrush(ColorConversion.ColorFromRGBA(ColorConversion.BytesFromFixed(localArr))); };
         }
 
+        private void PartDropdowns()
+        {
+            costumeCB.SelectedIndex = costumeCB.Items.IndexOf(cmxHandler.costumeOuterDictReverse[(int)xxpHandler.baseSLCT.costumePart]);
+            basewearCB.SelectedIndex = basewearCB.Items.IndexOf(cmxHandler.basewearDictReverse[(int)xxpHandler.baseSLCT2.basewearPart]);
+            innerwearCB.SelectedIndex = innerwearCB.Items.IndexOf(cmxHandler.innerwearDictReverse[(int)xxpHandler.baseSLCT2.innerwearPart]);
+            castArmCB.SelectedIndex = castArmCB.Items.IndexOf(cmxHandler.castArmDictReverse[(int)xxpHandler.baseSLCT.armPart]);
+            castLegCB.SelectedIndex = castLegCB.Items.IndexOf(cmxHandler.castLegDictReverse[(int)xxpHandler.baseSLCT.legPart]);
+            bodyPaintCB.SelectedIndex = bodyPaintCB.Items.IndexOf(cmxHandler.bodyPaintDictReverse[(int)xxpHandler.baseSLCT.bodyPaintPart]);
+            bodyPaint2CB.SelectedIndex = bodyPaint2CB.Items.IndexOf(cmxHandler.bodyPaintDictReverse[(int)xxpHandler.baseSLCT2.bodyPaint2Part]);
+            stickerCB.SelectedIndex = stickerCB.Items.IndexOf(cmxHandler.stickerDictReverse[(int)xxpHandler.baseSLCT.stickerPart]);
+            hairCB.SelectedIndex = hairCB.Items.IndexOf(cmxHandler.hairDictReverse[(int)xxpHandler.baseSLCT.hairPart]);
+            rightEyeCB.SelectedIndex = rightEyeCB.Items.IndexOf(cmxHandler.eyeDictReverse[(int)xxpHandler.baseSLCT.eyePart]);
+            leftEyeCB.SelectedIndex = leftEyeCB.Items.IndexOf(cmxHandler.eyeDictReverse[(int)xxpHandler.leftEyePart]);
+            eyebrowsCB.SelectedIndex = eyebrowsCB.Items.IndexOf(cmxHandler.eyebrowDictReverse[(int)xxpHandler.baseSLCT.eyebrowPart]);
+            eyelashesCB.SelectedIndex = eyelashesCB.Items.IndexOf(cmxHandler.eyelashDictReverse[(int)xxpHandler.baseSLCT.eyelashPart]);
+            faceModelCB.SelectedIndex = faceModelCB.Items.IndexOf(cmxHandler.faceDictReverse[(int)xxpHandler.baseSLCT.faceTypePart]);
+            faceTexCB.SelectedIndex = faceTexCB.Items.IndexOf(cmxHandler.faceTexDictReverse[(int)xxpHandler.baseSLCT.faceTexPart]);
+            earsCB.SelectedIndex = earsCB.Items.IndexOf(cmxHandler.earDictReverse[(int)xxpHandler.baseSLCTNGS.earsPart]);
+            hornsCB.SelectedIndex = hornsCB.Items.IndexOf(cmxHandler.hornDictReverse[(int)xxpHandler.baseSLCTNGS.hornPart]);
+            teethCB.SelectedIndex = teethCB.Items.IndexOf(cmxHandler.teethDictReverse[(int)xxpHandler.baseSLCTNGS.teethPart]);
+            acce1CB.SelectedIndex = acce1CB.Items.IndexOf(cmxHandler.accessoryDictReverse[(int)xxpHandler.baseSLCT.acc1Part]);
+            acce2CB.SelectedIndex = acce2CB.Items.IndexOf(cmxHandler.accessoryDictReverse[(int)xxpHandler.baseSLCT.acc2Part]);
+            acce3CB.SelectedIndex = acce3CB.Items.IndexOf(cmxHandler.accessoryDictReverse[(int)xxpHandler.baseSLCT.acc3Part]);
+            acce4CB.SelectedIndex = acce4CB.Items.IndexOf(cmxHandler.accessoryDictReverse[(int)xxpHandler.baseSLCT2.acc4Part]);
+
+            acce5CB.SelectedIndex = acce5CB.Items.IndexOf(cmxHandler.accessoryDictReverse[(int)xxpHandler.baseSLCTNGS.acc5Part]);
+            acce6CB.SelectedIndex = acce6CB.Items.IndexOf(cmxHandler.accessoryDictReverse[(int)xxpHandler.baseSLCTNGS.acc6Part]);
+            acce7CB.SelectedIndex = acce7CB.Items.IndexOf(cmxHandler.accessoryDictReverse[(int)xxpHandler.baseSLCTNGS.acc7Part]);
+            acce8CB.SelectedIndex = acce8CB.Items.IndexOf(cmxHandler.accessoryDictReverse[(int)xxpHandler.baseSLCTNGS.acc8Part]);
+
+            acce9CB.SelectedIndex = acce9CB.Items.IndexOf(cmxHandler.accessoryDictReverse[(int)xxpHandler.baseSLCTNGS.acc9Part]);
+            acce10CB.SelectedIndex = acce10CB.Items.IndexOf(cmxHandler.accessoryDictReverse[(int)xxpHandler.baseSLCTNGS.acc10Part]);
+            acce11CB.SelectedIndex = acce11CB.Items.IndexOf(cmxHandler.accessoryDictReverse[(int)xxpHandler.baseSLCTNGS.acc11Part]);
+            acce12CB.SelectedIndex = acce12CB.Items.IndexOf(cmxHandler.accessoryDictReverse[(int)xxpHandler.baseSLCTNGS.acc12Part]);
+        }
+
+        private void MotionDropdowns()
+        {
+            swimUD.Value = xxpHandler.ngsMTON.swimMotion;
+            glideUD.Value = xxpHandler.ngsMTON.glideMotion;
+            movUD.Value = xxpHandler.ngsMTON.walkRunMotion;
+            sprintUD.Value = xxpHandler.ngsMTON.dashMotion;
+            landingUD.Value = xxpHandler.ngsMTON.landingMotion;
+            jumpUD.Value = xxpHandler.ngsMTON.jumpMotion;
+            idleUD.Value = xxpHandler.ngsMTON.idleMotion;
+        }
+
+        private void ExpressionsData()
+        {
+        }
+
         private void LoadGameData()
         {
             pso2_binDir = File.ReadAllText(pso2BinCachePath);
             if(wipBox == null)
             {
-                wipBox = new WIPBox("Generating name cache. This will be\n" +
-                                    "done any time the .cmx is patched.\n" +
-                                    "It may take a moment.");
+                wipBox = new WIPBox("Generating name cache.");
             }
             cmxHandler = new CharacterMakingIndexHandler(pso2_binDir, wipBox);
 
@@ -278,159 +542,355 @@ namespace NGS_Salon_Tool
             Application.Current.Shutdown();
         }
 
+        private void RaceUDChanged(object sender, RoutedEventArgs e)
+        {
+            xxpHandler.baseDOC.race = (uint)raceUD.Value;
+        }
+        private void GenderUDChanged(object sender, RoutedEventArgs e)
+        {
+            xxpHandler.baseDOC.gender = (uint)genderUD.Value;
+        }
+        private void MuscleUDChanged(object sender, RoutedEventArgs e)
+        {
+            xxpHandler.baseDOC.muscleMass = (float)muscleUD.Value;
+        }
+        private void SkinVariantUDChanged(object sender, RoutedEventArgs e)
+        {
+            xxpHandler.skinVariant = (byte)skinVariantUD.Value;
+        }
+        private void EyebrowDensityUDChanged(object sender, RoutedEventArgs e)
+        {
+            xxpHandler.eyebrowDensity = (sbyte)eyebrowDensityUD.Value;
+        }
+        private void CMLVariableUDChanged(object sender, RoutedEventArgs e)
+        {
+            xxpHandler.cmlVariant = (short)cmlVariableUD.Value;
+        }
         private void CostumeSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             string text = (sender as ComboBox).SelectedItem as string;
+            if(text == null)
+            {
+                costumeIcon.Source = null;
+                return;
+            }
             costumeIcon.Source = IceHandler.GetIconFromIce(pso2_binDir, cmxHandler.costumeOuterDict[text], CharacterMakingIndex.costumeIcon);
+            xxpHandler.baseSLCT.costumePart = (uint)cmxHandler.costumeOuterDict[text];
         }
         private void BasewearSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             string text = (sender as ComboBox).SelectedItem as string;
+            if (text == null)
+            {
+                basewearIcon.Source = null;
+                return;
+            }
             basewearIcon.Source = IceHandler.GetIconFromIce(pso2_binDir, cmxHandler.basewearDict[text], CharacterMakingIndex.basewearIcon);
+            xxpHandler.baseSLCT2.basewearPart = (uint)cmxHandler.basewearDict[text];
         }
         private void InnerwearSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             string text = (sender as ComboBox).SelectedItem as string;
+            if (text == null)
+            {
+                innerwearIcon.Source = null;
+                return;
+            }
             innerwearIcon.Source = IceHandler.GetIconFromIce(pso2_binDir, cmxHandler.innerwearDict[text], CharacterMakingIndex.innerwearIcon);
+            xxpHandler.baseSLCT2.innerwearPart = (uint)cmxHandler.innerwearDict[text];
         }
         private void CastArmSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             string text = (sender as ComboBox).SelectedItem as string;
+            if (text == null)
+            {
+                castArmIcon.Source = null;
+                return;
+            }
             castArmIcon.Source = IceHandler.GetIconFromIce(pso2_binDir, cmxHandler.castArmDict[text], CharacterMakingIndex.castArmIcon);
+            xxpHandler.baseSLCT.armPart = (uint)cmxHandler.castArmDict[text];
         }
         private void CastLegSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             string text = (sender as ComboBox).SelectedItem as string;
+            if (text == null)
+            {
+                castLegIcon.Source = null;
+                return;
+            }
             castLegIcon.Source = IceHandler.GetIconFromIce(pso2_binDir, cmxHandler.castLegDict[text], CharacterMakingIndex.castLegIcon);
+            xxpHandler.baseSLCT.legPart = (uint)cmxHandler.castLegDict[text];
         }
         private void BodyPaint1SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             string text = (sender as ComboBox).SelectedItem as string;
+            if (text == null)
+            {
+                bodyPaintIcon.Source = null;
+                return;
+            }
             bodyPaintIcon.Source = IceHandler.GetIconFromIce(pso2_binDir, cmxHandler.bodyPaintDict[text], CharacterMakingIndex.bodyPaintIcon);
+            xxpHandler.baseSLCT.bodyPaintPart = (uint)cmxHandler.bodyPaintDict[text];
         }
         private void BodyPaint2SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             string text = (sender as ComboBox).SelectedItem as string;
+            if (text == null)
+            {
+                bodyPaint2Icon.Source = null;
+                return;
+            }
             bodyPaint2Icon.Source = IceHandler.GetIconFromIce(pso2_binDir, cmxHandler.bodyPaintDict[text], CharacterMakingIndex.bodyPaintIcon);
+            xxpHandler.baseSLCT2.bodyPaint2Part = (uint)cmxHandler.bodyPaintDict[text];
         }
         private void StickerSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             string text = (sender as ComboBox).SelectedItem as string;
+            if (text == null)
+            {
+                stickerIcon.Source = null;
+                return;
+            }
             stickerIcon.Source = IceHandler.GetIconFromIce(pso2_binDir, cmxHandler.stickerDict[text], CharacterMakingIndex.stickerIcon);
+            xxpHandler.baseSLCT.stickerPart = (uint)cmxHandler.stickerDict[text];
         }
         private void HairSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             string text = (sender as ComboBox).SelectedItem as string;
+            if (text == null)
+            {
+                hairIcon.Source = null;
+                return;
+            }
             hairIcon.Source = IceHandler.GetIconFromIce(pso2_binDir, cmxHandler.hairDict[text], CharacterMakingIndex.hairIcon);
+            xxpHandler.baseSLCT.hairPart = (uint)cmxHandler.hairDict[text];
         }
         private void RightEyeSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             string text = (sender as ComboBox).SelectedItem as string;
+            if (text == null)
+            {
+                rightEyeIcon.Source = null;
+                return;
+            }
             rightEyeIcon.Source = IceHandler.GetIconFromIce(pso2_binDir, cmxHandler.eyeDict[text], CharacterMakingIndex.eyeIcon);
+            xxpHandler.baseSLCT.eyePart = (uint)cmxHandler.eyeDict[text];
         }
         private void EyebrowsSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             string text = (sender as ComboBox).SelectedItem as string;
+            if (text == null)
+            {
+                eyebrowsIcon.Source = null;
+                return;
+            }
             eyebrowsIcon.Source = IceHandler.GetIconFromIce(pso2_binDir, cmxHandler.eyebrowDict[text], CharacterMakingIndex.eyebrowsIcon);
+            xxpHandler.baseSLCT.eyebrowPart = (uint)cmxHandler.eyebrowDict[text];
         }
         private void EyelashesSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             string text = (sender as ComboBox).SelectedItem as string;
+            if (text == null)
+            {
+                eyelashesIcon.Source = null;
+                return;
+            }
             eyelashesIcon.Source = IceHandler.GetIconFromIce(pso2_binDir, cmxHandler.eyelashDict[text], CharacterMakingIndex.eyelashesIcon);
+            xxpHandler.baseSLCT.eyelashPart = (uint)cmxHandler.eyelashDict[text];
         }
         private void LeftEyeSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             string text = (sender as ComboBox).SelectedItem as string;
+            if (text == null)
+            {
+                leftEyeIcon.Source = null;
+                return;
+            }
             leftEyeIcon.Source = IceHandler.GetIconFromIce(pso2_binDir, cmxHandler.eyeDict[text], CharacterMakingIndex.eyeIcon);
+            xxpHandler.leftEyePart = (uint)cmxHandler.eyeDict[text];
         }
         private void FaceModelSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            /*
             string text = (sender as ComboBox).SelectedItem as string;
-            leftEyeIcon.Source = IceHandler.GetIconFromIce(pso2_binDir, cmxHandler.eyeDict[text], CharacterMakingIndex.eyeIcon);
-            */
+            if (text == null)
+            {
+                return;
+            }
+            xxpHandler.baseSLCT.faceTypePart = (uint)cmxHandler.faceDict[text];
         }
         private void FaceTexSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            /*
             string text = (sender as ComboBox).SelectedItem as string;
-            leftEyeIcon.Source = IceHandler.GetIconFromIce(pso2_binDir, cmxHandler.eyeDict[text], CharacterMakingIndex.eyeIcon);
-            */
+            if (text == null)
+            {
+                return;
+            }
+            xxpHandler.baseSLCT.faceTexPart = (uint)cmxHandler.faceTexDict[text];
         }
         private void EarsSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             string text = (sender as ComboBox).SelectedItem as string;
+            if (text == null)
+            {
+                earsIcon.Source = null;
+                return;
+            }
             earsIcon.Source = IceHandler.GetIconFromIce(pso2_binDir, cmxHandler.earDict[text], CharacterMakingIndex.earIcon);
+            xxpHandler.baseSLCTNGS.earsPart = (uint)cmxHandler.earDict[text];
         }
         private void HornsSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             string text = (sender as ComboBox).SelectedItem as string;
+            if (text == null)
+            {
+                hornsIcon.Source = null;
+                return;
+            }
             hornsIcon.Source = IceHandler.GetIconFromIce(pso2_binDir, cmxHandler.hornDict[text], CharacterMakingIndex.hornIcon);
+            xxpHandler.baseSLCTNGS.hornPart = (uint)cmxHandler.hornDict[text];
         }
         private void TeethSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             string text = (sender as ComboBox).SelectedItem as string;
+            if (text == null)
+            {
+                teethIcon.Source = null;
+                return;
+            }
             teethIcon.Source = IceHandler.GetIconFromIce(pso2_binDir, cmxHandler.teethDict[text], CharacterMakingIndex.teethIcon);
+            xxpHandler.baseSLCTNGS.teethPart = (uint)cmxHandler.teethDict[text];
         }
         private void Acce1SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             string text = (sender as ComboBox).SelectedItem as string;
+            if (text == null)
+            {
+                acce1Icon.Source = null;
+                return;
+            }
             acce1Icon.Source = IceHandler.GetIconFromIce(pso2_binDir, cmxHandler.accessoryDict[text], CharacterMakingIndex.accessoryIcon);
+            xxpHandler.baseSLCT.acc1Part = (uint)cmxHandler.accessoryDict[text];
         }
         private void Acce2SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             string text = (sender as ComboBox).SelectedItem as string;
+            if (text == null)
+            {
+                acce2Icon.Source = null;
+                return;
+            }
             acce2Icon.Source = IceHandler.GetIconFromIce(pso2_binDir, cmxHandler.accessoryDict[text], CharacterMakingIndex.accessoryIcon);
+            xxpHandler.baseSLCT.acc2Part = (uint)cmxHandler.accessoryDict[text];
         }
         private void Acce3SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             string text = (sender as ComboBox).SelectedItem as string;
+            if (text == null)
+            {
+                acce3Icon.Source = null;
+                return;
+            }
             acce3Icon.Source = IceHandler.GetIconFromIce(pso2_binDir, cmxHandler.accessoryDict[text], CharacterMakingIndex.accessoryIcon);
+            xxpHandler.baseSLCT.acc3Part = (uint)cmxHandler.accessoryDict[text];
         }
         private void Acce4SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             string text = (sender as ComboBox).SelectedItem as string;
+            if (text == null)
+            {
+                acce4Icon.Source = null;
+                return;
+            }
             acce4Icon.Source = IceHandler.GetIconFromIce(pso2_binDir, cmxHandler.accessoryDict[text], CharacterMakingIndex.accessoryIcon);
+            xxpHandler.baseSLCT2.acc4Part = (uint)cmxHandler.accessoryDict[text];
         }
         private void Acce5SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             string text = (sender as ComboBox).SelectedItem as string;
+            if (text == null)
+            {
+                acce5Icon.Source = null;
+                return;
+            }
             acce5Icon.Source = IceHandler.GetIconFromIce(pso2_binDir, cmxHandler.accessoryDict[text], CharacterMakingIndex.accessoryIcon);
+            xxpHandler.baseSLCTNGS.acc5Part = (uint)cmxHandler.accessoryDict[text];
         }
         private void Acce6SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             string text = (sender as ComboBox).SelectedItem as string;
+            if (text == null)
+            {
+                acce6Icon.Source = null;
+                return;
+            }
             acce6Icon.Source = IceHandler.GetIconFromIce(pso2_binDir, cmxHandler.accessoryDict[text], CharacterMakingIndex.accessoryIcon);
+            xxpHandler.baseSLCTNGS.acc6Part = (uint)cmxHandler.accessoryDict[text];
         }
         private void Acce7SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             string text = (sender as ComboBox).SelectedItem as string;
+            if (text == null)
+            {
+                acce7Icon.Source = null;
+                return;
+            }
             acce7Icon.Source = IceHandler.GetIconFromIce(pso2_binDir, cmxHandler.accessoryDict[text], CharacterMakingIndex.accessoryIcon);
+            xxpHandler.baseSLCTNGS.acc7Part = (uint)cmxHandler.accessoryDict[text];
         }
         private void Acce8SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             string text = (sender as ComboBox).SelectedItem as string;
+            if (text == null)
+            {
+                acce8Icon.Source = null;
+                return;
+            }
             acce8Icon.Source = IceHandler.GetIconFromIce(pso2_binDir, cmxHandler.accessoryDict[text], CharacterMakingIndex.accessoryIcon);
+            xxpHandler.baseSLCTNGS.acc8Part = (uint)cmxHandler.accessoryDict[text];
         }
         private void Acce9SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             string text = (sender as ComboBox).SelectedItem as string;
+            if (text == null)
+            {
+                acce9Icon.Source = null;
+                return;
+            }
             acce9Icon.Source = IceHandler.GetIconFromIce(pso2_binDir, cmxHandler.accessoryDict[text], CharacterMakingIndex.accessoryIcon);
+            xxpHandler.baseSLCTNGS.acc9Part = (uint)cmxHandler.accessoryDict[text];
         }
         private void Acce10SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             string text = (sender as ComboBox).SelectedItem as string;
+            if (text == null)
+            {
+                acce10Icon.Source = null;
+                return;
+            }
             acce10Icon.Source = IceHandler.GetIconFromIce(pso2_binDir, cmxHandler.accessoryDict[text], CharacterMakingIndex.accessoryIcon);
+            xxpHandler.baseSLCTNGS.acc10Part = (uint)cmxHandler.accessoryDict[text];
         }
         private void Acce11SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             string text = (sender as ComboBox).SelectedItem as string;
+            if (text == null)
+            {
+                acce11Icon.Source = null;
+                return;
+            }
             acce11Icon.Source = IceHandler.GetIconFromIce(pso2_binDir, cmxHandler.accessoryDict[text], CharacterMakingIndex.accessoryIcon);
+            xxpHandler.baseSLCTNGS.acc11Part = (uint)cmxHandler.accessoryDict[text];
         }
         private void Acce12SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             string text = (sender as ComboBox).SelectedItem as string;
+            if (text == null)
+            {
+                acce12Icon.Source = null;
+                return;
+            }
             acce12Icon.Source = IceHandler.GetIconFromIce(pso2_binDir, cmxHandler.accessoryDict[text], CharacterMakingIndex.accessoryIcon);
+            xxpHandler.baseSLCTNGS.acc12Part = (uint)cmxHandler.accessoryDict[text];
         }
         private void SwimSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
@@ -438,6 +898,7 @@ namespace NGS_Salon_Tool
             {
                 motionWait = true;
                 swimUD.Value = cmxHandler.swimDict[(string)swimCB.SelectedItem];
+                xxpHandler.ngsMTON.swimMotion = (int)swimUD.Value;
                 motionWait = false;
             }
         }
@@ -462,6 +923,7 @@ namespace NGS_Salon_Tool
             {
                 motionWait = true;
                 glideUD.Value = cmxHandler.glideDict[(string)glideCB.SelectedItem];
+                xxpHandler.ngsMTON.glideMotion = (int)glideUD.Value;
                 motionWait = false;
             }
         }
@@ -487,6 +949,7 @@ namespace NGS_Salon_Tool
             {
                 motionWait = true;
                 jumpUD.Value = cmxHandler.jumpDict[(string)jumpCB.SelectedItem];
+                xxpHandler.ngsMTON.jumpMotion = (int)jumpUD.Value;
                 motionWait = false;
             }
         }
@@ -512,6 +975,7 @@ namespace NGS_Salon_Tool
             {
                 motionWait = true;
                 landingUD.Value = cmxHandler.landingDict[(string)landingCB.SelectedItem];
+                xxpHandler.ngsMTON.landingMotion = (int)landingUD.Value;
                 motionWait = false;
             }
         }
@@ -537,6 +1001,7 @@ namespace NGS_Salon_Tool
             {
                 motionWait = true;
                 movUD.Value = cmxHandler.movDict[(string)movCB.SelectedItem];
+                xxpHandler.ngsMTON.walkRunMotion = (int)movUD.Value;
                 motionWait = false;
             }
         }
@@ -562,6 +1027,7 @@ namespace NGS_Salon_Tool
             {
                 motionWait = true;
                 sprintUD.Value = cmxHandler.sprintDict[(string)sprintCB.SelectedItem];
+                xxpHandler.ngsMTON.dashMotion = (int)sprintUD.Value;
                 motionWait = false;
             }
         }
@@ -587,6 +1053,7 @@ namespace NGS_Salon_Tool
             {
                 motionWait = true;
                 idleUD.Value = cmxHandler.idleDict[(string)idleCB.SelectedItem];
+                xxpHandler.ngsMTON.idleMotion = (int)idleUD.Value;
                 motionWait = false;
             }
         }

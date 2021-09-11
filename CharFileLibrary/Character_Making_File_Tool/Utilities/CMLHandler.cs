@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using static Character_Making_File_Tool.CharacterDataStructs;
 using static Character_Making_File_Tool.CharacterDataStructsReboot;
+using static Character_Making_File_Tool.CharacterConstants;
 
 namespace Character_Making_File_Tool
 {
@@ -75,6 +76,7 @@ namespace Character_Making_File_Tool
                         TryGet(ref xxp.cmlVariant, doc, 0x73);
                         TryGet(ref xxp.skinVariant, doc, 0x74);
                         TryGet(ref xxp.eyebrowDensity, doc, 0x75);
+                        TryGet(ref xxp.xxpVersion, doc, 0xFF);
                         break;
                     case "FIGR":
                         var figr = data[0];
@@ -89,8 +91,19 @@ namespace Character_Making_File_Tool
                         TryGetFromArray(ref xxp.baseFIGR.noseShapeVerts, figr, 0x8);
                         TryGetFromArray(ref xxp.baseFIGR.mouthVerts, figr, 0x9);
                         TryGetFromArray(ref xxp.baseFIGR.ear_hornVerts, figr, 0xA);
-                        TryGetFromArray(ref xxp.neckVerts, figr, 0xB);
-                        TryGetFromArray(ref xxp.waistVerts, figr, 0xC);
+                        TryGetFromArray(ref xxp.neckVerts, figr, 0xC);
+                        TryGetFromArray(ref xxp.waistVerts, figr, 0xD);
+                        TryGetFromArray(ref xxp.hands, figr, 0x16);
+                        TryGetFromArray(ref xxp.horns, figr, 0x20);
+
+                        //Technically this is the same struct as the above, but its values are used ingame much differently
+                        if(figr.TryGetValue(0x21, out object extra))
+                        {
+                            int[] extraArr = ((int[][])extra)[0];
+                            xxp.eyeSize = extraArr[0];
+                            xxp.eyeHorizontalPosition = extraArr[1];
+                            xxp.neckAngle = extraArr[2];
+                        }
                         break;
                     case "OFST":
                         var ofst = data[0];
@@ -172,7 +185,7 @@ namespace Character_Making_File_Tool
                         TryGet(ref xxp.baseSLCT2.acc4Part, slct, 0x56);
                         TryGet(ref xxp.baseSLCT2.basewearPart, slct, 0x57);
                         TryGet(ref xxp.baseSLCT2.innerwearPart, slct, 0x58);
-                        TryGet(ref xxp.baseSLCT2.bodypaint2Part, slct, 0x59);
+                        TryGet(ref xxp.baseSLCT2.bodyPaint2Part, slct, 0x59);
 
                         //BaseSLCTNGS
                         TryGet(ref xxp.baseSLCTNGS.skinTextureSet, slct, 0x0);
@@ -204,12 +217,12 @@ namespace Character_Making_File_Tool
                         }
                         else if(slct.ContainsKey(0x43))
                         {
-                            if (xxp.cmlVariant >= 0x9)
+                            if (xxp.cmlVariant >= 0x9 || xxp.baseDOC.race != 0x3)
                             {
                                 TryGet(ref xxp.baseSLCT.eyePart, slct, 0x43);
                                 TryGet(ref xxp.leftEyePart, slct, 0x43);
                             }
-                            else
+                            else 
                             {
                                 var eyeBytes = BitConverter.GetBytes((int)slct[0x43]);
                                 xxp.baseSLCT.eyePart = eyeBytes[0];
@@ -383,9 +396,99 @@ namespace Character_Making_File_Tool
             return expr;
         }
 
-        public static byte[] WriteNGSCML(CharacterHandlerReboot.xxpGeneralReboot xxp)
+        public unsafe static byte[] WriteNGSCML(CharacterHandlerReboot.xxpGeneralReboot xxp)
         {
-            return null;
+            List<byte> cml = new List<byte>();
+
+            //Header
+            cml.AddRange(ConstantCMLHeader); //Always the same in all observed files
+
+            //DOC
+            VTBFMethods.WriteTagHeader(cml, "DOC ", 0xC, 0x7);
+            VTBFMethods.addBytes(cml, 0x70, 0x8, BitConverter.GetBytes(xxp.baseDOC.race));
+            VTBFMethods.addBytes(cml, 0x71, 0x8, BitConverter.GetBytes(xxp.baseDOC.gender));
+            VTBFMethods.addBytes(cml, 0x72, 0x8, BitConverter.GetBytes((int)xxp.baseDOC.muscleMass));
+            VTBFMethods.addBytes(cml, 0x73, 0x8, BitConverter.GetBytes((int)0x9));
+            VTBFMethods.addBytes(cml, 0xFF, 0x8, BitConverter.GetBytes((int)0xA));
+            VTBFMethods.addBytes(cml, 0x74, 0x8, BitConverter.GetBytes((int)xxp.skinVariant));
+            VTBFMethods.addBytes(cml, 0x75, 0x8, BitConverter.GetBytes((int)xxp.eyebrowDensity));
+
+            //FIGR
+            VTBFMethods.WriteTagHeader(cml, "FIGR", 0, 0x10);
+            VTBFMethods.addBytes(cml, 0x0, 0x48, 0x1, Reloaded.Memory.Struct.GetBytes(xxp.baseFIGR.bodyVerts));
+            VTBFMethods.addBytes(cml, 0x1, 0x48, 0x1, Reloaded.Memory.Struct.GetBytes(xxp.baseFIGR.armVerts));
+            VTBFMethods.addBytes(cml, 0x2, 0x48, 0x1, Reloaded.Memory.Struct.GetBytes(xxp.baseFIGR.legVerts));
+            VTBFMethods.addBytes(cml, 0x3, 0x48, 0x1, Reloaded.Memory.Struct.GetBytes(xxp.baseFIGR.bustVerts));
+
+            VTBFMethods.addBytes(cml, 0x4, 0x48, 0x1, Reloaded.Memory.Struct.GetBytes(xxp.baseFIGR.headVerts));
+            VTBFMethods.addBytes(cml, 0x5, 0x48, 0x1, Reloaded.Memory.Struct.GetBytes(xxp.baseFIGR.faceShapeVerts));
+            VTBFMethods.addBytes(cml, 0x6, 0x48, 0x1, Reloaded.Memory.Struct.GetBytes(xxp.baseFIGR.eyeShapeVerts));
+            VTBFMethods.addBytes(cml, 0x7, 0x48, 0x1, Reloaded.Memory.Struct.GetBytes(xxp.baseFIGR.noseHeightVerts));
+
+            VTBFMethods.addBytes(cml, 0x8, 0x48, 0x1, Reloaded.Memory.Struct.GetBytes(xxp.baseFIGR.noseShapeVerts));
+            VTBFMethods.addBytes(cml, 0x9, 0x48, 0x1, Reloaded.Memory.Struct.GetBytes(xxp.baseFIGR.mouthVerts));
+            VTBFMethods.addBytes(cml, 0xA, 0x48, 0x1, Reloaded.Memory.Struct.GetBytes(xxp.baseFIGR.ear_hornVerts));
+            VTBFMethods.addBytes(cml, 0xC, 0x48, 0x1, Reloaded.Memory.Struct.GetBytes(xxp.neckVerts));
+            VTBFMethods.addBytes(cml, 0xD, 0x48, 0x1, Reloaded.Memory.Struct.GetBytes(xxp.waistVerts));
+            VTBFMethods.addBytes(cml, 0x16, 0x48, 0x1, Reloaded.Memory.Struct.GetBytes(xxp.hands));
+            VTBFMethods.addBytes(cml, 0x20, 0x48, 0x1, Reloaded.Memory.Struct.GetBytes(xxp.horns));
+            Vector3Int.Vec3Int vec3_21 = Vector3Int.Vec3Int.CreateVec3Int(xxp.eyeSize, xxp.eyeHorizontalPosition, xxp.neckAngle);
+            VTBFMethods.addBytes(cml, 0x21, 0x48, 0x1, Reloaded.Memory.Struct.GetBytes(vec3_21));
+
+            //OFST - Scale
+            VTBFMethods.WriteTagHeader(cml, "OFST", 0, 0xC);
+            for(int i = 0; i < 0x24; i += 3)
+            {
+                VTBFMethods.addBytes(cml, (byte)(0x90 + (i / 3)), 0x83, 0x8, 0x2, 
+                    new byte[] { (byte)xxp.accessorySlidersReboot.scaleSliders[i], (byte)xxp.accessorySlidersReboot.scaleSliders[i + 1], (byte)xxp.accessorySlidersReboot.scaleSliders[i + 2] } );
+            }
+            //OFST - Rot
+            VTBFMethods.WriteTagHeader(cml, "OFST", 0, 0xC);
+            for (int i = 0; i < 0x24; i += 3)
+            {
+                VTBFMethods.addBytes(cml, (byte)(0xA0 + (i / 3)), 0x83, 0x8, 0x2,
+                    new byte[] { (byte)xxp.accessorySlidersReboot.rotSliders[i], (byte)xxp.accessorySlidersReboot.rotSliders[i + 1], (byte)xxp.accessorySlidersReboot.rotSliders[i + 2] });
+            }
+
+            //OFST - Pos
+            VTBFMethods.WriteTagHeader(cml, "OFST", 0, 0xC);
+            for (int i = 0; i < 0x24; i += 3)
+            {
+                VTBFMethods.addBytes(cml, (byte)(0xB0 + (i / 3)), 0x83, 0x8, 0x2,
+                    new byte[] { (byte)xxp.accessorySlidersReboot.posSliders[i], (byte)xxp.accessorySlidersReboot.posSliders[i + 1], (byte)xxp.accessorySlidersReboot.posSliders[i + 2] });
+            }
+
+            //ACWK
+            VTBFMethods.WriteTagHeader(cml, "ACWK", 0, 0xC);
+            for(int i = 0; i < 0xC; i++)
+            {
+                VTBFMethods.addBytes(cml, (byte)(0x0 + i), 0x48, 0x1, BitConverter.GetBytes((int)(xxp.accessoryMiscData.accessoryAttach[i])));
+                cml.AddRange(BitConverter.GetBytes((int)(xxp.accessoryMiscData.accessoryColorChoices[i * 2])));
+                cml.AddRange(BitConverter.GetBytes((int)(xxp.accessoryMiscData.accessoryColorChoices[i * 2 + 1])));
+            }
+
+            //COL2
+            VTBFMethods.WriteTagHeader(cml, "COL2", 0, 0x12);
+
+            //SLCT
+            VTBFMethods.WriteTagHeader(cml, "SLCT", 0, 0x21);
+
+            //SLCT - Paint Priority
+            VTBFMethods.WriteTagHeader(cml, "SLCT", 0, 0x3);
+
+            //SLID - Extra NGS Sliders
+            VTBFMethods.WriteTagHeader(cml, "SLID", 0, 0xD);
+
+            //MTON
+            VTBFMethods.WriteTagHeader(cml, "MTON", 0, 0x8);
+
+            //VISI
+            VTBFMethods.WriteTagHeader(cml, "VISI", 0, 0x2);
+
+            //EXPR
+            VTBFMethods.WriteTagHeader(cml, "EXPR", 0, 0xA);
+
+            return cml.ToArray();
         }
     }
 }
