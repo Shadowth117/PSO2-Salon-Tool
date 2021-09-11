@@ -209,7 +209,7 @@ namespace NGS_Salon_Tool
 
             }*/
 
-            //saveFileDialog.Filter += "|Character Markup Language files (*.cml)|*.cml";
+            saveFileDialog.Filter += "|Character Markup Language files (*.cml)|*.cml";
                //+ "|Data Dump (*.txt)|*.txt";
 
             if (saveFileDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
@@ -220,7 +220,7 @@ namespace NGS_Salon_Tool
                         SaveXXP();
                         break;
                     case 2:
-                        //SaveCML();
+                        SaveCML();
                         break;
                     default:
                         break;
@@ -229,6 +229,11 @@ namespace NGS_Salon_Tool
             saveFileDialog.FileName = "";
             openedFileName = "";
             
+        }
+
+        private void SaveCML()
+        {
+            File.WriteAllBytes(saveFileDialog.FileName, CMLHandler.GetNGSCML(xxpHandler));
         }
 
         private void SaveXXP()

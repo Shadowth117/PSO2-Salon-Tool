@@ -12,6 +12,7 @@ using static Character_Making_File_Tool.CharacterHandlerUtilityMethods;
 using static Character_Making_File_Tool.CharacterDataStructs;
 using static Character_Making_File_Tool.CharacterDataStructsReboot;
 using static Character_Making_File_Tool.CharacterStructConstants;
+using System.Diagnostics;
 
 namespace Character_Making_File_Tool
 {
@@ -212,8 +213,6 @@ namespace Character_Making_File_Tool
 
             public uint padding24;
             public uint padding25;
-            public uint padding26;
-            public uint padding27;
 
             //0x398 - Accessory attach points followed by color choices
             public AccessoryMisc accessoryMiscData;
@@ -656,6 +655,7 @@ namespace Character_Making_File_Tool
                 tempXXP.int_350 = int_350;
                 tempXXP.int_354 = int_354;
                 tempXXP.ngsVISI = ngsVISI;
+                tempXXP.accessoryMiscData = accessoryMiscData;
 
                 return tempXXP;
             }

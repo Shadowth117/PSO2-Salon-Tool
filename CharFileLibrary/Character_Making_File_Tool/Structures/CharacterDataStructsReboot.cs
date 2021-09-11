@@ -300,6 +300,16 @@ namespace Character_Making_File_Tool
             public fixed byte accessoryColorChoices[0x18]; //Each accessory has choice 1 and choice 2 next to each other
         }
 
+        public struct AccessoryMiscAttach
+        {
+            public fixed byte accessoryAttach[0xC];
+        }
+
+        public struct AccessoryMiscColor
+        {
+            public fixed byte accessoryColorChoices[0x18];
+        }
+
         public struct BaseSLCTNGS
         {
             public uint skinTextureSet;
