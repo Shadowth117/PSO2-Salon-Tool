@@ -63,37 +63,37 @@
                         <Label x:Name="outerColorLabel" Content="Outerwear 1" Margin="8,19,152,34" HorizontalAlignment="Left" VerticalAlignment="Top"/>
                         <Button x:Name="baseColorButton" Content=""  Margin="222,15,622,16" Height="48" Width="48" Click="SetBaseColor" Background="#FF00FF00" Grid.ColumnSpan="2" HorizontalAlignment="Left" VerticalAlignment="Top"/>
                         <Label x:Name="baseColorLabel" Content="Basewear 1" Margin="153,19,14,34" HorizontalAlignment="Left" VerticalAlignment="Top"/>
-                        <Button x:Name="outerColor2Button" Content=""  Margin="84,78,0,0" Height="48" Width="48" Click="SetOuterColor" Background="#FFDE5656" HorizontalAlignment="Left" VerticalAlignment="Top"/>
+                        <Button x:Name="outerColor2Button" Content=""  Margin="84,78,0,0" Height="48" Width="48" Click="SetOuterColor2" Background="#FFDE5656" HorizontalAlignment="Left" VerticalAlignment="Top"/>
                         <Label x:Name="outerColor2Label" Content="Outerwear 2" Margin="8,82,0,0" HorizontalAlignment="Left" VerticalAlignment="Top"/>
-                        <Button x:Name="baseColor2Button" Content=""  Margin="222,78,0,0" Height="48" Width="48" Click="SetBaseColor" Background="#FF71EC71" Grid.ColumnSpan="2" HorizontalAlignment="Left" VerticalAlignment="Top"/>
+                        <Button x:Name="baseColor2Button" Content=""  Margin="222,78,0,0" Height="48" Width="48" Click="SetBaseColor2" Background="#FF71EC71" Grid.ColumnSpan="2" HorizontalAlignment="Left" VerticalAlignment="Top"/>
                         <Label x:Name="baseColor2Label" Content="Basewear 2" Margin="153,82,0,0" HorizontalAlignment="Left" VerticalAlignment="Top"/>
-                        <Button x:Name="innerColorButton" Content=""  Margin="122,15,0,0" Height="48" Width="48" Click="SetBaseColor" Background="#FF00FFE8" HorizontalAlignment="Left" VerticalAlignment="Top" Grid.Column="1"/>
+                        <Button x:Name="innerColorButton" Content=""  Margin="122,15,0,0" Height="48" Width="48" Click="SetInnerColor" Background="#FF00FFE8" HorizontalAlignment="Left" VerticalAlignment="Top" Grid.Column="1"/>
                         <Label x:Name="innerColorLabel" Content="Innerwear 1" Margin="49,19,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" Grid.Column="1" Width="73"/>
-                        <Button x:Name="innerColor2Button" Content=""  Margin="122,78,0,0" Height="48" Width="48" Click="SetBaseColor" Background="#FF71ECE6" HorizontalAlignment="Left" VerticalAlignment="Top" Grid.Column="1"/>
+                        <Button x:Name="innerColor2Button" Content=""  Margin="122,78,0,0" Height="48" Width="48" Click="SetInnerColor2" Background="#FF71ECE6" HorizontalAlignment="Left" VerticalAlignment="Top" Grid.Column="1"/>
                         <Label x:Name="innerColor2Label" Content="Innerwear 2" Margin="49,0,0,0" HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Column="1" Width="73"/>
-                        <Button x:Name="skinColorButton" Content=""  Margin="250,15,0,0" Height="48" Width="48" Click="SetBaseColor" Background="#FFFFC500" HorizontalAlignment="Left" VerticalAlignment="Top" Grid.Column="1"/>
+                        <Button x:Name="skinColorButton" Content=""  Margin="250,15,0,0" Height="48" Width="48" Click="SetSkinColor" Background="#FFFFC500" HorizontalAlignment="Left" VerticalAlignment="Top" Grid.Column="1"/>
                         <Label x:Name="skinColorLabel" Content="Skin 1" Margin="208,19,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" Grid.Column="1"/>
-                        <Button x:Name="skinColor2Button" Content=""  Margin="250,78,0,0" Height="48" Width="48" Click="SetBaseColor" Background="#FFECAE71" HorizontalAlignment="Left" VerticalAlignment="Top" Grid.Column="1"/>
+                        <Button x:Name="skinColor2Button" Content=""  Margin="250,78,0,0" Height="48" Width="48" Click="SetSkinColor2" Background="#FFECAE71" HorizontalAlignment="Left" VerticalAlignment="Top" Grid.Column="1"/>
                         <Label x:Name="skinColor2Label" Content="Skin 2" Margin="208,82,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" Grid.Column="1"/>
-                        <Button x:Name="hairColorButton" Content=""  Margin="373,15,0,0" Height="48" Width="48" Click="SetBaseColor" Background="#FFFF00D1" HorizontalAlignment="Left" VerticalAlignment="Top" Grid.Column="1"/>
+                        <Button x:Name="hairColorButton" Content=""  Margin="373,15,0,0" Height="48" Width="48" Click="SetHairColor" Background="#FFFF00D1" HorizontalAlignment="Left" VerticalAlignment="Top" Grid.Column="1"/>
                         <Label x:Name="hairColorLabel" Content="Hair 1" Margin="331,19,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" Grid.Column="1"/>
-                        <Button x:Name="hairColor2Button" Content=""  Margin="373,78,0,0" Height="48" Width="48" Click="SetBaseColor" Background="#FFEC71E6" HorizontalAlignment="Left" VerticalAlignment="Top" Grid.Column="1"/>
+                        <Button x:Name="hairColor2Button" Content=""  Margin="373,78,0,0" Height="48" Width="48" Click="SetHairColor2" Background="#FFEC71E6" HorizontalAlignment="Left" VerticalAlignment="Top" Grid.Column="1"/>
                         <Label x:Name="hairColor2Label" Content="Hair 2" Margin="331,82,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" Grid.Column="1"/>
-                        <Button x:Name="eyebrowsColorButton" Content=""  Margin="491,15,0,0" Height="48" Width="48" Click="SetBaseColor" Background="#FF7A7A7A" HorizontalAlignment="Left" VerticalAlignment="Top" Grid.Column="1"/>
+                        <Button x:Name="eyebrowsColorButton" Content=""  Margin="491,15,0,0" Height="48" Width="48" Click="SetEyebrowColor" Background="#FF7A7A7A" HorizontalAlignment="Left" VerticalAlignment="Top" Grid.Column="1"/>
                         <Label x:Name="eyebrowsColorLabel" Content="Eyebrows" Margin="430,19,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" Grid.Column="1"/>
-                        <Button x:Name="eyelashesColorButton" Content=""  Margin="607,15,0,0" Height="48" Width="48" Click="SetBaseColor" Background="#FF545459" HorizontalAlignment="Left" VerticalAlignment="Top" Grid.Column="1"/>
+                        <Button x:Name="eyelashesColorButton" Content=""  Margin="607,15,0,0" Height="48" Width="48" Click="SetEyelashColor" Background="#FF545459" HorizontalAlignment="Left" VerticalAlignment="Top" Grid.Column="1"/>
                         <Label x:Name="eyelashesColorLabel" Content="Eyelashes" Margin="545,19,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" Grid.Column="1"/>
-                        <Button x:Name="leftEyeColorButton" Content=""  Margin="491,78,0,0" Height="48" Width="48" Click="SetBaseColor" Background="#FFF1F110" HorizontalAlignment="Left" VerticalAlignment="Top" Grid.Column="1"/>
+                        <Button x:Name="leftEyeColorButton" Content=""  Margin="491,78,0,0" Height="48" Width="48" Click="SetLeftEyeColor" Background="#FFF1F110" HorizontalAlignment="Left" VerticalAlignment="Top" Grid.Column="1"/>
                         <Label x:Name="leftEyeColorLabel" Content="Left Eye" Margin="430,82,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" Grid.Column="1"/>
-                        <Button x:Name="rightEyeColorButton" Content=""  Margin="607,78,0,0" Height="48" Width="48" Click="SetBaseColor" Background="#FF0000A2" HorizontalAlignment="Left" VerticalAlignment="Top" Grid.Column="1"/>
+                        <Button x:Name="rightEyeColorButton" Content=""  Margin="607,78,0,0" Height="48" Width="48" Click="SetRightEyeColor" Background="#FF0000A2" HorizontalAlignment="Left" VerticalAlignment="Top" Grid.Column="1"/>
                         <Label x:Name="rightEyeColorLabel" Content="Right Eye" Margin="545,82,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" Grid.Column="1"/>
-                        <Button x:Name="mainColorButton" Content=""  Margin="84,141,0,0" Height="48" Width="48" Click="SetOuterColor" Background="#FF0B1EDE" HorizontalAlignment="Left" VerticalAlignment="Top"/>
+                        <Button x:Name="mainColorButton" Content=""  Margin="84,141,0,0" Height="48" Width="48" Click="SetMainColor" Background="#FF0B1EDE" HorizontalAlignment="Left" VerticalAlignment="Top"/>
                         <Label x:Name="mainColorLabel" Content="Main Color" Margin="8,145,0,0" HorizontalAlignment="Left" VerticalAlignment="Top"/>
-                        <Button x:Name="subcolor1Button" Content=""  Margin="222,141,0,0" Height="48" Width="48" Click="SetBaseColor" Background="#FFFFA80F" Grid.ColumnSpan="2" HorizontalAlignment="Left" VerticalAlignment="Top"/>
+                        <Button x:Name="subcolor1Button" Content=""  Margin="222,141,0,0" Height="48" Width="48" Click="SetSubColor1" Background="#FFFFA80F" Grid.ColumnSpan="2" HorizontalAlignment="Left" VerticalAlignment="Top"/>
                         <Label x:Name="subcolor1Label" Content="Subcolor 1" Margin="153,145,0,0" HorizontalAlignment="Left" VerticalAlignment="Top"/>
-                        <Button x:Name="subcolor2Button" Content=""  Margin="122,141,0,0" Height="48" Width="48" Click="SetBaseColor" Background="#FF9155F9" HorizontalAlignment="Left" VerticalAlignment="Top" Grid.Column="1"/>
+                        <Button x:Name="subcolor2Button" Content=""  Margin="122,141,0,0" Height="48" Width="48" Click="SetSubColor2" Background="#FF9155F9" HorizontalAlignment="Left" VerticalAlignment="Top" Grid.Column="1"/>
                         <Label x:Name="subcolor2Label" Content="Subcolor 2" Margin="53,145,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" Grid.Column="1"/>
-                        <Button x:Name="subcolor3Button" Content=""  Margin="250,141,0,0" Height="48" Width="48" Click="SetBaseColor" Background="#FF21B400" HorizontalAlignment="Left" VerticalAlignment="Top" Grid.Column="1"/>
+                        <Button x:Name="subcolor3Button" Content=""  Margin="250,141,0,0" Height="48" Width="48" Click="SetSubColor3" Background="#FF21B400" HorizontalAlignment="Left" VerticalAlignment="Top" Grid.Column="1"/>
                         <Label x:Name="subcolor3Label" Content="Subcolor 3" Margin="183,145,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" Grid.Column="1"/>
                     </Grid>
                 </TabItem>

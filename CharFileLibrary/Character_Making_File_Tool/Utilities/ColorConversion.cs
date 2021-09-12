@@ -122,13 +122,19 @@ namespace Character_Making_File_Tool
             return System.Windows.Media.Color.FromArgb(bytes[3], bytes[0], bytes[1], bytes[2]);
         }
 
-        public unsafe static byte[] BytesFromFixed(byte* fixedArr)
+        public unsafe static byte[] BytesFromFixed(byte* fixedArr, bool maxAlpha = false)
         {
             byte[] bytes = new byte[4];
             bytes[0] = fixedArr[0];
             bytes[1] = fixedArr[1];
             bytes[2] = fixedArr[2];
-            bytes[3] = fixedArr[3];
+            if(maxAlpha == true)
+            {
+                bytes[3] = 0xFF;
+            } else
+            {
+                bytes[3] = fixedArr[3];
+            }
 
             return bytes;
         }
