@@ -23,8 +23,8 @@
                     <MenuItem Name="saveAsButton" Header="Save As" Click="SaveCharFileAs"/>
                 </MenuItem>
                 <MenuItem Header="Batch">
-                    <MenuItem Header="XXP Folder to CML"/>
-                    <MenuItem Header="CML Folder to xxp"/>
+                    <MenuItem Header="XXP Folder to CML" Click="ToCML"/>
+                    <MenuItem Header="CML Folder to xxp" Click="ToXXP"/>
                 </MenuItem>
                 <MenuItem Header="Extra">
                     <MenuItem Header="Decrypt xxp(s) and save" Click="DecryptXXPs"/>

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -27,6 +28,10 @@ namespace NGS_Salon_Tool
             IsFolderPicker = true,
             Title = "Select pso2_bin",
         };
+        CommonOpenFileDialog folderPick = new CommonOpenFileDialog()
+        {
+            IsFolderPicker = true
+        };
         System.Windows.Forms.OpenFileDialog fileOpen = new()
         {
             Filter = "All character files (*.cml,*.xxp,*.xxpu,*.bin)|*.fhp;*.fnp;*.fcp;*.fdp;*.mhp;*.mnp;*.mcp;*.mdp;" +
@@ -40,6 +45,9 @@ namespace NGS_Salon_Tool
         {
             Title = "Save character file"
         };
+        string[] xxpSearchPattern = new string[] {"*.fhp", "*.fnp", "*.fcp", "*.fdp", "*.mhp", "*.mnp", "*.mcp", "*.mdp",
+                            "*.fhpu", "*.fnpu", "*.fcpu", "*.fdpu", "*.mhpu", "*.mnpu", "*.mcpu", "*.mdpu"};
+        string[] cmlSearchPattern = new string[] { "*.cml", "*.eml" };
         string namesPath = System.IO.Path.Combine(System.IO.Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "names\\");
         string pso2BinCachePath = System.IO.Path.Combine(System.IO.Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "names\\pso2Bin.txt");
         string pso2_binDir = null;
@@ -92,6 +100,73 @@ namespace NGS_Salon_Tool
             customizeExpressionsTab.IsEnabled = enabled;
         }
 
+        private void ToCML(object sender, RoutedEventArgs e)
+        {
+            folderPick.Title = "Please select the folder with the desired Salon xxp files";
+
+            if (folderPick.ShowDialog() == CommonFileDialogResult.Ok)
+            {
+                List<string> files = new List<string>();
+                foreach(string ext in xxpSearchPattern)
+                {
+                    files.AddRange(Directory.EnumerateFiles(folderPick.FileName, ext, SearchOption.TopDirectoryOnly));
+                }
+
+                foreach(string file in files)
+                {
+#if DEBUG
+                    Trace.WriteLine(file);
+#endif
+                    byte[] data;
+                    //Handle encrypted files
+                    if (file.LastOrDefault() == 'p')
+                    {
+                        data = CharacterHandler.DecryptXXP(file);
+                    }
+                    else
+                    {
+                        data = File.ReadAllBytes(file);
+                    }
+
+                    CharacterHandlerReboot.xxpGeneralReboot tempxxp;
+                    using (Stream stream = new MemoryStream(data))
+                    using (var streamReader = new BufferedStreamReader(stream, 8192))
+                    {
+                        tempxxp = OpenXXP(streamReader);
+                    }
+                    WriteCML(tempxxp, file + ".cml");
+                }
+            }
+
+        }
+
+        private void ToXXP(object sender, RoutedEventArgs e)
+        {
+            folderPick.Title = "Please select the folder with the desired cml/eml files";
+
+            if (folderPick.ShowDialog() == CommonFileDialogResult.Ok)
+            {
+                List<string> files = new List<string>();
+                foreach (string ext in cmlSearchPattern)
+                {
+                    files.AddRange(Directory.EnumerateFiles(folderPick.FileName, ext, SearchOption.TopDirectoryOnly));
+                }
+
+                foreach (string file in files)
+                {
+                    CharacterHandlerReboot.xxpGeneralReboot tempxxp;
+                    using (Stream stream = new MemoryStream(File.ReadAllBytes(file)))
+                    using (var streamReader = new BufferedStreamReader(stream, 8192))
+                    {
+                        tempxxp = CMLHandler.ParseCML(streamReader);
+                    }
+
+                    GetXXPWildcards(out string letterOne, out string letterTwo);
+                    WriteXXP(tempxxp, file + $".{letterOne}{letterTwo}p");
+                }
+            }
+        }
+
         private void OpenCharacterFile(object sender, RoutedEventArgs e)
         {
             fileOpen.InitialDirectory = openInitialDirectory;
@@ -121,7 +196,7 @@ namespace NGS_Salon_Tool
                                 xxpHandler = CMLHandler.ParseCML(streamReader);
                                 break;
                             default:
-                                OpenXXP(streamReader);
+                                xxpHandler = OpenXXP(streamReader);
                                 break;
                         }
                     }
@@ -158,6 +233,51 @@ namespace NGS_Salon_Tool
             saveFileDialog.InitialDirectory = savedInitialDirectory;
             saveFileDialog.FileName = openedFileName;
 
+            GetXXPWildcards(out letterOne, out letterTwo);
+
+            saveFileDialog.Filter = "V10 Salon files (*." + letterOne + letterTwo + "p)|*." + letterOne + letterTwo + "p";
+
+            /*
+            if (unencryptCheckBox.Checked == true)
+            {
+                saveFileDialog.Filter = "V9 Salon files (*." + letterOne + letterTwo + "pu)|*." + letterOne + letterTwo + "pu";
+                //+ "|V6 (Ep4 Char Creator) Salon files (*." + letterOne + letterTwo + "pu)|*." + letterOne + letterTwo + "pu|" +
+                //"V5 Salon files (*." + letterOne + letterTwo + "pu)|*." + letterOne + letterTwo + "pu|" +
+                //"V2 (Ep1 Char Creator) Salon files (*." + letterOne + letterTwo + "pu)|*." + letterOne + letterTwo + "pu";
+            }
+            else
+            {
+                saveFileDialog.Filter = "V9 Salon files (*." + letterOne + letterTwo + "p)|*." + letterOne + letterTwo + "p|" +
+                "V6 (Ep4 Char Creator) Salon files (*." + letterOne + letterTwo + "p)|*." + letterOne + letterTwo + "p|" +
+                "V5 Salon files (*." + letterOne + letterTwo + "p)|*." + letterOne + letterTwo + "p|" +
+                "V2 (Ep1 Char Creator) Salon files (*." + letterOne + letterTwo + "p)|*." + letterOne + letterTwo + "p";
+
+            }*/
+
+            saveFileDialog.Filter += "|cml files (*.cml)|*.cml";
+            //+ "|Data Dump (*.txt)|*.txt";
+
+            if (saveFileDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            {
+                switch (saveFileDialog.FilterIndex)
+                {
+                    case 1:
+                        SaveXXP();
+                        break;
+                    case 2:
+                        SaveCML();
+                        break;
+                    default:
+                        break;
+                }
+            }
+            saveFileDialog.FileName = "";
+            openedFileName = "";
+
+        }
+
+        private void GetXXPWildcards(out string letterOne, out string letterTwo)
+        {
             switch (xxpHandler.baseDOC.gender)
             {
                 case 0:
@@ -189,46 +309,6 @@ namespace NGS_Salon_Tool
                     letterTwo = "h";
                     break;
             }
-
-            saveFileDialog.Filter = "V10 Salon files (*." + letterOne + letterTwo + "p)|*." + letterOne + letterTwo + "p";
-
-            /*
-            if (unencryptCheckBox.Checked == true)
-            {
-                saveFileDialog.Filter = "V9 Salon files (*." + letterOne + letterTwo + "pu)|*." + letterOne + letterTwo + "pu";
-                //+ "|V6 (Ep4 Char Creator) Salon files (*." + letterOne + letterTwo + "pu)|*." + letterOne + letterTwo + "pu|" +
-                //"V5 Salon files (*." + letterOne + letterTwo + "pu)|*." + letterOne + letterTwo + "pu|" +
-                //"V2 (Ep1 Char Creator) Salon files (*." + letterOne + letterTwo + "pu)|*." + letterOne + letterTwo + "pu";
-            }
-            else
-            {
-                saveFileDialog.Filter = "V9 Salon files (*." + letterOne + letterTwo + "p)|*." + letterOne + letterTwo + "p|" +
-                "V6 (Ep4 Char Creator) Salon files (*." + letterOne + letterTwo + "p)|*." + letterOne + letterTwo + "p|" +
-                "V5 Salon files (*." + letterOne + letterTwo + "p)|*." + letterOne + letterTwo + "p|" +
-                "V2 (Ep1 Char Creator) Salon files (*." + letterOne + letterTwo + "p)|*." + letterOne + letterTwo + "p";
-
-            }*/
-
-            saveFileDialog.Filter += "|Character Markup Language files (*.cml)|*.cml";
-               //+ "|Data Dump (*.txt)|*.txt";
-
-            if (saveFileDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
-            {
-                switch(saveFileDialog.FilterIndex)
-                {
-                    case 1:
-                        SaveXXP();
-                        break;
-                    case 2:
-                        SaveCML();
-                        break;
-                    default:
-                        break;
-                }
-            }
-            saveFileDialog.FileName = "";
-            openedFileName = "";
-            
         }
 
         private void SaveCML()
@@ -238,9 +318,20 @@ namespace NGS_Salon_Tool
 
         private void SaveXXP()
         {
+            WriteXXP(xxpHandler, saveFileDialog.FileName);
+            savedInitialDirectory = Path.GetDirectoryName(saveFileDialog.FileName);
+        }
+
+        private static void WriteCML(CharacterHandlerReboot.xxpGeneralReboot xxp, string fileName)
+        {
+            File.WriteAllBytes(fileName, CMLHandler.GetNGSCML(xxp));
+        }
+
+        private static void WriteXXP(CharacterHandlerReboot.xxpGeneralReboot xxp, string fileName)
+        {
             List<byte> fileData = new List<byte>();
             int fileSize = CharacterConstants.v10Size;
-            var body = Reloaded.Memory.Struct.GetBytes(xxpHandler.GetXXPV10());
+            var body = Reloaded.Memory.Struct.GetBytes(xxp.GetXXPV10());
             body = CharacterHandler.EncryptData(body, fileSize, out int hash);
 
             fileData.AddRange(BitConverter.GetBytes((int)0xA));
@@ -249,11 +340,10 @@ namespace NGS_Salon_Tool
             fileData.AddRange(new byte[] { 0, 0, 0, 0 });
             fileData.AddRange(body);
 
-            File.WriteAllBytes(saveFileDialog.FileName, fileData.ToArray());
-            savedInitialDirectory = Path.GetDirectoryName(saveFileDialog.FileName);
+            File.WriteAllBytes(fileName, fileData.ToArray());
         }
 
-        private void OpenXXP(BufferedStreamReader streamReader)
+        private static CharacterHandlerReboot.xxpGeneralReboot OpenXXP(BufferedStreamReader streamReader)
         {
             int version = streamReader.Read<int>();
             streamReader.Seek(0x10, SeekOrigin.Begin);
@@ -261,27 +351,21 @@ namespace NGS_Salon_Tool
             switch (version)
             {
                 case 2:
-                    xxpHandler = new CharacterHandlerReboot.xxpGeneralReboot(streamReader.Read<CharacterHandlerReboot.XXPV2>());
-                    break;
+                    return new CharacterHandlerReboot.xxpGeneralReboot(streamReader.Read<CharacterHandlerReboot.XXPV2>());
                 case 5:
-                    xxpHandler = new CharacterHandlerReboot.xxpGeneralReboot(streamReader.Read<CharacterHandlerReboot.XXPV5>());
-                    break;
+                    return new CharacterHandlerReboot.xxpGeneralReboot(streamReader.Read<CharacterHandlerReboot.XXPV5>());
                 case 6:
-                    xxpHandler = new CharacterHandlerReboot.xxpGeneralReboot(streamReader.Read<CharacterHandlerReboot.XXPV5>());
-                    break;
+                    return new CharacterHandlerReboot.xxpGeneralReboot(streamReader.Read<CharacterHandlerReboot.XXPV5>());
                 case 7:
-                    xxpHandler = new CharacterHandlerReboot.xxpGeneralReboot(streamReader.Read<CharacterHandlerReboot.XXPV7>());
-                    break;
+                    return new CharacterHandlerReboot.xxpGeneralReboot(streamReader.Read<CharacterHandlerReboot.XXPV7>());
                 case 8:
                 case 9:
-                    xxpHandler = new CharacterHandlerReboot.xxpGeneralReboot(streamReader.Read<CharacterHandlerReboot.XXPV9>());
-                    break;
+                    return new CharacterHandlerReboot.xxpGeneralReboot(streamReader.Read<CharacterHandlerReboot.XXPV9>());
                 case 10:
-                    xxpHandler = new CharacterHandlerReboot.xxpGeneralReboot(streamReader.Read<CharacterHandlerReboot.XXPV10>());
-                    break;
+                    return new CharacterHandlerReboot.xxpGeneralReboot(streamReader.Read<CharacterHandlerReboot.XXPV10>());
                 default:
                     MessageBox.Show("Error: File version unknown. If this is a proper salon file, please report this!");
-                    return;
+                    return null;
             }
         }
 
