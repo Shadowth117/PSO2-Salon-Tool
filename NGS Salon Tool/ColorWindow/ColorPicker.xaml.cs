@@ -44,7 +44,7 @@ namespace NGS_Salon_Tool
             DataContext = this;
             trueColor = new SolidColorBrush(new Color());
             SelColor = trueColor;
-            RectColor = new Color();
+            RectColor = Color.FromArgb(0xFF, 0xFF, 0, 0);
             SelColor.Color = ColorLogic.ColorFromHSV(hueSlider.Value, horizSlider.Value / horizSlider.Maximum, vertSlider.Value / vertSlider.Maximum);
 
             LinkExternalColor(selectedColor, alphaEnabled);
@@ -56,7 +56,7 @@ namespace NGS_Salon_Tool
             DataContext = this;
             trueColor = new SolidColorBrush(new Color());
             SelColor = trueColor;
-            RectColor = new Color();
+            RectColor = Color.FromArgb(0xFF, 0xFF, 0, 0);
             SelColor.Color = ColorLogic.ColorFromHSV(hueSlider.Value, horizSlider.Value / horizSlider.Maximum, vertSlider.Value / vertSlider.Maximum);
 
             LinkExternalColor(selectedColor, button, alphaEnabled);
@@ -68,7 +68,7 @@ namespace NGS_Salon_Tool
             DataContext = this;
             trueColor = new SolidColorBrush(new Color());
             SelColor = trueColor;
-            RectColor = new Color();
+            RectColor = Color.FromArgb(0xFF, 0xFF, 0, 0);
             SelColor.Color = ColorLogic.ColorFromHSV(hueSlider.Value, horizSlider.Value / horizSlider.Maximum, vertSlider.Value / vertSlider.Maximum);
 
             LinkExternalColor(selectedColor, button, alphaEnabled);
@@ -124,9 +124,9 @@ namespace NGS_Salon_Tool
         private void SetColorUDs()
         {
             ignoreValueChanges = true;
-            redUD.Value = internalColor[0];
+            redUD.Value = internalColor[2];
             greenUD.Value = internalColor[1];
-            blueUD.Value = internalColor[2];
+            blueUD.Value = internalColor[0];
             alphaUD.Value = internalColor[3];
             ignoreValueChanges = false;
         }
@@ -134,7 +134,7 @@ namespace NGS_Salon_Tool
         private void SetSliders()
         {
             ignoreValueChanges = true;
-            ColorLogic.ColorToHSV(Color.FromArgb(internalColor[3], internalColor[0], internalColor[1], internalColor[2]), out double hue, out double saturation, out double value);
+            ColorLogic.ColorToHSV(Color.FromArgb(internalColor[3], internalColor[2], internalColor[1], internalColor[0]), out double hue, out double saturation, out double value);
             hueSlider.Value = hue;
             horizSlider.Value = saturation * horizSlider.Maximum;
             vertSlider.Value = value * vertSlider.Maximum;
@@ -151,9 +151,9 @@ namespace NGS_Salon_Tool
 
         private void SetInternalColor()
         {
-            internalColor[0] = SelColor.Color.R;
+            internalColor[0] = SelColor.Color.B;
             internalColor[1] = SelColor.Color.G;
-            internalColor[2] = SelColor.Color.B;
+            internalColor[2] = SelColor.Color.R;
             internalColor[3] = SelColor.Color.A;
             
             if(internalColorPtr != null)
@@ -223,6 +223,7 @@ namespace NGS_Salon_Tool
             if (SelColor != null && ignoreValueChanges == false)
             {
                 var color = SelColor.Color;
+                
                 color.G = (byte)(int)e.NewValue;
                 SelColor.Color = color;
                 SetInternalColor();

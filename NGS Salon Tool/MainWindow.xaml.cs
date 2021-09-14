@@ -59,7 +59,7 @@ namespace NGS_Salon_Tool
 
         private bool motionWait = false; //Used to avoid loops when changing motion controls
 
-        public MainWindow()
+        public unsafe MainWindow()
         {
             InitializeComponent();
 
@@ -68,7 +68,7 @@ namespace NGS_Salon_Tool
             tabControl.Items.Remove(customizeExpressionsTab);
             saveAsButton.IsEnabled = false;
 
-            colorPicker = new ColorPicker();
+            colorPicker = new();
             colorPicker.Hide();
             if (File.Exists(pso2BinCachePath))
             {
@@ -81,6 +81,7 @@ namespace NGS_Salon_Tool
                     "It can be set through File->Set pso2_bin directory");
             }
             SetEnabledState(false);
+
         }
 
         private void SetEnabledState(bool enabled)
@@ -204,6 +205,7 @@ namespace NGS_Salon_Tool
                     openedFileName = Path.GetFileNameWithoutExtension(fileOpen.FileName);
                     this.Title = "NGS Salon Tool - " + Path.GetFileName(fileOpen.FileName);
                     saveAsButton.IsEnabled = true;
+
 
                     //Ensure parts exist in the dropdowns if they don't
                     PartCheck();
@@ -461,24 +463,24 @@ namespace NGS_Salon_Tool
         private unsafe void ColorButtons()
         {
             //Colors
-            fixed (byte* localArr = xxpHandler.ngsCOL2.outerColor1) { outerColorButton.Background = new SolidColorBrush(ColorConversion.ColorFromRGBA(ColorConversion.BytesFromFixed(localArr, true))); };
-            fixed (byte* localArr = xxpHandler.ngsCOL2.outerColor2) { outerColor2Button.Background = new SolidColorBrush(ColorConversion.ColorFromRGBA(ColorConversion.BytesFromFixed(localArr, true))); };
-            fixed (byte* localArr = xxpHandler.ngsCOL2.baseColor1) { baseColorButton.Background = new SolidColorBrush(ColorConversion.ColorFromRGBA(ColorConversion.BytesFromFixed(localArr, true))); };
-            fixed (byte* localArr = xxpHandler.ngsCOL2.baseColor2) { baseColor2Button.Background = new SolidColorBrush(ColorConversion.ColorFromRGBA(ColorConversion.BytesFromFixed(localArr, true))); };
-            fixed (byte* localArr = xxpHandler.ngsCOL2.innerColor1) { innerColorButton.Background = new SolidColorBrush(ColorConversion.ColorFromRGBA(ColorConversion.BytesFromFixed(localArr, true))); };
-            fixed (byte* localArr = xxpHandler.ngsCOL2.innerColor2) { innerColor2Button.Background = new SolidColorBrush(ColorConversion.ColorFromRGBA(ColorConversion.BytesFromFixed(localArr, true))); };
-            fixed (byte* localArr = xxpHandler.ngsCOL2.hairColor1) { hairColorButton.Background = new SolidColorBrush(ColorConversion.ColorFromRGBA(ColorConversion.BytesFromFixed(localArr, true))); };
-            fixed (byte* localArr = xxpHandler.ngsCOL2.hairColor2) { hairColor2Button.Background = new SolidColorBrush(ColorConversion.ColorFromRGBA(ColorConversion.BytesFromFixed(localArr, true))); };
-            fixed (byte* localArr = xxpHandler.ngsCOL2.skinColor1) { skinColorButton.Background = new SolidColorBrush(ColorConversion.ColorFromRGBA(ColorConversion.BytesFromFixed(localArr, true))); };
-            fixed (byte* localArr = xxpHandler.ngsCOL2.skinColor2) { skinColor2Button.Background = new SolidColorBrush(ColorConversion.ColorFromRGBA(ColorConversion.BytesFromFixed(localArr, true))); };
-            fixed (byte* localArr = xxpHandler.ngsCOL2.leftEyeColor) { leftEyeColorButton.Background = new SolidColorBrush(ColorConversion.ColorFromRGBA(ColorConversion.BytesFromFixed(localArr, true))); };
-            fixed (byte* localArr = xxpHandler.ngsCOL2.rightEyeColor) { rightEyeColorButton.Background = new SolidColorBrush(ColorConversion.ColorFromRGBA(ColorConversion.BytesFromFixed(localArr, true))); };
-            fixed (byte* localArr = xxpHandler.ngsCOL2.eyebrowColor) { eyebrowsColorButton.Background = new SolidColorBrush(ColorConversion.ColorFromRGBA(ColorConversion.BytesFromFixed(localArr, true))); };
-            fixed (byte* localArr = xxpHandler.ngsCOL2.eyelashColor) { eyelashesColorButton.Background = new SolidColorBrush(ColorConversion.ColorFromRGBA(ColorConversion.BytesFromFixed(localArr, true))); };
-            fixed (byte* localArr = xxpHandler.ngsCOL2.mainColor) { mainColorButton.Background = new SolidColorBrush(ColorConversion.ColorFromRGBA(ColorConversion.BytesFromFixed(localArr, true))); };
-            fixed (byte* localArr = xxpHandler.ngsCOL2.subColor1) { subcolor1Button.Background = new SolidColorBrush(ColorConversion.ColorFromRGBA(ColorConversion.BytesFromFixed(localArr, true))); };
-            fixed (byte* localArr = xxpHandler.ngsCOL2.subColor2) { subcolor2Button.Background = new SolidColorBrush(ColorConversion.ColorFromRGBA(ColorConversion.BytesFromFixed(localArr, true))); };
-            fixed (byte* localArr = xxpHandler.ngsCOL2.subColor3) { subcolor3Button.Background = new SolidColorBrush(ColorConversion.ColorFromRGBA(ColorConversion.BytesFromFixed(localArr, true))); };
+            fixed (byte* localArr = xxpHandler.ngsCOL2.outerColor1) { outerColorButton.Background = new SolidColorBrush(ColorConversion.ColorFromBGRA(ColorConversion.BytesFromFixed(localArr, true))); };
+            fixed (byte* localArr = xxpHandler.ngsCOL2.outerColor2) { outerColor2Button.Background = new SolidColorBrush(ColorConversion.ColorFromBGRA(ColorConversion.BytesFromFixed(localArr, true))); };
+            fixed (byte* localArr = xxpHandler.ngsCOL2.baseColor1) { baseColorButton.Background = new SolidColorBrush(ColorConversion.ColorFromBGRA(ColorConversion.BytesFromFixed(localArr, true))); };
+            fixed (byte* localArr = xxpHandler.ngsCOL2.baseColor2) { baseColor2Button.Background = new SolidColorBrush(ColorConversion.ColorFromBGRA(ColorConversion.BytesFromFixed(localArr, true))); };
+            fixed (byte* localArr = xxpHandler.ngsCOL2.innerColor1) { innerColorButton.Background = new SolidColorBrush(ColorConversion.ColorFromBGRA(ColorConversion.BytesFromFixed(localArr, true))); };
+            fixed (byte* localArr = xxpHandler.ngsCOL2.innerColor2) { innerColor2Button.Background = new SolidColorBrush(ColorConversion.ColorFromBGRA(ColorConversion.BytesFromFixed(localArr, true))); };
+            fixed (byte* localArr = xxpHandler.ngsCOL2.hairColor1) { hairColorButton.Background = new SolidColorBrush(ColorConversion.ColorFromBGRA(ColorConversion.BytesFromFixed(localArr, true))); };
+            fixed (byte* localArr = xxpHandler.ngsCOL2.hairColor2) { hairColor2Button.Background = new SolidColorBrush(ColorConversion.ColorFromBGRA(ColorConversion.BytesFromFixed(localArr, true))); };
+            fixed (byte* localArr = xxpHandler.ngsCOL2.skinColor1) { skinColorButton.Background = new SolidColorBrush(ColorConversion.ColorFromBGRA(ColorConversion.BytesFromFixed(localArr, true))); };
+            fixed (byte* localArr = xxpHandler.ngsCOL2.skinColor2) { skinColor2Button.Background = new SolidColorBrush(ColorConversion.ColorFromBGRA(ColorConversion.BytesFromFixed(localArr, true))); };
+            fixed (byte* localArr = xxpHandler.ngsCOL2.leftEyeColor) { leftEyeColorButton.Background = new SolidColorBrush(ColorConversion.ColorFromBGRA(ColorConversion.BytesFromFixed(localArr, true))); };
+            fixed (byte* localArr = xxpHandler.ngsCOL2.rightEyeColor) { rightEyeColorButton.Background = new SolidColorBrush(ColorConversion.ColorFromBGRA(ColorConversion.BytesFromFixed(localArr, true))); };
+            fixed (byte* localArr = xxpHandler.ngsCOL2.eyebrowColor) { eyebrowsColorButton.Background = new SolidColorBrush(ColorConversion.ColorFromBGRA(ColorConversion.BytesFromFixed(localArr, true))); };
+            fixed (byte* localArr = xxpHandler.ngsCOL2.eyelashColor) { eyelashesColorButton.Background = new SolidColorBrush(ColorConversion.ColorFromBGRA(ColorConversion.BytesFromFixed(localArr, true))); };
+            fixed (byte* localArr = xxpHandler.ngsCOL2.mainColor) { mainColorButton.Background = new SolidColorBrush(ColorConversion.ColorFromBGRA(ColorConversion.BytesFromFixed(localArr, true))); };
+            fixed (byte* localArr = xxpHandler.ngsCOL2.subColor1) { subcolor1Button.Background = new SolidColorBrush(ColorConversion.ColorFromBGRA(ColorConversion.BytesFromFixed(localArr, true))); };
+            fixed (byte* localArr = xxpHandler.ngsCOL2.subColor2) { subcolor2Button.Background = new SolidColorBrush(ColorConversion.ColorFromBGRA(ColorConversion.BytesFromFixed(localArr, true))); };
+            fixed (byte* localArr = xxpHandler.ngsCOL2.subColor3) { subcolor3Button.Background = new SolidColorBrush(ColorConversion.ColorFromBGRA(ColorConversion.BytesFromFixed(localArr, true))); };
             
         }
 
@@ -1163,34 +1165,32 @@ namespace NGS_Salon_Tool
                 motionWait = false;
             }
         }
+        private unsafe void SetupColorPicker(object sender, byte* col2)
+        {
+            if (colorPicker != null && colorPicker.IsLoaded == true)
+            {
+                colorPicker.LinkExternalColor(col2, (Button)sender);
+            }
+            else
+            {
+                colorPicker = new ColorPicker(col2, (Button)sender);
+            }
+        }
 
         private unsafe void SetOuterColor(object sender, RoutedEventArgs e)
         {
             fixed (byte* col2 = xxpHandler.ngsCOL2.outerColor1)
             {
-                if (colorPicker != null && colorPicker.IsLoaded == true)
-                {
-                    colorPicker.LinkExternalColor(col2, (Button)sender);
-                }
-                else
-                {
-                    colorPicker = new ColorPicker(col2, (Button)sender);
-                }
+                SetupColorPicker(sender, col2);
             }
             colorPicker.Show();
         }
+
         private unsafe void SetOuterColor2(object sender, RoutedEventArgs e)
         {
             fixed (byte* col2 = xxpHandler.ngsCOL2.outerColor2)
             {
-                if (colorPicker != null && colorPicker.IsLoaded == true)
-                {
-                    colorPicker.LinkExternalColor(col2, (Button)sender);
-                }
-                else
-                {
-                    colorPicker = new ColorPicker(col2, (Button)sender);
-                }
+                SetupColorPicker(sender, col2);
             }
             colorPicker.Show();
         }
@@ -1198,14 +1198,7 @@ namespace NGS_Salon_Tool
         {
             fixed (byte* col2 = xxpHandler.ngsCOL2.baseColor1)
             {
-                if (colorPicker != null && colorPicker.IsLoaded == true)
-                {
-                    colorPicker.LinkExternalColor(col2, (Button)sender);
-                }
-                else
-                {
-                    colorPicker = new ColorPicker(col2, (Button)sender);
-                }
+                SetupColorPicker(sender, col2);
             }
             colorPicker.Show();
         }
@@ -1213,14 +1206,7 @@ namespace NGS_Salon_Tool
         {
             fixed (byte* col2 = xxpHandler.ngsCOL2.baseColor2)
             {
-                if (colorPicker != null && colorPicker.IsLoaded == true)
-                {
-                    colorPicker.LinkExternalColor(col2, (Button)sender);
-                }
-                else
-                {
-                    colorPicker = new ColorPicker(col2, (Button)sender);
-                }
+                SetupColorPicker(sender, col2);
             }
             colorPicker.Show();
         }
@@ -1228,14 +1214,7 @@ namespace NGS_Salon_Tool
         {
             fixed (byte* col2 = xxpHandler.ngsCOL2.innerColor1)
             {
-                if (colorPicker != null && colorPicker.IsLoaded == true)
-                {
-                    colorPicker.LinkExternalColor(col2, (Button)sender);
-                }
-                else
-                {
-                    colorPicker = new ColorPicker(col2, (Button)sender);
-                }
+                SetupColorPicker(sender, col2);
             }
             colorPicker.Show();
         }
@@ -1243,14 +1222,7 @@ namespace NGS_Salon_Tool
         {
             fixed (byte* col2 = xxpHandler.ngsCOL2.innerColor2)
             {
-                if (colorPicker != null && colorPicker.IsLoaded == true)
-                {
-                    colorPicker.LinkExternalColor(col2, (Button)sender);
-                }
-                else
-                {
-                    colorPicker = new ColorPicker(col2, (Button)sender);
-                }
+                SetupColorPicker(sender, col2);
             }
             colorPicker.Show();
         }
@@ -1258,14 +1230,7 @@ namespace NGS_Salon_Tool
         {
             fixed (byte* col2 = xxpHandler.ngsCOL2.skinColor1)
             {
-                if (colorPicker != null && colorPicker.IsLoaded == true)
-                {
-                    colorPicker.LinkExternalColor(col2, (Button)sender);
-                }
-                else
-                {
-                    colorPicker = new ColorPicker(col2, (Button)sender);
-                }
+                SetupColorPicker(sender, col2);
             }
             colorPicker.Show();
         }
@@ -1273,14 +1238,7 @@ namespace NGS_Salon_Tool
         {
             fixed (byte* col2 = xxpHandler.ngsCOL2.skinColor2)
             {
-                if (colorPicker != null && colorPicker.IsLoaded == true)
-                {
-                    colorPicker.LinkExternalColor(col2, (Button)sender);
-                }
-                else
-                {
-                    colorPicker = new ColorPicker(col2, (Button)sender);
-                }
+                SetupColorPicker(sender, col2);
             }
             colorPicker.Show();
         }
@@ -1288,14 +1246,7 @@ namespace NGS_Salon_Tool
         {
             fixed (byte* col2 = xxpHandler.ngsCOL2.hairColor1)
             {
-                if (colorPicker != null && colorPicker.IsLoaded == true)
-                {
-                    colorPicker.LinkExternalColor(col2, (Button)sender);
-                }
-                else
-                {
-                    colorPicker = new ColorPicker(col2, (Button)sender);
-                }
+                SetupColorPicker(sender, col2);
             }
             colorPicker.Show();
         }
@@ -1303,14 +1254,7 @@ namespace NGS_Salon_Tool
         {
             fixed (byte* col2 = xxpHandler.ngsCOL2.hairColor2)
             {
-                if (colorPicker != null && colorPicker.IsLoaded == true)
-                {
-                    colorPicker.LinkExternalColor(col2, (Button)sender);
-                }
-                else
-                {
-                    colorPicker = new ColorPicker(col2, (Button)sender);
-                }
+                SetupColorPicker(sender, col2);
             }
             colorPicker.Show();
         }
@@ -1318,14 +1262,7 @@ namespace NGS_Salon_Tool
         {
             fixed (byte* col2 = xxpHandler.ngsCOL2.leftEyeColor)
             {
-                if (colorPicker != null && colorPicker.IsLoaded == true)
-                {
-                    colorPicker.LinkExternalColor(col2, (Button)sender);
-                }
-                else
-                {
-                    colorPicker = new ColorPicker(col2, (Button)sender);
-                }
+                SetupColorPicker(sender, col2);
             }
             colorPicker.Show();
         }
@@ -1333,14 +1270,7 @@ namespace NGS_Salon_Tool
         {
             fixed (byte* col2 = xxpHandler.ngsCOL2.rightEyeColor)
             {
-                if (colorPicker != null && colorPicker.IsLoaded == true)
-                {
-                    colorPicker.LinkExternalColor(col2, (Button)sender);
-                }
-                else
-                {
-                    colorPicker = new ColorPicker(col2, (Button)sender);
-                }
+                SetupColorPicker(sender, col2);
             }
             colorPicker.Show();
         }
@@ -1348,14 +1278,7 @@ namespace NGS_Salon_Tool
         {
             fixed (byte* col2 = xxpHandler.ngsCOL2.eyelashColor)
             {
-                if (colorPicker != null && colorPicker.IsLoaded == true)
-                {
-                    colorPicker.LinkExternalColor(col2, (Button)sender);
-                }
-                else
-                {
-                    colorPicker = new ColorPicker(col2, (Button)sender);
-                }
+                SetupColorPicker(sender, col2);
             }
             colorPicker.Show();
         }
@@ -1363,14 +1286,7 @@ namespace NGS_Salon_Tool
         {
             fixed (byte* col2 = xxpHandler.ngsCOL2.eyebrowColor)
             {
-                if (colorPicker != null && colorPicker.IsLoaded == true)
-                {
-                    colorPicker.LinkExternalColor(col2, (Button)sender);
-                }
-                else
-                {
-                    colorPicker = new ColorPicker(col2, (Button)sender);
-                }
+                SetupColorPicker(sender, col2);
             }
             colorPicker.Show();
         }
@@ -1378,14 +1294,7 @@ namespace NGS_Salon_Tool
         {
             fixed (byte* col2 = xxpHandler.ngsCOL2.mainColor)
             {
-                if (colorPicker != null && colorPicker.IsLoaded == true)
-                {
-                    colorPicker.LinkExternalColor(col2, (Button)sender);
-                }
-                else
-                {
-                    colorPicker = new ColorPicker(col2, (Button)sender);
-                }
+                SetupColorPicker(sender, col2);
             }
             colorPicker.Show();
         }
@@ -1393,14 +1302,7 @@ namespace NGS_Salon_Tool
         {
             fixed (byte* col2 = xxpHandler.ngsCOL2.subColor1)
             {
-                if (colorPicker != null && colorPicker.IsLoaded == true)
-                {
-                    colorPicker.LinkExternalColor(col2, (Button)sender);
-                }
-                else
-                {
-                    colorPicker = new ColorPicker(col2, (Button)sender);
-                }
+                SetupColorPicker(sender, col2);
             }
             colorPicker.Show();
         }
@@ -1408,14 +1310,7 @@ namespace NGS_Salon_Tool
         {
             fixed (byte* col2 = xxpHandler.ngsCOL2.subColor2)
             {
-                if (colorPicker != null && colorPicker.IsLoaded == true)
-                {
-                    colorPicker.LinkExternalColor(col2, (Button)sender);
-                }
-                else
-                {
-                    colorPicker = new ColorPicker(col2, (Button)sender);
-                }
+                SetupColorPicker(sender, col2);
             }
             colorPicker.Show();
         }
@@ -1423,14 +1318,7 @@ namespace NGS_Salon_Tool
         {
             fixed (byte* col2 = xxpHandler.ngsCOL2.subColor3)
             {
-                if (colorPicker != null && colorPicker.IsLoaded == true)
-                {
-                    colorPicker.LinkExternalColor(col2, (Button)sender);
-                }
-                else
-                {
-                    colorPicker = new ColorPicker(col2, (Button)sender);
-                }
+                SetupColorPicker(sender, col2);
             }
             colorPicker.Show();
         }

@@ -117,9 +117,9 @@ namespace Character_Making_File_Tool
             return col;
         }
 
-        public static System.Windows.Media.Color ColorFromRGBA(byte[] bytes)
+        public static System.Windows.Media.Color ColorFromBGRA(byte[] bytes)
         {
-            return System.Windows.Media.Color.FromArgb(bytes[3], bytes[0], bytes[1], bytes[2]);
+            return System.Windows.Media.Color.FromArgb(bytes[3], bytes[2], bytes[1], bytes[0]);
         }
 
         public unsafe static byte[] BytesFromFixed(byte* fixedArr, bool maxAlpha = false)
@@ -140,7 +140,7 @@ namespace Character_Making_File_Tool
         }
 
         //Linear interpolation between two colors
-        public static byte[] LerpRGBA(byte[] a, byte[] b, double t, bool roundDown = false)
+        public static byte[] LerpColor(byte[] a, byte[] b, double t, bool roundDown = false)
         {
             var rounding = MidpointRounding.ToEven;
             if(roundDown)
@@ -187,9 +187,9 @@ namespace Character_Making_File_Tool
             }
 
             //Get base color from the interpolation of the 4 colors we get from these values
-            byte[] baseColor =  LerpRGBA(
-                                   LerpRGBA(palette[leftColumn, topRow], palette[rightColumn, topRow], tHoriz),
-                                   LerpRGBA(palette[leftColumn, bottomRow], palette[rightColumn, bottomRow], tHoriz),
+            byte[] baseColor =  LerpColor(
+                                   LerpColor(palette[leftColumn, topRow], palette[rightColumn, topRow], tHoriz),
+                                   LerpColor(palette[leftColumn, bottomRow], palette[rightColumn, bottomRow], tHoriz),
                                    tVert,
                                    true
                                    );
@@ -199,7 +199,7 @@ namespace Character_Making_File_Tool
             byte average = (byte)Math.Round(((double)baseColor[0] + baseColor[1] + baseColor[2]) / 3);
             double tSat = (double)vec3.Z / MaxSliderClassicSaturation;
 
-            return LerpRGBA(baseColor, new byte[] { average, average, average, 255 }, tSat);
+            return LerpColor(baseColor, new byte[] { average, average, average, 255 }, tSat);
         }
 
         //Idea for HSL color space interpretation of PSO2 COLR values. Only reasonable for cast colors due to variations between other palettes.
