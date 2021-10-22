@@ -128,15 +128,6 @@ namespace Character_Making_File_Tool
         //Generate dictionaries for storing part names and for storing part ids
         public void GenerateDictionaries(string pso2_binPath)
         {
-            //Generate path strings
-            /*
-            namePath = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "names\\");
-            costumeNamePath = Path.Combine(namePath, "costumeOuterNames.txt");
-            basewearNamePath = Path.Combine(namePath, "basewearNames.txt");
-            innerwearNamePath = Path.Combine(namePath, "innerwearNames.txt");
-            castArmNamePath = Path.Combine(namePath, "castArmNames.txt");
-            castLegNamePath = Path.Combine(namePath, "castLegNames.txt");*/
-
             //Check CMX data
             string cmxPath = Path.Combine(pso2_binPath, CharacterMakingIndex.dataDir, CharacterMakingIndexMethods.GetFileHash(CharacterMakingIndex.classicCMX));
 
@@ -158,14 +149,6 @@ namespace Character_Making_File_Tool
             }
 
             GenerateNameCache();
-
-            //Read stored cached names
-            /*
-            ReadCache(costumeNamePath, costumeOuterDict);
-            ReadCache(basewearNamePath, basewearDict);
-            ReadCache(innerwearNamePath, innerwearDict);
-            ReadCache(castArmNamePath, castArmDict);
-            ReadCache(castLegNamePath, castLegDict);*/
             GC.Collect();
 
         }
@@ -312,6 +295,21 @@ namespace Character_Making_File_Tool
 
             foreach (int id in subByCat[category].Keys)
             {
+                //Account for broken listings
+                string defaultName;
+                if(subByCat[category][id].Count > 0)
+                {
+                    defaultName = subByCat[category][id][0];
+                } else //This condition should never happen, but still.
+                {
+                    defaultName = id.ToString() + "_Fallback";
+                }
+
+                //Add in default if needed
+                while (subByCat[category][id].Count < language + 1)
+                {
+                    subByCat[category][id].Add(defaultName);
+                }
                 motions[subByCat[category][id][language]] = id;
                 motionsReverse[id] = subByCat[category][id][language];
             }
