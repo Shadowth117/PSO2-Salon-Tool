@@ -182,7 +182,7 @@ namespace Character_Making_File_Tool
             }
         }
 
-        public struct FaceExpression
+        public struct FaceExpressionV10
         {
             public sbyte irisSize;
             public sbyte leftEyebrowVertical;
@@ -207,9 +207,9 @@ namespace Character_Making_File_Tool
             public sbyte rightEyebrowVerticalUnused;
             public sbyte tongue;
 
-            public static FaceExpression CreateExpression(sbyte[] raw)
+            public static FaceExpressionV10 CreateExpression(sbyte[] raw)
             {
-                FaceExpression exp = new FaceExpression();
+                FaceExpressionV10 exp = new FaceExpressionV10();
 
                 exp.irisSize = raw[0];
                 exp.leftEyebrowVertical = raw[1];
@@ -235,6 +235,58 @@ namespace Character_Making_File_Tool
                 exp.tongue = raw[0x11];
 
                 return exp;
+            }
+        }
+
+        public struct FaceExpressionV11
+        {
+            public FaceExpressionV10 expStruct;
+            public sbyte tongueVertical;
+            public sbyte tongueHorizontal;
+
+            public static FaceExpressionV11 CreateExpression(sbyte[] raw)
+            {
+                FaceExpressionV11 obj = new();
+                FaceExpressionV10 exp = new();
+
+                exp.irisSize = raw[0];
+                exp.leftEyebrowVertical = raw[1];
+                exp.leftMouthVertical = raw[2];
+                exp.rightEyebrowVertical = raw[3];
+
+                exp.rightMouthVertical = raw[4];
+                exp.eyeCorner = raw[5];
+                exp.leftEyelidVertical = raw[6];
+                exp.leftEyebrowExpression = raw[7];
+
+                exp.rightEyelidVertical = raw[8];
+                exp.rightEyebrowExpression = raw[9];
+                exp.mouthA = raw[0xA];
+                exp.mouthI = raw[0xB];
+
+                exp.mouthU = raw[0xC];
+                exp.mouthE = raw[0xD];
+                exp.mouthO = raw[0xE];
+                exp.leftEyebrowVerticalUnused = raw[0xF];
+
+                exp.rightEyebrowVerticalUnused = raw[0x10];
+                exp.tongue = raw[0x11];
+
+                obj.expStruct = exp;
+                obj.tongueVertical = raw[0x12];
+                obj.tongueHorizontal = raw[0x13];
+
+                return obj;
+            }
+            public static FaceExpressionV11 CreateExpression(FaceExpressionV10 exp)
+            {
+                FaceExpressionV11 obj = new();
+
+                obj.expStruct = exp;
+                obj.tongueVertical = 0;
+                obj.tongueHorizontal = 0;
+
+                return obj;
             }
         }
     }

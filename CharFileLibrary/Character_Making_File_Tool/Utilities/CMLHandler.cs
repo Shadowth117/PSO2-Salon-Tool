@@ -283,18 +283,18 @@ namespace Character_Making_File_Tool
                         break;
                     case "EXPR":
                         var expr = data[0];
-                        xxp.faceNatural = TryGetEXPR(xxp.faceNatural, expr, 0x0);
-                        xxp.faceSmile = TryGetEXPR(xxp.faceSmile, expr, 0x1);
-                        xxp.faceAngry = TryGetEXPR(xxp.faceAngry, expr, 0x2);
-                        xxp.faceSad = TryGetEXPR(xxp.faceSad, expr, 0x3);
+                        xxp.faceNatural.expStruct = TryGetEXPR(xxp.faceNatural.expStruct, expr, 0x0);
+                        xxp.faceSmile.expStruct = TryGetEXPR(xxp.faceSmile.expStruct, expr, 0x1);
+                        xxp.faceAngry.expStruct = TryGetEXPR(xxp.faceAngry.expStruct, expr, 0x2);
+                        xxp.faceSad.expStruct = TryGetEXPR(xxp.faceSad.expStruct, expr, 0x3);
 
-                        xxp.faceSus = TryGetEXPR(xxp.faceSus, expr, 0x4);
-                        xxp.faceEyesClosed = TryGetEXPR(xxp.faceEyesClosed, expr, 0x5);
-                        xxp.faceSmile2 = TryGetEXPR(xxp.faceSmile2, expr, 0x6);
-                        xxp.faceWink = TryGetEXPR(xxp.faceWink, expr, 0x7);
+                        xxp.faceSus.expStruct = TryGetEXPR(xxp.faceSus.expStruct, expr, 0x4);
+                        xxp.faceEyesClosed.expStruct = TryGetEXPR(xxp.faceEyesClosed.expStruct, expr, 0x5);
+                        xxp.faceSmile2.expStruct = TryGetEXPR(xxp.faceSmile2.expStruct, expr, 0x6);
+                        xxp.faceWink.expStruct = TryGetEXPR(xxp.faceWink.expStruct, expr, 0x7);
 
-                        xxp.faceUnused1 = TryGetEXPR(xxp.faceUnused1, expr, 0x8);
-                        xxp.faceUnused2 = TryGetEXPR(xxp.faceUnused2, expr, 0x9);
+                        xxp.faceUnused1.expStruct = TryGetEXPR(xxp.faceUnused1.expStruct, expr, 0x8);
+                        xxp.faceUnused2.expStruct = TryGetEXPR(xxp.faceUnused2.expStruct, expr, 0x9);
                         break;
                     default:
                         //Data being null signfies that the last thing read wasn't a proper tag. This should mean the end of the VTBF stream if nothing else.
@@ -382,15 +382,15 @@ namespace Character_Making_File_Tool
             }
         }
 
-        public static unsafe FaceExpression TryGetEXPR(FaceExpression expr, Dictionary<int, object> dict, int key)
+        public static unsafe FaceExpressionV10 TryGetEXPR(FaceExpressionV10 expr, Dictionary<int, object> dict, int key)
         {
             if(dict.TryGetValue(key, out object dictValue))
             {
-                FaceExpression outExpr = new FaceExpression();
+                FaceExpressionV10 outExpr = new FaceExpressionV10();
                 IntPtr intPtr = Marshal.AllocHGlobal(Marshal.SizeOf(expr));
                 Marshal.StructureToPtr(outExpr, intPtr, true);
                 Marshal.Copy((byte[])dictValue, 0, intPtr, 0x12);
-                return Marshal.PtrToStructure<FaceExpression>(intPtr);
+                return Marshal.PtrToStructure<FaceExpressionV10>(intPtr);
             }
 
             return expr;

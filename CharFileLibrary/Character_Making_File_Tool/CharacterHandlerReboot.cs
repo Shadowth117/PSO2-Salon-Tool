@@ -169,18 +169,18 @@ namespace Character_Making_File_Tool
             public AccessorySlidersReboot accessorySlidersReboot;
 
             //0x22C
-            public FaceExpression faceNatural;
-            public FaceExpression faceSmile;
-            public FaceExpression faceAngry;
-            public FaceExpression faceSad;
+            public FaceExpressionV10 faceNatural;
+            public FaceExpressionV10 faceSmile;
+            public FaceExpressionV10 faceAngry;
+            public FaceExpressionV10 faceSad;
 
-            public FaceExpression faceSus;
-            public FaceExpression faceEyesClosed;
-            public FaceExpression faceSmile2;
-            public FaceExpression faceWink;
+            public FaceExpressionV10 faceSus;
+            public FaceExpressionV10 faceEyesClosed;
+            public FaceExpressionV10 faceSmile2;
+            public FaceExpressionV10 faceWink;
 
-            public FaceExpression faceUnused1;
-            public FaceExpression faceUnused2;
+            public FaceExpressionV10 faceUnused1;
+            public FaceExpressionV10 faceUnused2;
 
             //0x2E0
             public PaintPriority paintPriority;
@@ -218,6 +218,99 @@ namespace Character_Making_File_Tool
             public AccessoryMisc accessoryMiscData;
         }
 
+        //V10, but expressions have 0x2 added to them
+        public struct XXPV11
+        {
+            //DOC 0x10
+            public BaseDOC baseDOC;
+            public byte skinVariant; //0 or above 3 for default, 1 for human, 2 for dewman, 3 for cast. This decides the color map used for the skin. 
+            public sbyte eyebrowDensity; //-100 to 100 
+            public short cmlVariant;
+
+            //0x20
+            public BaseFIGR baseFIGR;
+            public Vec3Int neckVerts;
+            public Vec3Int waistVerts;
+
+            //0xBC
+            public Vec3Int hands;
+            public Vec3Int horns;
+            public int eyeSize;
+            public int eyeHorizontalPosition;
+            public int neckAngle;
+
+            //0xE0 COL2 - These are just standard RGBA in NGS as opposed to the original COLR slider positions
+            public COL2 ngsCOL2;
+
+            //0x128 SLCT
+            public BaseSLCT baseSLCT;
+            public BaseSLCT2 baseSLCT2;
+            public uint leftEyePart;
+
+            //0x180 SLCT continued
+            public BaseSLCTNGS baseSLCTNGS;
+
+            //0x1AC Padding?
+            public uint padding0;
+
+            public uint padding1;
+            public uint padding2;
+            public uint padding3;
+            public uint padding4;
+
+            //0x1C0
+            public AccessorySlidersReboot accessorySlidersReboot;
+
+            //0x22C
+            public FaceExpressionV11 faceNatural;
+            public FaceExpressionV11 faceSmile;
+            public FaceExpressionV11 faceAngry;
+            public FaceExpressionV11 faceSad;
+
+            public FaceExpressionV11 faceSus;
+            public FaceExpressionV11 faceEyesClosed;
+            public FaceExpressionV11 faceSmile2;
+            public FaceExpressionV11 faceWink;
+
+            public FaceExpressionV11 faceUnused1;
+            public FaceExpressionV11 faceUnused2;
+
+            //0x2F4
+            public PaintPriority paintPriority;
+            public ushort padding14;
+            public uint padding15;
+            public uint padding16;
+
+            //0x304 NGS extra slider data
+            public NGSSLID ngsSLID;
+
+            //0x344 - Motion change 
+            public NGSMTON ngsMTON;
+
+            //0x364 - Costume ornament hiding leftover?
+            public int int_350;
+            public int int_354;
+
+            //0x36B Ornament Display - VISI, stored as 0 or 1 in xxp. In CML, these are stored as bits in a single byte.
+            public VISI ngsVISI;
+
+            //0x388
+            public uint padding17;
+            public uint padding18;
+            public uint padding19;
+
+            public uint padding20;
+            public uint padding21;
+            public uint padding22;
+            public uint padding23;
+
+            public uint padding24;
+            public uint padding25;
+
+            //0x3AB - Accessory attach points followed by color choices
+            public AccessoryMisc accessoryMiscData;
+        }
+
         public class xxpGeneralReboot
         {
             public int xxpVersion; 
@@ -250,18 +343,18 @@ namespace Character_Making_File_Tool
 
             public AccessorySlidersReboot accessorySlidersReboot;
 
-            public FaceExpression faceNatural;
-            public FaceExpression faceSmile;
-            public FaceExpression faceAngry;
-            public FaceExpression faceSad;
+            public FaceExpressionV11 faceNatural;
+            public FaceExpressionV11 faceSmile;
+            public FaceExpressionV11 faceAngry;
+            public FaceExpressionV11 faceSad;
 
-            public FaceExpression faceSus;
-            public FaceExpression faceEyesClosed;
-            public FaceExpression faceSmile2;
-            public FaceExpression faceWink;
+            public FaceExpressionV11 faceSus;
+            public FaceExpressionV11 faceEyesClosed;
+            public FaceExpressionV11 faceSmile2;
+            public FaceExpressionV11 faceWink;
 
-            public FaceExpression faceUnused1;
-            public FaceExpression faceUnused2;
+            public FaceExpressionV11 faceUnused1;
+            public FaceExpressionV11 faceUnused2;
 
             public PaintPriority paintPriority = PaintPriority.GetDefault();
 
@@ -503,6 +596,60 @@ namespace Character_Making_File_Tool
 
                 accessorySlidersReboot = tempXXP.accessorySlidersReboot;
 
+                faceNatural = FaceExpressionV11.CreateExpression(tempXXP.faceNatural);
+                faceSmile = FaceExpressionV11.CreateExpression(tempXXP.faceSmile);
+                faceAngry = FaceExpressionV11.CreateExpression(tempXXP.faceAngry);
+                faceSad = FaceExpressionV11.CreateExpression(tempXXP.faceSad);
+
+                faceSus = FaceExpressionV11.CreateExpression(tempXXP.faceSus);
+                faceEyesClosed = FaceExpressionV11.CreateExpression(tempXXP.faceEyesClosed);
+                faceSmile2 = FaceExpressionV11.CreateExpression(tempXXP.faceSmile2);
+                faceWink = FaceExpressionV11.CreateExpression(tempXXP.faceWink);
+
+                faceUnused1 = FaceExpressionV11.CreateExpression(tempXXP.faceUnused1);
+                faceUnused2 = FaceExpressionV11.CreateExpression(tempXXP.faceUnused2);
+
+                paintPriority = tempXXP.paintPriority;
+
+                ngsSLID = tempXXP.ngsSLID;
+                ngsMTON = tempXXP.ngsMTON;
+
+                int_350 = tempXXP.int_350;
+                int_354 = tempXXP.int_354;
+                ngsVISI = tempXXP.ngsVISI;
+
+                accessoryMiscData = tempXXP.accessoryMiscData;
+            }
+
+            public xxpGeneralReboot(XXPV11 tempXXP)
+            {
+                xxpVersion = 11;
+
+                baseDOC = tempXXP.baseDOC;
+                skinVariant = tempXXP.skinVariant;
+                eyebrowDensity = tempXXP.eyebrowDensity;
+                cmlVariant = tempXXP.cmlVariant;
+
+                baseFIGR = tempXXP.baseFIGR;
+                neckVerts = tempXXP.neckVerts;
+                waistVerts = tempXXP.waistVerts;
+
+                hands = tempXXP.hands;
+                horns = tempXXP.horns;
+                eyeSize = tempXXP.eyeSize;
+                eyeHorizontalPosition = tempXXP.eyeHorizontalPosition;
+                neckAngle = tempXXP.neckAngle;
+
+                ngsCOL2 = tempXXP.ngsCOL2;
+
+                baseSLCT = tempXXP.baseSLCT;
+                baseSLCT2 = tempXXP.baseSLCT2;
+                leftEyePart = tempXXP.leftEyePart;
+
+                baseSLCTNGS = tempXXP.baseSLCTNGS;
+
+                accessorySlidersReboot = tempXXP.accessorySlidersReboot;
+
                 faceNatural = tempXXP.faceNatural;
                 faceSmile = tempXXP.faceSmile;
                 faceAngry = tempXXP.faceAngry;
@@ -639,6 +786,49 @@ namespace Character_Making_File_Tool
                 tempXXP.leftEyePart = leftEyePart;
                 tempXXP.baseSLCTNGS = baseSLCTNGS;
                 tempXXP.accessorySlidersReboot = accessorySlidersReboot;
+                tempXXP.faceNatural = faceNatural.expStruct;
+                tempXXP.faceSmile = faceSmile.expStruct;
+                tempXXP.faceAngry = faceAngry.expStruct;
+                tempXXP.faceSad = faceSad.expStruct;
+                tempXXP.faceSus = faceSus.expStruct;
+                tempXXP.faceEyesClosed = faceEyesClosed.expStruct;
+                tempXXP.faceSmile2 = faceSmile2.expStruct;
+                tempXXP.faceWink = faceWink.expStruct;
+                tempXXP.faceUnused1 = faceUnused1.expStruct;
+                tempXXP.faceUnused2 = faceUnused2.expStruct;
+                tempXXP.paintPriority = paintPriority;
+                tempXXP.ngsSLID = ngsSLID;
+                tempXXP.ngsMTON = ngsMTON;
+                tempXXP.int_350 = int_350;
+                tempXXP.int_354 = int_354;
+                tempXXP.ngsVISI = ngsVISI;
+                tempXXP.accessoryMiscData = accessoryMiscData;
+
+                return tempXXP;
+            }
+
+            public XXPV11 GetXXPV11()
+            {
+                XXPV11 tempXXP = new XXPV11();
+
+                tempXXP.baseDOC = baseDOC;
+                tempXXP.skinVariant = skinVariant;
+                tempXXP.eyebrowDensity = eyebrowDensity;
+                tempXXP.cmlVariant = cmlVariant;
+                tempXXP.baseFIGR = baseFIGR;
+                tempXXP.neckVerts = neckVerts;
+                tempXXP.waistVerts = waistVerts;
+                tempXXP.hands = hands;
+                tempXXP.horns = horns;
+                tempXXP.eyeSize = eyeSize;
+                tempXXP.eyeHorizontalPosition = eyeHorizontalPosition;
+                tempXXP.neckAngle = neckAngle;
+                tempXXP.ngsCOL2 = ngsCOL2;
+                tempXXP.baseSLCT = baseSLCT;
+                tempXXP.baseSLCT2 = baseSLCT2;
+                tempXXP.leftEyePart = leftEyePart;
+                tempXXP.baseSLCTNGS = baseSLCTNGS;
+                tempXXP.accessorySlidersReboot = accessorySlidersReboot;
                 tempXXP.faceNatural = faceNatural;
                 tempXXP.faceSmile = faceSmile;
                 tempXXP.faceAngry = faceAngry;
@@ -708,6 +898,8 @@ namespace Character_Making_File_Tool
                         return Reloaded.Memory.Struct.GetBytes(GetXXPV9());
                     case 10:
                         return Reloaded.Memory.Struct.GetBytes(GetXXPV10());
+                    case 11:
+                        return Reloaded.Memory.Struct.GetBytes(GetXXPV11());
                 }
                 throw new NotImplementedException();
             }

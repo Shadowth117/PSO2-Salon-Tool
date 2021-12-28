@@ -336,7 +336,7 @@ namespace NGS_Salon_Tool
             var body = Reloaded.Memory.Struct.GetBytes(xxp.GetXXPV10());
             body = CharacterHandler.EncryptData(body, fileSize, out int hash);
 
-            fileData.AddRange(BitConverter.GetBytes((int)0xA));
+            fileData.AddRange(BitConverter.GetBytes(0xA));
             fileData.AddRange(BitConverter.GetBytes(fileSize));
             fileData.AddRange(BitConverter.GetBytes(hash));
             fileData.AddRange(new byte[] { 0, 0, 0, 0 });
@@ -365,6 +365,8 @@ namespace NGS_Salon_Tool
                     return new CharacterHandlerReboot.xxpGeneralReboot(streamReader.Read<CharacterHandlerReboot.XXPV9>());
                 case 10:
                     return new CharacterHandlerReboot.xxpGeneralReboot(streamReader.Read<CharacterHandlerReboot.XXPV10>());
+                case 11:
+                    return new CharacterHandlerReboot.xxpGeneralReboot(streamReader.Read<CharacterHandlerReboot.XXPV11>());
                 default:
                     MessageBox.Show("Error: File version unknown. If this is a proper salon file, please report this!");
                     return null;

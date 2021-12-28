@@ -139,31 +139,31 @@ namespace Character_Making_File_Tool
             //Costumes, cast bodies, outers
             if(cmx.costumeIdLink.ContainsKey((int)xxpGeneral.baseSLCT.costumePart))
             {
-                xxpGeneral.baseSLCT.costumePart =  (uint)cmx.costumeIdLink[(int)xxpGeneral.baseSLCT.costumePart].fileId;
+                xxpGeneral.baseSLCT.costumePart =  (uint)cmx.costumeIdLink[(int)xxpGeneral.baseSLCT.costumePart].bcln.fileId;
             }
             else if (cmx.outerWearIdLink.ContainsKey((int)xxpGeneral.baseSLCT.costumePart))
             {
-                xxpGeneral.baseSLCT.costumePart = (uint)cmx.outerWearIdLink[(int)xxpGeneral.baseSLCT.costumePart].fileId;
+                xxpGeneral.baseSLCT.costumePart = (uint)cmx.outerWearIdLink[(int)xxpGeneral.baseSLCT.costumePart].bcln.fileId;
             }
             //Basewear
             if (cmx.baseWearIdLink.ContainsKey((int)xxpGeneral.baseSLCT2.basewearPart))
             {
-                xxpGeneral.baseSLCT2.basewearPart = (uint)cmx.baseWearIdLink[(int)xxpGeneral.baseSLCT2.basewearPart].fileId;
+                xxpGeneral.baseSLCT2.basewearPart = (uint)cmx.baseWearIdLink[(int)xxpGeneral.baseSLCT2.basewearPart].bcln.fileId;
             }
             //Leg Parts
             if (cmx.clegIdLink.ContainsKey((int)xxpGeneral.baseSLCT.legPart))
             {
-                xxpGeneral.baseSLCT.legPart = (uint)cmx.clegIdLink[(int)xxpGeneral.baseSLCT.legPart].fileId;
+                xxpGeneral.baseSLCT.legPart = (uint)cmx.clegIdLink[(int)xxpGeneral.baseSLCT.legPart].bcln.fileId;
             }
             //Arm Parts
             if (cmx.castArmIdLink.ContainsKey((int)xxpGeneral.baseSLCT.armPart))
             {
-                xxpGeneral.baseSLCT.armPart = (uint)cmx.castArmIdLink[(int)xxpGeneral.baseSLCT.armPart].fileId;
+                xxpGeneral.baseSLCT.armPart = (uint)cmx.castArmIdLink[(int)xxpGeneral.baseSLCT.armPart].bcln.fileId;
             }
             //InnerWear
             if (cmx.innerWearIdLink.ContainsKey((int)xxpGeneral.baseSLCT2.innerwearPart))
             {
-                xxpGeneral.baseSLCT2.innerwearPart = (uint)cmx.innerWearIdLink[(int)xxpGeneral.baseSLCT2.innerwearPart].fileId;
+                xxpGeneral.baseSLCT2.innerwearPart = (uint)cmx.innerWearIdLink[(int)xxpGeneral.baseSLCT2.innerwearPart].bcln.fileId;
             }
         }
 
