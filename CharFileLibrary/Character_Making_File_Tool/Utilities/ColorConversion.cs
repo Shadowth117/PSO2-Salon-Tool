@@ -89,7 +89,7 @@ namespace Character_Making_File_Tool
                     Marshal.Copy(GetPSO2CharColor(colr.skinSubColor2Verts, deumanSkinPalette), 0, (IntPtr)col.skinColor1, 4);
                     break;
             }
-            Marshal.Copy(new byte[] { 0xFF, 0, 0, 0xFF }, 0, (IntPtr)col.skinColor2, 4);
+            Marshal.Copy(new byte[] { 0, 0, 0xFF, 0xFF }, 0, (IntPtr)col.skinColor2, 4);
 
             Marshal.Copy(new byte[] { 0, 0, 0, 0xFF }, 0, (IntPtr)col.baseColor2, 4);
             Marshal.Copy(new byte[] { 0, 0, 0, 0xFF }, 0, (IntPtr)col.outerColor2, 4);
@@ -198,8 +198,12 @@ namespace Character_Making_File_Tool
             //Saturation is handled by interpolating between the color and this grayscale color
             byte average = (byte)Math.Round(((double)baseColor[0] + baseColor[1] + baseColor[2]) / 3);
             double tSat = (double)vec3.Z / MaxSliderClassicSaturation;
+            byte[] finalColor = LerpColor(baseColor, new byte[] { average, average, average, 255 }, tSat);
+            var temp = finalColor[0];
+            finalColor[0] = finalColor[2];
+            finalColor[2] = temp;
 
-            return LerpColor(baseColor, new byte[] { average, average, average, 255 }, tSat);
+            return finalColor;
         }
 
         //Idea for HSL color space interpretation of PSO2 COLR values. Only reasonable for cast colors due to variations between other palettes.
