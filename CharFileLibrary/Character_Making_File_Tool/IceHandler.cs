@@ -133,7 +133,14 @@ namespace Character_Making_File_Tool
             IceFile ice;
             using (var strm = new MemoryStream(File.ReadAllBytes(fileName)))
             {
-                ice = IceFile.LoadIceFile(strm);
+                try
+                {
+                    ice = IceFile.LoadIceFile(strm);
+                }
+                catch
+                {
+                    return null;
+                }
             }
             List<byte[]> files = (new List<byte[]>(ice.groupOneFiles));
             files.AddRange(ice.groupTwoFiles);

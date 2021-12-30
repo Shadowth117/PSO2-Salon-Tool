@@ -107,6 +107,11 @@ namespace Character_Making_File_Tool
             }
         }
 
+        public CharacterMakingIndexHandler()
+        {
+
+        }
+
         public CharacterMakingIndexHandler(string pso2_binPath, WIPBox box)
         {
             messageBox = box;
