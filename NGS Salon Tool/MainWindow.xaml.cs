@@ -1328,5 +1328,22 @@ namespace NGS_Salon_Tool
             }
             colorPicker.Show();
         }
+
+        public void SetGlobalMin(object sender, RoutedEventArgs e)
+        {
+            if(openedFileName == null)
+            {
+                MessageBox.Show("You must have data loaded to fix it!");
+                return;
+            }
+            if(xxpHandler.baseFIGR.bodyVerts.X < CharacterConstants.MinHeightBodySliderNGS)
+            {
+                xxpHandler.baseFIGR.bodyVerts.X = CharacterConstants.MinHeightBodySliderNGS;
+            }
+            if(xxpHandler.baseFIGR.legVerts.X < CharacterConstants.MinHeightLegSliderNGS)
+            {
+                xxpHandler.baseFIGR.legVerts.X = CharacterConstants.MinHeightLegSliderNGS;
+            }
+        }
     }
 }

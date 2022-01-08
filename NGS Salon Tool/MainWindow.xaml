@@ -27,6 +27,7 @@
                     <MenuItem Header="CML Folder to xxp" Click="ToXXP"/>
                 </MenuItem>
                 <MenuItem Header="Extra">
+                    <MenuItem Header="Ensure data meets Global minimums" Click="SetGlobalMin"/>
                     <MenuItem Header="Decrypt xxp(s) and save" Click="DecryptXXPs"/>
                     <MenuItem Header="Encrypt xxpu(s) and save" Click="EncryptXXPs"/>
                 </MenuItem>
