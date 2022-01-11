@@ -237,7 +237,7 @@ namespace NGS_Salon_Tool
 
             GetXXPWildcards(out letterOne, out letterTwo);
 
-            saveFileDialog.Filter = "V10 Salon files (*." + letterOne + letterTwo + "p)|*." + letterOne + letterTwo + "p";
+            saveFileDialog.Filter = $"V{xxpHandler.xxpVersion} Salon files (*." + letterOne + letterTwo + "p)|*." + letterOne + letterTwo + "p";
 
             /*
             if (unencryptCheckBox.Checked == true)

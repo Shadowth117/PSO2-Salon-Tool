@@ -69,7 +69,7 @@ namespace Character_Making_File_Tool
 
             Marshal.Copy(GetPSO2CharColor(colr.skinSubColor2Verts, castPalette), 0, (IntPtr)col.subColor2, 4);
             Marshal.Copy(GetPSO2CharColor(colr.subColor3_leftEye_castHair2Verts, castPalette), 0, (IntPtr)col.subColor3, 4);
-            Marshal.Copy(GetPSO2CharColor(colr.rightEye_EyesVerts, castPalette), 0, (IntPtr)col.rightEyeColor, 4);
+            Marshal.Copy(GetPSO2CharColor(colr.rightEye_EyesVerts, eyePalette), 0, (IntPtr)col.rightEyeColor, 4);
             Marshal.Copy(GetPSO2CharColor(colr.hairVerts, hairPalette), 0, (IntPtr)col.hairColor1, 4);
 
             Marshal.Copy(new byte[] { 0, 0, 0, 0xFF }, 0, (IntPtr)col.eyebrowColor, 4);
@@ -197,7 +197,7 @@ namespace Character_Making_File_Tool
             //The grayscale of a pso2 color is the average of r, g, and b applied to r, g, and b on a color.
             //Saturation is handled by interpolating between the color and this grayscale color
             byte average = (byte)Math.Round(((double)baseColor[0] + baseColor[1] + baseColor[2]) / 3);
-            double tSat = (double)vec3.Z / MaxSliderClassicSaturation;
+            double tSat = 1 - (double)vec3.Z / MaxSliderClassicSaturation; 
             byte[] finalColor = LerpColor(baseColor, new byte[] { average, average, average, 255 }, tSat);
             var temp = finalColor[0];
             finalColor[0] = finalColor[2];
