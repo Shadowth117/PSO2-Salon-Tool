@@ -10,14 +10,14 @@ namespace Character_Making_File_Tool
 {
     public static class CharacterHandlerUtilityMethods
     {
-        public static void ToNGSSliders(this Vec3Int vec3)
+        public static void ToNGSSliders(this ref Vec3Int vec3)
         {
             vec3.X = (int)((double)vec3.X / MaxSliderClassic * MaxSliderNGS);
             vec3.Y = (int)((double)vec3.Y / MaxSliderClassic * MaxSliderNGS);
             vec3.Z = (int)((double)vec3.Z / MaxSliderClassic * MaxSliderNGS);
         }
 
-        public static void ToOldSliders(this Vec3Int vec3)
+        public static void ToOldSliders(this ref Vec3Int vec3)
         {
             vec3.X = (int)((double)vec3.X / MaxSliderNGS * MaxSliderClassic);
             vec3.Y = (int)((double)vec3.Y / MaxSliderNGS * MaxSliderClassic);
