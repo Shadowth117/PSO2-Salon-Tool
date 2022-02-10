@@ -367,6 +367,8 @@ namespace NGS_Salon_Tool
                     return new CharacterHandlerReboot.xxpGeneralReboot(streamReader.Read<CharacterHandlerReboot.XXPV10>());
                 case 11:
                     return new CharacterHandlerReboot.xxpGeneralReboot(streamReader.Read<CharacterHandlerReboot.XXPV11>());
+                case 12:
+                    return new CharacterHandlerReboot.xxpGeneralReboot(streamReader.Read<CharacterHandlerReboot.XXPV12>());
                 default:
                     MessageBox.Show("Error: File version unknown. If this is a proper salon file, please report this!");
                     return null;

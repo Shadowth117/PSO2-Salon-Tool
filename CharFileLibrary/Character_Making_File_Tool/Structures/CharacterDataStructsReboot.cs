@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using static Character_Making_File_Tool.NibbleUtility;
+using static Character_Making_File_Tool.Vector3Int;
 
 namespace Character_Making_File_Tool
 {
@@ -352,6 +353,22 @@ namespace Character_Making_File_Tool
 
             public fixed byte leftEyeColor[4];
             public fixed byte hairColor2[4];
+        }
+
+        public struct AltFaceFIGR
+        {
+            public Vec3Int headVerts;
+            public Vec3Int faceShapeVerts;
+            public Vec3Int eyeShapeVerts;
+            public Vec3Int noseHeightVerts;
+
+            public Vec3Int noseShapeVerts;
+            public Vec3Int mouthVerts;
+            public Vec3Int ear_hornVerts;
+            public Vec3Int neckVerts;
+
+            public Vec3Int horns;
+            public Vec3Int unkFaceVerts;
         }
 
         //1 dimensional extra sliders added by NGS

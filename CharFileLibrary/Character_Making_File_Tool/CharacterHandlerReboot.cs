@@ -291,7 +291,7 @@ namespace Character_Making_File_Tool
             public int int_350;
             public int int_354;
 
-            //0x36B Ornament Display - VISI, stored as 0 or 1 in xxp. In CML, these are stored as bits in a single byte.
+            //0x36C Ornament Display - VISI, stored as 0 or 1 in xxp. In CML, these are stored as bits in a single byte.
             public VISI ngsVISI;
 
             //0x388
@@ -307,7 +307,103 @@ namespace Character_Making_File_Tool
             public uint padding24;
             public uint padding25;
 
-            //0x3AB - Accessory attach points followed by color choices
+            //0x3AC - Accessory attach points followed by color choices
+            public AccessoryMisc accessoryMiscData;
+        }
+
+        //Adds the AltFaceFIGR struct between neckAngle and ngsCOL2
+        public struct XXPV12
+        {
+            //DOC 0x10
+            public BaseDOC baseDOC;
+            public byte skinVariant; //0 or above 3 for default, 1 for human, 2 for dewman, 3 for cast. This decides the color map used for the skin. 
+            public sbyte eyebrowDensity; //-100 to 100 
+            public short cmlVariant;
+
+            //0x20
+            public BaseFIGR baseFIGR;
+            public Vec3Int neckVerts;
+            public Vec3Int waistVerts;
+
+            //0xBC
+            public Vec3Int hands;
+            public Vec3Int horns;
+            public int eyeSize;
+            public int eyeHorizontalPosition;
+            public int neckAngle;
+
+            //0xE0 AltFaceFIGR
+            public AltFaceFIGR altFace;
+
+            //0x158 COL2 - These are just standard RGBA in NGS as opposed to the original COLR slider positions
+            public COL2 ngsCOL2;
+
+            //0x1A0 SLCT
+            public BaseSLCT baseSLCT;
+            public BaseSLCT2 baseSLCT2;
+            public uint leftEyePart;
+
+            //0x1F8 SLCT continued
+            public BaseSLCTNGS baseSLCTNGS;
+
+            //0x224 Padding?
+            public uint padding0;
+
+            public uint padding1;
+            public uint padding2;
+            public uint padding3;
+            public uint padding4;
+
+            //0x238
+            public AccessorySlidersReboot accessorySlidersReboot;
+
+            //0x2A4
+            public FaceExpressionV11 faceNatural;
+            public FaceExpressionV11 faceSmile;
+            public FaceExpressionV11 faceAngry;
+            public FaceExpressionV11 faceSad;
+
+            public FaceExpressionV11 faceSus;
+            public FaceExpressionV11 faceEyesClosed;
+            public FaceExpressionV11 faceSmile2;
+            public FaceExpressionV11 faceWink;
+
+            public FaceExpressionV11 faceUnused1;
+            public FaceExpressionV11 faceUnused2;
+
+            //0x36C
+            public PaintPriority paintPriority;
+            public ushort padding14;
+            public uint padding15;
+            public uint padding16;
+
+            //0x37C NGS extra slider data
+            public NGSSLID ngsSLID;
+
+            //0x3BC - Motion change 
+            public NGSMTON ngsMTON;
+
+            //0x3DC - Costume ornament hiding leftover?
+            public int int_350;
+            public int int_354;
+
+            //0x3E4 Ornament Display - VISI, stored as 0 or 1 in xxp. In CML, these are stored as bits in a single byte.
+            public VISI ngsVISI;
+
+            //0x400
+            public uint padding17;
+            public uint padding18;
+            public uint padding19;
+
+            public uint padding20;
+            public uint padding21;
+            public uint padding22;
+            public uint padding23;
+
+            public uint padding24;
+            public uint padding25;
+
+            //0x424 - Accessory attach points followed by color choices
             public AccessoryMisc accessoryMiscData;
         }
 
@@ -329,6 +425,8 @@ namespace Character_Making_File_Tool
             public int eyeSize;
             public int eyeHorizontalPosition;
             public int neckAngle;
+
+            public AltFaceFIGR altFace;
 
             //COL2 - These are just standard RGBA in NGS as opposed to the original COLR slider positions
             public COL2 ngsCOL2;
@@ -675,6 +773,62 @@ namespace Character_Making_File_Tool
                 accessoryMiscData = tempXXP.accessoryMiscData;
             }
 
+            public xxpGeneralReboot(XXPV12 tempXXP)
+            {
+                xxpVersion = 12;
+
+                baseDOC = tempXXP.baseDOC;
+                skinVariant = tempXXP.skinVariant;
+                eyebrowDensity = tempXXP.eyebrowDensity;
+                cmlVariant = tempXXP.cmlVariant;
+
+                baseFIGR = tempXXP.baseFIGR;
+                neckVerts = tempXXP.neckVerts;
+                waistVerts = tempXXP.waistVerts;
+
+                hands = tempXXP.hands;
+                horns = tempXXP.horns;
+                eyeSize = tempXXP.eyeSize;
+                eyeHorizontalPosition = tempXXP.eyeHorizontalPosition;
+                neckAngle = tempXXP.neckAngle;
+
+                altFace = tempXXP.altFace;
+
+                ngsCOL2 = tempXXP.ngsCOL2;
+
+                baseSLCT = tempXXP.baseSLCT;
+                baseSLCT2 = tempXXP.baseSLCT2;
+                leftEyePart = tempXXP.leftEyePart;
+
+                baseSLCTNGS = tempXXP.baseSLCTNGS;
+
+                accessorySlidersReboot = tempXXP.accessorySlidersReboot;
+
+                faceNatural = tempXXP.faceNatural;
+                faceSmile = tempXXP.faceSmile;
+                faceAngry = tempXXP.faceAngry;
+                faceSad = tempXXP.faceSad;
+
+                faceSus = tempXXP.faceSus;
+                faceEyesClosed = tempXXP.faceEyesClosed;
+                faceSmile2 = tempXXP.faceSmile2;
+                faceWink = tempXXP.faceWink;
+
+                faceUnused1 = tempXXP.faceUnused1;
+                faceUnused2 = tempXXP.faceUnused2;
+
+                paintPriority = tempXXP.paintPriority;
+
+                ngsSLID = tempXXP.ngsSLID;
+                ngsMTON = tempXXP.ngsMTON;
+
+                int_350 = tempXXP.int_350;
+                int_354 = tempXXP.int_354;
+                ngsVISI = tempXXP.ngsVISI;
+
+                accessoryMiscData = tempXXP.accessoryMiscData;
+            }
+
             public XXPV2 GetXXPV2()
             {
                 XXPV2 xxpv2 = new XXPV2();
@@ -823,6 +977,50 @@ namespace Character_Making_File_Tool
                 tempXXP.eyeSize = eyeSize;
                 tempXXP.eyeHorizontalPosition = eyeHorizontalPosition;
                 tempXXP.neckAngle = neckAngle;
+                tempXXP.ngsCOL2 = ngsCOL2;
+                tempXXP.baseSLCT = baseSLCT;
+                tempXXP.baseSLCT2 = baseSLCT2;
+                tempXXP.leftEyePart = leftEyePart;
+                tempXXP.baseSLCTNGS = baseSLCTNGS;
+                tempXXP.accessorySlidersReboot = accessorySlidersReboot;
+                tempXXP.faceNatural = faceNatural;
+                tempXXP.faceSmile = faceSmile;
+                tempXXP.faceAngry = faceAngry;
+                tempXXP.faceSad = faceSad;
+                tempXXP.faceSus = faceSus;
+                tempXXP.faceEyesClosed = faceEyesClosed;
+                tempXXP.faceSmile2 = faceSmile2;
+                tempXXP.faceWink = faceWink;
+                tempXXP.faceUnused1 = faceUnused1;
+                tempXXP.faceUnused2 = faceUnused2;
+                tempXXP.paintPriority = paintPriority;
+                tempXXP.ngsSLID = ngsSLID;
+                tempXXP.ngsMTON = ngsMTON;
+                tempXXP.int_350 = int_350;
+                tempXXP.int_354 = int_354;
+                tempXXP.ngsVISI = ngsVISI;
+                tempXXP.accessoryMiscData = accessoryMiscData;
+
+                return tempXXP;
+            }
+
+            public XXPV12 GetXXPV12()
+            {
+                XXPV12 tempXXP = new XXPV12();
+
+                tempXXP.baseDOC = baseDOC;
+                tempXXP.skinVariant = skinVariant;
+                tempXXP.eyebrowDensity = eyebrowDensity;
+                tempXXP.cmlVariant = cmlVariant;
+                tempXXP.baseFIGR = baseFIGR;
+                tempXXP.neckVerts = neckVerts;
+                tempXXP.waistVerts = waistVerts;
+                tempXXP.hands = hands;
+                tempXXP.horns = horns;
+                tempXXP.eyeSize = eyeSize;
+                tempXXP.eyeHorizontalPosition = eyeHorizontalPosition;
+                tempXXP.neckAngle = neckAngle;
+                tempXXP.altFace = altFace;
                 tempXXP.ngsCOL2 = ngsCOL2;
                 tempXXP.baseSLCT = baseSLCT;
                 tempXXP.baseSLCT2 = baseSLCT2;
