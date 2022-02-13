@@ -332,11 +332,11 @@ namespace NGS_Salon_Tool
         private static void WriteXXP(CharacterHandlerReboot.xxpGeneralReboot xxp, string fileName)
         {
             List<byte> fileData = new List<byte>();
-            int fileSize = CharacterConstants.v10Size;
-            var body = Reloaded.Memory.Struct.GetBytes(xxp.GetXXPV10());
+            int fileSize = xxp.fileSize;
+            var body = xxp.GetBytes();
             body = CharacterHandler.EncryptData(body, fileSize, out int hash);
 
-            fileData.AddRange(BitConverter.GetBytes(0xA));
+            fileData.AddRange(BitConverter.GetBytes(xxp.xxpVersion));
             fileData.AddRange(BitConverter.GetBytes(fileSize));
             fileData.AddRange(BitConverter.GetBytes(hash));
             fileData.AddRange(new byte[] { 0, 0, 0, 0 });
@@ -353,22 +353,22 @@ namespace NGS_Salon_Tool
             switch (version)
             {
                 case 2:
-                    return new CharacterHandlerReboot.xxpGeneralReboot(streamReader.Read<CharacterHandlerReboot.XXPV2>());
+                    return new CharacterHandlerReboot.xxpGeneralRebootV2(streamReader.Read<CharacterHandlerReboot.XXPV2>());
                 case 5:
-                    return new CharacterHandlerReboot.xxpGeneralReboot(streamReader.Read<CharacterHandlerReboot.XXPV5>());
+                    return new CharacterHandlerReboot.xxpGeneralRebootV5(streamReader.Read<CharacterHandlerReboot.XXPV5>());
                 case 6:
-                    return new CharacterHandlerReboot.xxpGeneralReboot(streamReader.Read<CharacterHandlerReboot.XXPV5>());
+                    return new CharacterHandlerReboot.xxpGeneralRebootV6(streamReader.Read<CharacterHandlerReboot.XXPV6>());
                 case 7:
-                    return new CharacterHandlerReboot.xxpGeneralReboot(streamReader.Read<CharacterHandlerReboot.XXPV7>());
+                    return new CharacterHandlerReboot.xxpGeneralRebootV7(streamReader.Read<CharacterHandlerReboot.XXPV7>());
                 case 8:
                 case 9:
-                    return new CharacterHandlerReboot.xxpGeneralReboot(streamReader.Read<CharacterHandlerReboot.XXPV9>());
+                    return new CharacterHandlerReboot.xxpGeneralRebootV9(streamReader.Read<CharacterHandlerReboot.XXPV9>());
                 case 10:
-                    return new CharacterHandlerReboot.xxpGeneralReboot(streamReader.Read<CharacterHandlerReboot.XXPV10>());
+                    return new CharacterHandlerReboot.xxpGeneralRebootV10(streamReader.Read<CharacterHandlerReboot.XXPV10>());
                 case 11:
-                    return new CharacterHandlerReboot.xxpGeneralReboot(streamReader.Read<CharacterHandlerReboot.XXPV11>());
+                    return new CharacterHandlerReboot.xxpGeneralRebootV11(streamReader.Read<CharacterHandlerReboot.XXPV11>());
                 case 12:
-                    return new CharacterHandlerReboot.xxpGeneralReboot(streamReader.Read<CharacterHandlerReboot.XXPV12>());
+                    return new CharacterHandlerReboot.xxpGeneralRebootV12(streamReader.Read<CharacterHandlerReboot.XXPV12>());
                 default:
                     MessageBox.Show("Error: File version unknown. If this is a proper salon file, please report this!");
                     return null;

@@ -409,7 +409,8 @@ namespace Character_Making_File_Tool
 
         public class xxpGeneralReboot
         {
-            public int xxpVersion; 
+            public int xxpVersion;
+            public int fileSize;
 
             public BaseDOC baseDOC;
             public byte skinVariant; //0 or above 3 for default, 1 for human, 2 for dewman, 3 for cast. This decides the color map used for the skin. 
@@ -474,9 +475,52 @@ namespace Character_Making_File_Tool
             {
             }
 
-            public xxpGeneralReboot(XXPV2 tempXXP)
+            protected void SetDefaultExpressions()
             {
-                xxpVersion = 10;
+                if (baseDOC.gender == 0)
+                {
+                    faceNatural = defaultMaleExpressions[0];
+                    faceSmile = defaultMaleExpressions[1];
+                    faceAngry = defaultMaleExpressions[2];
+                    faceSad = defaultMaleExpressions[3];
+
+                    faceSus = defaultMaleExpressions[4];
+                    faceEyesClosed = defaultMaleExpressions[5];
+                    faceSmile2 = defaultMaleExpressions[6];
+                    faceWink = defaultMaleExpressions[7];
+
+                    faceUnused1 = defaultMaleExpressions[8];
+                    faceUnused2 = defaultMaleExpressions[9];
+                }
+                else
+                {
+                    faceNatural = defaultFemaleExpressions[0];
+                    faceSmile = defaultFemaleExpressions[1];
+                    faceAngry = defaultFemaleExpressions[2];
+                    faceSad = defaultFemaleExpressions[3];
+
+                    faceSus = defaultFemaleExpressions[4];
+                    faceEyesClosed = defaultFemaleExpressions[5];
+                    faceSmile2 = defaultFemaleExpressions[6];
+                    faceWink = defaultFemaleExpressions[7];
+
+                    faceUnused1 = defaultFemaleExpressions[8];
+                    faceUnused2 = defaultFemaleExpressions[9];
+                }
+            }
+
+            public virtual byte[] GetBytes()
+            {
+                throw new NotImplementedException();
+            }
+        }
+
+        public class xxpGeneralRebootV2 : xxpGeneralReboot
+        {
+            public xxpGeneralRebootV2(XXPV2 tempXXP)
+            {
+                xxpVersion = 2;
+                fileSize = 0x15C;
 
                 baseDOC = tempXXP.baseDOC;
                 skinVariant = 0;
@@ -493,10 +537,11 @@ namespace Character_Making_File_Tool
                 //Eye parts 
                 byte[] eyes = BitConverter.GetBytes(baseSLCT.eyePart);
                 baseSLCT.eyePart = eyes[0];
-                if(baseDOC.race == 3)
+                if (baseDOC.race == 3)
                 {
                     leftEyePart = eyes[1];
-                } else
+                }
+                else
                 {
                     leftEyePart = eyes[0];
                 }
@@ -507,9 +552,31 @@ namespace Character_Making_File_Tool
                 paintPriority = PaintPriority.GetDefault();
             }
 
-            public xxpGeneralReboot(XXPV5 tempXXP)
+            public XXPV2 GetXXP()
             {
-                xxpVersion = 10;
+                XXPV2 xxpv2 = new XXPV2();
+
+                xxpv2.baseDOC = baseDOC;
+                xxpv2.baseFIGR = baseFIGR;
+                xxpv2.baseFIGR.ToOld();
+                xxpv2.baseCOLR = ColorConversion.COL2ToCOLR(ngsCOL2, baseDOC.race);
+                xxpv2.baseSLCT = baseSLCT;
+
+                return xxpv2;
+            }
+
+            public override byte[] GetBytes()
+            {
+                return Reloaded.Memory.Struct.GetBytes(GetXXP());
+            }
+        }
+
+        public class xxpGeneralRebootV5 : xxpGeneralReboot
+        {
+            public xxpGeneralRebootV5(XXPV5 tempXXP)
+            {
+                xxpVersion = 5;
+                fileSize = 0x170;
 
                 baseDOC = tempXXP.baseDOC;
                 skinVariant = 0;
@@ -544,9 +611,33 @@ namespace Character_Making_File_Tool
                 paintPriority = PaintPriority.GetDefault();
             }
 
-            public xxpGeneralReboot(XXPV6 tempXXP)
+            public XXPV5 GetXXP()
             {
-                xxpVersion = 10;
+                XXPV5 xxpv5 = new XXPV5();
+
+                xxpv5.baseDOC = baseDOC;
+                xxpv5.baseFIGR = baseFIGR;
+                xxpv5.baseFIGR.ToOld();
+                xxpv5.baseCOLR = ColorConversion.COL2ToCOLR(ngsCOL2, baseDOC.race);
+                xxpv5.baseSLCT = baseSLCT;
+                xxpv5.baseSLCT2 = baseSLCT2;
+                xxpv5.oldPosSliders = accessorySlidersReboot.GetOldAccessoryPositionSliders();
+
+                return xxpv5;
+            }
+
+            public override byte[] GetBytes()
+            {
+                return Reloaded.Memory.Struct.GetBytes(GetXXP());
+            }
+        }
+
+        public class xxpGeneralRebootV6 : xxpGeneralReboot
+        {
+            public xxpGeneralRebootV6(XXPV6 tempXXP)
+            {
+                xxpVersion = 6;
+                fileSize = 0x2DC;
 
                 baseDOC = tempXXP.baseDOC;
                 skinVariant = 0;
@@ -585,9 +676,46 @@ namespace Character_Making_File_Tool
                 paintPriority = PaintPriority.GetDefault();
             }
 
-            public xxpGeneralReboot(XXPV7 tempXXP)
+            public XXPV6 GetXXP()
             {
-                xxpVersion = 10;
+                XXPV6 xxpv6 = new XXPV6();
+
+                xxpv6.baseDOC = baseDOC;
+                xxpv6.baseFIGR = baseFIGR;
+                xxpv6.baseFIGR.ToOld();
+
+                xxpv6.baseFIGR2 = new BaseFIGR2();
+                xxpv6.baseFIGR2.neckVerts = neckVerts;
+                xxpv6.baseFIGR2.waistVerts = waistVerts;
+                xxpv6.baseFIGR2.neck2Verts = neckVerts;
+                xxpv6.baseFIGR2.waist2Verts = waistVerts;
+                xxpv6.baseFIGR2.arm2Verts = baseFIGR.armVerts;
+                xxpv6.baseFIGR2.body2Verts = baseFIGR.bodyVerts;
+                xxpv6.baseFIGR2.bust2Verts = baseFIGR.bustVerts;
+                xxpv6.baseFIGR2.leg2Verts = baseFIGR.legVerts;
+                xxpv6.baseFIGR2.ToOld();
+
+                xxpv6.baseCOLR = ColorConversion.COL2ToCOLR(ngsCOL2, baseDOC.race);
+                xxpv6.baseSLCT = baseSLCT;
+                xxpv6.baseSLCT2 = baseSLCT2;
+                xxpv6.oldAccessorySliders = accessorySlidersReboot.GetOldAccessorySliders();
+                xxpv6.paintPriority = paintPriority;
+
+                return xxpv6;
+            }
+
+            public override byte[] GetBytes()
+            {
+                return Reloaded.Memory.Struct.GetBytes(GetXXP());
+            }
+        }
+
+        public class xxpGeneralRebootV7 : xxpGeneralReboot
+        {
+            public xxpGeneralRebootV7(XXPV7 tempXXP)
+            {
+                xxpVersion = 7;
+                fileSize = 0; // TODO: Get filesize for V7
 
                 baseDOC = tempXXP.baseDOC;
                 skinVariant = 0;
@@ -626,9 +754,46 @@ namespace Character_Making_File_Tool
                 paintPriority = PaintPriority.GetDefault();
             }
 
-            public xxpGeneralReboot(XXPV9 tempXXP)
+            public XXPV7 GetXXP() // TODO This is copied from V6
+            {
+                XXPV7 xxpv7 = new XXPV7();
+
+                xxpv7.baseDOC = baseDOC;
+                xxpv7.baseFIGR = baseFIGR;
+                xxpv7.baseFIGR.ToOld();
+
+                xxpv7.baseFIGR2 = new BaseFIGR2();
+                xxpv7.baseFIGR2.neckVerts = neckVerts;
+                xxpv7.baseFIGR2.waistVerts = waistVerts;
+                xxpv7.baseFIGR2.neck2Verts = neckVerts;
+                xxpv7.baseFIGR2.waist2Verts = waistVerts;
+                xxpv7.baseFIGR2.arm2Verts = baseFIGR.armVerts;
+                xxpv7.baseFIGR2.body2Verts = baseFIGR.bodyVerts;
+                xxpv7.baseFIGR2.bust2Verts = baseFIGR.bustVerts;
+                xxpv7.baseFIGR2.leg2Verts = baseFIGR.legVerts;
+                xxpv7.baseFIGR2.ToOld();
+
+                xxpv7.baseCOLR = ColorConversion.COL2ToCOLR(ngsCOL2, baseDOC.race);
+                xxpv7.baseSLCT = baseSLCT;
+                xxpv7.baseSLCT2 = baseSLCT2;
+                xxpv7.accessorySliders = accessorySlidersReboot.GetClassicAccessorySliders();
+                xxpv7.paintPriority = paintPriority;
+
+                return xxpv7;
+            }
+
+            public override byte[] GetBytes()
+            {
+                return Reloaded.Memory.Struct.GetBytes(GetXXP());
+            }
+        }
+
+        public class xxpGeneralRebootV9 : xxpGeneralReboot
+        {
+            public xxpGeneralRebootV9(XXPV9 tempXXP)
             {
                 xxpVersion = 10;
+                fileSize = 0x2F0;
 
                 baseDOC = tempXXP.baseDOC;
                 skinVariant = tempXXP.skinVariant;
@@ -665,9 +830,51 @@ namespace Character_Making_File_Tool
                 paintPriority = PaintPriority.GetDefault();
             }
 
-            public xxpGeneralReboot(XXPV10 tempXXP)
+            public XXPV9 GetXXP()
+            {
+                XXPV9 xxpv9 = new XXPV9();
+
+                xxpv9.baseDOC = baseDOC;
+                xxpv9.skinVariant = 3; //Hack to deal with limitations of backwards conversion
+                xxpv9.eyebrowDensity = eyebrowDensity;
+                xxpv9.cmlVariant = cmlVariant;
+
+                xxpv9.baseFIGR = baseFIGR;
+                xxpv9.baseFIGR.ToOld();
+
+                xxpv9.baseFIGR2 = new BaseFIGR2();
+                xxpv9.baseFIGR2.neckVerts = neckVerts;
+                xxpv9.baseFIGR2.waistVerts = waistVerts;
+                xxpv9.baseFIGR2.neck2Verts = neckVerts;
+                xxpv9.baseFIGR2.waist2Verts = waistVerts;
+                xxpv9.baseFIGR2.arm2Verts = baseFIGR.armVerts;
+                xxpv9.baseFIGR2.body2Verts = baseFIGR.bodyVerts;
+                xxpv9.baseFIGR2.bust2Verts = baseFIGR.bustVerts;
+                xxpv9.baseFIGR2.leg2Verts = baseFIGR.legVerts;
+                xxpv9.baseFIGR2.ToOld();
+
+                xxpv9.baseCOLR = ColorConversion.COL2ToCOLR(ngsCOL2, baseDOC.race);
+                xxpv9.baseSLCT = baseSLCT;
+                xxpv9.baseSLCT2 = baseSLCT2;
+                xxpv9.leftEyePart = leftEyePart;
+                xxpv9.accessorySliders = accessorySlidersReboot.GetClassicAccessorySliders();
+                xxpv9.paintPriority = paintPriority;
+
+                return xxpv9;
+            }
+
+            public override byte[] GetBytes()
+            {
+                return Reloaded.Memory.Struct.GetBytes(GetXXP());
+            }
+        }
+
+        public class xxpGeneralRebootV10 : xxpGeneralReboot
+        {
+            public xxpGeneralRebootV10(XXPV10 tempXXP)
             {
                 xxpVersion = 10;
+                fileSize = 0x3AC;
 
                 baseDOC = tempXXP.baseDOC;
                 skinVariant = tempXXP.skinVariant;
@@ -719,9 +926,61 @@ namespace Character_Making_File_Tool
                 accessoryMiscData = tempXXP.accessoryMiscData;
             }
 
-            public xxpGeneralReboot(XXPV11 tempXXP)
+            public XXPV10 GetXXP()
+            {
+                XXPV10 tempXXP = new XXPV10();
+
+                tempXXP.baseDOC = baseDOC;
+                tempXXP.skinVariant = skinVariant;
+                tempXXP.eyebrowDensity = eyebrowDensity;
+                tempXXP.cmlVariant = cmlVariant;
+                tempXXP.baseFIGR = baseFIGR;
+                tempXXP.neckVerts = neckVerts;
+                tempXXP.waistVerts = waistVerts;
+                tempXXP.hands = hands;
+                tempXXP.horns = horns;
+                tempXXP.eyeSize = eyeSize;
+                tempXXP.eyeHorizontalPosition = eyeHorizontalPosition;
+                tempXXP.neckAngle = neckAngle;
+                tempXXP.ngsCOL2 = ngsCOL2;
+                tempXXP.baseSLCT = baseSLCT;
+                tempXXP.baseSLCT2 = baseSLCT2;
+                tempXXP.leftEyePart = leftEyePart;
+                tempXXP.baseSLCTNGS = baseSLCTNGS;
+                tempXXP.accessorySlidersReboot = accessorySlidersReboot;
+                tempXXP.faceNatural = faceNatural.expStruct;
+                tempXXP.faceSmile = faceSmile.expStruct;
+                tempXXP.faceAngry = faceAngry.expStruct;
+                tempXXP.faceSad = faceSad.expStruct;
+                tempXXP.faceSus = faceSus.expStruct;
+                tempXXP.faceEyesClosed = faceEyesClosed.expStruct;
+                tempXXP.faceSmile2 = faceSmile2.expStruct;
+                tempXXP.faceWink = faceWink.expStruct;
+                tempXXP.faceUnused1 = faceUnused1.expStruct;
+                tempXXP.faceUnused2 = faceUnused2.expStruct;
+                tempXXP.paintPriority = paintPriority;
+                tempXXP.ngsSLID = ngsSLID;
+                tempXXP.ngsMTON = ngsMTON;
+                tempXXP.int_350 = int_350;
+                tempXXP.int_354 = int_354;
+                tempXXP.ngsVISI = ngsVISI;
+                tempXXP.accessoryMiscData = accessoryMiscData;
+
+                return tempXXP;
+            }
+
+            public override byte[] GetBytes()
+            {
+                return Reloaded.Memory.Struct.GetBytes(GetXXP());
+            }
+        }
+
+        public class xxpGeneralRebootV11 : xxpGeneralReboot
+        {
+            public xxpGeneralRebootV11(XXPV11 tempXXP)
             {
                 xxpVersion = 11;
+                fileSize = 0x3C0;
 
                 baseDOC = tempXXP.baseDOC;
                 skinVariant = tempXXP.skinVariant;
@@ -773,9 +1032,61 @@ namespace Character_Making_File_Tool
                 accessoryMiscData = tempXXP.accessoryMiscData;
             }
 
-            public xxpGeneralReboot(XXPV12 tempXXP)
+            public XXPV11 GetXXP()
+            {
+                XXPV11 tempXXP = new XXPV11();
+
+                tempXXP.baseDOC = baseDOC;
+                tempXXP.skinVariant = skinVariant;
+                tempXXP.eyebrowDensity = eyebrowDensity;
+                tempXXP.cmlVariant = cmlVariant;
+                tempXXP.baseFIGR = baseFIGR;
+                tempXXP.neckVerts = neckVerts;
+                tempXXP.waistVerts = waistVerts;
+                tempXXP.hands = hands;
+                tempXXP.horns = horns;
+                tempXXP.eyeSize = eyeSize;
+                tempXXP.eyeHorizontalPosition = eyeHorizontalPosition;
+                tempXXP.neckAngle = neckAngle;
+                tempXXP.ngsCOL2 = ngsCOL2;
+                tempXXP.baseSLCT = baseSLCT;
+                tempXXP.baseSLCT2 = baseSLCT2;
+                tempXXP.leftEyePart = leftEyePart;
+                tempXXP.baseSLCTNGS = baseSLCTNGS;
+                tempXXP.accessorySlidersReboot = accessorySlidersReboot;
+                tempXXP.faceNatural = faceNatural;
+                tempXXP.faceSmile = faceSmile;
+                tempXXP.faceAngry = faceAngry;
+                tempXXP.faceSad = faceSad;
+                tempXXP.faceSus = faceSus;
+                tempXXP.faceEyesClosed = faceEyesClosed;
+                tempXXP.faceSmile2 = faceSmile2;
+                tempXXP.faceWink = faceWink;
+                tempXXP.faceUnused1 = faceUnused1;
+                tempXXP.faceUnused2 = faceUnused2;
+                tempXXP.paintPriority = paintPriority;
+                tempXXP.ngsSLID = ngsSLID;
+                tempXXP.ngsMTON = ngsMTON;
+                tempXXP.int_350 = int_350;
+                tempXXP.int_354 = int_354;
+                tempXXP.ngsVISI = ngsVISI;
+                tempXXP.accessoryMiscData = accessoryMiscData;
+
+                return tempXXP;
+            }
+
+            public override byte[] GetBytes()
+            {
+                return Reloaded.Memory.Struct.GetBytes(GetXXP());
+            }
+        }
+
+        public class xxpGeneralRebootV12 : xxpGeneralReboot
+        {
+            public xxpGeneralRebootV12(XXPV12 tempXXP)
             {
                 xxpVersion = 12;
+                fileSize = 0x438;
 
                 baseDOC = tempXXP.baseDOC;
                 skinVariant = tempXXP.skinVariant;
@@ -829,182 +1140,7 @@ namespace Character_Making_File_Tool
                 accessoryMiscData = tempXXP.accessoryMiscData;
             }
 
-            public XXPV2 GetXXPV2()
-            {
-                XXPV2 xxpv2 = new XXPV2();
-
-                xxpv2.baseDOC = baseDOC;
-                xxpv2.baseFIGR = baseFIGR;
-                xxpv2.baseFIGR.ToOld();
-                xxpv2.baseCOLR = ColorConversion.COL2ToCOLR(ngsCOL2, baseDOC.race);
-                xxpv2.baseSLCT = baseSLCT;
-
-                return xxpv2;
-            }
-
-            public XXPV5 GetXXPV5()
-            {
-                XXPV5 xxpv5 = new XXPV5();
-
-                xxpv5.baseDOC = baseDOC;
-                xxpv5.baseFIGR = baseFIGR;
-                xxpv5.baseFIGR.ToOld();
-                xxpv5.baseCOLR = ColorConversion.COL2ToCOLR(ngsCOL2, baseDOC.race);
-                xxpv5.baseSLCT = baseSLCT;
-                xxpv5.baseSLCT2 = baseSLCT2;
-                xxpv5.oldPosSliders = accessorySlidersReboot.GetOldAccessoryPositionSliders();
-
-                return xxpv5;
-            }
-
-            public XXPV6 GetXXPV6()
-            {
-                XXPV6 xxpv6 = new XXPV6();
-
-                xxpv6.baseDOC = baseDOC;
-                xxpv6.baseFIGR = baseFIGR;
-                xxpv6.baseFIGR.ToOld();
-
-                xxpv6.baseFIGR2 = new BaseFIGR2();
-                xxpv6.baseFIGR2.neckVerts = neckVerts;
-                xxpv6.baseFIGR2.waistVerts = waistVerts;
-                xxpv6.baseFIGR2.neck2Verts = neckVerts;
-                xxpv6.baseFIGR2.waist2Verts = waistVerts;
-                xxpv6.baseFIGR2.arm2Verts = baseFIGR.armVerts;
-                xxpv6.baseFIGR2.body2Verts = baseFIGR.bodyVerts;
-                xxpv6.baseFIGR2.bust2Verts = baseFIGR.bustVerts;
-                xxpv6.baseFIGR2.leg2Verts = baseFIGR.legVerts;
-                xxpv6.baseFIGR2.ToOld();
-
-                xxpv6.baseCOLR = ColorConversion.COL2ToCOLR(ngsCOL2, baseDOC.race);
-                xxpv6.baseSLCT = baseSLCT; 
-                xxpv6.baseSLCT2 = baseSLCT2;
-                xxpv6.oldAccessorySliders = accessorySlidersReboot.GetOldAccessorySliders();
-                xxpv6.paintPriority = paintPriority;
-
-                return xxpv6;
-            }
-
-            public XXPV9 GetXXPV9()
-            {
-                XXPV9 xxpv9 = new XXPV9();
-
-                xxpv9.baseDOC = baseDOC;
-                xxpv9.skinVariant = 3; //Hack to deal with limitations of backwards conversion
-                xxpv9.eyebrowDensity = eyebrowDensity;
-                xxpv9.cmlVariant = cmlVariant;
-                
-                xxpv9.baseFIGR = baseFIGR;
-                xxpv9.baseFIGR.ToOld();
-
-                xxpv9.baseFIGR2 = new BaseFIGR2();
-                xxpv9.baseFIGR2.neckVerts = neckVerts;
-                xxpv9.baseFIGR2.waistVerts = waistVerts;
-                xxpv9.baseFIGR2.neck2Verts = neckVerts;
-                xxpv9.baseFIGR2.waist2Verts = waistVerts;
-                xxpv9.baseFIGR2.arm2Verts = baseFIGR.armVerts;
-                xxpv9.baseFIGR2.body2Verts = baseFIGR.bodyVerts;
-                xxpv9.baseFIGR2.bust2Verts = baseFIGR.bustVerts;
-                xxpv9.baseFIGR2.leg2Verts = baseFIGR.legVerts;
-                xxpv9.baseFIGR2.ToOld();
-
-                xxpv9.baseCOLR = ColorConversion.COL2ToCOLR(ngsCOL2, baseDOC.race);
-                xxpv9.baseSLCT = baseSLCT;
-                xxpv9.baseSLCT2 = baseSLCT2;
-                xxpv9.leftEyePart = leftEyePart;
-                xxpv9.accessorySliders = accessorySlidersReboot.GetClassicAccessorySliders();
-                xxpv9.paintPriority = paintPriority;
-
-                return xxpv9;
-            }
-
-            public XXPV10 GetXXPV10()
-            {
-                XXPV10 tempXXP = new XXPV10();
-
-                tempXXP.baseDOC = baseDOC;
-                tempXXP.skinVariant = skinVariant;
-                tempXXP.eyebrowDensity = eyebrowDensity;
-                tempXXP.cmlVariant = cmlVariant;
-                tempXXP.baseFIGR = baseFIGR;
-                tempXXP.neckVerts = neckVerts;
-                tempXXP.waistVerts = waistVerts;
-                tempXXP.hands = hands;
-                tempXXP.horns = horns;
-                tempXXP.eyeSize = eyeSize;
-                tempXXP.eyeHorizontalPosition = eyeHorizontalPosition;
-                tempXXP.neckAngle = neckAngle;
-                tempXXP.ngsCOL2 = ngsCOL2;
-                tempXXP.baseSLCT = baseSLCT;
-                tempXXP.baseSLCT2 = baseSLCT2;
-                tempXXP.leftEyePart = leftEyePart;
-                tempXXP.baseSLCTNGS = baseSLCTNGS;
-                tempXXP.accessorySlidersReboot = accessorySlidersReboot;
-                tempXXP.faceNatural = faceNatural.expStruct;
-                tempXXP.faceSmile = faceSmile.expStruct;
-                tempXXP.faceAngry = faceAngry.expStruct;
-                tempXXP.faceSad = faceSad.expStruct;
-                tempXXP.faceSus = faceSus.expStruct;
-                tempXXP.faceEyesClosed = faceEyesClosed.expStruct;
-                tempXXP.faceSmile2 = faceSmile2.expStruct;
-                tempXXP.faceWink = faceWink.expStruct;
-                tempXXP.faceUnused1 = faceUnused1.expStruct;
-                tempXXP.faceUnused2 = faceUnused2.expStruct;
-                tempXXP.paintPriority = paintPriority;
-                tempXXP.ngsSLID = ngsSLID;
-                tempXXP.ngsMTON = ngsMTON;
-                tempXXP.int_350 = int_350;
-                tempXXP.int_354 = int_354;
-                tempXXP.ngsVISI = ngsVISI;
-                tempXXP.accessoryMiscData = accessoryMiscData;
-
-                return tempXXP;
-            }
-
-            public XXPV11 GetXXPV11()
-            {
-                XXPV11 tempXXP = new XXPV11();
-
-                tempXXP.baseDOC = baseDOC;
-                tempXXP.skinVariant = skinVariant;
-                tempXXP.eyebrowDensity = eyebrowDensity;
-                tempXXP.cmlVariant = cmlVariant;
-                tempXXP.baseFIGR = baseFIGR;
-                tempXXP.neckVerts = neckVerts;
-                tempXXP.waistVerts = waistVerts;
-                tempXXP.hands = hands;
-                tempXXP.horns = horns;
-                tempXXP.eyeSize = eyeSize;
-                tempXXP.eyeHorizontalPosition = eyeHorizontalPosition;
-                tempXXP.neckAngle = neckAngle;
-                tempXXP.ngsCOL2 = ngsCOL2;
-                tempXXP.baseSLCT = baseSLCT;
-                tempXXP.baseSLCT2 = baseSLCT2;
-                tempXXP.leftEyePart = leftEyePart;
-                tempXXP.baseSLCTNGS = baseSLCTNGS;
-                tempXXP.accessorySlidersReboot = accessorySlidersReboot;
-                tempXXP.faceNatural = faceNatural;
-                tempXXP.faceSmile = faceSmile;
-                tempXXP.faceAngry = faceAngry;
-                tempXXP.faceSad = faceSad;
-                tempXXP.faceSus = faceSus;
-                tempXXP.faceEyesClosed = faceEyesClosed;
-                tempXXP.faceSmile2 = faceSmile2;
-                tempXXP.faceWink = faceWink;
-                tempXXP.faceUnused1 = faceUnused1;
-                tempXXP.faceUnused2 = faceUnused2;
-                tempXXP.paintPriority = paintPriority;
-                tempXXP.ngsSLID = ngsSLID;
-                tempXXP.ngsMTON = ngsMTON;
-                tempXXP.int_350 = int_350;
-                tempXXP.int_354 = int_354;
-                tempXXP.ngsVISI = ngsVISI;
-                tempXXP.accessoryMiscData = accessoryMiscData;
-
-                return tempXXP;
-            }
-
-            public XXPV12 GetXXPV12()
+            public XXPV12 GetXXP()
             {
                 XXPV12 tempXXP = new XXPV12();
 
@@ -1048,60 +1184,10 @@ namespace Character_Making_File_Tool
                 return tempXXP;
             }
 
-            private void SetDefaultExpressions()
+            public override byte[] GetBytes()
             {
-                if (baseDOC.gender == 0)
-                {
-                    faceNatural = defaultMaleExpressions[0];
-                    faceSmile = defaultMaleExpressions[1];
-                    faceAngry = defaultMaleExpressions[2];
-                    faceSad = defaultMaleExpressions[3];
-
-                    faceSus = defaultMaleExpressions[4];
-                    faceEyesClosed = defaultMaleExpressions[5];
-                    faceSmile2 = defaultMaleExpressions[6];
-                    faceWink = defaultMaleExpressions[7];
-
-                    faceUnused1 = defaultMaleExpressions[8];
-                    faceUnused2 = defaultMaleExpressions[9];
-                }
-                else
-                {
-                    faceNatural = defaultFemaleExpressions[0];
-                    faceSmile = defaultFemaleExpressions[1];
-                    faceAngry = defaultFemaleExpressions[2];
-                    faceSad = defaultFemaleExpressions[3];
-
-                    faceSus = defaultFemaleExpressions[4];
-                    faceEyesClosed = defaultFemaleExpressions[5];
-                    faceSmile2 = defaultFemaleExpressions[6];
-                    faceWink = defaultFemaleExpressions[7];
-
-                    faceUnused1 = defaultFemaleExpressions[8];
-                    faceUnused2 = defaultFemaleExpressions[9];
-                }
-            }
-
-            public byte[] GetBytes()
-            {
-                switch(xxpVersion)
-                {
-                    case 2:
-                        return Reloaded.Memory.Struct.GetBytes(GetXXPV2());
-                    case 5:
-                        return Reloaded.Memory.Struct.GetBytes(GetXXPV5());
-                    case 6:
-                        return Reloaded.Memory.Struct.GetBytes(GetXXPV6());
-                    case 9:
-                        return Reloaded.Memory.Struct.GetBytes(GetXXPV9());
-                    case 10:
-                        return Reloaded.Memory.Struct.GetBytes(GetXXPV10());
-                    case 11:
-                        return Reloaded.Memory.Struct.GetBytes(GetXXPV11());
-                }
-                throw new NotImplementedException();
+                return Reloaded.Memory.Struct.GetBytes(GetXXP());
             }
         }
-
     }
 }
