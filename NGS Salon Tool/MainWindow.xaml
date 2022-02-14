@@ -28,6 +28,7 @@
                 </MenuItem>
                 <MenuItem Header="Extra">
                     <MenuItem Header="Ensure data meets Global minimums" Click="SetGlobalMin"/>
+                    <MenuItem Header="Overwrite Face Model" Click="OverwriteFaceModel"/>
                     <MenuItem Header="Decrypt xxp(s) and save" Click="DecryptXXPs"/>
                     <MenuItem Header="Encrypt xxpu(s) and save" Click="EncryptXXPs"/>
                 </MenuItem>

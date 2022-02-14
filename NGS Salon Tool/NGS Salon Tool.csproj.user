@@ -10,9 +10,15 @@
     <Compile Update="ColorWindow\ColorPicker.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Update="FaceOverwriteDialog.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <Page Update="ColorWindow\ColorPicker.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="FaceOverwriteDialog.xaml">
       <SubType>Designer</SubType>
     </Page>
     <Page Update="MainWindow.xaml">

@@ -509,6 +509,37 @@ namespace Character_Making_File_Tool
                 }
             }
 
+            public AltFaceFIGR GetFaceFIGR()
+            {
+                AltFaceFIGR faceFIGR = new AltFaceFIGR();
+
+                faceFIGR.headVerts = baseFIGR.headVerts;
+                faceFIGR.faceShapeVerts = baseFIGR.faceShapeVerts;
+                faceFIGR.eyeShapeVerts = baseFIGR.eyeShapeVerts;
+                faceFIGR.noseHeightVerts = baseFIGR.noseHeightVerts;
+                faceFIGR.noseShapeVerts = baseFIGR.noseShapeVerts;
+                faceFIGR.mouthVerts = baseFIGR.mouthVerts;
+                faceFIGR.ear_hornVerts = baseFIGR.ear_hornVerts;
+                faceFIGR.neckVerts = neckVerts;
+                faceFIGR.horns = horns;
+                faceFIGR.unkFaceVerts = new Vec3Int();
+
+                return faceFIGR;
+            }
+
+            public void WriteFaceFIGR(AltFaceFIGR faceFIGR)
+            {
+                baseFIGR.headVerts = faceFIGR.headVerts;
+                baseFIGR.faceShapeVerts = faceFIGR.faceShapeVerts;
+                baseFIGR.eyeShapeVerts = faceFIGR.eyeShapeVerts;
+                baseFIGR.noseHeightVerts = faceFIGR.noseHeightVerts;
+                baseFIGR.noseShapeVerts = faceFIGR.noseShapeVerts;
+                baseFIGR.mouthVerts = faceFIGR.mouthVerts;
+                baseFIGR.ear_hornVerts = faceFIGR.ear_hornVerts;
+                neckVerts = faceFIGR.neckVerts;
+                horns = faceFIGR.horns;
+            }
+
             public virtual byte[] GetBytes()
             {
                 throw new NotImplementedException();
@@ -1182,6 +1213,16 @@ namespace Character_Making_File_Tool
                 tempXXP.accessoryMiscData = accessoryMiscData;
 
                 return tempXXP;
+            }
+
+            public AltFaceFIGR GetAltFaceFIGR()
+            {
+                return altFace;
+            }
+
+            public void WriteAltFaceFIGR(AltFaceFIGR altFaceFIGR)
+            {
+                altFace = altFaceFIGR;
             }
 
             public override byte[] GetBytes()
