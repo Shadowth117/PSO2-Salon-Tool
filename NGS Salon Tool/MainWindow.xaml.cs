@@ -168,6 +168,48 @@ namespace NGS_Salon_Tool
             }
         }
 
+        private CharacterHandlerReboot.xxpGeneralReboot LoadCharacterHandlerReboot(string inFilename)
+        {
+            CharacterHandlerReboot.xxpGeneralReboot outCharacterHandler = new CharacterHandlerReboot.xxpGeneralReboot();
+
+            try
+            {
+                byte[] data;
+
+                //Handle encrypted files
+                if (inFilename.LastOrDefault() == 'p')
+                {
+                    data = CharacterHandler.DecryptXXP(inFilename);
+                }
+                else
+                {
+                    data = File.ReadAllBytes(inFilename);
+                }
+
+                using (Stream stream = new MemoryStream(data))
+                using (var streamReader = new BufferedStreamReader(stream, 8192))
+                {
+                    string extension = Path.GetExtension(inFilename).ToLower();
+                    switch (extension)
+                    {
+                        case ".cml":
+                        case ".eml": //Rarely used "enemy" cml. Seemingly just the same format?
+                            outCharacterHandler = CMLHandler.ParseCML(streamReader);
+                            break;
+                        default:
+                            outCharacterHandler = OpenXXP(streamReader);
+                            break;
+                    }
+                }
+            }
+            catch
+            {
+                MessageBox.Show("Unable to open file. Check permissions and file type.");
+            }
+
+            return outCharacterHandler;
+        }
+
         private void OpenCharacterFile(object sender, RoutedEventArgs e)
         {
             fileOpen.InitialDirectory = openInitialDirectory;
@@ -175,32 +217,7 @@ namespace NGS_Salon_Tool
             {
                 try
                 {
-                    byte[] data;
-
-                    //Handle encrypted files
-                    if(fileOpen.FileName.LastOrDefault() == 'p')
-                    {
-                        data = CharacterHandler.DecryptXXP(fileOpen.FileName);
-                    } else
-                    {
-                        data = File.ReadAllBytes(fileOpen.FileName);
-                    }
-
-                    using (Stream stream = new MemoryStream(data))
-                    using (var streamReader = new BufferedStreamReader(stream, 8192))
-                    {
-                        string extension = Path.GetExtension(fileOpen.FileName).ToLower();
-                        switch (extension)
-                        {
-                            case ".cml":
-                            case ".eml": //Rarely used "enemy" cml. Seemingly just the same format?
-                                xxpHandler = CMLHandler.ParseCML(streamReader);
-                                break;
-                            default:
-                                xxpHandler = OpenXXP(streamReader);
-                                break;
-                        }
-                    }
+                    xxpHandler = LoadCharacterHandlerReboot(fileOpen.FileName);
 
                     openedFileName = Path.GetFileNameWithoutExtension(fileOpen.FileName);
                     this.Title = "NGS Salon Tool - " + Path.GetFileName(fileOpen.FileName);
@@ -332,11 +349,11 @@ namespace NGS_Salon_Tool
         private static void WriteXXP(CharacterHandlerReboot.xxpGeneralReboot xxp, string fileName)
         {
             List<byte> fileData = new List<byte>();
-            int fileSize = CharacterConstants.v10Size;
-            var body = Reloaded.Memory.Struct.GetBytes(xxp.GetXXPV10());
+            int fileSize = xxp.fileSize;
+            var body = xxp.GetBytes();
             body = CharacterHandler.EncryptData(body, fileSize, out int hash);
 
-            fileData.AddRange(BitConverter.GetBytes(0xA));
+            fileData.AddRange(BitConverter.GetBytes(xxp.xxpVersion));
             fileData.AddRange(BitConverter.GetBytes(fileSize));
             fileData.AddRange(BitConverter.GetBytes(hash));
             fileData.AddRange(new byte[] { 0, 0, 0, 0 });
@@ -353,22 +370,22 @@ namespace NGS_Salon_Tool
             switch (version)
             {
                 case 2:
-                    return new CharacterHandlerReboot.xxpGeneralReboot(streamReader.Read<CharacterHandlerReboot.XXPV2>());
+                    return new CharacterHandlerReboot.xxpGeneralRebootV2(streamReader.Read<CharacterHandlerReboot.XXPV2>());
                 case 5:
-                    return new CharacterHandlerReboot.xxpGeneralReboot(streamReader.Read<CharacterHandlerReboot.XXPV5>());
+                    return new CharacterHandlerReboot.xxpGeneralRebootV5(streamReader.Read<CharacterHandlerReboot.XXPV5>());
                 case 6:
-                    return new CharacterHandlerReboot.xxpGeneralReboot(streamReader.Read<CharacterHandlerReboot.XXPV5>());
+                    return new CharacterHandlerReboot.xxpGeneralRebootV6(streamReader.Read<CharacterHandlerReboot.XXPV6>());
                 case 7:
-                    return new CharacterHandlerReboot.xxpGeneralReboot(streamReader.Read<CharacterHandlerReboot.XXPV7>());
+                    return new CharacterHandlerReboot.xxpGeneralRebootV7(streamReader.Read<CharacterHandlerReboot.XXPV7>());
                 case 8:
                 case 9:
-                    return new CharacterHandlerReboot.xxpGeneralReboot(streamReader.Read<CharacterHandlerReboot.XXPV9>());
+                    return new CharacterHandlerReboot.xxpGeneralRebootV9(streamReader.Read<CharacterHandlerReboot.XXPV9>());
                 case 10:
-                    return new CharacterHandlerReboot.xxpGeneralReboot(streamReader.Read<CharacterHandlerReboot.XXPV10>());
+                    return new CharacterHandlerReboot.xxpGeneralRebootV10(streamReader.Read<CharacterHandlerReboot.XXPV10>());
                 case 11:
-                    return new CharacterHandlerReboot.xxpGeneralReboot(streamReader.Read<CharacterHandlerReboot.XXPV11>());
+                    return new CharacterHandlerReboot.xxpGeneralRebootV11(streamReader.Read<CharacterHandlerReboot.XXPV11>());
                 case 12:
-                    return new CharacterHandlerReboot.xxpGeneralReboot(streamReader.Read<CharacterHandlerReboot.XXPV12>());
+                    return new CharacterHandlerReboot.xxpGeneralRebootV12(streamReader.Read<CharacterHandlerReboot.XXPV12>());
                 default:
                     MessageBox.Show("Error: File version unknown. If this is a proper salon file, please report this!");
                     return null;
@@ -633,6 +650,71 @@ namespace NGS_Salon_Tool
                 foreach (var file in openFileDialog.FileNames)
                 {
                     CharacterHandler.EncryptAndWrite(file);
+                }
+            }
+        }
+
+        private void OverwriteFaceModel(object sender, RoutedEventArgs e)
+        {
+            if (openedFileName == null)
+            {
+                MessageBox.Show("You must have data loaded to overwrite face model.");
+                return;
+            }
+
+            System.Windows.Forms.OpenFileDialog openFileDialog = new System.Windows.Forms.OpenFileDialog()
+            {
+                Title = "Select xxp file(s)",
+                Filter = "File |*.*p"
+            };
+
+            if (openFileDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            {
+                CharacterHandlerReboot.xxpGeneralReboot FaceSourceCharacterHandler = LoadCharacterHandlerReboot(openFileDialog.FileName);
+
+                FaceOverwriteDialog faceOverwriteDialog = new FaceOverwriteDialog();
+
+                if (FaceSourceCharacterHandler.xxpVersion < 12)
+                {
+                    faceOverwriteDialog.EnableAltFaceSource(false);
+                }
+
+                if (xxpHandler.xxpVersion < 12)
+                {
+                    faceOverwriteDialog.EnableAltFaceDest(false);
+                }
+
+                faceOverwriteDialog.ShowDialog();
+
+                if (faceOverwriteDialog.DialogResult.HasValue && faceOverwriteDialog.DialogResult.Value)
+                {
+                    CharacterDataStructsReboot.AltFaceFIGR sourceFaceFIGR = FaceSourceCharacterHandler.GetFaceFIGR(); ;
+
+                    if (faceOverwriteDialog.AltFaceSource)
+                    {
+                        CharacterHandlerReboot.xxpGeneralRebootV12 xxpGeneralRebootV12 = FaceSourceCharacterHandler as CharacterHandlerReboot.xxpGeneralRebootV12;
+
+                        if (xxpGeneralRebootV12 != null)
+                        {
+                            sourceFaceFIGR = xxpGeneralRebootV12.GetAltFaceFIGR();
+                        }
+                        
+                    } 
+
+                    if (faceOverwriteDialog.OverwriteBaseFace)
+                    {
+                        xxpHandler.WriteFaceFIGR(sourceFaceFIGR);
+                    }
+
+                    if (faceOverwriteDialog.OverwriteAltFace)
+                    {
+                        CharacterHandlerReboot.xxpGeneralRebootV12 xxpGeneralRebootV12 = xxpHandler as CharacterHandlerReboot.xxpGeneralRebootV12;
+
+                        if (xxpGeneralRebootV12 != null)
+                        {
+                            xxpGeneralRebootV12.WriteAltFaceFIGR(sourceFaceFIGR);
+                        }
+                    }
                 }
             }
         }

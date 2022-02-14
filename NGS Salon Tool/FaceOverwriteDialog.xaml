@@ -1,0 +1,44 @@
+﻿<Window x:Class="NGS_Salon_Tool.FaceOverwriteDialog"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:NGS_Salon_Tool"
+        mc:Ignorable="d"
+        Title="FaceOverwriteDialog" Height="250" Width="400">
+    <Grid VerticalAlignment="Center">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="30"/>
+            <RowDefinition Height="30"/>
+            <RowDefinition Height="30"/>
+            <RowDefinition Height="30"/>
+            <RowDefinition Height="30"/>
+        </Grid.RowDefinitions>
+        <Label x:Name="FaceSourceLabel" Grid.Row="0" Content="Select Source Face" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+        <Grid Grid.Row="1" HorizontalAlignment="Center">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="100"/>
+                <ColumnDefinition Width="100"/>
+            </Grid.ColumnDefinitions>
+            <RadioButton x:Name="BaseFaceSourceRadio" GroupName="FaceSource" Grid.Column="0" HorizontalAlignment="Center" VerticalAlignment="Center" IsChecked="True">Base Face</RadioButton>
+            <RadioButton x:Name="AltFaceSourceRadio" GroupName="FaceSource" Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Center">Alt Face</RadioButton>
+        </Grid>
+        <Label x:Name="FaceDestLabel" Grid.Row="2" Content="Select Face to Overwrite" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+        <Grid Grid.Row="3" HorizontalAlignment="Center">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="100"/>
+                <ColumnDefinition Width="100"/>
+            </Grid.ColumnDefinitions>
+            <CheckBox x:Name="BaseFaceDestCheckbox" Grid.Column="0" HorizontalAlignment="Center" VerticalAlignment="Center">Base Face</CheckBox>
+            <CheckBox x:Name="AltFaceDestCheckbox" Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Center">Alt Face</CheckBox>
+        </Grid>
+        <Grid Grid.Row="4" HorizontalAlignment="Center">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="100"/>
+                <ColumnDefinition Width="100"/>
+            </Grid.ColumnDefinitions>
+            <Button x:Name="ApplyButton" Grid.Column="0" HorizontalAlignment="Center" VerticalAlignment="Center" Content="Apply" IsDefault="true" Click="OnClick_OkayButton"/>
+            <Button x:Name="CancelButton" Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Center" Content="Cancel" IsCancel="True"/>
+        </Grid>
+    </Grid>
+</Window>
