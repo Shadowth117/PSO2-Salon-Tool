@@ -353,22 +353,22 @@ namespace NGS_Salon_Tool
             switch (version)
             {
                 case 2:
-                    return new CharacterHandlerReboot.xxpGeneralReboot(streamReader.Read<CharacterHandlerReboot.XXPV2>());
+                    return new CharacterHandlerReboot.xxpGeneralReboot(streamReader.Read<CharacterMainStructs.XXPV2>());
                 case 5:
-                    return new CharacterHandlerReboot.xxpGeneralReboot(streamReader.Read<CharacterHandlerReboot.XXPV5>());
+                    return new CharacterHandlerReboot.xxpGeneralReboot(streamReader.Read<CharacterMainStructs.XXPV5>());
                 case 6:
-                    return new CharacterHandlerReboot.xxpGeneralReboot(streamReader.Read<CharacterHandlerReboot.XXPV5>());
+                    return new CharacterHandlerReboot.xxpGeneralReboot(streamReader.Read<CharacterMainStructs.XXPV5>());
                 case 7:
-                    return new CharacterHandlerReboot.xxpGeneralReboot(streamReader.Read<CharacterHandlerReboot.XXPV7>());
+                    return new CharacterHandlerReboot.xxpGeneralReboot(streamReader.Read<CharacterMainStructs.XXPV7>());
                 case 8:
                 case 9:
-                    return new CharacterHandlerReboot.xxpGeneralReboot(streamReader.Read<CharacterHandlerReboot.XXPV9>());
+                    return new CharacterHandlerReboot.xxpGeneralReboot(streamReader.Read<CharacterMainStructs.XXPV9>());
                 case 10:
-                    return new CharacterHandlerReboot.xxpGeneralReboot(streamReader.Read<CharacterHandlerReboot.XXPV10>());
+                    return new CharacterHandlerReboot.xxpGeneralReboot(streamReader.Read<CharacterMainStructs.XXPV10>());
                 case 11:
-                    return new CharacterHandlerReboot.xxpGeneralReboot(streamReader.Read<CharacterHandlerReboot.XXPV11>());
+                    return new CharacterHandlerReboot.xxpGeneralReboot(streamReader.Read<CharacterMainStructs.XXPV11>());
                 case 12:
-                    return new CharacterHandlerReboot.xxpGeneralReboot(streamReader.Read<CharacterHandlerReboot.XXPV12>());
+                    return new CharacterHandlerReboot.xxpGeneralReboot(streamReader.Read<CharacterMainStructs.XXPV12>());
                 default:
                     MessageBox.Show("Error: File version unknown. If this is a proper salon file, please report this!");
                     return null;
@@ -633,6 +633,69 @@ namespace NGS_Salon_Tool
                 foreach (var file in openFileDialog.FileNames)
                 {
                     CharacterHandler.EncryptAndWrite(file);
+                }
+            }
+        }
+
+        private void OverwriteFaceModel(object sender, RoutedEventArgs e)
+        {
+            if (openedFileName == null)
+            {
+                MessageBox.Show("You must have data loaded to overwrite face model.");
+                return;
+            }
+
+            System.Windows.Forms.OpenFileDialog openFileDialog = new System.Windows.Forms.OpenFileDialog()
+            {
+                Title = "Select xxp file(s)",
+                Filter = "File |*.*p"
+            };
+
+            if (openFileDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            {
+                var data = File.ReadAllBytes(openFileDialog.FileName);
+                CharacterHandlerReboot.xxpGeneralReboot faceSourceCharacterHandler;
+                using (Stream stream = new MemoryStream(data))
+                using (var streamReader = new BufferedStreamReader(stream, 8192))
+                {
+                    faceSourceCharacterHandler = OpenXXP(streamReader);
+                }
+
+                FaceOverwriteDialog faceOverwriteDialog = new FaceOverwriteDialog();
+
+                if (faceSourceCharacterHandler.xxpVersion < 12)
+                {
+                    faceOverwriteDialog.EnableAltFaceSource(false);
+                }
+
+                if (xxpHandler.xxpVersion < 12)
+                {
+                    faceOverwriteDialog.EnableAltFaceDest(false);
+                }
+
+                faceOverwriteDialog.ShowDialog();
+                
+                if (faceOverwriteDialog.DialogResult.HasValue && faceOverwriteDialog.DialogResult.Value)
+                {
+                    CharacterDataStructsReboot.AltFaceFIGR sourceFaceFIGR = faceSourceCharacterHandler.GetFaceData();
+
+                    if (faceOverwriteDialog.AltFaceSource)
+                    {
+                        if (faceSourceCharacterHandler.xxpVersion >= 12)
+                        {
+                            sourceFaceFIGR = faceSourceCharacterHandler.GetAltFaceData();
+                        }
+                    }
+
+                    if (faceOverwriteDialog.OverwriteBaseFace)
+                    {
+                        xxpHandler.SetFaceData(sourceFaceFIGR);
+                    }
+
+                    if (faceOverwriteDialog.OverwriteAltFace)
+                    {
+                        xxpHandler.SetAltFaceData(sourceFaceFIGR);
+                    }
                 }
             }
         }

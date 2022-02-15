@@ -15,6 +15,9 @@
     <Page Update="ColorWindow\ColorPicker.xaml">
       <SubType>Designer</SubType>
     </Page>
+    <Page Update="FaceOverwriteDialog.xaml">
+      <SubType>Designer</SubType>
+    </Page>
     <Page Update="MainWindow.xaml">
       <SubType>Designer</SubType>
     </Page>
