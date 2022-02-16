@@ -273,8 +273,11 @@ namespace Character_Making_File_Tool
                 exp.tongue = raw[0x11];
 
                 obj.expStruct = exp;
-                obj.tongueVertical = raw[0x12];
-                obj.tongueHorizontal = raw[0x13];
+                if(raw.Length > 0x12)
+                {
+                    obj.tongueVertical = raw[0x12];
+                    obj.tongueHorizontal = raw[0x13];
+                }
 
                 return obj;
             }

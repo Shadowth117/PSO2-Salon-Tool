@@ -282,19 +282,28 @@ namespace Character_Making_File_Tool
                         }
                         break;
                     case "EXPR":
+                        FaceExpressionV11[] expressions;
+                        if(xxp.baseDOC.gender == 0)
+                        {
+                            expressions = CharacterStructConstants.defaultMaleExpressions;
+                        } else
+                        {
+                            expressions = CharacterStructConstants.defaultFemaleExpressions;
+                        }
+
                         var expr = data[0];
-                        xxp.faceNatural.expStruct = TryGetEXPR(xxp.faceNatural.expStruct, expr, 0x0);
-                        xxp.faceSmile.expStruct = TryGetEXPR(xxp.faceSmile.expStruct, expr, 0x1);
-                        xxp.faceAngry.expStruct = TryGetEXPR(xxp.faceAngry.expStruct, expr, 0x2);
-                        xxp.faceSad.expStruct = TryGetEXPR(xxp.faceSad.expStruct, expr, 0x3);
+                        xxp.faceNatural = TryGetEXPR(expr, 0x0, expressions[0]);
+                        xxp.faceSmile = TryGetEXPR(expr, 0x1, expressions[1]);
+                        xxp.faceAngry = TryGetEXPR(expr, 0x2, expressions[2]);
+                        xxp.faceSad = TryGetEXPR(expr, 0x3, expressions[3]);
 
-                        xxp.faceSus.expStruct = TryGetEXPR(xxp.faceSus.expStruct, expr, 0x4);
-                        xxp.faceEyesClosed.expStruct = TryGetEXPR(xxp.faceEyesClosed.expStruct, expr, 0x5);
-                        xxp.faceSmile2.expStruct = TryGetEXPR(xxp.faceSmile2.expStruct, expr, 0x6);
-                        xxp.faceWink.expStruct = TryGetEXPR(xxp.faceWink.expStruct, expr, 0x7);
+                        xxp.faceSus = TryGetEXPR(expr, 0x4, expressions[4]);
+                        xxp.faceEyesClosed = TryGetEXPR(expr, 0x5, expressions[5]);
+                        xxp.faceSmile2 = TryGetEXPR(expr, 0x6, expressions[6]);
+                        xxp.faceWink = TryGetEXPR(expr, 0x7, expressions[7]);
 
-                        xxp.faceUnused1.expStruct = TryGetEXPR(xxp.faceUnused1.expStruct, expr, 0x8);
-                        xxp.faceUnused2.expStruct = TryGetEXPR(xxp.faceUnused2.expStruct, expr, 0x9);
+                        xxp.faceUnused1 = TryGetEXPR(expr, 0x1, expressions[8]);
+                        xxp.faceUnused2 = TryGetEXPR(expr, 0x9, expressions[9]);
                         break;
                     default:
                         //Data being null signfies that the last thing read wasn't a proper tag. This should mean the end of the VTBF stream if nothing else.
@@ -382,23 +391,21 @@ namespace Character_Making_File_Tool
             }
         }
 
-        public static unsafe FaceExpressionV10 TryGetEXPR(FaceExpressionV10 expr, Dictionary<int, object> dict, int key)
+        public static unsafe FaceExpressionV11 TryGetEXPR(Dictionary<int, object> dict, int key, FaceExpressionV11 defaultExpression)
         {
             if(dict.TryGetValue(key, out object dictValue))
             {
-                FaceExpressionV10 outExpr = new FaceExpressionV10();
-                IntPtr intPtr = Marshal.AllocHGlobal(Marshal.SizeOf(expr));
-                Marshal.StructureToPtr(outExpr, intPtr, true);
-                Marshal.Copy((byte[])dictValue, 0, intPtr, 0x12);
-                return Marshal.PtrToStructure<FaceExpressionV10>(intPtr);
+                sbyte[] values = (sbyte[])dictValue;
+                return FaceExpressionV11.CreateExpression(values);
             }
 
-            return expr;
+            return defaultExpression;
         }
 
         public unsafe static byte[] GetNGSCML(CharacterHandlerReboot.xxpGeneralReboot xxp)
         {
             List<byte> cml = new List<byte>();
+            int version = 0xA;
 
             //Header
             cml.AddRange(ConstantCMLHeader); //Always the same in all observed files
@@ -409,7 +416,7 @@ namespace Character_Making_File_Tool
             VTBFMethods.addBytes(doc, 0x71, 0x8, BitConverter.GetBytes(xxp.baseDOC.gender));
             VTBFMethods.addBytes(doc, 0x72, 0x8, BitConverter.GetBytes((int)xxp.baseDOC.muscleMass));
             VTBFMethods.addBytes(doc, 0x73, 0x8, BitConverter.GetBytes((int)0x9));
-            VTBFMethods.addBytes(doc, 0xFF, 0x8, BitConverter.GetBytes((int)0xA));
+            VTBFMethods.addBytes(doc, 0xFF, 0x8, BitConverter.GetBytes(version));
             VTBFMethods.addBytes(doc, 0x74, 0x8, BitConverter.GetBytes((int)xxp.skinVariant));
             VTBFMethods.addBytes(doc, 0x75, 0x8, BitConverter.GetBytes((int)xxp.eyebrowDensity));
             VTBFMethods.WriteTagHeader(doc, "DOC ", 0xC, 0x7);
@@ -621,19 +628,44 @@ namespace Character_Making_File_Tool
 
             //EXPR
             List<byte> expr = new List<byte>();
-            VTBFMethods.addBytes(expr, 0x0, 0x83, 0x8, 0x11, Reloaded.Memory.Struct.GetBytes(xxp.faceNatural));
-            VTBFMethods.addBytes(expr, 0x1, 0x83, 0x8, 0x11, Reloaded.Memory.Struct.GetBytes(xxp.faceSmile));
-            VTBFMethods.addBytes(expr, 0x2, 0x83, 0x8, 0x11, Reloaded.Memory.Struct.GetBytes(xxp.faceAngry));
-            VTBFMethods.addBytes(expr, 0x3, 0x83, 0x8, 0x11, Reloaded.Memory.Struct.GetBytes(xxp.faceSad));
 
-            VTBFMethods.addBytes(expr, 0x4, 0x83, 0x8, 0x11, Reloaded.Memory.Struct.GetBytes(xxp.faceSus));
-            VTBFMethods.addBytes(expr, 0x5, 0x83, 0x8, 0x11, Reloaded.Memory.Struct.GetBytes(xxp.faceEyesClosed));
-            VTBFMethods.addBytes(expr, 0x6, 0x83, 0x8, 0x11, Reloaded.Memory.Struct.GetBytes(xxp.faceSmile2));
-            VTBFMethods.addBytes(expr, 0x7, 0x83, 0x8, 0x11, Reloaded.Memory.Struct.GetBytes(xxp.faceWink));
+            switch(version)
+            {
+                case 0xA:
+                    VTBFMethods.addBytes(expr, 0x0, 0x83, 0x8, 0x11, Reloaded.Memory.Struct.GetBytes(xxp.faceNatural.expStruct));
+                    VTBFMethods.addBytes(expr, 0x1, 0x83, 0x8, 0x11, Reloaded.Memory.Struct.GetBytes(xxp.faceSmile.expStruct));
+                    VTBFMethods.addBytes(expr, 0x2, 0x83, 0x8, 0x11, Reloaded.Memory.Struct.GetBytes(xxp.faceAngry.expStruct));
+                    VTBFMethods.addBytes(expr, 0x3, 0x83, 0x8, 0x11, Reloaded.Memory.Struct.GetBytes(xxp.faceSad.expStruct));
 
-            VTBFMethods.addBytes(expr, 0x8, 0x83, 0x8, 0x11, Reloaded.Memory.Struct.GetBytes(xxp.faceUnused1));
-            VTBFMethods.addBytes(expr, 0x9, 0x83, 0x8, 0x11, Reloaded.Memory.Struct.GetBytes(xxp.faceUnused2));
-            VTBFMethods.WriteTagHeader(expr, "EXPR", 0, 0xA);
+                    VTBFMethods.addBytes(expr, 0x4, 0x83, 0x8, 0x11, Reloaded.Memory.Struct.GetBytes(xxp.faceSus.expStruct));
+                    VTBFMethods.addBytes(expr, 0x5, 0x83, 0x8, 0x11, Reloaded.Memory.Struct.GetBytes(xxp.faceEyesClosed.expStruct));
+                    VTBFMethods.addBytes(expr, 0x6, 0x83, 0x8, 0x11, Reloaded.Memory.Struct.GetBytes(xxp.faceSmile2.expStruct));
+                    VTBFMethods.addBytes(expr, 0x7, 0x83, 0x8, 0x11, Reloaded.Memory.Struct.GetBytes(xxp.faceWink.expStruct));
+
+                    VTBFMethods.addBytes(expr, 0x8, 0x83, 0x8, 0x11, Reloaded.Memory.Struct.GetBytes(xxp.faceUnused1.expStruct));
+                    VTBFMethods.addBytes(expr, 0x9, 0x83, 0x8, 0x11, Reloaded.Memory.Struct.GetBytes(xxp.faceUnused2.expStruct));
+                    VTBFMethods.WriteTagHeader(expr, "EXPR", 0, 0xA);
+                    break;
+                case 0xB:
+                case 0xC:
+                    VTBFMethods.addBytes(expr, 0x0, 0x83, 0x8, 0x13, Reloaded.Memory.Struct.GetBytes(xxp.faceNatural));
+                    VTBFMethods.addBytes(expr, 0x1, 0x83, 0x8, 0x13, Reloaded.Memory.Struct.GetBytes(xxp.faceSmile));
+                    VTBFMethods.addBytes(expr, 0x2, 0x83, 0x8, 0x13, Reloaded.Memory.Struct.GetBytes(xxp.faceAngry));
+                    VTBFMethods.addBytes(expr, 0x3, 0x83, 0x8, 0x13, Reloaded.Memory.Struct.GetBytes(xxp.faceSad));
+
+                    VTBFMethods.addBytes(expr, 0x4, 0x83, 0x8, 0x13, Reloaded.Memory.Struct.GetBytes(xxp.faceSus));
+                    VTBFMethods.addBytes(expr, 0x5, 0x83, 0x8, 0x13, Reloaded.Memory.Struct.GetBytes(xxp.faceEyesClosed));
+                    VTBFMethods.addBytes(expr, 0x6, 0x83, 0x8, 0x13, Reloaded.Memory.Struct.GetBytes(xxp.faceSmile2));
+                    VTBFMethods.addBytes(expr, 0x7, 0x83, 0x8, 0x13, Reloaded.Memory.Struct.GetBytes(xxp.faceWink));
+
+                    VTBFMethods.addBytes(expr, 0x8, 0x83, 0x8, 0x13, Reloaded.Memory.Struct.GetBytes(xxp.faceUnused1));
+                    VTBFMethods.addBytes(expr, 0x9, 0x83, 0x8, 0x13, Reloaded.Memory.Struct.GetBytes(xxp.faceUnused2));
+                    VTBFMethods.WriteTagHeader(expr, "EXPR", 0, 0xA);
+                    break;
+                default:
+                    throw new Exception();
+                    break;
+            }
             cml.AddRange(expr);
             AquaMiscMethods.AlignWriter(cml, 0x10);
 

@@ -38,11 +38,16 @@ namespace Character_Making_File_Tool
             { 0, 0x2F0}  //v9
         };
 
-        public static int v2Size = 0x15C;
-        public static int v5Size = 0x170;
-        public static int v6Size = 0x2DC;
-        public static int v9Size = 0x2F0;
-        public static int v10Size = 0x3AC;
+        public static Dictionary<int, int> ngsSalonToolSizes = new Dictionary<int, int>()
+        {
+            { 0x2, 0x15C},
+            { 0x5, 0x170},
+            { 0x6, 0x2DC},
+            { 0x9, 0x2F0},
+            { 0xA, 0x3AC},
+            { 0xB, 0x3C0},
+            { 0xC, 0x438},
+        };
 
         //Stores palette colors [column, row]
         //Each palette has 7 columns and 6 rows. Overall they mirror the slider backdrop, but with some differences due to it not matching what the game uses

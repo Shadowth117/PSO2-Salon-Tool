@@ -63,6 +63,10 @@ namespace NGS_Salon_Tool
         {
             InitializeComponent();
 
+#if !DEBUG
+            menu.Items.Remove(debugOptions);
+#endif
+
             //Disable unused items
             tabControl.Items.Remove(proportionsTab);
             tabControl.Items.Remove(customizeExpressionsTab);
@@ -331,12 +335,22 @@ namespace NGS_Salon_Tool
 
         private static void WriteXXP(CharacterHandlerReboot.xxpGeneralReboot xxp, string fileName)
         {
+
+            int version;
+            if (xxp.xxpVersion >= 0xA)
+            {
+                version = xxp.xxpVersion;
+            } else
+            {
+                version = CharacterConstants.ngsSalonToolSizes.Keys.ToArray().Last();
+                xxp.xxpVersion = version;
+            }
+            int fileSize = CharacterConstants.ngsSalonToolSizes[version];
             List<byte> fileData = new List<byte>();
-            int fileSize = CharacterConstants.v10Size;
-            var body = Reloaded.Memory.Struct.GetBytes(xxp.GetXXPV10());
+            var body = xxp.GetBytes();
             body = CharacterHandler.EncryptData(body, fileSize, out int hash);
 
-            fileData.AddRange(BitConverter.GetBytes(0xA));
+            fileData.AddRange(BitConverter.GetBytes(version));
             fileData.AddRange(BitConverter.GetBytes(fileSize));
             fileData.AddRange(BitConverter.GetBytes(hash));
             fileData.AddRange(new byte[] { 0, 0, 0, 0 });
@@ -1409,6 +1423,11 @@ namespace NGS_Salon_Tool
             {
                 xxpHandler.baseFIGR.legVerts.X = CharacterConstants.MinHeightLegSliderNGS;
             }
+        }
+
+        public void ExportCharModel(object sender, RoutedEventArgs e)
+        {
+
         }
     }
 }

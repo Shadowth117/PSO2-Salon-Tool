@@ -31,6 +31,9 @@
                     <MenuItem Header="Decrypt xxp(s) and save" Click="DecryptXXPs"/>
                     <MenuItem Header="Encrypt xxpu(s) and save" Click="EncryptXXPs"/>
                 </MenuItem>
+                <MenuItem Header="Debug" Name="debugOptions">
+                    <MenuItem Header="Export Character Model" Click="ExportCharModel"/>
+                </MenuItem>
             </Menu>
         </Grid>
         <Grid Margin="0,18,0,0" VerticalAlignment="Top" Height="auto" Grid.ColumnSpan="2">
