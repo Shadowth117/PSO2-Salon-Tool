@@ -104,6 +104,10 @@ namespace Character_Making_File_Tool
                             xxp.eyeHorizontalPosition = extraArr[1];
                             xxp.neckAngle = extraArr[2];
                         }
+                        if(xxp.xxpVersion == 0)
+                        {
+                            xxp.baseFIGR.ToNGS();
+                        }
                         break;
                     case "OFST":
                         var ofst = data[0];
