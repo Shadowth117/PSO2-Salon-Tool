@@ -20,6 +20,7 @@
                 <MenuItem Header="File">
                     <MenuItem Header="Open" Click="OpenCharacterFile"/>
                     <MenuItem Header="Set pso2_bin directory" Click="SetPSO2Bin"/>
+                    <MenuItem Name="saveButton" Header="Save" Click="SaveCurrentCharFile"/>
                     <MenuItem Name="saveAsButton" Header="Save As" Click="SaveCharFileAs"/>
                 </MenuItem>
                 <MenuItem Header="Batch">

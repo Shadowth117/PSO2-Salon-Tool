@@ -70,6 +70,7 @@ namespace NGS_Salon_Tool
             //Disable unused items
             tabControl.Items.Remove(proportionsTab);
             tabControl.Items.Remove(customizeExpressionsTab);
+            saveButton.IsEnabled = false;
             saveAsButton.IsEnabled = false;
 
             colorPicker = new();
@@ -206,9 +207,10 @@ namespace NGS_Salon_Tool
                         }
                     }
 
-                    openedFileName = Path.GetFileNameWithoutExtension(fileOpen.FileName);
+                    openedFileName = Path.GetFileName(fileOpen.FileName);
                     this.Title = "NGS Salon Tool - " + Path.GetFileName(fileOpen.FileName);
                     saveAsButton.IsEnabled = true;
+                    saveButton.IsEnabled = true;
 
 
                     //Ensure parts exist in the dropdowns if they don't
@@ -227,6 +229,7 @@ namespace NGS_Salon_Tool
                 {
                     MessageBox.Show("Unable to open file. Check permissions and file type.");
                 }
+                savedInitialDirectory = Path.GetDirectoryName(fileOpen.FileName);
                 openInitialDirectory = Path.GetDirectoryName(fileOpen.FileName);
                 fileOpen.FileName = "";
             }
@@ -237,7 +240,7 @@ namespace NGS_Salon_Tool
             string letterOne;
             string letterTwo;
             saveFileDialog.InitialDirectory = savedInitialDirectory;
-            saveFileDialog.FileName = openedFileName;
+            saveFileDialog.FileName = Path.GetFileNameWithoutExtension(openedFileName);
 
             GetXXPWildcards(out letterOne, out letterTwo);
 
@@ -268,17 +271,41 @@ namespace NGS_Salon_Tool
                 switch (saveFileDialog.FilterIndex)
                 {
                     case 1:
-                        SaveXXP();
+                        SaveXXP(saveFileDialog.FileName);
                         break;
                     case 2:
-                        SaveCML();
+                        SaveCML(saveFileDialog.FileName);
                         break;
                     default:
                         break;
                 }
             }
+            savedInitialDirectory = Path.GetDirectoryName(saveFileDialog.FileName);
+            openedFileName = Path.GetFileName(saveFileDialog.FileName);
             saveFileDialog.FileName = "";
-            openedFileName = "";
+
+        }
+
+        private void SaveCurrentCharFile(object sender, RoutedEventArgs e)
+        {
+            string ext = Path.GetExtension(openedFileName);
+            if (ext != ".cml")
+            {
+                string letterOne;
+                string letterTwo;
+                GetXXPWildcards(out letterOne, out letterTwo);
+                openedFileName = Path.GetFileNameWithoutExtension(openedFileName) + $".{letterOne}{letterTwo}p";
+            }
+
+            switch (ext)
+            {
+                case ".cml":
+                    SaveCML(savedInitialDirectory + @"\" + openedFileName);
+                    break;
+                default:
+                    SaveXXP(savedInitialDirectory + @"\" + openedFileName);
+                    break;
+            }
 
         }
 
@@ -317,15 +344,16 @@ namespace NGS_Salon_Tool
             }
         }
 
-        private void SaveCML()
+        private void SaveCML(string filename)
         {
-            File.WriteAllBytes(saveFileDialog.FileName, CMLHandler.GetNGSCML(xxpHandler));
+            File.WriteAllBytes(filename, CMLHandler.GetNGSCML(xxpHandler));
+            savedInitialDirectory = Path.GetDirectoryName(filename);
         }
 
-        private void SaveXXP()
+        private void SaveXXP(string filename)
         {
-            WriteXXP(xxpHandler, saveFileDialog.FileName);
-            savedInitialDirectory = Path.GetDirectoryName(saveFileDialog.FileName);
+            WriteXXP(xxpHandler, filename);
+            savedInitialDirectory = Path.GetDirectoryName(filename);
         }
 
         private static void WriteCML(CharacterHandlerReboot.xxpGeneralReboot xxp, string fileName)
