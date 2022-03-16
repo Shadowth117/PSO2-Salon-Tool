@@ -1453,6 +1453,13 @@ namespace NGS_Salon_Tool
             }
         }
 
+        //This bug happens when the value is above the expected range. In the past, this was treated as human color. Now, the game doesn't like it. Setting to 0 fixes it.
+        //This is something that may have resulted from older cml character file edits.
+        public void FixSkinColorBug(object sender, RoutedEventArgs e)
+        {
+            xxpHandler.skinVariant = 0; 
+        }
+
         public void ExportCharModel(object sender, RoutedEventArgs e)
         {
 
