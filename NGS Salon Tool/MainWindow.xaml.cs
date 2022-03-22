@@ -419,7 +419,7 @@ namespace NGS_Salon_Tool
 
         private void PartCheck()
         {
-            int castPart = (int)xxpHandler.baseSLCT.costumePart;
+            int costumePart = (int)xxpHandler.baseSLCT.costumePart;
             int basePart = (int)xxpHandler.baseSLCT2.basewearPart;
             int innerPart = (int)xxpHandler.baseSLCT2.innerwearPart;
             int armPart = (int)xxpHandler.baseSLCT.armPart;
@@ -453,7 +453,7 @@ namespace NGS_Salon_Tool
             {
                 cmxHandler = new CharacterMakingIndexHandler();
             }
-            AddPartIfMissing(castPart, cmxHandler.costumeOuterDict, cmxHandler.costumeOuterDictReverse);
+            AddPartIfMissing(costumePart, cmxHandler.costumeOuterDict, cmxHandler.costumeOuterDictReverse);
             AddPartIfMissing(basePart, cmxHandler.basewearDict, cmxHandler.basewearDictReverse);
             AddPartIfMissing(innerPart, cmxHandler.innerwearDict, cmxHandler.innerwearDictReverse);
             AddPartIfMissing(armPart, cmxHandler.castArmDict, cmxHandler.castArmDictReverse);
