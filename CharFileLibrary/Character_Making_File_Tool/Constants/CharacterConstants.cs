@@ -50,8 +50,9 @@ namespace Character_Making_File_Tool
         };
 
         //Stores palette colors [column, row]
-        //Each palette has 7 columns and 6 rows. Overall they mirror the slider backdrop, but with some differences due to it not matching what the game uses
+        //Each palette has 7 columns and 6 rows. Overall they mirror the slider backdrop, but with some differences due to it not matching what the game uses.
         //All palette data was recreated frrom the .cmx file(s) except for skin. Skin is handled a bit differently than other colors, and so I have recreated it a different way.
+        //Color data than skin should be accurate now. Skin may need to be reworked one day...
 
         public static byte[,][] skinPalette = new byte[,][]
         {

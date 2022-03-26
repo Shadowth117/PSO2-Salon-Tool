@@ -56,6 +56,7 @@ namespace NGS_Salon_Tool
         private string openedFileName;
         WIPBox wipBox = null;
         ColorPicker colorPicker = null;
+        AccessoryWindow[] accWindows = new AccessoryWindow[0xC];
 
         private bool motionWait = false; //Used to avoid loops when changing motion controls
 
@@ -219,6 +220,7 @@ namespace NGS_Salon_Tool
                     //Assign data
                     BasicSettings();
                     ColorButtons();
+                    AccessoryWindows();
                     Proportions();
                     PartDropdowns();
                     MotionDropdowns();
@@ -414,6 +416,18 @@ namespace NGS_Salon_Tool
                 default:
                     MessageBox.Show("Error: File version unknown. If this is a proper salon file, please report this!");
                     return null;
+            }
+        }
+
+        private void AccessoryWindows()
+        {
+            for(int i = 0; i < accWindows.Length; i++)
+            {
+                if(accWindows[i] != null)
+                {
+                    accWindows[i].Close();
+                    accWindows[i] = null;
+                }
             }
         }
 
@@ -744,6 +758,7 @@ namespace NGS_Salon_Tool
 
         public void OnWindowClosing(object sender, CancelEventArgs e)
         {
+            AccessoryWindows();
             Application.Current.Shutdown();
         }
 
@@ -975,6 +990,15 @@ namespace NGS_Salon_Tool
             }
             acce1Icon.Source = IceHandler.GetIconFromIce(pso2_binDir, cmxHandler.accessoryDict[text], CharacterMakingIndex.accessoryIcon);
             xxpHandler.baseSLCT.acc1Part = (uint)cmxHandler.accessoryDict[text];
+
+            if(xxpHandler.baseSLCT.acc1Part > 0)
+            {
+                acce1Extra.IsEnabled = true;
+            } else
+            {
+                acce1Extra.IsEnabled = false;
+                nullAccessoryExtra(0);
+            }
         }
         private void Acce2SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
@@ -986,6 +1010,16 @@ namespace NGS_Salon_Tool
             }
             acce2Icon.Source = IceHandler.GetIconFromIce(pso2_binDir, cmxHandler.accessoryDict[text], CharacterMakingIndex.accessoryIcon);
             xxpHandler.baseSLCT.acc2Part = (uint)cmxHandler.accessoryDict[text];
+
+            if (xxpHandler.baseSLCT.acc2Part > 0)
+            {
+                acce2Extra.IsEnabled = true;
+            }
+            else
+            {
+                acce2Extra.IsEnabled = false;
+                nullAccessoryExtra(1);
+            }
         }
         private void Acce3SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
@@ -997,6 +1031,16 @@ namespace NGS_Salon_Tool
             }
             acce3Icon.Source = IceHandler.GetIconFromIce(pso2_binDir, cmxHandler.accessoryDict[text], CharacterMakingIndex.accessoryIcon);
             xxpHandler.baseSLCT.acc3Part = (uint)cmxHandler.accessoryDict[text];
+
+            if (xxpHandler.baseSLCT.acc3Part > 0)
+            {
+                acce3Extra.IsEnabled = true;
+            }
+            else
+            {
+                acce3Extra.IsEnabled = false;
+                nullAccessoryExtra(2);
+            }
         }
         private void Acce4SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
@@ -1008,6 +1052,16 @@ namespace NGS_Salon_Tool
             }
             acce4Icon.Source = IceHandler.GetIconFromIce(pso2_binDir, cmxHandler.accessoryDict[text], CharacterMakingIndex.accessoryIcon);
             xxpHandler.baseSLCT2.acc4Part = (uint)cmxHandler.accessoryDict[text];
+
+            if (xxpHandler.baseSLCT2.acc4Part > 0)
+            {
+                acce4Extra.IsEnabled = true;
+            }
+            else
+            {
+                acce4Extra.IsEnabled = false;
+                nullAccessoryExtra(3);
+            }
         }
         private void Acce5SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
@@ -1019,6 +1073,16 @@ namespace NGS_Salon_Tool
             }
             acce5Icon.Source = IceHandler.GetIconFromIce(pso2_binDir, cmxHandler.accessoryDict[text], CharacterMakingIndex.accessoryIcon);
             xxpHandler.baseSLCTNGS.acc5Part = (uint)cmxHandler.accessoryDict[text];
+
+            if (xxpHandler.baseSLCTNGS.acc5Part > 0)
+            {
+                acce5Extra.IsEnabled = true;
+            }
+            else
+            {
+                acce5Extra.IsEnabled = false;
+                nullAccessoryExtra(4);
+            }
         }
         private void Acce6SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
@@ -1030,6 +1094,16 @@ namespace NGS_Salon_Tool
             }
             acce6Icon.Source = IceHandler.GetIconFromIce(pso2_binDir, cmxHandler.accessoryDict[text], CharacterMakingIndex.accessoryIcon);
             xxpHandler.baseSLCTNGS.acc6Part = (uint)cmxHandler.accessoryDict[text];
+
+            if (xxpHandler.baseSLCTNGS.acc6Part > 0)
+            {
+                acce6Extra.IsEnabled = true;
+            }
+            else
+            {
+                acce6Extra.IsEnabled = false;
+                nullAccessoryExtra(5);
+            }
         }
         private void Acce7SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
@@ -1041,6 +1115,16 @@ namespace NGS_Salon_Tool
             }
             acce7Icon.Source = IceHandler.GetIconFromIce(pso2_binDir, cmxHandler.accessoryDict[text], CharacterMakingIndex.accessoryIcon);
             xxpHandler.baseSLCTNGS.acc7Part = (uint)cmxHandler.accessoryDict[text];
+
+            if (xxpHandler.baseSLCTNGS.acc7Part > 0)
+            {
+                acce7Extra.IsEnabled = true;
+            }
+            else
+            {
+                acce7Extra.IsEnabled = false;
+                nullAccessoryExtra(6);
+            }
         }
         private void Acce8SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
@@ -1052,6 +1136,16 @@ namespace NGS_Salon_Tool
             }
             acce8Icon.Source = IceHandler.GetIconFromIce(pso2_binDir, cmxHandler.accessoryDict[text], CharacterMakingIndex.accessoryIcon);
             xxpHandler.baseSLCTNGS.acc8Part = (uint)cmxHandler.accessoryDict[text];
+
+            if (xxpHandler.baseSLCTNGS.acc8Part > 0)
+            {
+                acce8Extra.IsEnabled = true;
+            }
+            else
+            {
+                acce8Extra.IsEnabled = false;
+                nullAccessoryExtra(7);
+            }
         }
         private void Acce9SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
@@ -1063,6 +1157,16 @@ namespace NGS_Salon_Tool
             }
             acce9Icon.Source = IceHandler.GetIconFromIce(pso2_binDir, cmxHandler.accessoryDict[text], CharacterMakingIndex.accessoryIcon);
             xxpHandler.baseSLCTNGS.acc9Part = (uint)cmxHandler.accessoryDict[text];
+
+            if (xxpHandler.baseSLCTNGS.acc9Part > 0)
+            {
+                acce9Extra.IsEnabled = true;
+            }
+            else
+            {
+                acce9Extra.IsEnabled = false;
+                nullAccessoryExtra(8);
+            }
         }
         private void Acce10SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
@@ -1074,6 +1178,16 @@ namespace NGS_Salon_Tool
             }
             acce10Icon.Source = IceHandler.GetIconFromIce(pso2_binDir, cmxHandler.accessoryDict[text], CharacterMakingIndex.accessoryIcon);
             xxpHandler.baseSLCTNGS.acc10Part = (uint)cmxHandler.accessoryDict[text];
+
+            if (xxpHandler.baseSLCTNGS.acc10Part > 0)
+            {
+                acce10Extra.IsEnabled = true;
+            }
+            else
+            {
+                acce10Extra.IsEnabled = false;
+                nullAccessoryExtra(9);
+            }
         }
         private void Acce11SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
@@ -1085,6 +1199,16 @@ namespace NGS_Salon_Tool
             }
             acce11Icon.Source = IceHandler.GetIconFromIce(pso2_binDir, cmxHandler.accessoryDict[text], CharacterMakingIndex.accessoryIcon);
             xxpHandler.baseSLCTNGS.acc11Part = (uint)cmxHandler.accessoryDict[text];
+
+            if (xxpHandler.baseSLCTNGS.acc11Part > 0)
+            {
+                acce11Extra.IsEnabled = true;
+            }
+            else
+            {
+                acce11Extra.IsEnabled = false;
+                nullAccessoryExtra(10);
+            }
         }
         private void Acce12SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
@@ -1096,6 +1220,16 @@ namespace NGS_Salon_Tool
             }
             acce12Icon.Source = IceHandler.GetIconFromIce(pso2_binDir, cmxHandler.accessoryDict[text], CharacterMakingIndex.accessoryIcon);
             xxpHandler.baseSLCTNGS.acc12Part = (uint)cmxHandler.accessoryDict[text];
+
+            if (xxpHandler.baseSLCTNGS.acc12Part > 0)
+            {
+                acce12Extra.IsEnabled = true;
+            }
+            else
+            {
+                acce12Extra.IsEnabled = false;
+                nullAccessoryExtra(11);
+            }
         }
         private void SwimSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
@@ -1457,7 +1591,47 @@ namespace NGS_Salon_Tool
         //This is something that may have resulted from older cml character file edits.
         public void FixSkinColorBug(object sender, RoutedEventArgs e)
         {
+            if (openedFileName == null)
+            {
+                MessageBox.Show("You must have data loaded to fix it!");
+                return;
+            }
             xxpHandler.skinVariant = 0; 
+        }
+
+        private void acceExtra_Click(object sender, RoutedEventArgs e)
+        {
+            int num = Int32.Parse((string)((Button)sender).Tag);
+            if(accWindows[num] == null)
+            {
+                accWindows[num] = new AccessoryWindow(num, xxpHandler, setAccWindowState);
+                accWindows[num].Show();
+            }
+        }
+
+        public void setAccWindowState(int num)
+        {
+            accWindows[num] = null;
+        }
+
+        //Game does NOT like when these are filled with nothing in the slot so we null them
+        private unsafe void nullAccessoryExtra(int num)
+        {
+            xxpHandler.accessorySlidersReboot.posSliders[num * 3] = 0;
+            xxpHandler.accessorySlidersReboot.posSliders[(num * 3) + 1] = 0;
+            xxpHandler.accessorySlidersReboot.posSliders[(num * 3) + 2] = 0;
+
+            xxpHandler.accessorySlidersReboot.rotSliders[num * 3] = 0;
+            xxpHandler.accessorySlidersReboot.rotSliders[(num * 3) + 1] = 0;
+            xxpHandler.accessorySlidersReboot.rotSliders[(num * 3) + 2] = 0;
+
+            xxpHandler.accessorySlidersReboot.scaleSliders[num * 3] = 0;
+            xxpHandler.accessorySlidersReboot.scaleSliders[(num * 3) + 1] = 0;
+            xxpHandler.accessorySlidersReboot.scaleSliders[(num * 3) + 2] = 0;
+
+            xxpHandler.accessoryMiscData.accessoryAttach[num] = 0;
+            xxpHandler.accessoryMiscData.accessoryColorChoices[num * 2] = 0;
+            xxpHandler.accessoryMiscData.accessoryColorChoices[(num * 2) + 1] = 0;
         }
 
         public void ExportCharModel(object sender, RoutedEventArgs e)

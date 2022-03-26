@@ -377,6 +377,22 @@
                             </ComboBox>
                             <Image x:Name="acce12Icon" HorizontalAlignment="Left" Height="64" Margin="770,675,0,0" VerticalAlignment="Top" Width="64"/>
                             <Label x:Name="acce12Label" Content="Accessory 12" HorizontalAlignment="Left" Margin="565,671,0,0" VerticalAlignment="Top"/>
+                            
+                            <Button x:Name="acce1Extra" Content="Edit Accessory 1 Data" HorizontalAlignment="Left" Margin="5,494,0,0" VerticalAlignment="Top" Click="acceExtra_Click" Tag="0"/>
+                            <Button x:Name="acce2Extra" Content="Edit Accessory 2 Data" HorizontalAlignment="Left" Margin="285,494,0,0" VerticalAlignment="Top" Click="acceExtra_Click" Tag="1"/>
+                            <Button x:Name="acce3Extra" Content="Edit Accessory 3 Data" HorizontalAlignment="Left" Margin="565,494,0,0" VerticalAlignment="Top" Click="acceExtra_Click" Tag="2"/>
+
+                            <Button x:Name="acce4Extra" Content="Edit Accessory 4 Data" HorizontalAlignment="Left" Margin="5,570,0,0" VerticalAlignment="Top" Click="acceExtra_Click" Tag="3"/>
+                            <Button x:Name="acce5Extra" Content="Edit Accessory 5 Data" HorizontalAlignment="Left" Margin="285,570,0,0" VerticalAlignment="Top" Click="acceExtra_Click" Tag="4"/>
+                            <Button x:Name="acce6Extra" Content="Edit Accessory 6 Data" HorizontalAlignment="Left" Margin="565,570,0,0" VerticalAlignment="Top" Click="acceExtra_Click" Tag="5"/>
+
+                            <Button x:Name="acce7Extra" Content="Edit Accessory 7 Data" HorizontalAlignment="Left" Margin="5,646,0,0" VerticalAlignment="Top" Click="acceExtra_Click" Tag="6"/>
+                            <Button x:Name="acce8Extra" Content="Edit Accessory 8 Data" HorizontalAlignment="Left" Margin="285,646,0,0" VerticalAlignment="Top" Click="acceExtra_Click" Tag="7"/>
+                            <Button x:Name="acce9Extra" Content="Edit Accessory 9 Data" HorizontalAlignment="Left" Margin="565,646,0,0" VerticalAlignment="Top" Click="acceExtra_Click" Tag="8"/>
+
+                            <Button x:Name="acce10Extra" Content="Edit Accessory 10 Data" HorizontalAlignment="Left" Margin="5,722,0,0" VerticalAlignment="Top" Click="acceExtra_Click" Tag="9"/>
+                            <Button x:Name="acce11Extra" Content="Edit Accessory 11 Data" HorizontalAlignment="Left" Margin="285,722,0,0" VerticalAlignment="Top" Click="acceExtra_Click" Tag="10"/>
+                            <Button x:Name="acce12Extra" Content="Edit Accessory 12 Data" HorizontalAlignment="Left" Margin="565,722,0,0" VerticalAlignment="Top" Click="acceExtra_Click" Tag="11"/>
                         </Grid>
                     </ScrollViewer>
                 </TabItem>
