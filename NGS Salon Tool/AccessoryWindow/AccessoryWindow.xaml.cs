@@ -33,7 +33,7 @@ namespace NGS_Salon_Tool
             _setWindowState = setWindowState;
             InitializeComponent();
             InitializeValues();
-            Title = $"Accessory {accessoryNum + 1} Data";
+            Title = $"Accessory {accessoryNum + 1} Settings";
         }
 
         public void InitializeValues()

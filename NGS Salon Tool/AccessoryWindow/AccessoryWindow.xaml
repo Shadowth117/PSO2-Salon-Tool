@@ -7,7 +7,7 @@
         xmlns:local="clr-namespace:NGS_Salon_Tool"
         mc:Ignorable="d"
         Closing="OnWindowClosing"
-        Title="Accessory Data" Height="271" Width="323">
+        Title="Accessory Settings" Height="271" Width="323">
     <Grid>
         <Label x:Name="posLabel" Content="Position" HorizontalAlignment="Left" Margin="26,8,0,0" VerticalAlignment="Top"/>
         <Label x:Name="rotLabel" Content="Rotation" HorizontalAlignment="Center" Margin="0,8,0,0" VerticalAlignment="Top"/>

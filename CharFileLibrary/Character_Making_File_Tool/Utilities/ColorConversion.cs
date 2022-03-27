@@ -252,15 +252,10 @@ namespace Character_Making_File_Tool
         public static Vec3Int COLRFromRGBA(byte[] colorRGBA)
         {
             Vec3Int vec3 = new Vec3Int();
-            System.Drawing.Color color = System.Drawing.Color.FromArgb(colorRGBA[3], colorRGBA[0], colorRGBA[1], colorRGBA[2]);
+            System.Drawing.Color color = System.Drawing.Color.FromArgb(colorRGBA[3], colorRGBA[2], colorRGBA[1], colorRGBA[0]);
             vec3.X = (int)(color.GetHue() / 360 * MaxSliderClassicHue);
             vec3.Y = MaxSliderClassicLightness - (int)(color.GetBrightness() * (MaxSliderClassicLightness - LightnessThreshold));
             vec3.Z = (int)(color.GetSaturation() * MaxSliderClassicSaturation);
-#if DEBUG
-            HSLColor hsl = new HSLColor(colorRGBA[0], colorRGBA[1], colorRGBA[2]);
-            MessageBox.Show($"{hsl.Hue / 240.0 * 100} {hsl.Saturation / 240.0 * 100} {hsl.Luminosity / 240.0 * 100} {hsl.ToRGBString()}");
-            MessageBox.Show($"{color.GetHue() / 360 * 100} {color.GetSaturation() * 100} {color.GetBrightness() * 100}");
-#endif
             return vec3;
         }
 

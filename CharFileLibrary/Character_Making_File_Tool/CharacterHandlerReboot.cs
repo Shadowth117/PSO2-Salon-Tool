@@ -442,7 +442,7 @@ namespace Character_Making_File_Tool
 
             public XXPV2 GetXXPV2()
             {
-                XXPV2 xxpv2 = new XXPV2();
+                XXPV2 xxpv2 = new();
 
                 xxpv2.baseDOC = baseDOC;
                 xxpv2.baseFIGR = baseFIGR;
@@ -455,7 +455,7 @@ namespace Character_Making_File_Tool
 
             public XXPV5 GetXXPV5()
             {
-                XXPV5 xxpv5 = new XXPV5();
+                XXPV5 xxpv5 = new();
 
                 xxpv5.baseDOC = baseDOC;
                 xxpv5.baseFIGR = baseFIGR;
@@ -470,7 +470,7 @@ namespace Character_Making_File_Tool
 
             public XXPV6 GetXXPV6()
             {
-                XXPV6 xxpv6 = new XXPV6();
+                XXPV6 xxpv6 = new();
 
                 xxpv6.baseDOC = baseDOC;
                 xxpv6.baseFIGR = baseFIGR;
@@ -498,10 +498,10 @@ namespace Character_Making_File_Tool
 
             public XXPV9 GetXXPV9()
             {
-                XXPV9 xxpv9 = new XXPV9();
+                XXPV9 xxpv9 = new();
 
                 xxpv9.baseDOC = baseDOC;
-                xxpv9.skinVariant = 3; //Hack to deal with limitations of backwards conversion
+                xxpv9.skinVariant = 2; //Hack to deal with limitations of backwards conversion
                 xxpv9.eyebrowDensity = eyebrowDensity;
                 xxpv9.cmlVariant = cmlVariant;
                 
@@ -519,7 +519,7 @@ namespace Character_Making_File_Tool
                 xxpv9.baseFIGR2.leg2Verts = baseFIGR.legVerts;
                 xxpv9.baseFIGR2.ToOld();
 
-                xxpv9.baseCOLR = ColorConversion.COL2ToCOLR(ngsCOL2, baseDOC.race);
+                xxpv9.baseCOLR = ColorConversion.COL2ToCOLR(ngsCOL2, 2);
                 xxpv9.baseSLCT = baseSLCT;
                 xxpv9.baseSLCT2 = baseSLCT2;
                 xxpv9.leftEyePart = leftEyePart;
@@ -531,7 +531,7 @@ namespace Character_Making_File_Tool
 
             public XXPV10 GetXXPV10()
             {
-                XXPV10 tempXXP = new XXPV10();
+                XXPV10 tempXXP = new();
 
                 tempXXP.baseDOC = baseDOC;
                 tempXXP.skinVariant = skinVariant;
@@ -574,7 +574,7 @@ namespace Character_Making_File_Tool
 
             public XXPV11 GetXXPV11()
             {
-                XXPV11 tempXXP = new XXPV11();
+                XXPV11 tempXXP = new();
 
                 tempXXP.baseDOC = baseDOC;
                 tempXXP.skinVariant = skinVariant;
@@ -617,7 +617,7 @@ namespace Character_Making_File_Tool
 
             public XXPV12 GetXXPV12()
             {
-                XXPV12 tempXXP = new XXPV12();
+                XXPV12 tempXXP = new();
 
                 tempXXP.baseDOC = baseDOC;
                 tempXXP.skinVariant = skinVariant;
@@ -695,7 +695,7 @@ namespace Character_Making_File_Tool
 
             public AltFaceFIGR GetFaceData()
             {
-                AltFaceFIGR faceFIGR = new AltFaceFIGR();
+                AltFaceFIGR faceFIGR = new();
 
                 faceFIGR.headVerts = baseFIGR.headVerts;
                 faceFIGR.faceShapeVerts = baseFIGR.faceShapeVerts;
