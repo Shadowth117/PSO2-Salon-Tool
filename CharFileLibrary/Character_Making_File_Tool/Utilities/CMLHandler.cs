@@ -359,21 +359,21 @@ namespace Character_Making_File_Tool
                 {
                     //Pos
                     case 0xB:
+                        sliders.scaleSliders[idMult * 3] = sbytes[0];
+                        sliders.scaleSliders[idMult * 3 + 1] = sbytes[1];
+                        sliders.scaleSliders[idMult * 3 + 2] = sbytes[2];
+                        break;
+                    //Rot
+                    case 0xA:
                         sliders.rotSliders[idMult * 3] = sbytes[0];
                         sliders.rotSliders[idMult * 3 + 1] = sbytes[1];
                         sliders.rotSliders[idMult * 3 + 2] = sbytes[2];
                         break;
-                    //Rot
-                    case 0xA:
+                    //Scale
+                    case 0x9:
                         sliders.posSliders[idMult * 3] = sbytes[0];
                         sliders.posSliders[idMult * 3 + 1] = sbytes[1];
                         sliders.posSliders[idMult * 3 + 2] = sbytes[2];
-                        break;
-                    //Scale
-                    case 0x9:
-                        sliders.scaleSliders[idMult * 3] = sbytes[0];
-                        sliders.scaleSliders[idMult * 3 + 1] = sbytes[1];
-                        sliders.scaleSliders[idMult * 3 + 2] = sbytes[2];
                         break;
                     default:
                         MessageBox.Show($"Unexpected accessory transform type: {set:X}");
@@ -455,7 +455,7 @@ namespace Character_Making_File_Tool
             for(int i = 0; i < 0x24; i += 3)
             {
                 VTBFMethods.addBytes(ofstScale, (byte)(0x90 + (i / 3)), 0x83, 0x8, 0x2, 
-                    new byte[] { (byte)xxp.accessorySlidersReboot.scaleSliders[i], (byte)xxp.accessorySlidersReboot.scaleSliders[i + 1], (byte)xxp.accessorySlidersReboot.scaleSliders[i + 2] } );
+                    new byte[] { (byte)xxp.accessorySlidersReboot.posSliders[i], (byte)xxp.accessorySlidersReboot.posSliders[i + 1], (byte)xxp.accessorySlidersReboot.posSliders[i + 2] } );
             }
             VTBFMethods.WriteTagHeader(ofstScale, "OFST", 0, 0xC);
             cml.AddRange(ofstScale);
@@ -465,7 +465,7 @@ namespace Character_Making_File_Tool
             for (int i = 0; i < 0x24; i += 3)
             {
                 VTBFMethods.addBytes(ofstPos, (byte)(0xA0 + (i / 3)), 0x83, 0x8, 0x2,
-                    new byte[] { (byte)xxp.accessorySlidersReboot.posSliders[i], (byte)xxp.accessorySlidersReboot.posSliders[i + 1], (byte)xxp.accessorySlidersReboot.posSliders[i + 2] });
+                    new byte[] { (byte)xxp.accessorySlidersReboot.rotSliders[i], (byte)xxp.accessorySlidersReboot.rotSliders[i + 1], (byte)xxp.accessorySlidersReboot.rotSliders[i + 2] });
             }
             VTBFMethods.WriteTagHeader(ofstPos, "OFST", 0, 0xC);
             cml.AddRange(ofstPos);
@@ -475,7 +475,7 @@ namespace Character_Making_File_Tool
             for (int i = 0; i < 0x24; i += 3)
             {
                 VTBFMethods.addBytes(ofstRot, (byte)(0xB0 + (i / 3)), 0x83, 0x8, 0x2,
-                    new byte[] { (byte)xxp.accessorySlidersReboot.rotSliders[i], (byte)xxp.accessorySlidersReboot.rotSliders[i + 1], (byte)xxp.accessorySlidersReboot.rotSliders[i + 2] });
+                    new byte[] { (byte)xxp.accessorySlidersReboot.scaleSliders[i], (byte)xxp.accessorySlidersReboot.scaleSliders[i + 1], (byte)xxp.accessorySlidersReboot.scaleSliders[i + 2] });
             }
             VTBFMethods.WriteTagHeader(ofstRot, "OFST", 0, 0xC);
             cml.AddRange(ofstRot);

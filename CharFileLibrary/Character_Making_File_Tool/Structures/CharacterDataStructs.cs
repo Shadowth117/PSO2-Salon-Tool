@@ -17,7 +17,7 @@ namespace Character_Making_File_Tool
             public uint headerEnd; //0 in all known instances
         }
 
-        public struct BaseDOC
+        public struct BaseDOC //0xC bytes
         {
             //Contains important info regarding the type of character.Also has random info that doesn't use int or uint data types. 
             public uint race;
@@ -25,7 +25,7 @@ namespace Character_Making_File_Tool
             public float muscleMass; //float from 0 to 60000 
         }
 
-        public struct BaseFIGR
+        public struct BaseFIGR //0x132 bytes
         {
             //Slider vertex positions. 10000 to -10000. Center Vert Y, Side Vert X, Side Vert Y
             public Vec3Int bodyVerts;
@@ -77,7 +77,7 @@ namespace Character_Making_File_Tool
             }
         }
 
-        public struct BaseFIGR2
+        public struct BaseFIGR2 //0x60 bytes
         {
             //FIGR values added in ep4 to increase customization and add separate fleshy and cast sliders
             public Vec3Int neckVerts;
@@ -116,7 +116,7 @@ namespace Character_Making_File_Tool
             }
         }
 
-        public struct BaseCOLR
+        public struct BaseCOLR //0x60
         {
             //Color vertex positions. 0 to 60000 or 10000 to -10000. X, Y, and Saturation
             public Vec3Int outer_MainColorVerts; //Changed to copy of Main Color on changing body part allegedly as well as Ou color
@@ -130,7 +130,7 @@ namespace Character_Making_File_Tool
             public Vec3Int hairVerts;
         }
 
-        public struct BaseSLCT
+        public struct BaseSLCT //0x40
         {
             //.cmx (Character Making Index) piece references.
             public uint costumePart;
@@ -154,7 +154,7 @@ namespace Character_Making_File_Tool
             public uint armPart;
         }
 
-        public struct BaseSLCT2
+        public struct BaseSLCT2 //0x10
         {
             // .cmx bits added for EP4
             public uint acc4Part;

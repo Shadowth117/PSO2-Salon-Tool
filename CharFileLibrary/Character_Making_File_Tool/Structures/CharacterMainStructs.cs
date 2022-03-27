@@ -48,15 +48,21 @@ namespace Character_Making_File_Tool
             public BaseDOC baseDOC;
             public BaseFIGR baseFIGR;
             public BaseFIGR2 baseFIGR2;
-
+            
+            //0xF0
             public fixed byte paddingA[0x6C];
 
+            //0x16C
             public BaseCOLR baseCOLR;
 
+            //0x1CC
             public fixed byte paddingB[0x78];
 
+            //0x244
             public BaseSLCT baseSLCT;
             public BaseSLCT2 baseSLCT2;
+
+            public fixed byte accessorySliders[0x30];
 
             public OldAccessorySliders oldAccessorySliders;
 

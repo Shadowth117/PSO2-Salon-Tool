@@ -87,7 +87,7 @@ namespace Character_Making_File_Tool
 
             public xxpGeneralReboot(XXPV2 tempXXP)
             {
-                xxpVersion = 10;
+                xxpVersion = 12;
 
                 baseDOC = tempXXP.baseDOC;
                 skinVariant = 0;
@@ -120,7 +120,7 @@ namespace Character_Making_File_Tool
 
             public xxpGeneralReboot(XXPV5 tempXXP)
             {
-                xxpVersion = 10;
+                xxpVersion = 12;
 
                 baseDOC = tempXXP.baseDOC;
                 skinVariant = 0;
@@ -157,7 +157,7 @@ namespace Character_Making_File_Tool
 
             public xxpGeneralReboot(XXPV6 tempXXP)
             {
-                xxpVersion = 10;
+                xxpVersion = 12;
 
                 baseDOC = tempXXP.baseDOC;
                 skinVariant = 0;
@@ -177,15 +177,15 @@ namespace Character_Making_File_Tool
                 baseSLCT2 = tempXXP.baseSLCT2;
 
                 //Eye parts 
-                byte[] eyes = BitConverter.GetBytes(baseSLCT.eyePart);
-                baseSLCT.eyePart = eyes[0];
                 if (baseDOC.race == 3)
                 {
+                    byte[] eyes = BitConverter.GetBytes(baseSLCT.eyePart);
+                    baseSLCT.eyePart = eyes[0];
                     leftEyePart = eyes[1];
                 }
                 else
                 {
-                    leftEyePart = eyes[0];
+                    leftEyePart = baseSLCT.eyePart;
                 }
 
                 //Conditionally assign premade expressions based on gender
@@ -198,7 +198,7 @@ namespace Character_Making_File_Tool
 
             public xxpGeneralReboot(XXPV7 tempXXP)
             {
-                xxpVersion = 10;
+                xxpVersion = 12;
 
                 baseDOC = tempXXP.baseDOC;
                 skinVariant = 0;
@@ -218,15 +218,15 @@ namespace Character_Making_File_Tool
                 baseSLCT2 = tempXXP.baseSLCT2;
 
                 //Eye parts 
-                byte[] eyes = BitConverter.GetBytes(baseSLCT.eyePart);
-                baseSLCT.eyePart = eyes[0];
                 if (baseDOC.race == 3)
                 {
+                    byte[] eyes = BitConverter.GetBytes(baseSLCT.eyePart);
+                    baseSLCT.eyePart = eyes[0];
                     leftEyePart = eyes[1];
                 }
                 else
                 {
-                    leftEyePart = eyes[0];
+                    leftEyePart = baseSLCT.eyePart;
                 }
 
                 //Conditionally assign premade expressions based on gender
@@ -239,7 +239,7 @@ namespace Character_Making_File_Tool
 
             public xxpGeneralReboot(XXPV9 tempXXP)
             {
-                xxpVersion = 10;
+                xxpVersion = 12;
 
                 baseDOC = tempXXP.baseDOC;
                 skinVariant = tempXXP.skinVariant;

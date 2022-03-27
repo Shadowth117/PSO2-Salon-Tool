@@ -13,6 +13,8 @@ using AquaModelLibrary;
 using Character_Making_File_Tool;
 using Microsoft.WindowsAPICodePack.Dialogs;
 using Reloaded.Memory.Streams;
+using static Character_Making_File_Tool.CharacterDataStructs;
+using static NGS_Salon_Tool.MiscReference;
 
 namespace NGS_Salon_Tool
 {
@@ -54,6 +56,8 @@ namespace NGS_Salon_Tool
         private string openInitialDirectory;
         private string savedInitialDirectory;
         private string openedFileName;
+        private bool canUpdateExpressions = false;
+        private bool canUpdateProportionGroups = false;
         WIPBox wipBox = null;
         ColorPicker colorPicker = null;
         AccessoryWindow[] accWindows = new AccessoryWindow[0xC];
@@ -69,8 +73,6 @@ namespace NGS_Salon_Tool
 #endif
 
             //Disable unused items
-            tabControl.Items.Remove(proportionsTab);
-            tabControl.Items.Remove(customizeExpressionsTab);
             saveButton.IsEnabled = false;
             saveAsButton.IsEnabled = false;
 
@@ -248,24 +250,16 @@ namespace NGS_Salon_Tool
 
             saveFileDialog.Filter = $"V{xxpHandler.xxpVersion} Salon files (*." + letterOne + letterTwo + "p)|*." + letterOne + letterTwo + "p";
 
-            /*
-            if (unencryptCheckBox.Checked == true)
-            {
-                saveFileDialog.Filter = "V9 Salon files (*." + letterOne + letterTwo + "pu)|*." + letterOne + letterTwo + "pu";
-                //+ "|V6 (Ep4 Char Creator) Salon files (*." + letterOne + letterTwo + "pu)|*." + letterOne + letterTwo + "pu|" +
-                //"V5 Salon files (*." + letterOne + letterTwo + "pu)|*." + letterOne + letterTwo + "pu|" +
-                //"V2 (Ep1 Char Creator) Salon files (*." + letterOne + letterTwo + "pu)|*." + letterOne + letterTwo + "pu";
-            }
-            else
-            {
-                saveFileDialog.Filter = "V9 Salon files (*." + letterOne + letterTwo + "p)|*." + letterOne + letterTwo + "p|" +
-                "V6 (Ep4 Char Creator) Salon files (*." + letterOne + letterTwo + "p)|*." + letterOne + letterTwo + "p|" +
-                "V5 Salon files (*." + letterOne + letterTwo + "p)|*." + letterOne + letterTwo + "p|" +
-                "V2 (Ep1 Char Creator) Salon files (*." + letterOne + letterTwo + "p)|*." + letterOne + letterTwo + "p";
+            saveFileDialog.Filter = "V2 (Ep1 Char Creator) Salon files (*." + letterOne + letterTwo + "p)|*." + letterOne + letterTwo + "p"
+            + "|V5 Salon files (*." + letterOne + letterTwo + "p)|*." + letterOne + letterTwo + "p"
+            + "|V6 (Ep4 Char Creator) Salon files (*." + letterOne + letterTwo + "p)|*." + letterOne + letterTwo + "p"
+            + "|V9 Salon files (*." + letterOne + letterTwo + "p)|*." + letterOne + letterTwo + "p"
+            + "|V10 (NGS/NGS Char Creator) Salon files (*." + letterOne + letterTwo + "p)|*." + letterOne + letterTwo + "p"
+            + "|V11 Salon files (*." + letterOne + letterTwo + "p)|*." + letterOne + letterTwo + "p"
+            + "|V12 Salon files (*." + letterOne + letterTwo + "p)|*." + letterOne + letterTwo + "p"
+            + "|cml files (*.cml)|*.cml";
 
-            }*/
-
-            saveFileDialog.Filter += "|cml files (*.cml)|*.cml";
+            saveFileDialog.FilterIndex = 7; 
             //+ "|Data Dump (*.txt)|*.txt";
 
             if (saveFileDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
@@ -273,9 +267,34 @@ namespace NGS_Salon_Tool
                 switch (saveFileDialog.FilterIndex)
                 {
                     case 1:
+                        xxpHandler.xxpVersion = 2;
                         SaveXXP(saveFileDialog.FileName);
                         break;
                     case 2:
+                        xxpHandler.xxpVersion = 5;
+                        SaveXXP(saveFileDialog.FileName);
+                        break;
+                    case 3:
+                        xxpHandler.xxpVersion = 6;
+                        SaveXXP(saveFileDialog.FileName);
+                        break;
+                    case 4:
+                        xxpHandler.xxpVersion = 9;
+                        SaveXXP(saveFileDialog.FileName);
+                        break;
+                    case 5:
+                        xxpHandler.xxpVersion = 0xA;
+                        SaveXXP(saveFileDialog.FileName);
+                        break;
+                    case 6:
+                        xxpHandler.xxpVersion = 0xB;
+                        SaveXXP(saveFileDialog.FileName);
+                        break;
+                    case 7:
+                        xxpHandler.xxpVersion = 0xC;
+                        SaveXXP(saveFileDialog.FileName);
+                        break;
+                    case 8:
                         SaveCML(saveFileDialog.FileName);
                         break;
                     default:
@@ -284,6 +303,7 @@ namespace NGS_Salon_Tool
             }
             savedInitialDirectory = Path.GetDirectoryName(saveFileDialog.FileName);
             openedFileName = Path.GetFileName(saveFileDialog.FileName);
+            this.Title = "NGS Salon Tool - " + Path.GetFileName(saveFileDialog.FileName);
             saveFileDialog.FileName = "";
 
         }
@@ -297,6 +317,7 @@ namespace NGS_Salon_Tool
                 string letterTwo;
                 GetXXPWildcards(out letterOne, out letterTwo);
                 openedFileName = Path.GetFileNameWithoutExtension(openedFileName) + $".{letterOne}{letterTwo}p";
+                xxpHandler.xxpVersion = CharacterConstants.ngsSalonToolSizes.Keys.ToArray().Last();
             }
 
             switch (ext)
@@ -365,16 +386,7 @@ namespace NGS_Salon_Tool
 
         private static void WriteXXP(CharacterHandlerReboot.xxpGeneralReboot xxp, string fileName)
         {
-
-            int version;
-            if (xxp.xxpVersion >= 0xA)
-            {
-                version = xxp.xxpVersion;
-            } else
-            {
-                version = CharacterConstants.ngsSalonToolSizes.Keys.ToArray().Last();
-                xxp.xxpVersion = version;
-            }
+            int version = xxp.xxpVersion;
             int fileSize = CharacterConstants.ngsSalonToolSizes[version];
             List<byte> fileData = new List<byte>();
             var body = xxp.GetBytes();
@@ -401,7 +413,7 @@ namespace NGS_Salon_Tool
                 case 5:
                     return new CharacterHandlerReboot.xxpGeneralReboot(streamReader.Read<CharacterMainStructs.XXPV5>());
                 case 6:
-                    return new CharacterHandlerReboot.xxpGeneralReboot(streamReader.Read<CharacterMainStructs.XXPV5>());
+                    return new CharacterHandlerReboot.xxpGeneralReboot(streamReader.Read<CharacterMainStructs.XXPV6>());
                 case 7:
                     return new CharacterHandlerReboot.xxpGeneralReboot(streamReader.Read<CharacterMainStructs.XXPV7>());
                 case 8:
@@ -518,10 +530,40 @@ namespace NGS_Salon_Tool
             skinVariantUD.Value = xxpHandler.skinVariant;
             cmlVariableUD.Value = xxpHandler.cmlVariant;
             eyebrowDensityUD.Value = xxpHandler.eyebrowDensity;
+
+            //VISI
+            bwOrn1Check.IsChecked = xxpHandler.ngsVISI.hideBasewearOrnament1 > 0 ? true : false;
+            bwOrn2Check.IsChecked = xxpHandler.ngsVISI.hideBasewearOrnament2 > 0 ? true : false;
+            outerOrnCheck.IsChecked = xxpHandler.ngsVISI.hideOuterwearOrnament > 0 ? true : false;
+            headOrnCheck.IsChecked = xxpHandler.ngsVISI.hideHeadPartOrnament > 0 ? true : false;
+            bodyOrnCheck.IsChecked = xxpHandler.ngsVISI.hideBodyPartOrnament > 0 ? true : false;
+            armOrnCheck.IsChecked = xxpHandler.ngsVISI.hideArmPartOrnament > 0 ? true : false;
+            legOrnCheck.IsChecked = xxpHandler.ngsVISI.hideLegPartOrnament > 0 ? true : false;
         }
         
         private void Proportions()
         {
+            proportionsCB.ItemsSource = proportionStrings;
+            proportionsCB.SelectedIndex = 0;
+            proportionsCB_SelectionChanged(null, null);
+
+            eyeSizeUD.Value = xxpHandler.eyeSize;
+            eyeHorizPosUD.Value = xxpHandler.eyeHorizontalPosition;
+            neckAngleUD.Value = xxpHandler.neckAngle;
+            shoulderSizeUD.Value = xxpHandler.ngsSLID.shoulderSize;
+            hairAdjustUD.Value = xxpHandler.ngsSLID.hairAdjust;
+            skinGlossUd.Value = xxpHandler.ngsSLID.skinGloss;
+            mouthVerticalUD.Value = xxpHandler.ngsSLID.mouthVertical;
+            eyebrowHorizUD.Value = xxpHandler.ngsSLID.eyebrowHoriz;
+            irisVerticalUD.Value = xxpHandler.ngsSLID.irisVertical;
+            facePaint1OpacityUD.Value = xxpHandler.ngsSLID.facePaint1Opacity;
+            facePaint2OpacityUD.Value = xxpHandler.ngsSLID.facePaint2Opacity;
+            shoulderVerticalUD.Value = xxpHandler.ngsSLID.shoulderVertical;
+            thighsAdjustUD.Value = xxpHandler.ngsSLID.thighsAdjust;
+            calvesAdjustUD.Value = xxpHandler.ngsSLID.calvesAdjust;
+            forearmsAdjust.Value = xxpHandler.ngsSLID.forearmsAdjust;
+            handThicknessUD.Value = xxpHandler.ngsSLID.handThickness;
+            footSizeUD.Value = xxpHandler.ngsSLID.footSize;
         }
 
         private unsafe void ColorButtons()
@@ -597,6 +639,9 @@ namespace NGS_Salon_Tool
 
         private void ExpressionsData()
         {
+            expressionsCB.ItemsSource = faceExpressionStrings;
+            expressionsCB.SelectedIndex = 0;
+            expressionsCB_SelectionChanged(null, null);
         }
 
         private void LoadGameData()
@@ -1569,6 +1614,34 @@ namespace NGS_Salon_Tool
             }
             colorPicker.Show();
         }
+        private void BaseWearOrn1Changed(object sender, RoutedEventArgs e)
+        {
+            xxpHandler.ngsVISI.hideBasewearOrnament1 = (bool)bwOrn1Check.IsChecked ? 1 : 0;
+        }
+        private void BaseWearOrn2Changed(object sender, RoutedEventArgs e)
+        {
+            xxpHandler.ngsVISI.hideBasewearOrnament2 = (bool)bwOrn2Check.IsChecked ? 1 : 0;
+        }
+        private void HeadOrnChanged(object sender, RoutedEventArgs e)
+        {
+            xxpHandler.ngsVISI.hideHeadPartOrnament = (bool)headOrnCheck.IsChecked ? 1 : 0;
+        }
+        private void BodyOrnChanged(object sender, RoutedEventArgs e)
+        {
+            xxpHandler.ngsVISI.hideBodyPartOrnament = (bool)bodyOrnCheck.IsChecked ? 1 : 0;
+        }
+        private void ArmOrnChanged(object sender, RoutedEventArgs e)
+        {
+            xxpHandler.ngsVISI.hideArmPartOrnament = (bool)armOrnCheck.IsChecked ? 1 : 0;
+        }
+        private void LegOrnChanged(object sender, RoutedEventArgs e)
+        {
+            xxpHandler.ngsVISI.hideLegPartOrnament = (bool)legOrnCheck.IsChecked ? 1 : 0;
+        }
+        private void OuterWearOrnChanged(object sender, RoutedEventArgs e)
+        {
+            xxpHandler.ngsVISI.hideOuterwearOrnament = (bool)outerOrnCheck.IsChecked ? 1 : 0;
+        }
 
         public void SetGlobalMin(object sender, RoutedEventArgs e)
         {
@@ -1617,10 +1690,6 @@ namespace NGS_Salon_Tool
         //Game does NOT like when these are filled with nothing in the slot so we null them
         private unsafe void nullAccessoryExtra(int num)
         {
-            xxpHandler.accessorySlidersReboot.posSliders[num * 3] = 0;
-            xxpHandler.accessorySlidersReboot.posSliders[(num * 3) + 1] = 0;
-            xxpHandler.accessorySlidersReboot.posSliders[(num * 3) + 2] = 0;
-
             xxpHandler.accessorySlidersReboot.rotSliders[num * 3] = 0;
             xxpHandler.accessorySlidersReboot.rotSliders[(num * 3) + 1] = 0;
             xxpHandler.accessorySlidersReboot.rotSliders[(num * 3) + 2] = 0;
@@ -1628,6 +1697,10 @@ namespace NGS_Salon_Tool
             xxpHandler.accessorySlidersReboot.scaleSliders[num * 3] = 0;
             xxpHandler.accessorySlidersReboot.scaleSliders[(num * 3) + 1] = 0;
             xxpHandler.accessorySlidersReboot.scaleSliders[(num * 3) + 2] = 0;
+
+            xxpHandler.accessorySlidersReboot.posSliders[num * 3] = 0;
+            xxpHandler.accessorySlidersReboot.posSliders[(num * 3) + 1] = 0;
+            xxpHandler.accessorySlidersReboot.posSliders[(num * 3) + 2] = 0;
 
             xxpHandler.accessoryMiscData.accessoryAttach[num] = 0;
             xxpHandler.accessoryMiscData.accessoryColorChoices[num * 2] = 0;
@@ -1638,5 +1711,382 @@ namespace NGS_Salon_Tool
         {
 
         }
+
+        private void proportionsCB_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            switch((string)proportionsCB.SelectedItem)
+            {
+                case "Body":
+                    SetProportionsVec3UI(xxpHandler.baseFIGR.bodyVerts);
+                    break;
+                case "Arm":
+                    SetProportionsVec3UI(xxpHandler.baseFIGR.armVerts);
+                    break;
+                case "Leg":
+                    SetProportionsVec3UI(xxpHandler.baseFIGR.legVerts);
+                    break;
+                case "Bust":
+                    SetProportionsVec3UI(xxpHandler.baseFIGR.bustVerts);
+                    break;
+                case "Head":
+                    SetProportionsVec3UI(xxpHandler.baseFIGR.headVerts);
+                    break;
+                case "Face Shape":
+                    SetProportionsVec3UI(xxpHandler.baseFIGR.faceShapeVerts);
+                    break;
+                case "Eye Shape":
+                    SetProportionsVec3UI(xxpHandler.baseFIGR.eyeShapeVerts);
+                    break;
+                case "Nose Height":
+                    SetProportionsVec3UI(xxpHandler.baseFIGR.noseHeightVerts);
+                    break;
+                case "Nose Shape":
+                    SetProportionsVec3UI(xxpHandler.baseFIGR.noseShapeVerts);
+                    break;
+                case "Mouth":
+                    SetProportionsVec3UI(xxpHandler.baseFIGR.mouthVerts);
+                    break;
+                case "Ears":
+                    SetProportionsVec3UI(xxpHandler.baseFIGR.ear_hornVerts);
+                    break;
+                case "Neck":
+                    SetProportionsVec3UI(xxpHandler.neckVerts);
+                    break;
+                case "Waist":
+                    SetProportionsVec3UI(xxpHandler.waistVerts);
+                    break;
+                case "Hands":
+                    SetProportionsVec3UI(xxpHandler.hands);
+                    break;
+                case "Horns":
+                    SetProportionsVec3UI(xxpHandler.horns);
+                    break;
+                case "Alt Face Head":
+                    SetProportionsVec3UI(xxpHandler.altFace.headVerts);
+                    break;
+                case "Alt Face Face Shape":
+                    SetProportionsVec3UI(xxpHandler.altFace.faceShapeVerts);
+                    break;
+                case "Alt Face Eye Shape":
+                    SetProportionsVec3UI(xxpHandler.altFace.eyeShapeVerts);
+                    break;
+                case "Alt Face Nose Height":
+                    SetProportionsVec3UI(xxpHandler.altFace.noseHeightVerts);
+                    break;
+                case "Alt Face Nose Shape":
+                    SetProportionsVec3UI(xxpHandler.altFace.noseShapeVerts);
+                    break;
+                case "Alt Face Mouth":
+                    SetProportionsVec3UI(xxpHandler.altFace.mouthVerts);
+                    break;
+                case "Alt Face Ears":
+                    SetProportionsVec3UI(xxpHandler.altFace.ear_hornVerts);
+                    break;
+                case "Alt Face Necks":
+                    SetProportionsVec3UI(xxpHandler.altFace.neckVerts);
+                    break;
+                case "Alt Face Horns":
+                    SetProportionsVec3UI(xxpHandler.altFace.horns);
+                    break;
+                case "Alt Face Unknown":
+                    SetProportionsVec3UI(xxpHandler.altFace.unkFaceVerts);
+                    break;
+            }
+        }
+
+        private void SetProportionsVec3UI(Vector3Int.Vec3Int vec3)
+        {
+            canUpdateProportionGroups = false;
+            propSetAUD.Value = vec3.X;
+            propSetBUD.Value = vec3.Y;
+            propSetCUD.Value = vec3.Z;
+            canUpdateProportionGroups = true;
+        }
+
+        private void SetProportionsGroup(object sender, RoutedEventArgs e)
+        {
+            if (canUpdateProportionGroups)
+            {
+                var vec3UI = Vector3Int.Vec3Int.CreateVec3Int((int)propSetAUD.Value, (int)propSetBUD.Value, (int)propSetCUD.Value);
+                switch ((string)proportionsCB.SelectedItem)
+                {
+                    case "Body":
+                        xxpHandler.baseFIGR.bodyVerts = vec3UI;
+                        break;
+                    case "Arm":
+                        xxpHandler.baseFIGR.armVerts = vec3UI;
+                        break;
+                    case "Leg":
+                        xxpHandler.baseFIGR.legVerts = vec3UI;
+                        break;
+                    case "Bust":
+                        xxpHandler.baseFIGR.bustVerts = vec3UI;
+                        break;
+                    case "Head":
+                        xxpHandler.baseFIGR.headVerts = vec3UI;
+                        break;
+                    case "Face Shape":
+                        xxpHandler.baseFIGR.faceShapeVerts = vec3UI;
+                        break;
+                    case "Eye Shape":
+                        xxpHandler.baseFIGR.eyeShapeVerts = vec3UI;
+                        break;
+                    case "Nose Height":
+                        xxpHandler.baseFIGR.noseHeightVerts = vec3UI;
+                        break;
+                    case "Nose Shape":
+                        xxpHandler.baseFIGR.noseShapeVerts = vec3UI;
+                        break;
+                    case "Mouth":
+                        xxpHandler.baseFIGR.mouthVerts = vec3UI;
+                        break;
+                    case "Ears":
+                        xxpHandler.baseFIGR.ear_hornVerts = vec3UI;
+                        break;
+                    case "Neck":
+                        xxpHandler.neckVerts = vec3UI;
+                        break;
+                    case "Waist":
+                        xxpHandler.waistVerts = vec3UI;
+                        break;
+                    case "Hands":
+                        xxpHandler.hands = vec3UI;
+                        break;
+                    case "Horns":
+                        xxpHandler.horns = vec3UI;
+                        break;
+                    case "Alt Face Head":
+                        xxpHandler.altFace.headVerts = vec3UI;
+                        break;
+                    case "Alt Face Face Shape":
+                        xxpHandler.altFace.faceShapeVerts = vec3UI;
+                        break;
+                    case "Alt Face Eye Shape":
+                        xxpHandler.altFace.eyeShapeVerts = vec3UI;
+                        break;
+                    case "Alt Face Nose Height":
+                        xxpHandler.altFace.noseHeightVerts = vec3UI;
+                        break;
+                    case "Alt Face Nose Shape":
+                        xxpHandler.altFace.noseShapeVerts = vec3UI;
+                        break;
+                    case "Alt Face Mouth":
+                        xxpHandler.altFace.mouthVerts = vec3UI;
+                        break;
+                    case "Alt Face Ears":
+                        xxpHandler.altFace.ear_hornVerts = vec3UI;
+                        break;
+                    case "Alt Face Necks":
+                        xxpHandler.altFace.neckVerts = vec3UI;
+                        break;
+                    case "Alt Face Horns":
+                        xxpHandler.altFace.horns = vec3UI;
+                        break;
+                    case "Alt Face Unknown":
+                        xxpHandler.altFace.unkFaceVerts = vec3UI;
+                        break;
+                }
+            }
+        }
+
+        private void expressionsCB_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            switch((string)expressionsCB.SelectedItem)
+            {
+                case "Natural":
+                    SetExpressionUI(xxpHandler.faceNatural);
+                    break;
+                case "Smile":
+                    SetExpressionUI(xxpHandler.faceSmile);
+                    break;
+                case "Angry":
+                    SetExpressionUI(xxpHandler.faceAngry);
+                    break;
+                case "Sad":
+                    SetExpressionUI(xxpHandler.faceSad);
+                    break;
+                case "Sus":
+                    SetExpressionUI(xxpHandler.faceSus);
+                    break;
+                case "Eyes Closed":
+                    SetExpressionUI(xxpHandler.faceEyesClosed);
+                    break;
+                case "Smile2":
+                    SetExpressionUI(xxpHandler.faceSmile2);
+                    break;
+                case "Wink":
+                    SetExpressionUI(xxpHandler.faceWink);
+                    break;
+                case "Unused 1":
+                    SetExpressionUI(xxpHandler.faceUnused1);
+                    break;
+                case "Unused 2":
+                    SetExpressionUI(xxpHandler.faceUnused2);
+                    break;
+            }
+        }
+
+        private void SetExpressionUI(FaceExpressionV11 exp)
+        {
+            canUpdateExpressions = false;
+            
+            irisSizeUD.Value = exp.expStruct.irisSize;
+            leftEyebrowVerticalUD.Value = exp.expStruct.leftEyebrowVertical;
+            leftMouthVerticalUD.Value = exp.expStruct.leftMouthVertical;
+            rightEyebrowVerticalUD.Value = exp.expStruct.rightEyebrowVertical;
+            rightMouthVerticalUD.Value = exp.expStruct.rightMouthVertical;
+            eyeCornerUD.Value = exp.expStruct.eyeCorner;
+
+            leftEyelidVerticalUD.Value = exp.expStruct.leftEyelidVertical;
+            leftEyebrowExpressionUD.Value = exp.expStruct.leftEyebrowExpression;
+            rightEyelidVerticalUD.Value = exp.expStruct.rightEyelidVertical;
+            rightEyebrowExpressionUD.Value = exp.expStruct.rightEyebrowExpression;
+            mouthAUD.Value = exp.expStruct.mouthA;
+            mouthIUD.Value = exp.expStruct.mouthI;
+            mouthUUD.Value = exp.expStruct.mouthU;
+            mouthEUD.Value = exp.expStruct.mouthE;
+            mouthOUD.Value = exp.expStruct.mouthO;
+            leftEyebrowVerticalUnusedUD.Value = exp.expStruct.leftEyebrowVerticalUnused;
+            rightEyebrowVerticalUnusedUD.Value = exp.expStruct.rightEyebrowVerticalUnused;
+            tongueUD.Value = exp.expStruct.tongue;
+            tongueVerticalUD.Value = exp.tongueVertical;
+            tongueHorizontalUD.Value = exp.tongueHorizontal;
+
+            canUpdateExpressions = true;
+        }
+
+        private void SetExpressionInternal(object sender, RoutedEventArgs e)
+        {
+            if (canUpdateExpressions)
+            {
+                var faceExp = new FaceExpressionV11() {
+                        expStruct = new FaceExpressionV10() {
+                        irisSize = (sbyte)irisSizeUD.Value,
+                        leftEyebrowVertical = (sbyte)leftEyebrowVerticalUD.Value,
+                        leftMouthVertical = (sbyte)leftMouthVerticalUD.Value,
+                        rightEyebrowVertical = (sbyte)rightEyebrowVerticalUD.Value,
+                        rightMouthVertical = (sbyte)rightMouthVerticalUD.Value,
+                        eyeCorner = (sbyte)eyeCornerUD.Value,
+                        leftEyelidVertical = (sbyte)leftEyelidVerticalUD.Value,
+                        leftEyebrowExpression = (sbyte)leftEyebrowExpressionUD.Value,
+                        rightEyelidVertical = (sbyte)rightEyelidVerticalUD.Value,
+                        rightEyebrowExpression = (sbyte)rightEyebrowExpressionUD.Value,
+                        mouthA = (sbyte)mouthAUD.Value,
+                        mouthI = (sbyte)mouthIUD.Value,
+                        mouthU = (sbyte)mouthUUD.Value,
+                        mouthE = (sbyte)mouthEUD.Value,
+                        mouthO = (sbyte)mouthOUD.Value,
+                        leftEyebrowVerticalUnused = (sbyte)leftEyebrowVerticalUnusedUD.Value,
+                        rightEyebrowVerticalUnused = (sbyte)rightEyebrowVerticalUnusedUD.Value,
+                        tongue = (sbyte)tongueUD.Value
+                    },
+                    tongueVertical = (sbyte)tongueVerticalUD.Value, 
+                    tongueHorizontal = (sbyte)tongueHorizontalUD.Value 
+                };
+                switch ((string)expressionsCB.SelectedItem)
+                {
+                    case "Natural":
+                        xxpHandler.faceNatural = faceExp;
+                        break;
+                    case "Smile":
+                        xxpHandler.faceSmile = faceExp;
+                        break;
+                    case "Angry":
+                        xxpHandler.faceAngry = faceExp;
+                        break;
+                    case "Sad":
+                        xxpHandler.faceSad = faceExp;
+                        break;
+                    case "Sus":
+                        xxpHandler.faceSus = faceExp;
+                        break;
+                    case "Eyes Closed":
+                        xxpHandler.faceEyesClosed = faceExp;
+                        break;
+                    case "Smile2":
+                        xxpHandler.faceSmile2 = faceExp;
+                        break;
+                    case "Wink":
+                        xxpHandler.faceWink = faceExp;
+                        break;
+                    case "Unused 1":
+                        xxpHandler.faceUnused1 = faceExp;
+                        break;
+                    case "Unused 2":
+                        xxpHandler.faceUnused2 = faceExp;
+                        break;
+                }
+            }
+        }
+
+        private void EyeSizeUDChanged(object sender, RoutedEventArgs e)
+        {
+            xxpHandler.eyeSize = (sbyte)eyeSizeUD.Value;
+        }
+        private void EyeHorizPosUDChanged(object sender, RoutedEventArgs e)
+        {
+            xxpHandler.eyeHorizontalPosition = (sbyte)eyeHorizPosUD.Value;
+        }
+        private void NeckAngleUDChanged(object sender, RoutedEventArgs e)
+        {
+            xxpHandler.neckAngle = (sbyte)neckAngleUD.Value;
+        }
+        private void ShoulderSizeUDChanged(object sender, RoutedEventArgs e)
+        {
+            xxpHandler.ngsSLID.shoulderSize = (sbyte)shoulderSizeUD.Value;
+        }
+        private void HairAdjustUDChanged(object sender, RoutedEventArgs e)
+        {
+            xxpHandler.ngsSLID.hairAdjust = (sbyte)hairAdjustUD.Value;
+        }
+        private void SkinGlossUDChanged(object sender, RoutedEventArgs e)
+        {
+            xxpHandler.ngsSLID.skinGloss = (sbyte)skinGlossUd.Value;
+        }
+        private void MouthVerticalUDChanged(object sender, RoutedEventArgs e)
+        {
+            xxpHandler.ngsSLID.mouthVertical = (sbyte)mouthVerticalUD.Value;
+        }
+        private void EyebrowHorizUDChanged(object sender, RoutedEventArgs e)
+        {
+            xxpHandler.ngsSLID.eyebrowHoriz = (sbyte)eyebrowHorizUD.Value;
+        }
+        private void IrisVerticalUDChanged(object sender, RoutedEventArgs e)
+        {
+            xxpHandler.ngsSLID.irisVertical = (sbyte)irisVerticalUD.Value;
+        }
+        private void FacePaint1OpacityUDChanged(object sender, RoutedEventArgs e)
+        {
+            xxpHandler.ngsSLID.facePaint1Opacity = (sbyte)facePaint1OpacityUD.Value;
+        }
+        private void FacePaint2OpacityUDChanged(object sender, RoutedEventArgs e)
+        {
+            xxpHandler.ngsSLID.facePaint2Opacity = (sbyte)facePaint2OpacityUD.Value;
+        }
+        private void ShoulderVerticalUDChanged(object sender, RoutedEventArgs e)
+        {
+            xxpHandler.ngsSLID.shoulderVertical = (sbyte)shoulderVerticalUD.Value;
+        }
+        private void ThighsAdjustUDChanged(object sender, RoutedEventArgs e)
+        {
+            xxpHandler.ngsSLID.thighsAdjust = (sbyte)thighsAdjustUD.Value;
+        }
+        private void CalvesAdjustUDChanged(object sender, RoutedEventArgs e)
+        {
+            xxpHandler.ngsSLID.calvesAdjust = (sbyte)calvesAdjustUD.Value;
+        }
+        private void ForearmsAdjustUDChanged(object sender, RoutedEventArgs e)
+        {
+            xxpHandler.ngsSLID.forearmsAdjust = (sbyte)forearmsAdjust.Value;
+        }
+        private void HandThicknessUDChanged(object sender, RoutedEventArgs e)
+        {
+            xxpHandler.ngsSLID.handThickness = (sbyte)handThicknessUD.Value;
+        }
+        private void FootSizeUDChanged(object sender, RoutedEventArgs e)
+        {
+            xxpHandler.ngsSLID.footSize = (sbyte)footSizeUD.Value;
+        }
+
     }
 }

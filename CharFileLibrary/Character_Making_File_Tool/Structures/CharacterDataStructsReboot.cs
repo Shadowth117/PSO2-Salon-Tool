@@ -12,9 +12,9 @@ namespace Character_Making_File_Tool
     {
         public struct AccessorySlidersReboot
         {
+            public fixed sbyte posSliders[0x24];
             public fixed sbyte scaleSliders[0x24];
             public fixed sbyte rotSliders[0x24];
-            public fixed sbyte posSliders[0x24];
             
             public AccessorySliders GetClassicAccessorySliders()
             {
