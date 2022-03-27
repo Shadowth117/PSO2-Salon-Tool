@@ -63,6 +63,10 @@
                         <CheckBox x:Name="armOrnCheck" Content="Hide Arm Parts Ornament" HorizontalAlignment="Left" Margin="14,114,0,0" VerticalAlignment="Top" Checked="ArmOrnChanged" Unchecked="ArmOrnChanged"/>
                         <CheckBox x:Name="legOrnCheck" Content="Hide Leg Parts Ornament" HorizontalAlignment="Left" Margin="14,129,0,0" VerticalAlignment="Top" Checked="LegOrnChanged" Unchecked="LegOrnChanged"/>
                         <CheckBox x:Name="outerOrnCheck" Content="Hide Outer Wear Ornament" HorizontalAlignment="Left" Margin="14,69,0,0" VerticalAlignment="Top" Checked="OuterWearOrnChanged" Unchecked="OuterWearOrnChanged"/>
+                        <Label x:Name="bpLabel" Content="Bodypaint/Innerwear order" HorizontalAlignment="Left" Margin="224,36,0,0" VerticalAlignment="Top"/>
+                        <ComboBox x:Name="bpOrder0" HorizontalAlignment="Left" Margin="240,65,0,0" VerticalAlignment="Top" Width="120" SelectionChanged="bpOrder0_SelectionChanged"/>
+                        <ComboBox x:Name="bpOrder1" HorizontalAlignment="Left" Margin="240,95,0,0" VerticalAlignment="Top" Width="120" SelectionChanged="bpOrder1_SelectionChanged"/>
+                        <ComboBox x:Name="bpOrder2" HorizontalAlignment="Left" Margin="240,125,0,0" VerticalAlignment="Top" Width="120" SelectionChanged="bpOrder2_SelectionChanged"/>
                     </Grid>
                 </TabItem>
                 <TabItem x:Name="proportionsTab" Header="Proportions">

@@ -58,6 +58,7 @@ namespace NGS_Salon_Tool
         private string openedFileName;
         private bool canUpdateExpressions = false;
         private bool canUpdateProportionGroups = false;
+        private bool canReorderPaint = false;
         WIPBox wipBox = null;
         ColorPicker colorPicker = null;
         AccessoryWindow[] accWindows = new AccessoryWindow[0xC];
@@ -539,6 +540,16 @@ namespace NGS_Salon_Tool
             bodyOrnCheck.IsChecked = xxpHandler.ngsVISI.hideBodyPartOrnament > 0 ? true : false;
             armOrnCheck.IsChecked = xxpHandler.ngsVISI.hideArmPartOrnament > 0 ? true : false;
             legOrnCheck.IsChecked = xxpHandler.ngsVISI.hideLegPartOrnament > 0 ? true : false;
+
+            //Paint Priority
+            canReorderPaint = false;
+            bpOrder0.ItemsSource = paintPriorityStrings;
+            bpOrder1.ItemsSource = paintPriorityStrings;
+            bpOrder2.ItemsSource = paintPriorityStrings;
+            bpOrder0.SelectedIndex = xxpHandler.paintPriority.priority1;
+            bpOrder1.SelectedIndex = xxpHandler.paintPriority.priority2;
+            bpOrder2.SelectedIndex = xxpHandler.paintPriority.priority3;
+            canReorderPaint = true;
         }
         
         private void Proportions()
@@ -2088,5 +2099,100 @@ namespace NGS_Salon_Tool
             xxpHandler.ngsSLID.footSize = (sbyte)footSizeUD.Value;
         }
 
+        private void bpOrder0_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            xxpHandler.paintPriority.priority1 = (ushort)bpOrder0.SelectedIndex;
+
+            if(canReorderPaint)
+            {
+                canReorderPaint = false;
+                List<int> choices = new List<int>() { 0, 1, 2 };
+                choices.Remove(bpOrder0.SelectedIndex);
+
+                if (bpOrder0.SelectedIndex == bpOrder1.SelectedIndex)
+                {
+                    bpOrder1.SelectedIndex = choices[0];
+                    choices.Remove(bpOrder1.SelectedIndex);
+                    if (bpOrder1.SelectedIndex == bpOrder2.SelectedIndex)
+                    {
+                        bpOrder1.SelectedIndex = choices[0];
+                    }
+                }
+                else if (bpOrder0.SelectedIndex == bpOrder2.SelectedIndex)
+                {
+                    bpOrder2.SelectedIndex = choices[0];
+                    choices.Remove(bpOrder2.SelectedIndex);
+                    if (bpOrder2.SelectedIndex == bpOrder1.SelectedIndex)
+                    {
+                        bpOrder2.SelectedIndex = choices[0];
+                    }
+                }
+                canReorderPaint = true;
+            }
+        }
+
+        private void bpOrder1_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            xxpHandler.paintPriority.priority2 = (ushort)bpOrder1.SelectedIndex;
+
+            if (canReorderPaint)
+            {
+                canReorderPaint = false;
+                List<int> choices = new List<int>() { 0, 1, 2 };
+                choices.Remove(bpOrder1.SelectedIndex);
+
+                if (bpOrder1.SelectedIndex == bpOrder0.SelectedIndex)
+                {
+                    bpOrder0.SelectedIndex = choices[0];
+                    choices.Remove(bpOrder0.SelectedIndex);
+                    if (bpOrder0.SelectedIndex == bpOrder2.SelectedIndex)
+                    {
+                        bpOrder0.SelectedIndex = choices[0];
+                    }
+                }
+                else if (bpOrder1.SelectedIndex == bpOrder2.SelectedIndex)
+                {
+                    bpOrder2.SelectedIndex = choices[0];
+                    choices.Remove(bpOrder2.SelectedIndex);
+                    if (bpOrder2.SelectedIndex == bpOrder0.SelectedIndex)
+                    {
+                        bpOrder2.SelectedIndex = choices[0];
+                    }
+                }
+                canReorderPaint = true;
+            }
+        }
+
+        private void bpOrder2_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            xxpHandler.paintPriority.priority3 = (ushort)bpOrder2.SelectedIndex; 
+            
+            if (canReorderPaint)
+            {
+                canReorderPaint = false;
+                List<int> choices = new List<int>() { 0, 1, 2 };
+                choices.Remove(bpOrder2.SelectedIndex);
+
+                if (bpOrder2.SelectedIndex == bpOrder0.SelectedIndex)
+                {
+                    bpOrder0.SelectedIndex = choices[0];
+                    choices.Remove(bpOrder0.SelectedIndex);
+                    if (bpOrder0.SelectedIndex == bpOrder2.SelectedIndex)
+                    {
+                        bpOrder0.SelectedIndex = choices[0];
+                    }
+                }
+                else if (bpOrder2.SelectedIndex == bpOrder1.SelectedIndex)
+                {
+                    bpOrder1.SelectedIndex = choices[0];
+                    choices.Remove(bpOrder1.SelectedIndex);
+                    if (bpOrder1.SelectedIndex == bpOrder0.SelectedIndex)
+                    {
+                        bpOrder1.SelectedIndex = choices[0];
+                    }
+                }
+                canReorderPaint = true;
+            }
+        }
     }
 }

@@ -14,21 +14,17 @@ namespace NGS_Salon_Tool
             "Arm",
             "Leg",
             "Bust",
-
             "Head",
             "Face Shape",
             "Eye Shape",
             "Nose Height",
-
             "Nose Shape",
             "Mouth",
             "Ears",
             "Neck",
-
             "Waist",
             "Hands",
             "Horns",
-
             "Alt Face Head",
             "Alt Face Face Shape",
             "Alt Face Eye Shape",
@@ -47,14 +43,20 @@ namespace NGS_Salon_Tool
             "Smile",
             "Angry",
             "Sad",
-
             "Sus",
             "Eyes Closed",
             "Smile 2",
             "Wink",
-
             "Unused 1",
             "Unused 2",
         };
+
+        public static List<string> paintPriorityStrings = new List<string>()
+        {
+            "Innerwear",
+            "Body Paint 1",
+            "Body Paint 2"
+        };
+
     }
 }
