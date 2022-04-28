@@ -11,6 +11,7 @@ using System.Windows.Controls;
 using System.Windows.Media;
 using AquaModelLibrary;
 using Character_Making_File_Tool;
+using CharFileLibrary.Character_Making_File_Tool.Utilities;
 using Microsoft.WindowsAPICodePack.Dialogs;
 using Reloaded.Memory.Streams;
 using static Character_Making_File_Tool.CharacterDataStructs;
@@ -1720,7 +1721,8 @@ namespace NGS_Salon_Tool
 
         public void ExportCharModel(object sender, RoutedEventArgs e)
         {
-
+            ModelUtility util = new ModelUtility(pso2_binDir);
+            util.GetCharacterModel(xxpHandler, cmxHandler.cmx);
         }
 
         private void proportionsCB_SelectionChanged(object sender, SelectionChangedEventArgs e)

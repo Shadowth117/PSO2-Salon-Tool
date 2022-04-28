@@ -419,6 +419,7 @@ namespace Character_Making_File_Tool
             public int hideLegPartOrnament;
 
             public int hideOuterwearOrnament;
+            public int hideInnerwear;
         }
     }
 }

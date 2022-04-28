@@ -200,8 +200,7 @@ namespace Character_Making_File_Tool
             //0x358 Ornament Display - VISI, stored as 0 or 1 in xxp. In CML, these are stored as bits in a single byte.
             public VISI ngsVISI;
 
-            //0x374
-            public uint padding17;
+            //0x378
             public uint padding18;
             public uint padding19;
 
@@ -293,8 +292,7 @@ namespace Character_Making_File_Tool
             //0x36C Ornament Display - VISI, stored as 0 or 1 in xxp. In CML, these are stored as bits in a single byte.
             public VISI ngsVISI;
 
-            //0x388
-            public uint padding17;
+            //0x38C
             public uint padding18;
             public uint padding19;
 
@@ -389,8 +387,7 @@ namespace Character_Making_File_Tool
             //0x3E4 Ornament Display - VISI, stored as 0 or 1 in xxp. In CML, these are stored as bits in a single byte.
             public VISI ngsVISI;
 
-            //0x400
-            public uint padding17;
+            //0x404
             public uint padding18;
             public uint padding19;
 

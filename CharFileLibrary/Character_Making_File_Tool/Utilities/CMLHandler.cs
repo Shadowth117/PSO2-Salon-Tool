@@ -11,6 +11,7 @@ using System.Windows.Forms;
 using static Character_Making_File_Tool.CharacterDataStructs;
 using static Character_Making_File_Tool.CharacterDataStructsReboot;
 using static Character_Making_File_Tool.CharacterConstants;
+using AquaModelLibrary.AquaMethods;
 
 namespace Character_Making_File_Tool
 {
@@ -671,7 +672,7 @@ namespace Character_Making_File_Tool
                     break;
             }
             cml.AddRange(expr);
-            AquaMiscMethods.AlignWriter(cml, 0x10);
+            AquaGeneralMethods.AlignWriter(cml, 0x10);
 
             return cml.ToArray();
         }

@@ -1,11 +1,18 @@
 ﻿using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using zamboni;
 using AquaModelLibrary;
 using static AquaExtras.FilenameConstants;
 using static AquaModelLibrary.CharacterMakingIndex;
 using static AquaModelLibrary.CharacterMakingIndexMethods;
 using static Character_Making_File_Tool.CharacterHandlerReboot;
+using static Character_Making_File_Tool.CharacterConstants;
+using static CharFileLibrary.Character_Making_File_Tool.Constants.CharacterProportionConstants;
+using System.Numerics;
+using System.Diagnostics;
+using System;
+using AquaModelLibrary.Native.Fbx;
 
 namespace CharFileLibrary.Character_Making_File_Tool.Utilities
 {
@@ -22,8 +29,84 @@ namespace CharFileLibrary.Character_Making_File_Tool.Utilities
         public string basewearHNFilename = null;
         public string basewearLinkedInnerFilename = null;
 
+        public AquaObject compositeModel = null;
         public AquaObject basewearModel = null;
+        public AquaNode compositeBones = null;
         public AquaNode basewearNode = null;
+
+        public class TransformSet
+        {
+            public Vector3 pos = new Vector3();
+            public Quaternion rot = Quaternion.Identity;
+            public Vector3 scale = new Vector3(1, 1, 1);
+
+            public TransformSet()
+            {
+
+            }
+
+            public TransformSet(Matrix4x4 mat)
+            {
+                Matrix4x4.Decompose(mat, out var matScale, out var matRot, out var matPos);
+                pos = matPos;
+                rot = matRot;
+                scale = matScale;
+            }
+
+            public TransformSet Clone()
+            {
+                var tfm = new TransformSet();
+                tfm.pos = pos;
+                tfm.rot = rot;
+                tfm.scale = scale;
+
+                return tfm;
+            }
+
+            public void PSO2Transform(TransformSet oldParSet, TransformSet newParSet, TransformSet relativeTfm)
+            {
+                
+                //Get difference in parent rotations
+                var parDif = newParSet.rot * Quaternion.Inverse(oldParSet.rot);
+
+                //Translation vector transformation
+                    var tempPosNeg1 = pos;
+                pos -= oldParSet.pos;
+                    var tempPos = pos;
+                var relativeTemp = relativeTfm.pos;
+                relativeTemp = Vector3.Transform(relativeTemp, relativeTfm.rot);
+                pos += relativeTemp;
+                    var tempPos2 = pos;
+                //pos = Vector3.Transform(pos, parDif);
+                //pos = Vector3.Transform(pos, relativeTfm.rot);
+                pos += newParSet.pos;
+
+                //Rotation transformation
+                var tempRot = rot;
+                rot = rot * relativeTfm.rot;
+                
+                //Scale transformation
+                scale *= relativeTfm.scale;
+            }
+
+            public Matrix4x4 GetMatrix4x4()
+            {
+                Matrix4x4 mat = Matrix4x4.Identity;
+
+                mat *= Matrix4x4.CreateScale(scale);
+                mat *= Matrix4x4.CreateFromQuaternion(rot);
+                mat *= Matrix4x4.CreateTranslation(pos);
+
+                return mat;
+            }
+
+            public Matrix4x4 GetInverseMatrix4x4()
+            {
+                Matrix4x4.Invert(GetMatrix4x4(), out Matrix4x4 result);
+                return result;
+            }
+        }
+
         public ModelUtility(string pso2_binDirectory)
         {
             pso2_binDir = pso2_binDirectory;
@@ -38,6 +121,24 @@ namespace CharFileLibrary.Character_Making_File_Tool.Utilities
             string bodyTypeString = GetBodyTypeString(xxp, out string bodyCategory);
             AquaMotion bodyProps = GetMotion(xxp, proportionsPath, bodyTypeString);
 
+            //Calc final transformation matrices per bone
+            var finalBodyTransforms = CalcBodyTransforms(bodyProps);
+            /*
+            //Calc final face transformations per bone
+            var finalFaceTransforms = CalcFaceTransforms(faceProps, bodyProps);
+
+            //Calc final mouth transformations per bone
+            var finalMouthTransforms = CalcMouthTransforms(mouthProps);
+
+            //Calc final ear transformations per bone
+            var finalEarTransforms = CalcEarTransforms(earProps);
+
+            //Calc final face transformations per bone
+            var finalHornTransforms = CalcHornTransforms(hornProps);
+
+            //Calc final ngs hair transformations per bone (Seems to use X scale of drs_line_front_1_1 as a vertical scale for bangs on frames 1 and 3)
+            var finalHairTransforms = CalcHairTransforms(hornProps);
+            */
             //Get filenames
             GetCharacterFilenames();
 
@@ -45,13 +146,17 @@ namespace CharFileLibrary.Character_Making_File_Tool.Utilities
             switch (bodyCategory)
             {
                 case basewearStr: //Basewear is base, Outer wear is attached
-                    basewearModel = GetModel(xxp, Path.Combine(pso2_binDir, dataDir, GetFileHash(basewearFilename)), new List<string>() { ".aqp", ".aqn" }, out basewearNode);
+                    basewearModel = GetModel(xxp, Path.Combine(pso2_binDir, dataDir, basewearFilename), new List<string>() { ".aqp", ".aqn" }, out basewearNode);
                     break;
                 case costumeStr: //On its own
                     break;
                 case castStr: //Legs are base, Body and Arms are to be attached
                     break;
             }
+
+            compositeModel = basewearModel;
+            compositeBones = basewearNode;
+            ApplyProportions(finalBodyTransforms, compositeModel, compositeBones);
 
             //Load head models 
 
@@ -79,12 +184,362 @@ namespace CharFileLibrary.Character_Making_File_Tool.Utilities
             //Blend face textures - cast and special head/full coverage hairs should NOT have blending
 
             //Color accessory textures
+
+            AquaUtil aqu = new AquaUtil();
+            AquaUtil.ModelSet ms = new AquaUtil.ModelSet();
+            ms.models.Add(compositeModel);
+            aqu.aquaModels.Add(ms);
+            if(compositeModel.objc.type >= 0xC32)
+            {
+                aqu.WriteNGSNIFLModel("C:/Test.aqp", "C:/Test.aqp");
+            } else
+            {
+                aqu.WriteClassicNIFLModel("C:/Test.aqp", "C:/Test.aqp");
+            }
+            AquaUtil.WriteBones("C:/Test.aqn", compositeBones);
+            if (aqu.aquaModels[0].models[0].objc.type > 0xC32)
+            {
+                aqu.aquaModels[0].models[0].splitVSETPerMesh();
+            }
+            FbxExporter.ExportToFile(aqu.aquaModels[0].models[0], compositeBones, "C:/Test.fbx", false);
         }
+
+        public void ApplyProportions(List<TransformSet> props, AquaObject bodyModel, AquaNode aquaNode)
+        {
+            List<TransformSet> oldBoneList = new List<TransformSet>() { new TransformSet() };
+            List<TransformSet> newBoneList = new List<TransformSet>() { new TransformSet() };
+            List<Vector3> localPoss = new List<Vector3>() { new Vector3() };
+            List<Quaternion> localRots = new List<Quaternion>() { Quaternion.Identity };
+
+            //Gather node transforms, apply node. Start at 1 to skip root.
+            for(int i = 1; i < aquaNode.nodeList.Count; i++)
+            {
+                var node = aquaNode.nodeList[i];
+                Matrix4x4.Invert(aquaNode.nodeList[i].GetInverseBindPoseMatrix(), out Matrix4x4 mat);
+                var tfmSet = new TransformSet(mat);
+                Matrix4x4.Decompose(mat, out var scale, out var rot, out var pos);
+                oldBoneList.Add(tfmSet);
+
+                var newTfmSet = tfmSet.Clone();
+                var oldParMat = oldBoneList[aquaNode.nodeList[i].parentId];
+                var newParMat = newBoneList[aquaNode.nodeList[i].parentId];
+
+
+                //DEBUG REMOVE LATER ********************************
+                /*
+                if (props.Count > i)
+                {
+                    props[i].pos = new Vector3();
+                    props[i].rot = Quaternion.Identity;
+                    //props[i].scale = scale;
+                }*/
+                localPoss.Add(tfmSet.pos - oldParMat.pos);
+                localRots.Add(tfmSet.rot * Quaternion.Inverse(oldParMat.rot));
+                //DEBUG REMOVE LATER ********************************
+
+                if (props.Count > i)
+                {
+                    newTfmSet.PSO2Transform(oldParMat, newParMat, props[i]);
+                } else
+                {
+                    newTfmSet.PSO2Transform(oldParMat, newParMat, new TransformSet());
+                }
+
+                node.SetInverseBindPoseMatrix(newTfmSet.GetInverseMatrix4x4());
+                aquaNode.nodeList[i] = node;
+                newBoneList.Add(newTfmSet);
+            }
+            foreach(var vtxl in bodyModel.vtxlList)
+            {
+                List<uint> bonePalette;
+                if (bodyModel.bonePalette != null && bodyModel.bonePalette.Count > 0)
+                {
+                    bonePalette = bodyModel.bonePalette;
+                } else
+                {
+                    bonePalette = new List<uint>();
+                    for(int i = 0; i < vtxl.bonePalette.Count; i++)
+                    {
+                        bonePalette.Add(vtxl.bonePalette[i]);
+                    }
+                }
+                for (int i = 0; i < vtxl.vertPositions.Count; i++)
+                {
+                    Vector3 vertPos = new Vector3();
+                    Vector3 vertNrm = new Vector3();
+                    var weightIndices = vtxl.trueVertWeightIndices[i];
+                    var weights = vtxl.trueVertWeights[i];
+
+
+                    for(int w = 0; w < weightIndices.Length; w++)
+                    {
+                        int finalWeightIndex = (int)bonePalette[weightIndices[w]];
+                        var localPos = vtxl.vertPositions[i] - oldBoneList[finalWeightIndex].pos;
+                        float weight = 0;
+                        switch (w)
+                        {
+                            case 0:
+                                weight = weights.X;
+                                break;
+                            case 1:
+                                weight = weights.Y;
+                                break;
+                            case 2:
+                                weight = weights.Z;
+                                break;
+                            case 3:
+                                weight = weights.W;
+                                break;
+                        }
+
+                        if (props.Count > finalWeightIndex)
+                        {
+                            localPos += props[finalWeightIndex].pos;
+                            localPos *= props[finalWeightIndex].scale;
+
+                            localPos = Vector3.Transform(localPos, props[finalWeightIndex].rot);
+
+                            //localPos = Vector3.Transform(localPos, props[finalWeightIndex].GetMatrix4x4());
+                            vertNrm += Vector3.TransformNormal(vtxl.vertNormals[i], props[finalWeightIndex].GetMatrix4x4()) * weight;
+                        } else
+                        {
+                            vertNrm += vtxl.vertNormals[i] * weight;
+                        }
+                        vertPos += (localPos + newBoneList[finalWeightIndex].pos) * weight;
+                    }
+                    vtxl.vertPositions[i] = vertPos;
+                    vtxl.vertNormals[i] = vertNrm;
+                }
+            }
+        }
+
+        //Multiply rotations by inverse of frame 0 and multiply results by each other for relevant bones and transforms.
+        //Multiply scales by each other
+        //Subtract frame 0 pos for each, add together
+        //Returns a transofmration
+        public List<TransformSet> CalcBodyTransforms(AquaMotion props)
+        {
+            var propTransforms = GetPropTransforms(props);
+            List<TransformSet> outTfm = new();
+
+            //Get base matrices
+            for (int i = 0; i < props.motionKeys.Count; i++)
+            {
+                TransformSet tfm = new();
+
+                var scl = props.motionKeys[i].keyData[2].vector4Keys[0];
+                tfm.pos = new Vector3(0, 0, 0);
+                tfm.rot = Quaternion.Identity;
+                tfm.scale = new Vector3(scl.X, scl.Y, scl.Z);
+
+                outTfm.Add(tfm);
+            }
+
+            //Physique
+            PropTransforms(ref outTfm, propTransforms, PhysiqueCenterYMin, PhysiqueCenterYMax, GetNGSPropRatio(xxp.baseFIGR.bodyVerts.X));
+            PropTransforms(ref outTfm, propTransforms, PhysiqueSideXMin, PhysiqueSideXMax, GetNGSPropRatio(xxp.baseFIGR.bodyVerts.Y));
+            PropTransforms(ref outTfm, propTransforms, PhysiqueSideYMin, PhysiqueSideYMax, GetNGSPropRatio(xxp.baseFIGR.bodyVerts.Z));
+
+            //Arms
+            PropTransforms(ref outTfm, propTransforms, ArmsCenterYMin, ArmsCenterYMax, GetNGSPropRatio(xxp.baseFIGR.armVerts.X));
+            PropTransforms(ref outTfm, propTransforms, ArmsSideXMin, ArmsSideXMax, GetNGSPropRatio(xxp.baseFIGR.armVerts.Y));
+            PropTransforms(ref outTfm, propTransforms, ArmsSideYMin, ArmsSideYMax, GetNGSPropRatio(xxp.baseFIGR.armVerts.Z));
+
+            //Legs
+            PropTransforms(ref outTfm, propTransforms, LegsCenterYMin, LegsCenterYMax, GetNGSPropRatio(xxp.baseFIGR.legVerts.X));
+            PropTransforms(ref outTfm, propTransforms, LegsSideXMin, LegsSideXMax, GetNGSPropRatio(xxp.baseFIGR.legVerts.Y));
+            PropTransforms(ref outTfm, propTransforms, LegsSideYMin, LegsSideYMax, GetNGSPropRatio(xxp.baseFIGR.legVerts.Z));
+
+            //Chest
+            PropTransforms(ref outTfm, propTransforms, ChestCenterYMin, ChestCenterYMax, GetNGSPropRatio(xxp.baseFIGR.bustVerts.X));
+            PropTransforms(ref outTfm, propTransforms, ChestSideXMin, ChestSideXMax, GetNGSPropRatio(xxp.baseFIGR.bustVerts.Y));
+            PropTransforms(ref outTfm, propTransforms, ChestSideYMin, ChestSideYMax, GetNGSPropRatio(xxp.baseFIGR.bustVerts.Z));
+
+            //Neck
+            PropTransforms(ref outTfm, propTransforms, NeckCenterYMin, NeckCenterYMax, GetNGSPropRatio(xxp.neckVerts.X));
+            PropTransforms(ref outTfm, propTransforms, NeckSideXMin, NeckSideXMax, GetNGSPropRatio(xxp.neckVerts.Y));
+            PropTransforms(ref outTfm, propTransforms, NeckSideYMin, NeckSideYMax, GetNGSPropRatio(xxp.neckVerts.Z));
+
+            //Waist
+            PropTransforms(ref outTfm, propTransforms, WaistCenterYMin, WaistCenterYMax, GetNGSPropRatio(xxp.waistVerts.X));
+            PropTransforms(ref outTfm, propTransforms, WaistSideXMin, WaistSideXMax, GetNGSPropRatio(xxp.waistVerts.Y));
+            PropTransforms(ref outTfm, propTransforms, WaistSideYMin, WaistSideYMax, GetNGSPropRatio(xxp.waistVerts.Z));
+
+            //NGS only
+            if (props.moHeader.endFrame > 80)
+            {
+                PropTransforms(ref outTfm, propTransforms, ShoulderSizeMin, ShoulderSizeMax, GetNGSPropRatio(xxp.ngsSLID.shoulderSize));
+
+                PropTransforms(ref outTfm, propTransforms, HandsCenterYMin, HandsCenterYMax, GetNGSPropRatio(xxp.hands.X));
+                PropTransforms(ref outTfm, propTransforms, HandsSideXMin, HandsSideXMax, GetNGSPropRatio(xxp.hands.Y));
+                PropTransforms(ref outTfm, propTransforms, HandsSideYMin, HandsSideYMax, GetNGSPropRatio(xxp.hands.Z));
+
+                PropTransforms(ref outTfm, propTransforms, NeckAngleMin, NeckAngleMax, GetNGSPropRatio(xxp.neckAngle));
+                PropTransforms(ref outTfm, propTransforms, VerticalPositionArmsMin, VerticalPositionArmsMax, GetNGSPropRatio(xxp.ngsSLID.shoulderVertical));
+                PropTransforms(ref outTfm, propTransforms, ThighsMin, ThighsMax, GetNGSPropRatio(xxp.ngsSLID.thighsAdjust));
+                PropTransforms(ref outTfm, propTransforms, CalvesMin, CalvesMax, GetNGSPropRatio(xxp.ngsSLID.calvesAdjust));
+                PropTransforms(ref outTfm, propTransforms, ForearmsMin, ForearmsMax, GetNGSPropRatio(xxp.ngsSLID.forearmsAdjust));
+                PropTransforms(ref outTfm, propTransforms, HandThicknessMin, HandThicknessMax, GetNGSPropRatio(xxp.ngsSLID.handThickness));
+                PropTransforms(ref outTfm, propTransforms, FootSizeMin, FootSizeMax, GetNGSPropRatio(xxp.ngsSLID.footSize));
+            }
+
+            return outTfm;
+        }
+
+        public static float GetNGSPropRatio(int prop)
+        {
+            double absMin = Math.Abs(MinSliderNGS);
+            float ratio = (float)((prop + absMin) / (absMin + MaxSliderNGS));
+            return ratio;
+        }
+
+        public static void PropTransforms(ref List<TransformSet> outTfm, Dictionary<int, Dictionary<int, TransformSet>> propDict, int minFrame, int maxFrame, float ratio)
+        {
+            var commonKeys = propDict[maxFrame].Keys.ToList();
+            var minKeys = propDict[minFrame].Keys.ToList();
+            var toRemove = new List<int>();
+            foreach (var key in commonKeys)
+            {
+                if(!minKeys.Contains(key))
+                {
+                    toRemove.Add(key);
+                }
+            }
+
+            foreach(var key in toRemove)
+            {
+                commonKeys.Remove(key);
+            }
+
+            foreach(var key in commonKeys)
+            {
+                outTfm[key] = PropTransform(outTfm[key], propDict[minFrame][key], propDict[maxFrame][key], ratio);
+            }
+        }
+
+        public static TransformSet PropTransform(TransformSet baseTfm, TransformSet tfmMin, TransformSet tfmMax, float ratio)
+        {
+            return ApplyTransform(baseTfm, InterpolateTransforms(tfmMin, tfmMax, ratio));
+        }
+
+        public static TransformSet ApplyTransform(TransformSet baseTfm, TransformSet appliedTfm)
+        {
+            TransformSet outTfm = baseTfm;
+
+            outTfm.pos = baseTfm.pos + appliedTfm.pos;
+            outTfm.rot = baseTfm.rot * appliedTfm.rot;
+            outTfm.scale = baseTfm.scale * appliedTfm.scale;
+            
+            return outTfm;
+        }
+
+        public static TransformSet InterpolateTransforms(TransformSet tfmMin, TransformSet tfmMax, float ratio)
+        {
+            TransformSet outTfm = new();
+            outTfm.pos = Vector3.Lerp(tfmMin.pos, tfmMax.pos, (float)ratio);
+            outTfm.rot = Quaternion.Slerp(tfmMin.rot, tfmMax.rot, (float)ratio);
+            outTfm.scale = Vector3.Lerp(tfmMin.scale, tfmMax.scale, (float)ratio);
+
+            return outTfm;
+        }
+
+        //Returns a set of proportion transforms sorted by keyframe, then node number
+        //Frame 0 values are removed in order to keep just the values needed for transformation
+        public static Dictionary<int, Dictionary<int, TransformSet>> GetPropTransforms(AquaMotion props)
+        {
+            Dictionary<int, Dictionary<int, TransformSet>> propTransforms = new();
+            for(int i = 0; i <= props.moHeader.endFrame; i++)
+            {
+                propTransforms.Add(i, new Dictionary<int, TransformSet>());
+            }
+
+            for (int i = 0; i < props.motionKeys.Count; i++)
+            {
+                foreach (var data in props.motionKeys[i].keyData)
+                {
+                    if(data.vector4Keys.Count > 1)
+                    {
+                        for (int j = 0; j < data.vector4Keys.Count; j++)
+                        {
+                            int frame = data.frameTimings[j] / 0x10;
+                            TransformSet tfm;
+                            if (!propTransforms[frame].ContainsKey(i))
+                            {
+                                tfm = new TransformSet();
+
+                                //Because this is a proportion file, we can expect these to always be here
+                                var pos = props.motionKeys[i].keyData[0].vector4Keys[0];
+                                var rot = props.motionKeys[i].keyData[1].vector4Keys[0];
+                                var scl = props.motionKeys[i].keyData[2].vector4Keys[0];
+
+                                tfm.pos = new Vector3(0, 0, 0);
+                                tfm.rot = Quaternion.Identity;
+                                tfm.scale = new Vector3(scl.X, scl.Y, scl.Z);
+                            } else
+                            {
+                                tfm = propTransforms[frame][i];
+                            }
+
+                            switch (data.keyType)
+                            {
+                                case 1: //Pos
+                                    var posRaw = data.vector4Keys[j];
+                                    if (j != 0) //Remove default local influence
+                                    {
+                                        var pos = new Vector3(posRaw.X, posRaw.Y, posRaw.Z);
+                                        var pos0Raw = data.vector4Keys[0];
+                                        var pos0 = new Vector3(pos0Raw.X, pos0Raw.Y, pos0Raw.Z);
+                                        tfm.pos = tfm.pos + (pos - pos0);
+                                    } else
+                                    {
+                                        tfm.pos = new Vector3();
+                                    }
+                                    break;
+                                case 2: //Rot
+                                    var rot = data.vector4Keys[j];
+                                    if (j != 0) //Remove default local influence
+                                    {
+                                        var quat = new Quaternion(rot.X, rot.Y, rot.Z, rot.W);
+                                        var rot0 = data.vector4Keys[0];
+                                        var rot0Quat = new Quaternion(rot0.X, rot0.Y, rot0.Z, rot0.W);
+                                        tfm.rot = tfm.rot * (quat * Quaternion.Inverse(rot0Quat));
+                                    }
+                                    else
+                                    {
+                                        tfm.rot = Quaternion.Identity;
+                                    }
+                                    break;
+                                case 3: //Scale
+                                    var scaleRaw = data.vector4Keys[j];
+                                    if (j != 0) //Remove default local influence
+                                    {
+                                        var scale = new Vector3(scaleRaw.X, scaleRaw.Y, scaleRaw.Z);
+                                        var scale0Raw = data.vector4Keys[0];
+                                        var scale0 = new Vector3(scale0Raw.X, scale0Raw.Y, scale0Raw.Z);
+                                        tfm.scale = tfm.scale * (scale / scale0);
+                                    } else
+                                    {
+                                        tfm.scale = new Vector3(1, 1, 1);
+                                    }
+                                    break;
+                                default:
+                                    Trace.WriteLine($"Unexpected keytype {data.keyType}");
+                                break;
+                            }
+                            propTransforms[frame][i] = tfm;
+                        }
+                    }
+                }
+            }
+
+            return propTransforms;
+        }
+
+
 
         public void GetCharacterFilenames()
         {
             GetBasewearFilenames();
-            
         }
 
         public void GetBasewearFilenames()
@@ -145,9 +600,22 @@ namespace CharFileLibrary.Character_Making_File_Tool.Utilities
         {
             AquaUtil aqua = new AquaUtil();
             var files = GetFilesFromIceLooseMatch(icePath, modelStrings);
-            aqua.BeginReadModel(files[modelStrings[0]]);
+            byte[] aqp = new byte[0];
+            byte[] aqnode = new byte[0];
+            foreach(var file in files)
+            {
+                if(file.Key.Contains(modelStrings[0]))
+                {
+                    aqp = file.Value;
+                }
+                else if (file.Key.Contains(modelStrings[1]))
+                {
+                    aqnode = file.Value;
+                }
+            }
+            aqua.BeginReadModel(aqp);
             AquaObject model = aqua.aquaModels[0].models[0];
-            aqua.ReadBones(files[modelStrings[1]]);
+            aqua.ReadBones(aqnode);
             aqn = aqua.aquaBones[0];
 
             return model;
@@ -269,7 +737,7 @@ namespace CharFileLibrary.Character_Making_File_Tool.Utilities
             {
                 if (basewearPart >= 100000) //Reboot
                 {
-                    if(basewearPart >= 500000 || (basewearPart < 200000)) //Male. Currently 200000-300000 is unused. 400000-500000 is cast reserved and so not used for basewears. 500000 is 'genderless' which uses male reboot
+                    if(basewearPart >= 500000 && (basewearPart < 200000 || basewearPart >= 300000)) //Male. Currently 200000-300000 is unused. 400000-500000 is cast reserved and so not used for basewears. 500000 is 'genderless' which uses male reboot
                     {
                         if(face >= 100000)
                         {
