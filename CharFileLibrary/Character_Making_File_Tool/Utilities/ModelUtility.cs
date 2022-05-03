@@ -65,28 +65,35 @@ namespace CharFileLibrary.Character_Making_File_Tool.Utilities
 
             public void PSO2Transform(TransformSet oldParSet, TransformSet newParSet, TransformSet relativeTfm)
             {
-                
-                //Get difference in parent rotations
-                var parDif = newParSet.rot * Quaternion.Inverse(oldParSet.rot);
-
                 //Translation vector transformation
-                    var tempPosNeg1 = pos;
+                
+                var tempPosNeg1 = pos;
                 pos -= oldParSet.pos;
-                    var tempPos = pos;
+                
+                var tempPos = pos;
                 var relativeTemp = relativeTfm.pos;
-                relativeTemp = Vector3.Transform(relativeTemp, relativeTfm.rot);
-                pos += relativeTemp;
+                //relativeTemp = Vector3.Transform(relativeTemp, relativeTfm.rot);
+                
+                //pos += relativeTfm.pos;
                     var tempPos2 = pos;
                 //pos = Vector3.Transform(pos, parDif);
                 //pos = Vector3.Transform(pos, relativeTfm.rot);
-                pos += newParSet.pos;
+                
 
                 //Rotation transformation
                 var tempRot = rot;
+                rot = rot * Quaternion.Inverse(oldParSet.rot);
                 rot = rot * relativeTfm.rot;
-                
+                var localRot = rot;
+                rot = rot * newParSet.rot;
+
+                //Finish translation with local rot
+                relativeTemp = Vector3.Transform(relativeTemp, newParSet.rot);
+                pos += relativeTemp;
+                pos += newParSet.pos;
+
                 //Scale transformation
-                scale *= relativeTfm.scale;
+                //scale *= relativeTfm.scale;
             }
 
             public Matrix4x4 GetMatrix4x4()
@@ -274,7 +281,8 @@ namespace CharFileLibrary.Character_Making_File_Tool.Utilities
                     for(int w = 0; w < weightIndices.Length; w++)
                     {
                         int finalWeightIndex = (int)bonePalette[weightIndices[w]];
-                        var localPos = vtxl.vertPositions[i] - oldBoneList[finalWeightIndex].pos;
+                        //var localPos = vtxl.vertPositions[i] - oldBoneList[finalWeightIndex].pos;
+                        var localPos = vtxl.vertPositions[i];
                         float weight = 0;
                         switch (w)
                         {
@@ -292,20 +300,24 @@ namespace CharFileLibrary.Character_Making_File_Tool.Utilities
                                 break;
                         }
 
+                        localPos = Vector3.Transform(localPos, oldBoneList[finalWeightIndex].GetInverseMatrix4x4());
                         if (props.Count > finalWeightIndex)
                         {
-                            localPos += props[finalWeightIndex].pos;
+                            //localPos += props[finalWeightIndex].pos;
+                            //localPos *= props[finalWeightIndex].scale;
+
+                            //localPos = Vector3.Transform(localPos, props[finalWeightIndex].rot);
+                            //localPos = Vector3.Transform(localPos, props[finalWeightIndex].GetMatrix4x4());
                             localPos *= props[finalWeightIndex].scale;
 
-                            localPos = Vector3.Transform(localPos, props[finalWeightIndex].rot);
-
-                            //localPos = Vector3.Transform(localPos, props[finalWeightIndex].GetMatrix4x4());
                             vertNrm += Vector3.TransformNormal(vtxl.vertNormals[i], props[finalWeightIndex].GetMatrix4x4()) * weight;
                         } else
                         {
                             vertNrm += vtxl.vertNormals[i] * weight;
                         }
-                        vertPos += (localPos + newBoneList[finalWeightIndex].pos) * weight;
+                        localPos = Vector3.Transform(localPos, newBoneList[finalWeightIndex].GetMatrix4x4());
+
+                        vertPos += localPos * weight;
                     }
                     vtxl.vertPositions[i] = vertPos;
                     vtxl.vertNormals[i] = vertNrm;
@@ -336,51 +348,51 @@ namespace CharFileLibrary.Character_Making_File_Tool.Utilities
             }
 
             //Physique
-            PropTransforms(ref outTfm, propTransforms, PhysiqueCenterYMin, PhysiqueCenterYMax, GetNGSPropRatio(xxp.baseFIGR.bodyVerts.X));
-            PropTransforms(ref outTfm, propTransforms, PhysiqueSideXMin, PhysiqueSideXMax, GetNGSPropRatio(xxp.baseFIGR.bodyVerts.Y));
-            PropTransforms(ref outTfm, propTransforms, PhysiqueSideYMin, PhysiqueSideYMax, GetNGSPropRatio(xxp.baseFIGR.bodyVerts.Z));
+            PropTransforms(outTfm, propTransforms, PhysiqueCenterYMin, PhysiqueCenterYMax, GetNGSPropRatio(xxp.baseFIGR.bodyVerts.X));
+            PropTransforms(outTfm, propTransforms, PhysiqueSideXMin, PhysiqueSideXMax, GetNGSPropRatio(xxp.baseFIGR.bodyVerts.Y));
+            PropTransforms(outTfm, propTransforms, PhysiqueSideYMin, PhysiqueSideYMax, GetNGSPropRatio(xxp.baseFIGR.bodyVerts.Z));
 
             //Arms
-            PropTransforms(ref outTfm, propTransforms, ArmsCenterYMin, ArmsCenterYMax, GetNGSPropRatio(xxp.baseFIGR.armVerts.X));
-            PropTransforms(ref outTfm, propTransforms, ArmsSideXMin, ArmsSideXMax, GetNGSPropRatio(xxp.baseFIGR.armVerts.Y));
-            PropTransforms(ref outTfm, propTransforms, ArmsSideYMin, ArmsSideYMax, GetNGSPropRatio(xxp.baseFIGR.armVerts.Z));
+            PropTransforms(outTfm, propTransforms, ArmsCenterYMin, ArmsCenterYMax, GetNGSPropRatio(xxp.baseFIGR.armVerts.X));
+            PropTransforms(outTfm, propTransforms, ArmsSideXMin, ArmsSideXMax, GetNGSPropRatio(xxp.baseFIGR.armVerts.Y));
+            PropTransforms(outTfm, propTransforms, ArmsSideYMin, ArmsSideYMax, GetNGSPropRatio(xxp.baseFIGR.armVerts.Z));
 
             //Legs
-            PropTransforms(ref outTfm, propTransforms, LegsCenterYMin, LegsCenterYMax, GetNGSPropRatio(xxp.baseFIGR.legVerts.X));
-            PropTransforms(ref outTfm, propTransforms, LegsSideXMin, LegsSideXMax, GetNGSPropRatio(xxp.baseFIGR.legVerts.Y));
-            PropTransforms(ref outTfm, propTransforms, LegsSideYMin, LegsSideYMax, GetNGSPropRatio(xxp.baseFIGR.legVerts.Z));
+            PropTransforms(outTfm, propTransforms, LegsCenterYMin, LegsCenterYMax, GetNGSPropRatio(xxp.baseFIGR.legVerts.X));
+            PropTransforms(outTfm, propTransforms, LegsSideXMin, LegsSideXMax, GetNGSPropRatio(xxp.baseFIGR.legVerts.Y));
+            PropTransforms(outTfm, propTransforms, LegsSideYMin, LegsSideYMax, GetNGSPropRatio(xxp.baseFIGR.legVerts.Z));
 
             //Chest
-            PropTransforms(ref outTfm, propTransforms, ChestCenterYMin, ChestCenterYMax, GetNGSPropRatio(xxp.baseFIGR.bustVerts.X));
-            PropTransforms(ref outTfm, propTransforms, ChestSideXMin, ChestSideXMax, GetNGSPropRatio(xxp.baseFIGR.bustVerts.Y));
-            PropTransforms(ref outTfm, propTransforms, ChestSideYMin, ChestSideYMax, GetNGSPropRatio(xxp.baseFIGR.bustVerts.Z));
+            PropTransforms(outTfm, propTransforms, ChestCenterYMin, ChestCenterYMax, GetNGSPropRatio(xxp.baseFIGR.bustVerts.X));
+            PropTransforms(outTfm, propTransforms, ChestSideXMin, ChestSideXMax, GetNGSPropRatio(xxp.baseFIGR.bustVerts.Y));
+            PropTransforms(outTfm, propTransforms, ChestSideYMin, ChestSideYMax, GetNGSPropRatio(xxp.baseFIGR.bustVerts.Z));
 
             //Neck
-            PropTransforms(ref outTfm, propTransforms, NeckCenterYMin, NeckCenterYMax, GetNGSPropRatio(xxp.neckVerts.X));
-            PropTransforms(ref outTfm, propTransforms, NeckSideXMin, NeckSideXMax, GetNGSPropRatio(xxp.neckVerts.Y));
-            PropTransforms(ref outTfm, propTransforms, NeckSideYMin, NeckSideYMax, GetNGSPropRatio(xxp.neckVerts.Z));
+            PropTransforms(outTfm, propTransforms, NeckCenterYMin, NeckCenterYMax, GetNGSPropRatio(xxp.neckVerts.X));
+            PropTransforms(outTfm, propTransforms, NeckSideXMin, NeckSideXMax, GetNGSPropRatio(xxp.neckVerts.Y));
+            PropTransforms(outTfm, propTransforms, NeckSideYMin, NeckSideYMax, GetNGSPropRatio(xxp.neckVerts.Z));
 
             //Waist
-            PropTransforms(ref outTfm, propTransforms, WaistCenterYMin, WaistCenterYMax, GetNGSPropRatio(xxp.waistVerts.X));
-            PropTransforms(ref outTfm, propTransforms, WaistSideXMin, WaistSideXMax, GetNGSPropRatio(xxp.waistVerts.Y));
-            PropTransforms(ref outTfm, propTransforms, WaistSideYMin, WaistSideYMax, GetNGSPropRatio(xxp.waistVerts.Z));
+            PropTransforms(outTfm, propTransforms, WaistCenterYMin, WaistCenterYMax, GetNGSPropRatio(xxp.waistVerts.X));
+            PropTransforms(outTfm, propTransforms, WaistSideXMin, WaistSideXMax, GetNGSPropRatio(xxp.waistVerts.Y));
+            PropTransforms(outTfm, propTransforms, WaistSideYMin, WaistSideYMax, GetNGSPropRatio(xxp.waistVerts.Z));
 
             //NGS only
             if (props.moHeader.endFrame > 80)
             {
-                PropTransforms(ref outTfm, propTransforms, ShoulderSizeMin, ShoulderSizeMax, GetNGSPropRatio(xxp.ngsSLID.shoulderSize));
+                PropTransforms(outTfm, propTransforms, ShoulderSizeMin, ShoulderSizeMax, GetNGSPropRatio(xxp.ngsSLID.shoulderSize));
 
-                PropTransforms(ref outTfm, propTransforms, HandsCenterYMin, HandsCenterYMax, GetNGSPropRatio(xxp.hands.X));
-                PropTransforms(ref outTfm, propTransforms, HandsSideXMin, HandsSideXMax, GetNGSPropRatio(xxp.hands.Y));
-                PropTransforms(ref outTfm, propTransforms, HandsSideYMin, HandsSideYMax, GetNGSPropRatio(xxp.hands.Z));
+                PropTransforms(outTfm, propTransforms, HandsCenterYMin, HandsCenterYMax, GetNGSPropRatio(xxp.hands.X));
+                PropTransforms(outTfm, propTransforms, HandsSideXMin, HandsSideXMax, GetNGSPropRatio(xxp.hands.Y));
+                PropTransforms(outTfm, propTransforms, HandsSideYMin, HandsSideYMax, GetNGSPropRatio(xxp.hands.Z));
 
-                PropTransforms(ref outTfm, propTransforms, NeckAngleMin, NeckAngleMax, GetNGSPropRatio(xxp.neckAngle));
-                PropTransforms(ref outTfm, propTransforms, VerticalPositionArmsMin, VerticalPositionArmsMax, GetNGSPropRatio(xxp.ngsSLID.shoulderVertical));
-                PropTransforms(ref outTfm, propTransforms, ThighsMin, ThighsMax, GetNGSPropRatio(xxp.ngsSLID.thighsAdjust));
-                PropTransforms(ref outTfm, propTransforms, CalvesMin, CalvesMax, GetNGSPropRatio(xxp.ngsSLID.calvesAdjust));
-                PropTransforms(ref outTfm, propTransforms, ForearmsMin, ForearmsMax, GetNGSPropRatio(xxp.ngsSLID.forearmsAdjust));
-                PropTransforms(ref outTfm, propTransforms, HandThicknessMin, HandThicknessMax, GetNGSPropRatio(xxp.ngsSLID.handThickness));
-                PropTransforms(ref outTfm, propTransforms, FootSizeMin, FootSizeMax, GetNGSPropRatio(xxp.ngsSLID.footSize));
+                PropTransforms(outTfm, propTransforms, NeckAngleMin, NeckAngleMax, GetNGSPropRatio(xxp.neckAngle));
+                PropTransforms(outTfm, propTransforms, VerticalPositionArmsMin, VerticalPositionArmsMax, GetNGSPropRatio(xxp.ngsSLID.shoulderVertical));
+                PropTransforms(outTfm, propTransforms, ThighsMin, ThighsMax, GetNGSPropRatio(xxp.ngsSLID.thighsAdjust));
+                PropTransforms(outTfm, propTransforms, CalvesMin, CalvesMax, GetNGSPropRatio(xxp.ngsSLID.calvesAdjust));
+                PropTransforms(outTfm, propTransforms, ForearmsMin, ForearmsMax, GetNGSPropRatio(xxp.ngsSLID.forearmsAdjust));
+                PropTransforms(outTfm, propTransforms, HandThicknessMin, HandThicknessMax, GetNGSPropRatio(xxp.ngsSLID.handThickness));
+                PropTransforms(outTfm, propTransforms, FootSizeMin, FootSizeMax, GetNGSPropRatio(xxp.ngsSLID.footSize));
             }
 
             return outTfm;
@@ -393,7 +405,7 @@ namespace CharFileLibrary.Character_Making_File_Tool.Utilities
             return ratio;
         }
 
-        public static void PropTransforms(ref List<TransformSet> outTfm, Dictionary<int, Dictionary<int, TransformSet>> propDict, int minFrame, int maxFrame, float ratio)
+        public static void PropTransforms(List<TransformSet> outTfm, Dictionary<int, Dictionary<int, TransformSet>> propDict, int minFrame, int maxFrame, float ratio)
         {
             var commonKeys = propDict[maxFrame].Keys.ToList();
             var minKeys = propDict[minFrame].Keys.ToList();
@@ -489,7 +501,8 @@ namespace CharFileLibrary.Character_Making_File_Tool.Utilities
                                         var pos = new Vector3(posRaw.X, posRaw.Y, posRaw.Z);
                                         var pos0Raw = data.vector4Keys[0];
                                         var pos0 = new Vector3(pos0Raw.X, pos0Raw.Y, pos0Raw.Z);
-                                        tfm.pos = tfm.pos + (pos - pos0);
+                                        var relPos = pos - pos0;
+                                        tfm.pos = tfm.pos + relPos;
                                     } else
                                     {
                                         tfm.pos = new Vector3();
@@ -502,12 +515,15 @@ namespace CharFileLibrary.Character_Making_File_Tool.Utilities
                                         var quat = new Quaternion(rot.X, rot.Y, rot.Z, rot.W);
                                         var rot0 = data.vector4Keys[0];
                                         var rot0Quat = new Quaternion(rot0.X, rot0.Y, rot0.Z, rot0.W);
-                                        tfm.rot = tfm.rot * (quat * Quaternion.Inverse(rot0Quat));
+                                        var relQuat = quat * Quaternion.Inverse(rot0Quat);
+                                        tfm.rot = tfm.rot * relQuat;
                                     }
                                     else
                                     {
                                         tfm.rot = Quaternion.Identity;
                                     }
+                                    tfm.rot = Quaternion.Identity;
+
                                     break;
                                 case 3: //Scale
                                     var scaleRaw = data.vector4Keys[j];
