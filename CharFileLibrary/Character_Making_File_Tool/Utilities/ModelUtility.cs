@@ -63,37 +63,26 @@ namespace CharFileLibrary.Character_Making_File_Tool.Utilities
                 return tfm;
             }
 
-            public void PSO2Transform(TransformSet oldParSet, TransformSet newParSet, TransformSet relativeTfm)
+            public void PSO2Transform(TransformSet oldParSet, TransformSet newParSet, TransformSet relativeTfm, TransformSet relativeParTfm)
             {
                 //Translation vector transformation
-                
-                var tempPosNeg1 = pos;
+                //We remove the old parent transform's influence from it, add the relative position, and multiply by the parent's scale before adding back the new parent transform influence
                 pos -= oldParSet.pos;
-                
-                var tempPos = pos;
-                var relativeTemp = relativeTfm.pos;
-                //relativeTemp = Vector3.Transform(relativeTemp, relativeTfm.rot);
-                
-                //pos += relativeTfm.pos;
-                    var tempPos2 = pos;
-                //pos = Vector3.Transform(pos, parDif);
-                //pos = Vector3.Transform(pos, relativeTfm.rot);
-                
 
-                //Rotation transformation
-                var tempRot = rot;
-                rot = rot * Quaternion.Inverse(oldParSet.rot);
-                rot = rot * relativeTfm.rot;
-                var localRot = rot;
-                rot = rot * newParSet.rot;
+                pos = Vector3.Transform(pos, Quaternion.Inverse(oldParSet.rot));
+                pos += relativeTfm.pos;
+                pos *= relativeParTfm.scale;
+                pos = Vector3.Transform(pos, newParSet.rot);
 
-                //Finish translation with local rot
-                relativeTemp = Vector3.Transform(relativeTemp, newParSet.rot);
-                pos += relativeTemp;
                 pos += newParSet.pos;
 
-                //Scale transformation
-                //scale *= relativeTfm.scale;
+                //Rotation transformation
+                //Remove old parent transform's influence, apply relative rotation, apply new parent transform's influence
+                rot = rot * Quaternion.Inverse(oldParSet.rot);
+                rot = rot * relativeTfm.rot;
+                rot = rot * newParSet.rot;
+
+                //Scale influence isn't done the usual way in pso2 so we leave this out.
             }
 
             public Matrix4x4 GetMatrix4x4()
@@ -196,10 +185,11 @@ namespace CharFileLibrary.Character_Making_File_Tool.Utilities
             AquaUtil.ModelSet ms = new AquaUtil.ModelSet();
             ms.models.Add(compositeModel);
             aqu.aquaModels.Add(ms);
-            if(compositeModel.objc.type >= 0xC32)
+            if (compositeModel.objc.type >= 0xC32)
             {
                 aqu.WriteNGSNIFLModel("C:/Test.aqp", "C:/Test.aqp");
-            } else
+            }
+            else
             {
                 aqu.WriteClassicNIFLModel("C:/Test.aqp", "C:/Test.aqp");
             }
@@ -219,7 +209,7 @@ namespace CharFileLibrary.Character_Making_File_Tool.Utilities
             List<Quaternion> localRots = new List<Quaternion>() { Quaternion.Identity };
 
             //Gather node transforms, apply node. Start at 1 to skip root.
-            for(int i = 1; i < aquaNode.nodeList.Count; i++)
+            for (int i = 1; i < aquaNode.nodeList.Count; i++)
             {
                 var node = aquaNode.nodeList[i];
                 Matrix4x4.Invert(aquaNode.nodeList[i].GetInverseBindPoseMatrix(), out Matrix4x4 mat);
@@ -230,7 +220,12 @@ namespace CharFileLibrary.Character_Making_File_Tool.Utilities
                 var newTfmSet = tfmSet.Clone();
                 var oldParMat = oldBoneList[aquaNode.nodeList[i].parentId];
                 var newParMat = newBoneList[aquaNode.nodeList[i].parentId];
+                var parProps = new TransformSet();
 
+                if (aquaNode.nodeList[i].parentId < props.Count)
+                {
+                    parProps = props[aquaNode.nodeList[i].parentId];
+                }
 
                 //DEBUG REMOVE LATER ********************************
                 /*
@@ -246,26 +241,28 @@ namespace CharFileLibrary.Character_Making_File_Tool.Utilities
 
                 if (props.Count > i)
                 {
-                    newTfmSet.PSO2Transform(oldParMat, newParMat, props[i]);
-                } else
+                    newTfmSet.PSO2Transform(oldParMat, newParMat, props[i], parProps);
+                }
+                else
                 {
-                    newTfmSet.PSO2Transform(oldParMat, newParMat, new TransformSet());
+                    newTfmSet.PSO2Transform(oldParMat, newParMat, new TransformSet(), parProps);
                 }
 
                 node.SetInverseBindPoseMatrix(newTfmSet.GetInverseMatrix4x4());
                 aquaNode.nodeList[i] = node;
                 newBoneList.Add(newTfmSet);
             }
-            foreach(var vtxl in bodyModel.vtxlList)
+            foreach (var vtxl in bodyModel.vtxlList)
             {
                 List<uint> bonePalette;
                 if (bodyModel.bonePalette != null && bodyModel.bonePalette.Count > 0)
                 {
                     bonePalette = bodyModel.bonePalette;
-                } else
+                }
+                else
                 {
                     bonePalette = new List<uint>();
-                    for(int i = 0; i < vtxl.bonePalette.Count; i++)
+                    for (int i = 0; i < vtxl.bonePalette.Count; i++)
                     {
                         bonePalette.Add(vtxl.bonePalette[i]);
                     }
@@ -278,7 +275,7 @@ namespace CharFileLibrary.Character_Making_File_Tool.Utilities
                     var weights = vtxl.trueVertWeights[i];
 
 
-                    for(int w = 0; w < weightIndices.Length; w++)
+                    for (int w = 0; w < weightIndices.Length; w++)
                     {
                         int finalWeightIndex = (int)bonePalette[weightIndices[w]];
                         //var localPos = vtxl.vertPositions[i] - oldBoneList[finalWeightIndex].pos;
@@ -308,10 +305,14 @@ namespace CharFileLibrary.Character_Making_File_Tool.Utilities
 
                             //localPos = Vector3.Transform(localPos, props[finalWeightIndex].rot);
                             //localPos = Vector3.Transform(localPos, props[finalWeightIndex].GetMatrix4x4());
+
+                            //if(aquaNode.nodeList[finalWeightIndex].boneShort1)
+
                             localPos *= props[finalWeightIndex].scale;
 
                             vertNrm += Vector3.TransformNormal(vtxl.vertNormals[i], props[finalWeightIndex].GetMatrix4x4()) * weight;
-                        } else
+                        }
+                        else
                         {
                             vertNrm += vtxl.vertNormals[i] * weight;
                         }
@@ -412,18 +413,18 @@ namespace CharFileLibrary.Character_Making_File_Tool.Utilities
             var toRemove = new List<int>();
             foreach (var key in commonKeys)
             {
-                if(!minKeys.Contains(key))
+                if (!minKeys.Contains(key))
                 {
                     toRemove.Add(key);
                 }
             }
 
-            foreach(var key in toRemove)
+            foreach (var key in toRemove)
             {
                 commonKeys.Remove(key);
             }
 
-            foreach(var key in commonKeys)
+            foreach (var key in commonKeys)
             {
                 outTfm[key] = PropTransform(outTfm[key], propDict[minFrame][key], propDict[maxFrame][key], ratio);
             }
@@ -441,7 +442,7 @@ namespace CharFileLibrary.Character_Making_File_Tool.Utilities
             outTfm.pos = baseTfm.pos + appliedTfm.pos;
             outTfm.rot = baseTfm.rot * appliedTfm.rot;
             outTfm.scale = baseTfm.scale * appliedTfm.scale;
-            
+
             return outTfm;
         }
 
@@ -460,7 +461,7 @@ namespace CharFileLibrary.Character_Making_File_Tool.Utilities
         public static Dictionary<int, Dictionary<int, TransformSet>> GetPropTransforms(AquaMotion props)
         {
             Dictionary<int, Dictionary<int, TransformSet>> propTransforms = new();
-            for(int i = 0; i <= props.moHeader.endFrame; i++)
+            for (int i = 0; i <= props.moHeader.endFrame; i++)
             {
                 propTransforms.Add(i, new Dictionary<int, TransformSet>());
             }
@@ -469,7 +470,7 @@ namespace CharFileLibrary.Character_Making_File_Tool.Utilities
             {
                 foreach (var data in props.motionKeys[i].keyData)
                 {
-                    if(data.vector4Keys.Count > 1)
+                    if (data.vector4Keys.Count > 1)
                     {
                         for (int j = 0; j < data.vector4Keys.Count; j++)
                         {
@@ -487,7 +488,8 @@ namespace CharFileLibrary.Character_Making_File_Tool.Utilities
                                 tfm.pos = new Vector3(0, 0, 0);
                                 tfm.rot = Quaternion.Identity;
                                 tfm.scale = new Vector3(scl.X, scl.Y, scl.Z);
-                            } else
+                            }
+                            else
                             {
                                 tfm = propTransforms[frame][i];
                             }
@@ -503,7 +505,8 @@ namespace CharFileLibrary.Character_Making_File_Tool.Utilities
                                         var pos0 = new Vector3(pos0Raw.X, pos0Raw.Y, pos0Raw.Z);
                                         var relPos = pos - pos0;
                                         tfm.pos = tfm.pos + relPos;
-                                    } else
+                                    }
+                                    else
                                     {
                                         tfm.pos = new Vector3();
                                     }
@@ -533,14 +536,15 @@ namespace CharFileLibrary.Character_Making_File_Tool.Utilities
                                         var scale0Raw = data.vector4Keys[0];
                                         var scale0 = new Vector3(scale0Raw.X, scale0Raw.Y, scale0Raw.Z);
                                         tfm.scale = tfm.scale * (scale / scale0);
-                                    } else
+                                    }
+                                    else
                                     {
                                         tfm.scale = new Vector3(1, 1, 1);
                                     }
                                     break;
                                 default:
                                     Trace.WriteLine($"Unexpected keytype {data.keyType}");
-                                break;
+                                    break;
                             }
                             propTransforms[frame][i] = tfm;
                         }
@@ -618,9 +622,9 @@ namespace CharFileLibrary.Character_Making_File_Tool.Utilities
             var files = GetFilesFromIceLooseMatch(icePath, modelStrings);
             byte[] aqp = new byte[0];
             byte[] aqnode = new byte[0];
-            foreach(var file in files)
+            foreach (var file in files)
             {
-                if(file.Key.Contains(modelStrings[0]))
+                if (file.Key.Contains(modelStrings[0]))
                 {
                     aqp = file.Value;
                 }
@@ -640,7 +644,7 @@ namespace CharFileLibrary.Character_Making_File_Tool.Utilities
         private static AquaMotion GetMotion(xxpGeneralReboot xxp, string icePath, string motionString)
         {
             AquaUtil aqua = new AquaUtil();
-            byte[] foundFile = GetFilesFromIce(icePath, new List<string>(){ motionString })[motionString];
+            byte[] foundFile = GetFilesFromIce(icePath, new List<string>() { motionString })[motionString];
             aqua.ReadMotion(foundFile);
             foundFile = null;
             AquaMotion motion = aqua.aquaMotions[0].anims[0];
@@ -692,9 +696,9 @@ namespace CharFileLibrary.Character_Making_File_Tool.Utilities
                 foreach (byte[] file in files)
                 {
                     var name = IceFile.getFileName(file).ToLower();
-                    foreach(var str in fileNames)
+                    foreach (var str in fileNames)
                     {
-                        if(name.Contains(str))
+                        if (name.Contains(str))
                         {
                             foundFiles.Add(name, file);
                             break;
@@ -725,7 +729,8 @@ namespace CharFileLibrary.Character_Making_File_Tool.Utilities
                 {
                     return "pl_cmakemot_b_fh_rb.aqm";
                 }
-            } else if (costumePart >= 40000 && costumePart < 60000)  //Cast
+            }
+            else if (costumePart >= 40000 && costumePart < 60000)  //Cast
             {
                 type = castStr;
                 if (costumePart < 50000)
@@ -753,16 +758,18 @@ namespace CharFileLibrary.Character_Making_File_Tool.Utilities
             {
                 if (basewearPart >= 100000) //Reboot
                 {
-                    if(basewearPart >= 500000 && (basewearPart < 200000 || basewearPart >= 300000)) //Male. Currently 200000-300000 is unused. 400000-500000 is cast reserved and so not used for basewears. 500000 is 'genderless' which uses male reboot
+                    if (basewearPart >= 500000 && (basewearPart < 200000 || basewearPart >= 300000)) //Male. Currently 200000-300000 is unused. 400000-500000 is cast reserved and so not used for basewears. 500000 is 'genderless' which uses male reboot
                     {
-                        if(face >= 100000)
+                        if (face >= 100000)
                         {
                             return "pl_cmakemot_b_mh_rb.aqm";
-                        } else
+                        }
+                        else
                         {
                             return "pl_cmakemot_b_mh_rb_oldface.aqm";
                         }
-                    } else
+                    }
+                    else
                     {
                         if (face >= 100000)
                         {
