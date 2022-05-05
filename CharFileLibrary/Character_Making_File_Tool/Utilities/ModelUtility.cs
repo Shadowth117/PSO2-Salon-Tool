@@ -36,9 +36,12 @@ namespace CharFileLibrary.Character_Making_File_Tool.Utilities
 
         public class TransformSet
         {
+            public ushort boneShort1;
+            public ushort boneShort2;
             public Vector3 pos = new Vector3();
             public Quaternion rot = Quaternion.Identity;
             public Vector3 scale = new Vector3(1, 1, 1);
+            public Vector3 postScale = new Vector3(1, 1, 1);
 
             public TransformSet()
             {
@@ -65,6 +68,12 @@ namespace CharFileLibrary.Character_Making_File_Tool.Utilities
 
             public void PSO2Transform(TransformSet oldParSet, TransformSet newParSet, TransformSet relativeTfm, TransformSet relativeParTfm)
             {
+                //Rotation transformation
+                //Remove old parent transform's influence, apply relative rotation, apply new parent transform's influence
+                rot = rot * Quaternion.Inverse(oldParSet.rot);
+                rot = rot * relativeTfm.rot;
+                rot = rot * newParSet.rot;
+
                 //Translation vector transformation
                 //We remove the old parent transform's influence from it, add the relative position, and multiply by the parent's scale before adding back the new parent transform influence
                 pos -= oldParSet.pos;
@@ -72,33 +81,31 @@ namespace CharFileLibrary.Character_Making_File_Tool.Utilities
                 pos = Vector3.Transform(pos, Quaternion.Inverse(oldParSet.rot));
                 pos += relativeTfm.pos;
                 pos *= relativeParTfm.scale;
+
                 pos = Vector3.Transform(pos, newParSet.rot);
 
                 pos += newParSet.pos;
 
-                //Rotation transformation
-                //Remove old parent transform's influence, apply relative rotation, apply new parent transform's influence
-                rot = rot * Quaternion.Inverse(oldParSet.rot);
-                rot = rot * relativeTfm.rot;
-                rot = rot * newParSet.rot;
-
                 //Scale influence isn't done the usual way in pso2 so we leave this out.
             }
 
-            public Matrix4x4 GetMatrix4x4()
+            public Matrix4x4 GetMatrix4x4(bool nullPos = false)
             {
                 Matrix4x4 mat = Matrix4x4.Identity;
 
                 mat *= Matrix4x4.CreateScale(scale);
                 mat *= Matrix4x4.CreateFromQuaternion(rot);
-                mat *= Matrix4x4.CreateTranslation(pos);
+                if(nullPos == false)
+                {
+                    mat *= Matrix4x4.CreateTranslation(pos);
+                }
 
                 return mat;
             }
 
-            public Matrix4x4 GetInverseMatrix4x4()
+            public Matrix4x4 GetInverseMatrix4x4(bool nullPos = false)
             {
-                Matrix4x4.Invert(GetMatrix4x4(), out Matrix4x4 result);
+                Matrix4x4.Invert(GetMatrix4x4(nullPos), out Matrix4x4 result);
                 return result;
             }
         }
@@ -117,24 +124,6 @@ namespace CharFileLibrary.Character_Making_File_Tool.Utilities
             string bodyTypeString = GetBodyTypeString(xxp, out string bodyCategory);
             AquaMotion bodyProps = GetMotion(xxp, proportionsPath, bodyTypeString);
 
-            //Calc final transformation matrices per bone
-            var finalBodyTransforms = CalcBodyTransforms(bodyProps);
-            /*
-            //Calc final face transformations per bone
-            var finalFaceTransforms = CalcFaceTransforms(faceProps, bodyProps);
-
-            //Calc final mouth transformations per bone
-            var finalMouthTransforms = CalcMouthTransforms(mouthProps);
-
-            //Calc final ear transformations per bone
-            var finalEarTransforms = CalcEarTransforms(earProps);
-
-            //Calc final face transformations per bone
-            var finalHornTransforms = CalcHornTransforms(hornProps);
-
-            //Calc final ngs hair transformations per bone (Seems to use X scale of drs_line_front_1_1 as a vertical scale for bangs on frames 1 and 3)
-            var finalHairTransforms = CalcHairTransforms(hornProps);
-            */
             //Get filenames
             GetCharacterFilenames();
 
@@ -152,6 +141,26 @@ namespace CharFileLibrary.Character_Making_File_Tool.Utilities
 
             compositeModel = basewearModel;
             compositeBones = basewearNode;
+
+            //Calc final transformation matrices per bone
+            var finalBodyTransforms = CalcBodyTransforms(bodyProps, compositeBones);
+            /*
+            //Calc final face transformations per bone
+            var finalFaceTransforms = CalcFaceTransforms(faceProps, bodyProps);
+
+            //Calc final mouth transformations per bone
+            var finalMouthTransforms = CalcMouthTransforms(mouthProps);
+
+            //Calc final ear transformations per bone
+            var finalEarTransforms = CalcEarTransforms(earProps);
+
+            //Calc final face transformations per bone
+            var finalHornTransforms = CalcHornTransforms(hornProps);
+
+            //Calc final ngs hair transformations per bone (Seems to use X scale of drs_line_front_1_1 as a vertical scale for bangs on frames 1 and 3)
+            var finalHairTransforms = CalcHairTransforms(hornProps);
+            */
+
             ApplyProportions(finalBodyTransforms, compositeModel, compositeBones);
 
             //Load head models 
@@ -278,8 +287,7 @@ namespace CharFileLibrary.Character_Making_File_Tool.Utilities
                     for (int w = 0; w < weightIndices.Length; w++)
                     {
                         int finalWeightIndex = (int)bonePalette[weightIndices[w]];
-                        //var localPos = vtxl.vertPositions[i] - oldBoneList[finalWeightIndex].pos;
-                        var localPos = vtxl.vertPositions[i];
+                        var localPos = vtxl.vertPositions[i] - oldBoneList[finalWeightIndex].pos;
                         float weight = 0;
                         switch (w)
                         {
@@ -297,7 +305,7 @@ namespace CharFileLibrary.Character_Making_File_Tool.Utilities
                                 break;
                         }
 
-                        localPos = Vector3.Transform(localPos, oldBoneList[finalWeightIndex].GetInverseMatrix4x4());
+                        localPos = Vector3.Transform(localPos, oldBoneList[finalWeightIndex].GetInverseMatrix4x4(true));
                         if (props.Count > finalWeightIndex)
                         {
                             //localPos += props[finalWeightIndex].pos;
@@ -306,9 +314,21 @@ namespace CharFileLibrary.Character_Making_File_Tool.Utilities
                             //localPos = Vector3.Transform(localPos, props[finalWeightIndex].rot);
                             //localPos = Vector3.Transform(localPos, props[finalWeightIndex].GetMatrix4x4());
 
-                            //if(aquaNode.nodeList[finalWeightIndex].boneShort1)
-
                             localPos *= props[finalWeightIndex].scale;
+
+                            //Add scaling for physics parts etc.
+                            if((props[finalWeightIndex].boneShort2 & 0x400) == 0x400)
+                            {
+                                var parRot = Quaternion.CreateFromRotationMatrix(newBoneList[aquaNode.nodeList[finalWeightIndex].parentId].GetMatrix4x4());
+                                var localRot = newBoneList[finalWeightIndex].rot * Quaternion.Inverse(parRot);
+
+                                localPos = Vector3.Transform(localPos, Quaternion.Inverse(localRot));
+                                localPos *= props[finalWeightIndex].postScale;
+                                localPos = Vector3.Transform(localPos, localRot);
+                            } else
+                            {
+                                localPos *= props[finalWeightIndex].postScale;
+                            }
 
                             vertNrm += Vector3.TransformNormal(vtxl.vertNormals[i], props[finalWeightIndex].GetMatrix4x4()) * weight;
                         }
@@ -316,7 +336,9 @@ namespace CharFileLibrary.Character_Making_File_Tool.Utilities
                         {
                             vertNrm += vtxl.vertNormals[i] * weight;
                         }
-                        localPos = Vector3.Transform(localPos, newBoneList[finalWeightIndex].GetMatrix4x4());
+
+                        localPos = Vector3.Transform(localPos, newBoneList[finalWeightIndex].GetMatrix4x4(true));
+                        localPos += newBoneList[finalWeightIndex].pos;
 
                         vertPos += localPos * weight;
                     }
@@ -330,34 +352,32 @@ namespace CharFileLibrary.Character_Making_File_Tool.Utilities
         //Multiply scales by each other
         //Subtract frame 0 pos for each, add together
         //Returns a transofmration
-        public List<TransformSet> CalcBodyTransforms(AquaMotion props)
+        public List<TransformSet> CalcBodyTransforms(AquaMotion props, AquaNode aqn)
         {
             var propTransforms = GetPropTransforms(props);
             List<TransformSet> outTfm = new();
 
             //Get base matrices
-            for (int i = 0; i < props.motionKeys.Count; i++)
+            for (int i = 0; i < aqn.nodeList.Count; i++)
             {
                 TransformSet tfm = new();
 
-                var scl = props.motionKeys[i].keyData[2].vector4Keys[0];
-                tfm.pos = new Vector3(0, 0, 0);
-                tfm.rot = Quaternion.Identity;
-                tfm.scale = new Vector3(scl.X, scl.Y, scl.Z);
+                //var scl = props.motionKeys[i].keyData[2].vector4Keys[0];
+                //tfm.scale = new Vector3(scl.X, scl.Y, scl.Z);
 
                 outTfm.Add(tfm);
             }
-
+            
             //Physique
             PropTransforms(outTfm, propTransforms, PhysiqueCenterYMin, PhysiqueCenterYMax, GetNGSPropRatio(xxp.baseFIGR.bodyVerts.X));
             PropTransforms(outTfm, propTransforms, PhysiqueSideXMin, PhysiqueSideXMax, GetNGSPropRatio(xxp.baseFIGR.bodyVerts.Y));
             PropTransforms(outTfm, propTransforms, PhysiqueSideYMin, PhysiqueSideYMax, GetNGSPropRatio(xxp.baseFIGR.bodyVerts.Z));
-
+            
             //Arms
             PropTransforms(outTfm, propTransforms, ArmsCenterYMin, ArmsCenterYMax, GetNGSPropRatio(xxp.baseFIGR.armVerts.X));
             PropTransforms(outTfm, propTransforms, ArmsSideXMin, ArmsSideXMax, GetNGSPropRatio(xxp.baseFIGR.armVerts.Y));
             PropTransforms(outTfm, propTransforms, ArmsSideYMin, ArmsSideYMax, GetNGSPropRatio(xxp.baseFIGR.armVerts.Z));
-
+            
             //Legs
             PropTransforms(outTfm, propTransforms, LegsCenterYMin, LegsCenterYMax, GetNGSPropRatio(xxp.baseFIGR.legVerts.X));
             PropTransforms(outTfm, propTransforms, LegsSideXMin, LegsSideXMax, GetNGSPropRatio(xxp.baseFIGR.legVerts.Y));
@@ -377,7 +397,7 @@ namespace CharFileLibrary.Character_Making_File_Tool.Utilities
             PropTransforms(outTfm, propTransforms, WaistCenterYMin, WaistCenterYMax, GetNGSPropRatio(xxp.waistVerts.X));
             PropTransforms(outTfm, propTransforms, WaistSideXMin, WaistSideXMax, GetNGSPropRatio(xxp.waistVerts.Y));
             PropTransforms(outTfm, propTransforms, WaistSideYMin, WaistSideYMax, GetNGSPropRatio(xxp.waistVerts.Z));
-
+            
             //NGS only
             if (props.moHeader.endFrame > 80)
             {
@@ -394,6 +414,18 @@ namespace CharFileLibrary.Character_Making_File_Tool.Utilities
                 PropTransforms(outTfm, propTransforms, ForearmsMin, ForearmsMax, GetNGSPropRatio(xxp.ngsSLID.forearmsAdjust));
                 PropTransforms(outTfm, propTransforms, HandThicknessMin, HandThicknessMax, GetNGSPropRatio(xxp.ngsSLID.handThickness));
                 PropTransforms(outTfm, propTransforms, FootSizeMin, FootSizeMax, GetNGSPropRatio(xxp.ngsSLID.footSize));
+
+            }
+
+            //Fix special NGS bones
+            for (int i = 0; i < aqn.nodeList.Count; i++)
+            {
+                outTfm[i].boneShort1 = aqn.nodeList[i].boneShort1;
+                outTfm[i].boneShort2 = aqn.nodeList[i].boneShort2;
+                if (aqn.nodeList[i].boneShort1 == 0)
+                {
+                    outTfm[i].postScale *= outTfm[aqn.nodeList[i].parentId].scale;
+                }
             }
 
             return outTfm;
@@ -410,23 +442,38 @@ namespace CharFileLibrary.Character_Making_File_Tool.Utilities
         {
             var commonKeys = propDict[maxFrame].Keys.ToList();
             var minKeys = propDict[minFrame].Keys.ToList();
-            var toRemove = new List<int>();
+            var maxFrame0List = new List<int>(); //List of nodes where the max frame should be 0
+            var minFrame0List = new List<int>(); //List of nodes where the min frame should be 0
             foreach (var key in commonKeys)
             {
                 if (!minKeys.Contains(key))
                 {
-                    toRemove.Add(key);
+                    minFrame0List.Add(key);
                 }
             }
 
-            foreach (var key in toRemove)
+            //Track keys from the other list if they're not in the max list. If we do find them here, make sure we use frame 0 for them
+            foreach (var key in minKeys)
             {
-                commonKeys.Remove(key);
+                if(!commonKeys.Contains(key))
+                {
+                    maxFrame0List.Add(key);
+                    commonKeys.Add(key);
+                }
             }
 
             foreach (var key in commonKeys)
             {
-                outTfm[key] = PropTransform(outTfm[key], propDict[minFrame][key], propDict[maxFrame][key], ratio);
+                var trueMaxFrame = maxFrame;
+                var trueMinFrame = minFrame;
+                if(maxFrame0List.Contains(key))
+                {
+                    trueMaxFrame = 0;
+                } else if (minFrame0List.Contains(key)) //Since the source is only two lists, we can't have both
+                {
+                    trueMinFrame = 0;
+                }
+                outTfm[key] = PropTransform(outTfm[key], propDict[trueMinFrame][key], propDict[trueMaxFrame][key], ratio);
             }
         }
 
@@ -457,7 +504,7 @@ namespace CharFileLibrary.Character_Making_File_Tool.Utilities
         }
 
         //Returns a set of proportion transforms sorted by keyframe, then node number
-        //Frame 0 values are removed in order to keep just the values needed for transformation
+        //Frame 0 values are removed from the transforms in order to keep just the values needed for transformation
         public static Dictionary<int, Dictionary<int, TransformSet>> GetPropTransforms(AquaMotion props)
         {
             Dictionary<int, Dictionary<int, TransformSet>> propTransforms = new();
