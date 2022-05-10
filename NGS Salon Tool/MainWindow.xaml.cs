@@ -171,8 +171,12 @@ namespace NGS_Salon_Tool
                     {
                         tempxxp = CMLHandler.ParseCML(streamReader);
                     }
+                    if (tempxxp.xxpVersion < 0xC)
+                    {
+                        tempxxp.xxpVersion = 0xC;
+                    }
 
-                    GetXXPWildcards(out string letterOne, out string letterTwo);
+                    tempxxp.GetXXPWildcards(out string letterOne, out string letterTwo);
                     WriteXXP(tempxxp, file + $".{letterOne}{letterTwo}p");
                 }
             }
@@ -183,8 +187,8 @@ namespace NGS_Salon_Tool
             fileOpen.InitialDirectory = openInitialDirectory;
             if (fileOpen.ShowDialog() == System.Windows.Forms.DialogResult.OK)
             {
-                try
-                {
+                //try
+                //{
                     byte[] data;
 
                     //Handle encrypted files
@@ -230,11 +234,11 @@ namespace NGS_Salon_Tool
                     MotionDropdowns();
                     ExpressionsData();
                     SetEnabledState(true);
-                }
-                catch
-                {
-                    MessageBox.Show("Unable to open file. Check permissions and file type.");
-                }
+                //}
+                //catch
+                //{
+                //    MessageBox.Show("Unable to open file. Check permissions and file type.");
+                //}
                 savedInitialDirectory = Path.GetDirectoryName(fileOpen.FileName);
                 openInitialDirectory = Path.GetDirectoryName(fileOpen.FileName);
                 fileOpen.FileName = "";
@@ -248,7 +252,7 @@ namespace NGS_Salon_Tool
             saveFileDialog.InitialDirectory = savedInitialDirectory;
             saveFileDialog.FileName = Path.GetFileNameWithoutExtension(openedFileName);
 
-            GetXXPWildcards(out letterOne, out letterTwo);
+            xxpHandler.GetXXPWildcards(out letterOne, out letterTwo);
 
             saveFileDialog.Filter = $"V{xxpHandler.xxpVersion} Salon files (*." + letterOne + letterTwo + "p)|*." + letterOne + letterTwo + "p";
 
@@ -317,7 +321,7 @@ namespace NGS_Salon_Tool
             {
                 string letterOne;
                 string letterTwo;
-                GetXXPWildcards(out letterOne, out letterTwo);
+                xxpHandler.GetXXPWildcards(out letterOne, out letterTwo);
                 openedFileName = Path.GetFileNameWithoutExtension(openedFileName) + $".{letterOne}{letterTwo}p";
                 xxpHandler.xxpVersion = CharacterConstants.ngsSalonToolSizes.Keys.ToArray().Last();
             }
@@ -332,41 +336,6 @@ namespace NGS_Salon_Tool
                     break;
             }
 
-        }
-
-        private void GetXXPWildcards(out string letterOne, out string letterTwo)
-        {
-            switch (xxpHandler.baseDOC.gender)
-            {
-                case 0:
-                    letterOne = "m";
-                    break;
-                case 1:
-                    letterOne = "f";
-                    break;
-                default:
-                    letterOne = "m";
-                    break;
-            }
-
-            switch (xxpHandler.baseDOC.race)
-            {
-                case 0:
-                    letterTwo = "h";
-                    break;
-                case 1:
-                    letterTwo = "n";
-                    break;
-                case 2:
-                    letterTwo = "c";
-                    break;
-                case 3:
-                    letterTwo = "d";
-                    break;
-                default:
-                    letterTwo = "h";
-                    break;
-            }
         }
 
         private void SaveCML(string filename)
@@ -2195,6 +2164,11 @@ namespace NGS_Salon_Tool
                 }
                 canReorderPaint = true;
             }
+        }
+
+        private void DumpCMLs(object sender, RoutedEventArgs e)
+        {
+            CMLSearchUtility.DumpCMLs(pso2_binDir);
         }
     }
 }

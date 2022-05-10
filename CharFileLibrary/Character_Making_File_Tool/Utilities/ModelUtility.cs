@@ -317,7 +317,7 @@ namespace CharFileLibrary.Character_Making_File_Tool.Utilities
                             localPos *= props[finalWeightIndex].scale;
 
                             //Add scaling for physics parts etc.
-                            if((props[finalWeightIndex].boneShort2 & 0x400) == 0x400)
+                            /*if((props[finalWeightIndex].boneShort2 & 0x400) == 0x400)
                             {
                                 var parRot = Quaternion.CreateFromRotationMatrix(newBoneList[aquaNode.nodeList[finalWeightIndex].parentId].GetMatrix4x4());
                                 var localRot = newBoneList[finalWeightIndex].rot * Quaternion.Inverse(parRot);
@@ -326,9 +326,9 @@ namespace CharFileLibrary.Character_Making_File_Tool.Utilities
                                 localPos *= props[finalWeightIndex].postScale;
                                 localPos = Vector3.Transform(localPos, localRot);
                             } else
-                            {
-                                localPos *= props[finalWeightIndex].postScale;
-                            }
+                            {*/
+                                //localPos *= props[finalWeightIndex].postScale;
+                            //}
 
                             vertNrm += Vector3.TransformNormal(vtxl.vertNormals[i], props[finalWeightIndex].GetMatrix4x4()) * weight;
                         }

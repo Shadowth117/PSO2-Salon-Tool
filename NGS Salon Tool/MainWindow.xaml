@@ -34,6 +34,7 @@
                     <MenuItem Header="Fix salon data not saving due to 'skin color'." Click="FixSkinColorBug"/>
                     <MenuItem Header="Decrypt xxp(s) and save" Click="DecryptXXPs"/>
                     <MenuItem Header="Encrypt xxpu(s) and save" Click="EncryptXXPs"/>
+                    <MenuItem Header="Dump ALL NPC files from current pso2_bin (Takes a LONG time)" Click="DumpCMLs"/>
                 </MenuItem>
                 <MenuItem Header="Debug" Name="debugOptions">
                     <MenuItem Header="Export Character Model" Click="ExportCharModel"/>

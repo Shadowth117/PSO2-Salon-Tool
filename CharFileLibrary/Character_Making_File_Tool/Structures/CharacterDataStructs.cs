@@ -264,20 +264,24 @@ namespace Character_Making_File_Tool
                 exp.mouthA = raw[0xA];
                 exp.mouthI = raw[0xB];
 
-                exp.mouthU = raw[0xC];
-                exp.mouthE = raw[0xD];
-                exp.mouthO = raw[0xE];
-                exp.leftEyebrowVerticalUnused = raw[0xF];
+                if (raw.Length > 0xC)
+                {
+                    exp.mouthU = raw[0xC];
+                    exp.mouthE = raw[0xD];
+                    exp.mouthO = raw[0xE];
+                    exp.leftEyebrowVerticalUnused = raw[0xF];
 
-                exp.rightEyebrowVerticalUnused = raw[0x10];
-                exp.tongue = raw[0x11];
+                    exp.rightEyebrowVerticalUnused = raw[0x10];
+                    exp.tongue = raw[0x11];
+                }
 
-                obj.expStruct = exp;
                 if(raw.Length > 0x12)
                 {
                     obj.tongueVertical = raw[0x12];
                     obj.tongueHorizontal = raw[0x13];
                 }
+
+                obj.expStruct = exp;
 
                 return obj;
             }

@@ -128,6 +128,40 @@ namespace Character_Making_File_Tool
             return fileName;
         }
 
+        public unsafe static IceFile GetIceFile(string fileName)
+        {
+            IceFile ice;
+            using (var strm = new MemoryStream(File.ReadAllBytes(fileName)))
+            {
+                try
+                {
+                    ice = IceFile.LoadIceFile(strm);
+                }
+                catch
+                {
+                    return null;
+                }
+            }
+
+            return ice;
+        }
+        public unsafe static IceFile GetIceFile(byte[] file)
+        {
+            IceFile ice;
+            using (var strm = new MemoryStream(file))
+            {
+                try
+                {
+                    ice = IceFile.LoadIceFile(strm);
+                }
+                catch
+                {
+                    return null;
+                }
+            }
+            return ice;
+        }
+
         public unsafe static BitmapSource GetFirstImageFromIce(string fileName)
         {
             IceFile ice;

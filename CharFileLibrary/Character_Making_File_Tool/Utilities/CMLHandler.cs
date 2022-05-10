@@ -17,6 +17,14 @@ namespace Character_Making_File_Tool
 {
     public class CMLHandler
     {
+        public static CharacterHandlerReboot.xxpGeneralReboot ParseCML(byte[] bytes)
+        {
+            using (MemoryStream strm = new MemoryStream(bytes))
+            using (BufferedStreamReader sr = new BufferedStreamReader(strm, 8192))
+            {
+                return ParseCML(sr);
+            }
+        }
         public static CharacterHandlerReboot.xxpGeneralReboot ParseCML(BufferedStreamReader streamReader)
         {
             CharacterHandlerReboot.xxpGeneralReboot xxp = new CharacterHandlerReboot.xxpGeneralReboot();
@@ -400,8 +408,19 @@ namespace Character_Making_File_Tool
         {
             if(dict.TryGetValue(key, out object dictValue))
             {
-                sbyte[] values = (sbyte[])dictValue;
-                return FaceExpressionV11.CreateExpression(values);
+                List<sbyte> values = new List<sbyte>();
+                if (dictValue is byte[][])
+                {
+                    foreach(var arr in (sbyte[][])dictValue)
+                    {
+                        values.AddRange(arr);
+                    }
+                }
+                else if(dictValue is byte[] || dictValue is sbyte[])
+                {
+                    values.AddRange((sbyte[])dictValue);
+                }
+                return FaceExpressionV11.CreateExpression(values.ToArray());
             }
 
             return defaultExpression;

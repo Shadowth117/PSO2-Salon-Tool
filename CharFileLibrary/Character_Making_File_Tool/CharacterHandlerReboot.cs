@@ -734,6 +734,41 @@ namespace Character_Making_File_Tool
                 altFace = faceData;
             }
 
+            public void GetXXPWildcards(out string letterOne, out string letterTwo)
+            {
+                switch (baseDOC.gender)
+                {
+                    case 0:
+                        letterOne = "m";
+                        break;
+                    case 1:
+                        letterOne = "f";
+                        break;
+                    default:
+                        letterOne = "m";
+                        break;
+                }
+
+                switch (baseDOC.race)
+                {
+                    case 0:
+                        letterTwo = "h";
+                        break;
+                    case 1:
+                        letterTwo = "n";
+                        break;
+                    case 2:
+                        letterTwo = "c";
+                        break;
+                    case 3:
+                        letterTwo = "d";
+                        break;
+                    default:
+                        letterTwo = "h";
+                        break;
+                }
+            }
+
             public byte[] GetBytes()
             {
                 switch(xxpVersion)
@@ -751,6 +786,8 @@ namespace Character_Making_File_Tool
                     case 11:
                         return Reloaded.Memory.Struct.GetBytes(GetXXPV11());
                     case 12:
+                        return Reloaded.Memory.Struct.GetBytes(GetXXPV12());
+                    default:
                         return Reloaded.Memory.Struct.GetBytes(GetXXPV12());
                 }
                 throw new NotImplementedException();
