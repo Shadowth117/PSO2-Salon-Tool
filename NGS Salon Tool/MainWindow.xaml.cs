@@ -1639,6 +1639,7 @@ namespace NGS_Salon_Tool
             {
                 xxpHandler.baseFIGR.legVerts.X = CharacterConstants.MinHeightLegSliderNGS;
             }
+            MessageBox.Show("Successfully fixed height!");
         }
 
         //This bug happens when the value is above the expected range. In the past, this was treated as human color. Now, the game doesn't like it. Setting to 0 fixes it.
@@ -1650,7 +1651,8 @@ namespace NGS_Salon_Tool
                 MessageBox.Show("You must have data loaded to fix it!");
                 return;
             }
-            xxpHandler.skinVariant = 0; 
+            xxpHandler.skinVariant = 0;
+            MessageBox.Show("Successfully skin color bug!");
         }
 
         private void acceExtra_Click(object sender, RoutedEventArgs e)

@@ -1,18 +1,19 @@
-﻿using System.Collections.Generic;
+﻿using AquaModelLibrary;
+using AquaModelLibrary.Native.Fbx;
+using System;
+using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Numerics;
 using zamboni;
-using AquaModelLibrary;
 using static AquaExtras.FilenameConstants;
 using static AquaModelLibrary.CharacterMakingIndex;
 using static AquaModelLibrary.CharacterMakingIndexMethods;
-using static Character_Making_File_Tool.CharacterHandlerReboot;
+using static AquaModelLibrary.Utility.AquaUtilData;
 using static Character_Making_File_Tool.CharacterConstants;
+using static Character_Making_File_Tool.CharacterHandlerReboot;
 using static CharFileLibrary.Character_Making_File_Tool.Constants.CharacterProportionConstants;
-using System.Numerics;
-using System.Diagnostics;
-using System;
-using AquaModelLibrary.Native.Fbx;
 
 namespace CharFileLibrary.Character_Making_File_Tool.Utilities
 {
@@ -95,7 +96,7 @@ namespace CharFileLibrary.Character_Making_File_Tool.Utilities
 
                 mat *= Matrix4x4.CreateScale(scale);
                 mat *= Matrix4x4.CreateFromQuaternion(rot);
-                if(nullPos == false)
+                if (nullPos == false)
                 {
                     mat *= Matrix4x4.CreateTranslation(pos);
                 }
@@ -191,7 +192,7 @@ namespace CharFileLibrary.Character_Making_File_Tool.Utilities
             //Color accessory textures
 
             AquaUtil aqu = new AquaUtil();
-            AquaUtil.ModelSet ms = new AquaUtil.ModelSet();
+            ModelSet ms = new ModelSet();
             ms.models.Add(compositeModel);
             aqu.aquaModels.Add(ms);
             if (compositeModel.objc.type >= 0xC32)
@@ -327,7 +328,7 @@ namespace CharFileLibrary.Character_Making_File_Tool.Utilities
                                 localPos = Vector3.Transform(localPos, localRot);
                             } else
                             {*/
-                                //localPos *= props[finalWeightIndex].postScale;
+                            //localPos *= props[finalWeightIndex].postScale;
                             //}
 
                             vertNrm += Vector3.TransformNormal(vtxl.vertNormals[i], props[finalWeightIndex].GetMatrix4x4()) * weight;
@@ -367,17 +368,17 @@ namespace CharFileLibrary.Character_Making_File_Tool.Utilities
 
                 outTfm.Add(tfm);
             }
-            
+
             //Physique
             PropTransforms(outTfm, propTransforms, PhysiqueCenterYMin, PhysiqueCenterYMax, GetNGSPropRatio(xxp.baseFIGR.bodyVerts.X));
             PropTransforms(outTfm, propTransforms, PhysiqueSideXMin, PhysiqueSideXMax, GetNGSPropRatio(xxp.baseFIGR.bodyVerts.Y));
             PropTransforms(outTfm, propTransforms, PhysiqueSideYMin, PhysiqueSideYMax, GetNGSPropRatio(xxp.baseFIGR.bodyVerts.Z));
-            
+
             //Arms
             PropTransforms(outTfm, propTransforms, ArmsCenterYMin, ArmsCenterYMax, GetNGSPropRatio(xxp.baseFIGR.armVerts.X));
             PropTransforms(outTfm, propTransforms, ArmsSideXMin, ArmsSideXMax, GetNGSPropRatio(xxp.baseFIGR.armVerts.Y));
             PropTransforms(outTfm, propTransforms, ArmsSideYMin, ArmsSideYMax, GetNGSPropRatio(xxp.baseFIGR.armVerts.Z));
-            
+
             //Legs
             PropTransforms(outTfm, propTransforms, LegsCenterYMin, LegsCenterYMax, GetNGSPropRatio(xxp.baseFIGR.legVerts.X));
             PropTransforms(outTfm, propTransforms, LegsSideXMin, LegsSideXMax, GetNGSPropRatio(xxp.baseFIGR.legVerts.Y));
@@ -397,7 +398,7 @@ namespace CharFileLibrary.Character_Making_File_Tool.Utilities
             PropTransforms(outTfm, propTransforms, WaistCenterYMin, WaistCenterYMax, GetNGSPropRatio(xxp.waistVerts.X));
             PropTransforms(outTfm, propTransforms, WaistSideXMin, WaistSideXMax, GetNGSPropRatio(xxp.waistVerts.Y));
             PropTransforms(outTfm, propTransforms, WaistSideYMin, WaistSideYMax, GetNGSPropRatio(xxp.waistVerts.Z));
-            
+
             //NGS only
             if (props.moHeader.endFrame > 80)
             {
@@ -455,7 +456,7 @@ namespace CharFileLibrary.Character_Making_File_Tool.Utilities
             //Track keys from the other list if they're not in the max list. If we do find them here, make sure we use frame 0 for them
             foreach (var key in minKeys)
             {
-                if(!commonKeys.Contains(key))
+                if (!commonKeys.Contains(key))
                 {
                     maxFrame0List.Add(key);
                     commonKeys.Add(key);
@@ -466,10 +467,11 @@ namespace CharFileLibrary.Character_Making_File_Tool.Utilities
             {
                 var trueMaxFrame = maxFrame;
                 var trueMinFrame = minFrame;
-                if(maxFrame0List.Contains(key))
+                if (maxFrame0List.Contains(key))
                 {
                     trueMaxFrame = 0;
-                } else if (minFrame0List.Contains(key)) //Since the source is only two lists, we can't have both
+                }
+                else if (minFrame0List.Contains(key)) //Since the source is only two lists, we can't have both
                 {
                     trueMinFrame = 0;
                 }

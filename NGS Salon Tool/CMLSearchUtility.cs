@@ -166,7 +166,8 @@ namespace NGS_Salon_Tool
                         if(magic == "ICE\0")
                         {
                             bool isRbFile = iceFilePath.Contains("datareboot") || iceFilePath.Contains("win32reboot");
-                            var ice = IceHandler.GetIceFile(iceFilePath);
+                            zamboni.IceFile ice = null;
+                            ice = IceHandler.GetIceFile(iceFilePath);
                             if(ice != null)
                             {
                                 var iceFiles = new List<byte[]>();
@@ -264,11 +265,20 @@ namespace NGS_Salon_Tool
                                     {
                                         var xxp = CMLHandler.ParseCML(file);
                                         xxp.GetXXPWildcards(out string letterOne, out string letterTwo);
-                                        if(xxp.xxpVersion < 0xC)
+                                        if(xxp.xxpVersion < 0xC || xxp.xxpVersion > 0xC)
                                         {
                                             xxp.xxpVersion = 0xC;
                                         }
-                                        int fileSize = CharacterConstants.ngsSalonToolSizes[xxp.xxpVersion];
+                                        int fileSize;
+
+                                        if(CharacterConstants.ngsSalonToolSizes.ContainsKey(xxp.xxpVersion))
+                                        {
+                                            fileSize = CharacterConstants.ngsSalonToolSizes[xxp.xxpVersion];
+                                        } else
+                                        {
+                                            fileSize = CharacterConstants.ngsSalonToolSizes[0xC];
+                                        }
+
                                         var body = xxp.GetBytes();
                                         body = CharacterHandler.EncryptData(body, fileSize, out int hash);
                                         List<byte> fileData = new List<byte>();
@@ -284,6 +294,10 @@ namespace NGS_Salon_Tool
                                     catch
                                     {
                                         Debug.WriteLine($"Could not convert {outPath} from CML");
+#if DEBUG
+                                        Directory.CreateDirectory("C:\\DebugCharFiles\\");
+                                        File.WriteAllBytes("C:\\DebugCharFiles\\" + Path.GetFileName(outPath), file);
+#endif
                                     }
                                     
                                 }

@@ -24,16 +24,19 @@
                     <MenuItem Name="saveButton" Header="Save" Click="SaveCurrentCharFile"/>
                     <MenuItem Name="saveAsButton" Header="Save As" Click="SaveCharFileAs"/>
                 </MenuItem>
-                <MenuItem Header="Batch">
-                    <MenuItem Header="XXP Folder to CML" Click="ToCML"/>
-                    <MenuItem Header="CML Folder to xxp" Click="ToXXP"/>
+                <MenuItem Header="Adjustments">
+                    <MenuItem Header="Import character face" Click="OverwriteFaceModel"/>
+                    <Separator/>
+                    <MenuItem Header="Ensure data meets Global minimums" Click="SetGlobalMin"/>
+                    <MenuItem Header="Fix salon data not saving due to 'skin color'." Click="FixSkinColorBug"/>
                 </MenuItem>
                 <MenuItem Header="Extra">
-                    <MenuItem Header="Ensure data meets Global minimums" Click="SetGlobalMin"/>
-                    <MenuItem Header="Import character face" Click="OverwriteFaceModel"/>
-                    <MenuItem Header="Fix salon data not saving due to 'skin color'." Click="FixSkinColorBug"/>
                     <MenuItem Header="Decrypt xxp(s) and save" Click="DecryptXXPs"/>
                     <MenuItem Header="Encrypt xxpu(s) and save" Click="EncryptXXPs"/>
+                    <Separator/>
+                    <MenuItem Header="XXP Folder to CML" Click="ToCML"/>
+                    <MenuItem Header="CML Folder to xxp" Click="ToXXP"/>
+                    <Separator/>
                     <MenuItem Header="Dump ALL NPC files from current pso2_bin (Takes a LONG time)" Click="DumpCMLs"/>
                 </MenuItem>
                 <MenuItem Header="Debug" Name="debugOptions">

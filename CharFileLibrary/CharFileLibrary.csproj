@@ -46,20 +46,6 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <None Update="Libraries\AquaLib\AquaModelLibrary.Native.X64.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="Libraries\AquaLib\AquaModelLibrary.Native.X64.dll.metagen">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="Libraries\AquaLib\AquaModelLibrary.Native.X86.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="Libraries\AquaLib\AquaModelLibrary.Native.X86.dll.metagen">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-  </ItemGroup>
-  <ItemGroup>
     <Page Update="SubWindows\WIPBox.xaml">
       <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
       <SubType>Designer</SubType>
