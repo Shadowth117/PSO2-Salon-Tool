@@ -672,6 +672,7 @@ namespace Character_Making_File_Tool
                     break;
                 case 0xB:
                 case 0xC:
+                case 0xD:
                     VTBFMethods.addBytes(expr, 0x0, 0x83, 0x8, 0x13, Reloaded.Memory.Struct.GetBytes(xxp.faceNatural));
                     VTBFMethods.addBytes(expr, 0x1, 0x83, 0x8, 0x13, Reloaded.Memory.Struct.GetBytes(xxp.faceSmile));
                     VTBFMethods.addBytes(expr, 0x2, 0x83, 0x8, 0x13, Reloaded.Memory.Struct.GetBytes(xxp.faceAngry));

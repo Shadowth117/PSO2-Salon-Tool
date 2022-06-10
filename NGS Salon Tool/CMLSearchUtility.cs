@@ -265,9 +265,9 @@ namespace NGS_Salon_Tool
                                     {
                                         var xxp = CMLHandler.ParseCML(file);
                                         xxp.GetXXPWildcards(out string letterOne, out string letterTwo);
-                                        if(xxp.xxpVersion < 0xC || xxp.xxpVersion > 0xC)
+                                        if(xxp.xxpVersion < 0xD || xxp.xxpVersion > 0xD)
                                         {
-                                            xxp.xxpVersion = 0xC;
+                                            xxp.xxpVersion = 0xD;
                                         }
                                         int fileSize;
 
@@ -276,7 +276,7 @@ namespace NGS_Salon_Tool
                                             fileSize = CharacterConstants.ngsSalonToolSizes[xxp.xxpVersion];
                                         } else
                                         {
-                                            fileSize = CharacterConstants.ngsSalonToolSizes[0xC];
+                                            fileSize = CharacterConstants.ngsSalonToolSizes[0xD];
                                         }
 
                                         var body = xxp.GetBytes();

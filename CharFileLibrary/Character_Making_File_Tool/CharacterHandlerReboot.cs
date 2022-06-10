@@ -81,6 +81,8 @@ namespace Character_Making_File_Tool
 
             public AccessoryMisc accessoryMiscData;
 
+            public CastColorIdSet castColorIds;
+
             public xxpGeneralReboot()
             {
             }
@@ -440,6 +442,64 @@ namespace Character_Making_File_Tool
                 accessoryMiscData = tempXXP.accessoryMiscData;
             }
 
+            public xxpGeneralReboot(XXPV13 tempXXP)
+            {
+                xxpVersion = 13;
+
+                baseDOC = tempXXP.baseDOC;
+                skinVariant = tempXXP.skinVariant;
+                eyebrowDensity = tempXXP.eyebrowDensity;
+                cmlVariant = tempXXP.cmlVariant;
+
+                baseFIGR = tempXXP.baseFIGR;
+                neckVerts = tempXXP.neckVerts;
+                waistVerts = tempXXP.waistVerts;
+
+                hands = tempXXP.hands;
+                horns = tempXXP.horns;
+                eyeSize = tempXXP.eyeSize;
+                eyeHorizontalPosition = tempXXP.eyeHorizontalPosition;
+                neckAngle = tempXXP.neckAngle;
+
+                altFace = tempXXP.altFace;
+
+                ngsCOL2 = tempXXP.ngsCOL2;
+
+                baseSLCT = tempXXP.baseSLCT;
+                baseSLCT2 = tempXXP.baseSLCT2;
+                leftEyePart = tempXXP.leftEyePart;
+
+                baseSLCTNGS = tempXXP.baseSLCTNGS;
+
+                accessorySlidersReboot = tempXXP.accessorySlidersReboot;
+
+                faceNatural = tempXXP.faceNatural;
+                faceSmile = tempXXP.faceSmile;
+                faceAngry = tempXXP.faceAngry;
+                faceSad = tempXXP.faceSad;
+
+                faceSus = tempXXP.faceSus;
+                faceEyesClosed = tempXXP.faceEyesClosed;
+                faceSmile2 = tempXXP.faceSmile2;
+                faceWink = tempXXP.faceWink;
+
+                faceUnused1 = tempXXP.faceUnused1;
+                faceUnused2 = tempXXP.faceUnused2;
+
+                paintPriority = tempXXP.paintPriority;
+
+                ngsSLID = tempXXP.ngsSLID;
+                ngsMTON = tempXXP.ngsMTON;
+
+                int_350 = tempXXP.int_350;
+                int_354 = tempXXP.int_354;
+                ngsVISI = tempXXP.ngsVISI;
+
+                accessoryMiscData = tempXXP.accessoryMiscData;
+
+                castColorIds = tempXXP.castColorIds;
+            }
+
             public XXPV2 GetXXPV2()
             {
                 XXPV2 xxpv2 = new();
@@ -659,6 +719,51 @@ namespace Character_Making_File_Tool
                 return tempXXP;
             }
 
+            public XXPV13 GetXXPV13()
+            {
+                XXPV13 tempXXP = new();
+
+                tempXXP.baseDOC = baseDOC;
+                tempXXP.skinVariant = skinVariant;
+                tempXXP.eyebrowDensity = eyebrowDensity;
+                tempXXP.cmlVariant = cmlVariant;
+                tempXXP.baseFIGR = baseFIGR;
+                tempXXP.neckVerts = neckVerts;
+                tempXXP.waistVerts = waistVerts;
+                tempXXP.hands = hands;
+                tempXXP.horns = horns;
+                tempXXP.eyeSize = eyeSize;
+                tempXXP.eyeHorizontalPosition = eyeHorizontalPosition;
+                tempXXP.neckAngle = neckAngle;
+                tempXXP.altFace = altFace;
+                tempXXP.ngsCOL2 = ngsCOL2;
+                tempXXP.baseSLCT = baseSLCT;
+                tempXXP.baseSLCT2 = baseSLCT2;
+                tempXXP.leftEyePart = leftEyePart;
+                tempXXP.baseSLCTNGS = baseSLCTNGS;
+                tempXXP.accessorySlidersReboot = accessorySlidersReboot;
+                tempXXP.faceNatural = faceNatural;
+                tempXXP.faceSmile = faceSmile;
+                tempXXP.faceAngry = faceAngry;
+                tempXXP.faceSad = faceSad;
+                tempXXP.faceSus = faceSus;
+                tempXXP.faceEyesClosed = faceEyesClosed;
+                tempXXP.faceSmile2 = faceSmile2;
+                tempXXP.faceWink = faceWink;
+                tempXXP.faceUnused1 = faceUnused1;
+                tempXXP.faceUnused2 = faceUnused2;
+                tempXXP.paintPriority = paintPriority;
+                tempXXP.ngsSLID = ngsSLID;
+                tempXXP.ngsMTON = ngsMTON;
+                tempXXP.int_350 = int_350;
+                tempXXP.int_354 = int_354;
+                tempXXP.ngsVISI = ngsVISI;
+                tempXXP.accessoryMiscData = accessoryMiscData;
+                tempXXP.castColorIds = castColorIds;
+
+                return tempXXP;
+            }
+
             private void SetDefaultExpressions()
             {
                 if (baseDOC.gender == 0)
@@ -787,6 +892,8 @@ namespace Character_Making_File_Tool
                         return Reloaded.Memory.Struct.GetBytes(GetXXPV11());
                     case 12:
                         return Reloaded.Memory.Struct.GetBytes(GetXXPV12());
+                    case 13:
+                        return Reloaded.Memory.Struct.GetBytes(GetXXPV13());
                     default:
                         return Reloaded.Memory.Struct.GetBytes(GetXXPV12());
                 }

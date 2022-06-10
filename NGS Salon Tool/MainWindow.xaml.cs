@@ -125,9 +125,8 @@ namespace NGS_Salon_Tool
 
                 foreach(string file in files)
                 {
-#if DEBUG
-                    Trace.WriteLine(file);
-#endif
+                    Debug.WriteLine(file);
+
                     byte[] data;
                     //Handle encrypted files
                     if (file.LastOrDefault() == 'p')
@@ -171,9 +170,9 @@ namespace NGS_Salon_Tool
                     {
                         tempxxp = CMLHandler.ParseCML(streamReader);
                     }
-                    if (tempxxp.xxpVersion < 0xC)
+                    if (tempxxp.xxpVersion < 0xD)
                     {
-                        tempxxp.xxpVersion = 0xC;
+                        tempxxp.xxpVersion = 0xD;
                     }
 
                     tempxxp.GetXXPWildcards(out string letterOne, out string letterTwo);
@@ -263,9 +262,10 @@ namespace NGS_Salon_Tool
             + "|V10 (NGS/NGS Char Creator) Salon files (*." + letterOne + letterTwo + "p)|*." + letterOne + letterTwo + "p"
             + "|V11 Salon files (*." + letterOne + letterTwo + "p)|*." + letterOne + letterTwo + "p"
             + "|V12 Salon files (*." + letterOne + letterTwo + "p)|*." + letterOne + letterTwo + "p"
+            + "|V13 Salon files (*." + letterOne + letterTwo + "p)|*." + letterOne + letterTwo + "p"
             + "|cml files (*.cml)|*.cml";
 
-            saveFileDialog.FilterIndex = 7; 
+            saveFileDialog.FilterIndex = 8; 
             //+ "|Data Dump (*.txt)|*.txt";
 
             if (saveFileDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
@@ -301,6 +301,10 @@ namespace NGS_Salon_Tool
                         SaveXXP(saveFileDialog.FileName);
                         break;
                     case 8:
+                        xxpHandler.xxpVersion = 0xD;
+                        SaveXXP(saveFileDialog.FileName);
+                        break;
+                    case 9:
                         SaveCML(saveFileDialog.FileName);
                         break;
                     default:
@@ -396,6 +400,8 @@ namespace NGS_Salon_Tool
                     return new CharacterHandlerReboot.xxpGeneralReboot(streamReader.Read<CharacterMainStructs.XXPV11>());
                 case 12:
                     return new CharacterHandlerReboot.xxpGeneralReboot(streamReader.Read<CharacterMainStructs.XXPV12>());
+                case 13:
+                    return new CharacterHandlerReboot.xxpGeneralReboot(streamReader.Read<CharacterMainStructs.XXPV13>());
                 default:
                     MessageBox.Show("Error: File version unknown. If this is a proper salon file, please report this!");
                     return null;

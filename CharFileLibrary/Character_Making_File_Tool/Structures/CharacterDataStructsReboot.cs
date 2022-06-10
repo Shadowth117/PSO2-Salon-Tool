@@ -421,5 +421,29 @@ namespace Character_Making_File_Tool
             public int hideOuterwearOrnament;
             public int hideInnerwear;
         }
+
+        public struct CastColorIdSet
+        {
+            public byte headMain;
+            public byte headSub1;
+            public byte headSub2;
+            public byte headSub3;
+
+            public byte bodyMain;
+            public byte bodySub1;
+            public byte bodySub2;
+            public byte bodySub3;
+
+            public byte armMain;
+            public byte armSub1;
+            public byte armSub2;
+            public byte armSub3;
+
+            public byte legMain;
+            public byte legSub1;
+            public byte legSub2;
+            public byte legSub3;
+        }
+
     }
 }
