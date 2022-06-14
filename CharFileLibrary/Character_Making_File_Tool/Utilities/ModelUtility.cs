@@ -8,8 +8,9 @@ using System.Linq;
 using System.Numerics;
 using zamboni;
 using static AquaExtras.FilenameConstants;
+using static AquaModelLibrary.AquaMethods.AquaGeneralMethods;
 using static AquaModelLibrary.CharacterMakingIndex;
-using static AquaModelLibrary.CharacterMakingIndexMethods;
+using static AquaModelLibrary.Extra.ReferenceConstructor;
 using static AquaModelLibrary.Utility.AquaUtilData;
 using static Character_Making_File_Tool.CharacterConstants;
 using static Character_Making_File_Tool.CharacterHandlerReboot;
@@ -650,7 +651,7 @@ namespace CharFileLibrary.Character_Making_File_Tool.Utilities
             }
             else
             {
-                string finalId = ToFive(adjustedId);
+                string finalId = $"{adjustedId:D5}";
                 string classic = $"{classicStart}bw_{finalId}.ice";
 
                 var classicHash = GetFileHash(classic);

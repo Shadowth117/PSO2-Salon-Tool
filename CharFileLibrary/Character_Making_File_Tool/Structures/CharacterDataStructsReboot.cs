@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using static Character_Making_File_Tool.NibbleUtility;
+﻿using static Character_Making_File_Tool.NibbleUtility;
 using static Character_Making_File_Tool.Vector3Int;
 
 namespace Character_Making_File_Tool
@@ -15,11 +10,11 @@ namespace Character_Making_File_Tool
             public fixed sbyte posSliders[0x24];
             public fixed sbyte scaleSliders[0x24];
             public fixed sbyte rotSliders[0x24];
-            
+
             public AccessorySliders GetClassicAccessorySliders()
             {
                 AccessorySliders acceSl = new();
-                for(int i = 0; i < 0xC; i++)
+                for (int i = 0; i < 0xC; i++)
                 {
                     acceSl.sliders[i] = posSliders[i];
                     acceSl.sliders[i + 0xC] = scaleSliders[i];
@@ -116,7 +111,7 @@ namespace Character_Making_File_Tool
             public AccessorySlidersReboot GetAccessorySlidersReboot()
             {
                 AccessorySlidersReboot acceSl = new AccessorySlidersReboot();
-                for(int i = 0; i < 0xC; i++)
+                for (int i = 0; i < 0xC; i++)
                 {
                     acceSl.posSliders[i] = sliders[i];
                     acceSl.scaleSliders[i] = sliders[i + 0xC];

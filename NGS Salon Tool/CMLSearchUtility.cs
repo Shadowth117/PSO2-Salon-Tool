@@ -1,5 +1,4 @@
 ﻿using AquaModelLibrary;
-using AquaModelLibrary.AquaMethods;
 using Character_Making_File_Tool;
 using Microsoft.WindowsAPICodePack.Dialogs;
 using System;
@@ -9,8 +8,8 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
+using static AquaModelLibrary.AquaMethods.AquaGeneralMethods;
 using static AquaModelLibrary.CharacterMakingIndex;
-using static AquaModelLibrary.CharacterMakingIndexMethods;
 
 namespace NGS_Salon_Tool
 {
@@ -93,15 +92,15 @@ namespace NGS_Salon_Tool
                     var files = Directory.EnumerateFiles(pso2_binDir, "*.*", SearchOption.AllDirectories).ToArray();
 
                     //Failsafe for if the standard pc name text routes aren't valid
-                    if(actorNameText == null && rbActorNameText == null)
+                    if (actorNameText == null && rbActorNameText == null)
                     {
                         var baseName = Path.GetFileName(rebootActorName);
                         foreach (var filePath in files)
                         {
-                            if((filePath.Contains(baseName) && filePath.Contains("datareboot")) || filePath.Contains(rbActorNameIce) && rbActorNameText == null)
+                            if ((filePath.Contains(baseName) && filePath.Contains("datareboot")) || filePath.Contains(rbActorNameIce) && rbActorNameText == null)
                             {
-                                rbActorNameText = AquaMiscMethods.GetTextConditional(filePath, filePath, actorNameNPCName); 
-                                
+                                rbActorNameText = AquaMiscMethods.GetTextConditional(filePath, filePath, actorNameNPCName);
+
                                 if (rbActorNameText != null)
                                 {
                                     for (int i = 0; i < rbActorNameText.text.Count; i++)
@@ -109,7 +108,8 @@ namespace NGS_Salon_Tool
                                         rbActorNameByCat.Add(rbActorNameText.categoryNames[i], rbActorNameText.text[i]);
                                     }
                                 }
-                            } else if(filePath.Contains(baseName) || filePath.Contains(actorNameIce) && actorNameText == null)
+                            }
+                            else if (filePath.Contains(baseName) || filePath.Contains(actorNameIce) && actorNameText == null)
                             {
                                 actorNameText = AquaMiscMethods.GetTextConditional(filePath, filePath, actorNameName);
 
@@ -162,13 +162,13 @@ namespace NGS_Salon_Tool
                         }
                         var bytes = File.ReadAllBytes(iceFilePath);
                         var magic = System.Text.Encoding.ASCII.GetString(bytes, 0, 4);
-                        
-                        if(magic == "ICE\0")
+
+                        if (magic == "ICE\0")
                         {
                             bool isRbFile = iceFilePath.Contains("datareboot") || iceFilePath.Contains("win32reboot");
                             zamboni.IceFile ice = null;
                             ice = IceHandler.GetIceFile(iceFilePath);
-                            if(ice != null)
+                            if (ice != null)
                             {
                                 var iceFiles = new List<byte[]>();
                                 iceFiles.AddRange(ice.groupOneFiles);
@@ -178,7 +178,7 @@ namespace NGS_Salon_Tool
                                 List<Dictionary<string, string>> localEvtDicts = new List<Dictionary<string, string>>();
                                 string iceEvt = "";
 
-                                foreach(var file in iceFiles)
+                                foreach (var file in iceFiles)
                                 {
                                     if (file.Length < 0x40) //Should never trigger, but might happen if you have corrupted or broken files 
                                     {
@@ -194,13 +194,13 @@ namespace NGS_Salon_Tool
                                             break;
                                         case ".skit":
                                         case ".evt":
-                                            if(iceEvt == "")
+                                            if (iceEvt == "")
                                             {
                                                 iceEvt = Path.GetFileNameWithoutExtension(fileName) + "_";
                                                 string evtNameStr = "";
                                                 CheckCategory(iceEvt, ref evtNameStr, startId, evtDicts);
 
-                                                if(evtNameStr != "")
+                                                if (evtNameStr != "")
                                                 {
                                                     iceEvt += evtNameStr + "_";
                                                 }
@@ -213,19 +213,19 @@ namespace NGS_Salon_Tool
                                 }
 
                                 //NGS event 'name'. Less prevalent, but exists sometimes in this very specific way
-                                if(iceEvt != "" && texts.ContainsKey(iceEvt))
+                                if (iceEvt != "" && texts.ContainsKey(iceEvt))
                                 {
                                     var textFile = AquaMiscMethods.ReadPSO2Text(texts[iceEvt]);
-                                    if(textFile.categoryNames.Contains("Basic"))
+                                    if (textFile.categoryNames.Contains("Basic"))
                                     {
                                         var id = textFile.categoryNames.IndexOf("Basic");
                                         var countId = startId;
-                                        while(countId > -1)
+                                        while (countId > -1)
                                         {
                                             for (int i = 0; i < textFile.text[id][countId].Count; i++)
                                             {
                                                 var pair = textFile.text[id][countId][i];
-                                                if(pair.name == "Title")
+                                                if (pair.name == "Title")
                                                 {
                                                     iceEvt += pair.str + "_";
                                                     countId = -1;
@@ -252,29 +252,31 @@ namespace NGS_Salon_Tool
                                         var icefullFileName = iceEvt + folderName + "_" + iceFileName;
                                         outDir = dumpPicker.FileName + "\\" + GetDirectoryString(icefullFileName, fileName, categoryDicts, npcNameDicts, isGlobal);
                                         Directory.CreateDirectory(outDir);
-                                    } else
+                                    }
+                                    else
                                     {
                                         var icefullFileName = iceEvt + iceFileName;
                                         outDir = dumpPicker.FileName + "\\" + GetDirectoryString(icefullFileName, fileName, categoryDicts, npcNameDicts, isGlobal);
                                         Directory.CreateDirectory(outDir);
                                     }
-                                    
+
                                     string outPath = outDir + fileName;
                                     File.WriteAllBytes(outPath, file);
                                     try
                                     {
                                         var xxp = CMLHandler.ParseCML(file);
                                         xxp.GetXXPWildcards(out string letterOne, out string letterTwo);
-                                        if(xxp.xxpVersion < 0xD || xxp.xxpVersion > 0xD)
+                                        if (xxp.xxpVersion < 0xD || xxp.xxpVersion > 0xD)
                                         {
                                             xxp.xxpVersion = 0xD;
                                         }
                                         int fileSize;
 
-                                        if(CharacterConstants.ngsSalonToolSizes.ContainsKey(xxp.xxpVersion))
+                                        if (CharacterConstants.ngsSalonToolSizes.ContainsKey(xxp.xxpVersion))
                                         {
                                             fileSize = CharacterConstants.ngsSalonToolSizes[xxp.xxpVersion];
-                                        } else
+                                        }
+                                        else
                                         {
                                             fileSize = CharacterConstants.ngsSalonToolSizes[0xD];
                                         }
@@ -299,10 +301,10 @@ namespace NGS_Salon_Tool
                                         File.WriteAllBytes("C:\\DebugCharFiles\\" + Path.GetFileName(outPath), file);
 #endif
                                     }
-                                    
+
                                 }
 
-                                
+
                             }
                         }
 
@@ -325,7 +327,8 @@ namespace NGS_Salon_Tool
                 unkCategory = "[]NoCategory[]";
                 unkNPC = "[]UnknownNPC[]";
                 startId = 1;
-            } else
+            }
+            else
             {
                 unkCategory = "[]なし[]";
                 unkNPC = "[]名無し[]";
@@ -351,9 +354,9 @@ namespace NGS_Salon_Tool
 
         public static void CheckCategory(string name, ref string nameToSet, int startId, List<Dictionary<string, string>> nameDicts)
         {
-            while(startId > -1)
+            while (startId > -1)
             {
-                if(nameDicts[startId].ContainsKey(name))
+                if (nameDicts[startId].ContainsKey(name))
                 {
                     nameToSet = nameDicts[startId][name];
                     break;
@@ -373,7 +376,7 @@ namespace NGS_Salon_Tool
                 foreach (var pair in textByCat[category][sub])
                 {
                     string key = pair.name.ToLower();
-                    if(rebootNPC && category == "Npc")
+                    if (rebootNPC && category == "Npc")
                     {
                         key = key.Insert(8, "_"); //Adjust to match cml layout. The second _ is missing normally
                     }
@@ -387,9 +390,9 @@ namespace NGS_Salon_Tool
 
         public static string NixIllegalCharacters(string str)
         {
-            foreach(var ch in illegalChars.Keys)
+            foreach (var ch in illegalChars.Keys)
             {
-                if(str.Contains(ch))
+                if (str.Contains(ch))
                 {
                     str = str.Replace(ch, illegalChars[ch]);
                 }

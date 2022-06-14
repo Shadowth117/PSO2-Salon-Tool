@@ -1,18 +1,10 @@
-﻿using Reloaded.Memory.Streams;
+﻿using AquaModelLibrary;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
-using System.Linq;
-using System.Reflection;
 using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
-using static AquaModelLibrary.VTBFMethods;
-using AquaModelLibrary;
-using System.Windows;
-using System.Threading;
-using System.Windows.Threading;
+using static AquaModelLibrary.AquaMethods.AquaGeneralMethods;
+using static AquaModelLibrary.Extra.ReferenceConstructor;
 
 namespace Character_Making_File_Tool
 {
@@ -134,11 +126,11 @@ namespace Character_Making_File_Tool
         public void GenerateDictionaries(string pso2_binPath)
         {
             //Check CMX data
-            string cmxPath = Path.Combine(pso2_binPath, CharacterMakingIndex.dataDir, CharacterMakingIndexMethods.GetFileHash(CharacterMakingIndex.classicCMX));
+            string cmxPath = Path.Combine(pso2_binPath, CharacterMakingIndex.dataDir, GetFileHash(CharacterMakingIndex.classicCMX));
 
             //Conditionally generate caches if cmx doesn't match
 
-            if(messageBox != null)
+            if (messageBox != null)
             {
                 messageBox.CenterWindowOnScreen();
                 messageBox.Show();
@@ -146,8 +138,8 @@ namespace Character_Making_File_Tool
 
             //Read the game data
             cmx = CharacterMakingIndexMethods.ExtractCMX(pso2_binPath);
-            CharacterMakingIndexMethods.ReadCMXText(pso2_binPath, out partsText, out acceText, out commonText, out commonTextReboot, out actorNameTextReboot);
-            faceIds = CharacterMakingIndexMethods.GetFaceVariationLuaNameDict(pso2_binPath, faceIds);
+            ReadCMXText(pso2_binPath, out partsText, out acceText, out commonText, out commonTextReboot, out actorNameTextReboot);
+            faceIds = GetFaceVariationLuaNameDict(pso2_binPath, faceIds);
             if (Directory.Exists(Path.Combine(pso2_binPath, CharacterMakingIndex.dataNADir)))
             {
                 language = 1;
@@ -163,7 +155,7 @@ namespace Character_Making_File_Tool
             string[] cache = File.ReadAllLines(cachePath);
             for (int i = 0; i < cache.Length - 1; i += 2)
             {
-                if(!dict.ContainsKey(cache[i]))
+                if (!dict.ContainsKey(cache[i]))
                 {
                     dict[cache[i]] = Int32.Parse(cache[i + 1]);
                 }
@@ -204,20 +196,20 @@ namespace Character_Making_File_Tool
                     commRebootByCat.Add(commonTextReboot.categoryNames[i], commonTextReboot.text[i]);
                 }
             }
-            Dictionary<string, Dictionary<int, List<string>>> subByCat = CharacterMakingIndexMethods.GatherSubCategories(commRebootByCat);
+            Dictionary<string, Dictionary<int, List<string>>> subByCat = GatherSubCategories(commRebootByCat);
 
             //***Costumes/Outers
             //Build text Dict
             List<int> masterIdList = new List<int>();
             List<Dictionary<int, string>> nameDicts = new List<Dictionary<int, string>>();
             StringBuilder nameCache = new StringBuilder();
-            CharacterMakingIndexMethods.GatherTextIds(textByCat, masterIdList, nameDicts, "costume", true);
-            CharacterMakingIndexMethods.GatherTextIds(textByCat, masterIdList, nameDicts, "body", false);
+            GatherTextIds(textByCat, masterIdList, nameDicts, "costume", true);
+            GatherTextIds(textByCat, masterIdList, nameDicts, "body", false);
             Dictionary<int, string> dict = nameDicts[language];
 
             //Add potential cmx ids that wouldn't be stored with 
-            CharacterMakingIndexMethods.GatherDictKeys(masterIdList, cmx.costumeDict.Keys);
-            CharacterMakingIndexMethods.GatherDictKeys(masterIdList, cmx.outerDict.Keys);
+            GatherDictKeys(masterIdList, cmx.costumeDict.Keys);
+            GatherDictKeys(masterIdList, cmx.outerDict.Keys);
 
             costumeOuterDict = BuildNameCache(masterIdList, nameCache, dict, out costumeOuterDictReverse);
 
@@ -302,10 +294,11 @@ namespace Character_Making_File_Tool
             {
                 //Account for broken listings
                 string defaultName;
-                if(subByCat[category][id].Count > 0)
+                if (subByCat[category][id].Count > 0)
                 {
                     defaultName = subByCat[category][id][0];
-                } else //This condition should never happen, but still.
+                }
+                else //This condition should never happen, but still.
                 {
                     defaultName = id.ToString() + "_Fallback";
                 }
@@ -327,11 +320,11 @@ namespace Character_Making_File_Tool
         {
             Dictionary<string, string> dict;
             List<Dictionary<string, string>> strNameDicts = new();
-            CharacterMakingIndexMethods.GatherTextIdsStringRef(textByCat, new List<string>(), strNameDicts, "facevariation", true);
+            GatherTextIdsStringRef(textByCat, new List<string>(), strNameDicts, "facevariation", true);
             dict = strNameDicts[language];
 
             //Add potential cmx ids that wouldn't be stored in
-            CharacterMakingIndexMethods.GatherDictKeys(masterIdList, cmxDict.Keys);
+            GatherDictKeys(masterIdList, cmxDict.Keys);
             masterIdList.Sort();
 
             return BuildNameCacheFaces(masterIdList, nameCache, dict);
@@ -344,8 +337,8 @@ namespace Character_Making_File_Tool
             masterIdList.Sort();
             for (int i = 0; i < masterIdList.Count; i++)
             {
-                int id = masterIdList[i]; 
-                
+                int id = masterIdList[i];
+
                 string realId = "";
                 if (!faceIds.TryGetValue(id, out realId))
                 {
@@ -373,29 +366,29 @@ namespace Character_Making_File_Tool
             return finalNameDict;
         }
 
-        private Dictionary<string, int> ProcessNames<T>(Dictionary<string, List<List<PSO2Text.textPair>>> textByCat, List<int> masterIdList, 
+        private Dictionary<string, int> ProcessNames<T>(Dictionary<string, List<List<PSO2Text.textPair>>> textByCat, List<int> masterIdList,
             List<Dictionary<int, string>> nameDicts, StringBuilder nameCache, string category, string outPath, Dictionary<int, T> cmxDict, out Dictionary<int, string> nameCacheDictReverse, bool writeToDisk = false)
         {
             Dictionary<int, string> dict;
             masterIdList.Clear();
             nameDicts.Clear();
             nameCache.Clear();
-            CharacterMakingIndexMethods.GatherTextIds(textByCat, masterIdList, nameDicts, category, true);
-            
+            GatherTextIds(textByCat, masterIdList, nameDicts, category, true);
+
             //Ensure we can use empty strings
-            while(nameDicts.Count < language + 1)
+            while (nameDicts.Count < language + 1)
             {
                 nameDicts.Add(new Dictionary<int, string>());
             }
             dict = nameDicts[language];
 
             //Add potential cmx ids that wouldn't be stored with 
-            CharacterMakingIndexMethods.GatherDictKeys(masterIdList, cmxDict.Keys);
+            GatherDictKeys(masterIdList, cmxDict.Keys);
 
             var finalNameDict = BuildNameCache(masterIdList, nameCache, dict, out nameCacheDictReverse);
 
             //Somewhat vestigial. Not needed with faster .text reading
-            if(writeToDisk == true)
+            if (writeToDisk == true)
             {
                 File.WriteAllText(outPath, nameCache.ToString());
             }
