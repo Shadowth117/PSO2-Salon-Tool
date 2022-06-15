@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using static AquaModelLibrary.AquaMethods.AquaGeneralMethods;
-using static AquaModelLibrary.Extra.ReferenceConstructor;
+using static AquaModelLibrary.Extra.ReferenceGenerator;
 
 namespace Character_Making_File_Tool
 {
@@ -138,7 +138,7 @@ namespace Character_Making_File_Tool
 
             //Read the game data
             cmx = CharacterMakingIndexMethods.ExtractCMX(pso2_binPath);
-            ReadCMXText(pso2_binPath, out partsText, out acceText, out commonText, out commonTextReboot, out actorNameTextReboot);
+            ReadCMXText(pso2_binPath, out partsText, out acceText, out commonText, out commonTextReboot);
             faceIds = GetFaceVariationLuaNameDict(pso2_binPath, faceIds);
             if (Directory.Exists(Path.Combine(pso2_binPath, CharacterMakingIndex.dataNADir)))
             {

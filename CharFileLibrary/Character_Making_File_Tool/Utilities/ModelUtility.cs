@@ -10,7 +10,7 @@ using zamboni;
 using static AquaExtras.FilenameConstants;
 using static AquaModelLibrary.AquaMethods.AquaGeneralMethods;
 using static AquaModelLibrary.CharacterMakingIndex;
-using static AquaModelLibrary.Extra.ReferenceConstructor;
+using static AquaModelLibrary.Extra.ReferenceGenerator;
 using static AquaModelLibrary.Utility.AquaUtilData;
 using static Character_Making_File_Tool.CharacterConstants;
 using static Character_Making_File_Tool.CharacterHandlerReboot;

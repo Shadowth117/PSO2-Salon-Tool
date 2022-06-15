@@ -8,7 +8,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Windows.Media.Imaging;
 using zamboni;
-using static AquaModelLibrary.Extra.ReferenceConstructor;
+using static AquaModelLibrary.Extra.ReferenceGenerator;
 
 namespace Character_Making_File_Tool
 {
