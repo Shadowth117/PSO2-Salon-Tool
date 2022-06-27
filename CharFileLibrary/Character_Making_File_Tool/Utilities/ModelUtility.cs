@@ -82,7 +82,13 @@ namespace CharFileLibrary.Character_Making_File_Tool.Utilities
 
                 pos = Vector3.Transform(pos, Quaternion.Inverse(oldParSet.rot));
                 pos += relativeTfm.pos;
-                pos *= relativeParTfm.scale;
+                pos *= relativeParTfm.scale; 
+
+                var bs1 = boneShort1;
+                if ((bs1 & 0x40) < 1 && (bs1 & 0x80) < 1 && (bs1 & 0x100) < 1 && (boneShort2 & 0x400) > 0)
+                {
+                    pos *= relativeTfm.postScale;
+                }
 
                 pos = Vector3.Transform(pos, newParSet.rot);
 
@@ -209,7 +215,7 @@ namespace CharFileLibrary.Character_Making_File_Tool.Utilities
             {
                 aqu.aquaModels[0].models[0].splitVSETPerMesh();
             }
-            FbxExporter.ExportToFile(aqu.aquaModels[0].models[0], compositeBones, "C:/Test.fbx", false);
+            FbxExporter.ExportToFile(aqu.aquaModels[0].models[0], compositeBones, "C:/Test.fbx", true);
         }
 
         public void ApplyProportions(List<TransformSet> props, AquaObject bodyModel, AquaNode aquaNode)
@@ -319,7 +325,8 @@ namespace CharFileLibrary.Character_Making_File_Tool.Utilities
                             localPos *= props[finalWeightIndex].scale;
 
                             //Add scaling for physics parts etc.
-                            /*if((props[finalWeightIndex].boneShort2 & 0x400) == 0x400)
+                            var bs1 = props[finalWeightIndex].boneShort1;
+                            if ((bs1 & 0x40) < 1 && (bs1 & 0x80) < 1 && (bs1 & 0x100) < 1)
                             {
                                 var parRot = Quaternion.CreateFromRotationMatrix(newBoneList[aquaNode.nodeList[finalWeightIndex].parentId].GetMatrix4x4());
                                 var localRot = newBoneList[finalWeightIndex].rot * Quaternion.Inverse(parRot);
@@ -328,9 +335,9 @@ namespace CharFileLibrary.Character_Making_File_Tool.Utilities
                                 localPos *= props[finalWeightIndex].postScale;
                                 localPos = Vector3.Transform(localPos, localRot);
                             } else
-                            {*/
-                            //localPos *= props[finalWeightIndex].postScale;
-                            //}
+                            {
+                                localPos *= props[finalWeightIndex].postScale;
+                            }
 
                             vertNrm += Vector3.TransformNormal(vtxl.vertNormals[i], props[finalWeightIndex].GetMatrix4x4()) * weight;
                         }
@@ -423,14 +430,34 @@ namespace CharFileLibrary.Character_Making_File_Tool.Utilities
             for (int i = 0; i < aqn.nodeList.Count; i++)
             {
                 outTfm[i].boneShort1 = aqn.nodeList[i].boneShort1;
+                var bs1 = outTfm[i].boneShort1;
                 outTfm[i].boneShort2 = aqn.nodeList[i].boneShort2;
-                if (aqn.nodeList[i].boneShort1 == 0)
+
+                if ((bs1 & 0x40) < 1 && (bs1 & 0x80) < 1 && (bs1 & 0x100) < 1)
                 {
-                    outTfm[i].postScale *= outTfm[aqn.nodeList[i].parentId].scale;
+                    var parId = GetNonPhysicsParent(aqn, i);
+                    var scale = new Vector3(outTfm[parId].scale.X, outTfm[parId].scale.Y, outTfm[parId].scale.Z);
+                    outTfm[i].postScale *= scale;
                 }
             }
 
             return outTfm;
+        }
+
+        public int GetNonPhysicsParent(AquaNode aqn, int id)
+        {
+            int parId = id;
+            while(parId >= 0)
+            {
+                parId = aqn.nodeList[parId].parentId;
+                var bs1 = aqn.nodeList[parId].boneShort1;
+                if((bs1 & 0x40) > 0 || (bs1 & 0x80) > 0 || (bs1 & 0x100) > 0)
+                {
+                    break;
+                }
+            }
+
+            return parId;
         }
 
         public static float GetNGSPropRatio(int prop)
