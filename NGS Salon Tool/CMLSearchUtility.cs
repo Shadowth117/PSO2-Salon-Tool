@@ -250,13 +250,13 @@ namespace NGS_Salon_Tool
                                         var dirName1 = Path.GetDirectoryName(dirName0);
                                         var folderName = dirName0.Replace(dirName1, "").Replace("\\", "");
                                         var icefullFileName = iceEvt + folderName + "_" + iceFileName;
-                                        outDir = dumpPicker.FileName + "\\" + GetDirectoryString(icefullFileName, fileName, categoryDicts, npcNameDicts, isGlobal);
+                                        outDir = dumpPicker.FileName + "\\NGS\\" + GetDirectoryString(icefullFileName, fileName, categoryDicts, npcNameDicts, isGlobal);
                                         Directory.CreateDirectory(outDir);
                                     }
                                     else
                                     {
                                         var icefullFileName = iceEvt + iceFileName;
-                                        outDir = dumpPicker.FileName + "\\" + GetDirectoryString(icefullFileName, fileName, categoryDicts, npcNameDicts, isGlobal);
+                                        outDir = dumpPicker.FileName + "\\Classic\\" + GetDirectoryString(icefullFileName, fileName, categoryDicts, npcNameDicts, isGlobal);
                                         Directory.CreateDirectory(outDir);
                                     }
 
