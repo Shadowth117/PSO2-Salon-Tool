@@ -91,6 +91,9 @@ namespace Character_Making_File_Tool
                 case "leg_":
                     typeString = GetCastLegIconString(finalId);
                     break;
+                case "skin01_":
+                    typeString = GetSkinIconString(finalId);
+                    break;
                 default:
                     throw new Exception("Unexpected icon type!");
             }

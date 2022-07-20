@@ -429,6 +429,9 @@ namespace NGS_Salon_Tool
             int legPart = (int)xxpHandler.baseSLCT.legPart;
             int bodyPaint = (int)xxpHandler.baseSLCT.bodyPaintPart;
             int bodyPaint2 = (int)xxpHandler.baseSLCT2.bodyPaint2Part;
+            int skinPart = (int)xxpHandler.baseSLCTNGS.skinTextureSet;
+            int facePaint = (int)xxpHandler.baseSLCT.makeup1Part;
+            int facePaint2 = (int)xxpHandler.baseSLCT.makeup2Part;
             int stickerPart = (int)xxpHandler.baseSLCT.stickerPart;
             int hairPart = (int)xxpHandler.baseSLCT.hairPart;
             int rightEyePart = (int)xxpHandler.baseSLCT.eyePart;
@@ -463,6 +466,9 @@ namespace NGS_Salon_Tool
             AddPartIfMissing(legPart, cmxHandler.castLegDict, cmxHandler.castLegDictReverse);
             AddPartIfMissing(bodyPaint, cmxHandler.bodyPaintDict, cmxHandler.bodyPaintDictReverse);
             AddPartIfMissing(bodyPaint2, cmxHandler.bodyPaintDict, cmxHandler.bodyPaintDictReverse);
+            AddPartIfMissing(skinPart, cmxHandler.skinDict, cmxHandler.skinDictReverse);
+            AddPartIfMissing(facePaint, cmxHandler.facePaintDict, cmxHandler.facePaintDictReverse);
+            AddPartIfMissing(facePaint2, cmxHandler.facePaintDict, cmxHandler.facePaintDictReverse);
             AddPartIfMissing(stickerPart, cmxHandler.stickerDict, cmxHandler.stickerDictReverse);
             AddPartIfMissing(hairPart, cmxHandler.hairDict, cmxHandler.hairDictReverse);
             AddPartIfMissing(rightEyePart, cmxHandler.eyeDict, cmxHandler.eyeDictReverse);
@@ -594,6 +600,9 @@ namespace NGS_Salon_Tool
             eyelashesCB.SelectedIndex = eyelashesCB.Items.IndexOf(cmxHandler.eyelashDictReverse[(int)xxpHandler.baseSLCT.eyelashPart]);
             faceModelCB.SelectedIndex = faceModelCB.Items.IndexOf(cmxHandler.faceDictReverse[(int)xxpHandler.baseSLCT.faceTypePart]);
             faceTexCB.SelectedIndex = faceTexCB.Items.IndexOf(cmxHandler.faceTexDictReverse[(int)xxpHandler.baseSLCT.faceTexPart]);
+            facePaintCB.SelectedIndex = facePaintCB.Items.IndexOf(cmxHandler.facePaintDictReverse[(int)xxpHandler.baseSLCT.makeup1Part]);
+            facePaint2CB.SelectedIndex = facePaint2CB.Items.IndexOf(cmxHandler.facePaintDictReverse[(int)xxpHandler.baseSLCT.makeup2Part]);
+            skinCB.SelectedIndex = skinCB.Items.IndexOf(cmxHandler.skinDictReverse[(int)xxpHandler.baseSLCTNGS.skinTextureSet]);
             earsCB.SelectedIndex = earsCB.Items.IndexOf(cmxHandler.earDictReverse[(int)xxpHandler.baseSLCTNGS.earsPart]);
             hornsCB.SelectedIndex = hornsCB.Items.IndexOf(cmxHandler.hornDictReverse[(int)xxpHandler.baseSLCTNGS.hornPart]);
             teethCB.SelectedIndex = teethCB.Items.IndexOf(cmxHandler.teethDictReverse[(int)xxpHandler.baseSLCTNGS.teethPart]);
@@ -656,6 +665,9 @@ namespace NGS_Salon_Tool
             leftEyeCB.ItemsSource = cmxHandler.eyeDict.Keys;
             faceModelCB.ItemsSource = cmxHandler.faceDict.Keys;
             faceTexCB.ItemsSource = cmxHandler.faceTexDict.Keys;
+            facePaintCB.ItemsSource = cmxHandler.facePaintDict.Keys;
+            facePaint2CB.ItemsSource = cmxHandler.facePaintDict.Keys;
+            skinCB.ItemsSource = cmxHandler.skinDict.Keys;
             earsCB.ItemsSource = cmxHandler.earDict.Keys;
             hornsCB.ItemsSource = cmxHandler.hornDict.Keys;
             teethCB.ItemsSource = cmxHandler.teethDict.Keys;
@@ -936,7 +948,7 @@ namespace NGS_Salon_Tool
                 eyebrowsIcon.Source = null;
                 return;
             }
-            eyebrowsIcon.Source = IceHandler.GetIconFromIce(pso2_binDir, cmxHandler.eyebrowDict[text], CharacterMakingIndex.eyebrowsIcon);
+            eyebrowsIcon.Source = IceHandler.GetIconFromIce(pso2_binDir, cmxHandler.eyebrowDict[text], CharacterMakingIndex.eyeBrowsIcon);
             xxpHandler.baseSLCT.eyebrowPart = (uint)cmxHandler.eyebrowDict[text];
         }
         private void EyelashesSelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -978,6 +990,39 @@ namespace NGS_Salon_Tool
                 return;
             }
             xxpHandler.baseSLCT.faceTexPart = (uint)cmxHandler.faceTexDict[text];
+        }
+        private void FacePaintSelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            string text = (sender as ComboBox).SelectedItem as string;
+            if (text == null)
+            {
+                facePaintIcon.Source = null;
+                return;
+            }
+            facePaintIcon.Source = IceHandler.GetIconFromIce(pso2_binDir, cmxHandler.facePaintDict[text], CharacterMakingIndex.facePaintIcon);
+            xxpHandler.baseSLCT.makeup1Part = (uint)cmxHandler.facePaintDict[text];
+        }
+        private void FacePaint2SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            string text = (sender as ComboBox).SelectedItem as string;
+            if (text == null)
+            {
+                facePaint2Icon.Source = null;
+                return;
+            }
+            facePaint2Icon.Source = IceHandler.GetIconFromIce(pso2_binDir, cmxHandler.facePaintDict[text], CharacterMakingIndex.facePaintIcon);
+            xxpHandler.baseSLCT.makeup2Part = (uint)cmxHandler.facePaintDict[text];
+        }
+        private void SkinSelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            string text = (sender as ComboBox).SelectedItem as string;
+            if (text == null)
+            {
+                skinIcon.Source = null;
+                return;
+            }
+            skinIcon.Source = IceHandler.GetIconFromIce(pso2_binDir, cmxHandler.skinDict[text], CharacterMakingIndex.skinIcon);
+            xxpHandler.baseSLCT.makeup2Part = (uint)cmxHandler.skinDict[text];
         }
         private void EarsSelectionChanged(object sender, SelectionChangedEventArgs e)
         {

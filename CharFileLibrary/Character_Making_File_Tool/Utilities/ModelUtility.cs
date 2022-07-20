@@ -215,7 +215,7 @@ namespace CharFileLibrary.Character_Making_File_Tool.Utilities
             {
                 aqu.aquaModels[0].models[0].splitVSETPerMesh();
             }
-            FbxExporter.ExportToFile(aqu.aquaModels[0].models[0], compositeBones, "C:/Test.fbx", true);
+            FbxExporter.ExportToFile(aqu.aquaModels[0].models[0], compositeBones, new List<AquaMotion>(), "C:/Test.fbx", new List<string>(), true);
         }
 
         public void ApplyProportions(List<TransformSet> props, AquaObject bodyModel, AquaNode aquaNode)

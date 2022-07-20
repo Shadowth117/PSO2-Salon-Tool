@@ -43,6 +43,7 @@ namespace Character_Making_File_Tool
         public Dictionary<string, int> faceDict = new();
         public Dictionary<string, int> faceTexDict = new();
         public Dictionary<string, int> facePaintDict = new();
+        public Dictionary<string, int> skinDict = new();
         public Dictionary<string, int> earDict = new();
         public Dictionary<string, int> hornDict = new();
         public Dictionary<string, int> teethDict = new();
@@ -70,6 +71,7 @@ namespace Character_Making_File_Tool
         public Dictionary<int, string> faceDictReverse = new();
         public Dictionary<int, string> faceTexDictReverse = new();
         public Dictionary<int, string> facePaintDictReverse = new();
+        public Dictionary<int, string> skinDictReverse = new();
         public Dictionary<int, string> earDictReverse = new();
         public Dictionary<int, string> hornDictReverse = new();
         public Dictionary<int, string> teethDictReverse = new();
@@ -259,7 +261,10 @@ namespace Character_Making_File_Tool
             faceTexDict = ProcessNames(textByCat, masterIdList, nameDicts, nameCache, "", null, cmx.faceTextureDict, out faceTexDictReverse, writeToDisk);
 
             //***Face paint
-            facePaintDict = ProcessNames(textByCat, masterIdList, nameDicts, nameCache, "facepaint1", null, cmx.fcpDict, out facePaintDictReverse, writeToDisk);
+            facePaintDict = ProcessNames(textByCat, masterIdList, nameDicts, nameCache, "facepaint2", null, cmx.fcpDict, out facePaintDictReverse, writeToDisk);
+
+            //***NGS Skin
+            skinDict = ProcessNames(textByCat, masterIdList, nameDicts, nameCache, "skin", null, cmx.fcpDict, out skinDictReverse, writeToDisk);
 
             //***Ear
             earDict = ProcessNames(textByCat, masterIdList, nameDicts, nameCache, "ears", null, cmx.ngsEarDict, out earDictReverse, writeToDisk);
