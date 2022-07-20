@@ -1,15 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Drawing;
 using System.Runtime.InteropServices;
-using static Character_Making_File_Tool.Vector3Int;
 using static Character_Making_File_Tool.CharacterConstants;
 using static Character_Making_File_Tool.CharacterDataStructs;
 using static Character_Making_File_Tool.CharacterDataStructsReboot;
-using System.Windows;
-using System.Drawing;
+using static Character_Making_File_Tool.Vector3Int;
 
 namespace Character_Making_File_Tool
 {
@@ -22,21 +17,23 @@ namespace Character_Making_File_Tool
             col.costumeColorVerts = COLRFromRGBA(BytesFromFixed(colr.baseColor1));
 
             //Handle hair 2 and cast main color
-            if(race == 2)
+            if (race == 2)
             {
                 col.mainColor_hair2Verts = COLRFromRGBA(BytesFromFixed(colr.mainColor));
-            } else
+            }
+            else
             {
                 col.mainColor_hair2Verts = COLRFromRGBA(BytesFromFixed(colr.hairColor2));
             }
 
             col.subColor1Verts = COLRFromRGBA(BytesFromFixed(colr.subColor1));
-            
+
             //Handle skin
-            if(race == 2)
+            if (race == 2)
             {
                 col.skinSubColor2Verts = COLRFromRGBA(BytesFromFixed(colr.subColor2));
-            } else
+            }
+            else
             {
                 col.skinSubColor2Verts = COLRFromRGBA(BytesFromFixed(colr.skinColor1));
             }
@@ -74,22 +71,23 @@ namespace Character_Making_File_Tool
 
             Marshal.Copy(new byte[] { 0, 0, 0, 0xFF }, 0, (IntPtr)col.eyebrowColor, 4);
             Marshal.Copy(new byte[] { 0, 0, 0, 0xFF }, 0, (IntPtr)col.eyelashColor, 4);
-            
+
             //Handle skin conditionally
-            switch(race)
+            switch (race)
             {
                 case 0:
                 case 1:
-                    Marshal.Copy(GetPSO2CharColor(colr.skinSubColor2Verts, skinPalette), 0, (IntPtr)col.skinColor1, 4);
+                    Marshal.Copy(GetPSO2CharColor(colr.skinSubColor2Verts, skinPalette, true), 0, (IntPtr)col.skinColor1, 4);
                     break;
                 case 2:
                     Marshal.Copy(GetPSO2CharColor(colr.skinSubColor2Verts, castPalette), 0, (IntPtr)col.skinColor1, 4);
                     break;
                 case 3:
-                    Marshal.Copy(GetPSO2CharColor(colr.skinSubColor2Verts, deumanSkinPalette), 0, (IntPtr)col.skinColor1, 4);
+                    Marshal.Copy(GetPSO2CharColor(colr.skinSubColor2Verts, deumanSkinPalette, true), 0, (IntPtr)col.skinColor1, 4);
                     break;
             }
-            Marshal.Copy(new byte[] { 0, 0, 0xFF, 0xFF }, 0, (IntPtr)col.skinColor2, 4);
+            //TODO, manually generate a skin 2 palette per skin type and use here.
+            Marshal.Copy(new byte[] { 0x53, 0x49, 0xE2, 0xFF }, 0, (IntPtr)col.skinColor2, 4);
 
             Marshal.Copy(new byte[] { 0, 0, 0, 0xFF }, 0, (IntPtr)col.baseColor2, 4);
             Marshal.Copy(new byte[] { 0, 0, 0, 0xFF }, 0, (IntPtr)col.outerColor2, 4);
@@ -100,16 +98,18 @@ namespace Character_Making_File_Tool
             if (race == 3)
             {
                 Marshal.Copy(GetPSO2CharColor(colr.subColor3_leftEye_castHair2Verts, eyePalette), 0, (IntPtr)col.leftEyeColor, 4);
-            } else
+            }
+            else
             {
                 Marshal.Copy(GetPSO2CharColor(colr.rightEye_EyesVerts, eyePalette), 0, (IntPtr)col.leftEyeColor, 4);
             }
 
             //If cast, get hair 2 differently
-            if(race == 2)
+            if (race == 2)
             {
                 Marshal.Copy(GetPSO2CharColor(colr.subColor3_leftEye_castHair2Verts, castPalette), 0, (IntPtr)col.hairColor2, 4);
-            } else
+            }
+            else
             {
                 Marshal.Copy(GetPSO2CharColor(colr.mainColor_hair2Verts, hairPalette), 0, (IntPtr)col.hairColor2, 4);
             }
@@ -128,10 +128,11 @@ namespace Character_Making_File_Tool
             bytes[0] = fixedArr[0];
             bytes[1] = fixedArr[1];
             bytes[2] = fixedArr[2];
-            if(maxAlpha == true)
+            if (maxAlpha == true)
             {
                 bytes[3] = 0xFF;
-            } else
+            }
+            else
             {
                 bytes[3] = fixedArr[3];
             }
@@ -143,7 +144,7 @@ namespace Character_Making_File_Tool
         public static byte[] LerpColor(byte[] a, byte[] b, double t, bool roundDown = false)
         {
             var rounding = MidpointRounding.ToEven;
-            if(roundDown)
+            if (roundDown)
             {
                 rounding = MidpointRounding.ToZero;
             }
@@ -157,7 +158,7 @@ namespace Character_Making_File_Tool
             };
         }
 
-        public static byte[] GetPSO2CharColor(Vec3Int vec3, byte[,][] palette)
+        public static byte[] GetPSO2CharColor(Vec3Int vec3, byte[,][] palette, bool useSkinMode = false)
         {
             double horizontalSlider = (double)vec3.X / MaxSliderClassicHue * 6;
             double verticalSlider = (double)vec3.Y / MaxSliderClassicLightness * 5;
@@ -168,10 +169,11 @@ namespace Character_Making_File_Tool
 
             //Get step between points as a remainder using mod of floored values
             double tHoriz = 0;
-            if(horizontalSlider >= 1)
+            if (horizontalSlider >= 1)
             {
                 tHoriz = horizontalSlider % leftColumn;
-            } else
+            }
+            else
             {
                 tHoriz = horizontalSlider;
             }
@@ -187,7 +189,7 @@ namespace Character_Making_File_Tool
             }
 
             //Get base color from the interpolation of the 4 colors we get from these values
-            byte[] baseColor =  LerpColor(
+            byte[] baseColor = LerpColor(
                                    LerpColor(palette[leftColumn, topRow], palette[rightColumn, topRow], tHoriz),
                                    LerpColor(palette[leftColumn, bottomRow], palette[rightColumn, bottomRow], tHoriz),
                                    tVert,
@@ -197,7 +199,16 @@ namespace Character_Making_File_Tool
             //The grayscale of a pso2 color is the average of r, g, and b applied to r, g, and b on a color.
             //Saturation is handled by interpolating between the color and this grayscale color
             byte average = (byte)Math.Round(((double)baseColor[0] + baseColor[1] + baseColor[2]) / 3);
-            double tSat = 1 - (double)vec3.Z / MaxSliderClassicSaturation; 
+            double tSat;
+            if (useSkinMode)
+            {
+                tSat = 0.5;
+                average = (byte)(average * 0.5);
+            }
+            else
+            {
+                tSat = 1 - (double)vec3.Z / MaxSliderClassicSaturation;
+            }
             byte[] finalColor = LerpColor(baseColor, new byte[] { average, average, average, 255 }, tSat);
             var temp = finalColor[0];
             finalColor[0] = finalColor[2];
@@ -212,12 +223,12 @@ namespace Character_Making_File_Tool
             int trueHue = (int)((double)vec3.X / MaxSliderClassicHue * 240);
             int trueLightness = (int)((MaxSliderClassicLightness - (double)vec3.Y) / MaxSliderClassicLightness * 240);
             int trueSaturation = 0;
-            if(vec3.Y > LightnessThreshold)
+            if (vec3.Y > LightnessThreshold)
             {
                 trueSaturation = (int)(((double)vec3.Z) / MaxSliderClassicSaturation * 240);
             }
             var newColor = (System.Drawing.Color)new HSLColor(trueHue, trueLightness, trueSaturation);
-            
+
 
             return new byte[] { newColor.R, newColor.G, newColor.B, newColor.A };
         }
