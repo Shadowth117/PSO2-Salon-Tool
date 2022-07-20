@@ -264,7 +264,7 @@ namespace Character_Making_File_Tool
             facePaintDict = ProcessNames(textByCat, masterIdList, nameDicts, nameCache, "facepaint2", null, cmx.fcpDict, out facePaintDictReverse, writeToDisk);
 
             //***NGS Skin
-            skinDict = ProcessNames(textByCat, masterIdList, nameDicts, nameCache, "skin", null, cmx.fcpDict, out skinDictReverse, writeToDisk);
+            skinDict = ProcessNames(textByCat, masterIdList, nameDicts, nameCache, "skin", null, cmx.ngsSkinDict, out skinDictReverse, writeToDisk);
 
             //***Ear
             earDict = ProcessNames(textByCat, masterIdList, nameDicts, nameCache, "ears", null, cmx.ngsEarDict, out earDictReverse, writeToDisk);
