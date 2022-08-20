@@ -32,7 +32,7 @@ namespace Character_Making_File_Tool
             public Vec3Int waistVerts;
 
             public Vec3Int hands;
-            public Vec3Int horns;
+            public Vec3Int hornVerts;
             public int eyeSize;
             public int eyeHorizontalPosition;
             public int neckAngle;
@@ -292,7 +292,7 @@ namespace Character_Making_File_Tool
                 waistVerts = tempXXP.waistVerts;
 
                 hands = tempXXP.hands;
-                horns = tempXXP.horns;
+                hornVerts = tempXXP.horns;
                 eyeSize = tempXXP.eyeSize;
                 eyeHorizontalPosition = tempXXP.eyeHorizontalPosition;
                 neckAngle = tempXXP.neckAngle;
@@ -346,7 +346,7 @@ namespace Character_Making_File_Tool
                 waistVerts = tempXXP.waistVerts;
 
                 hands = tempXXP.hands;
-                horns = tempXXP.horns;
+                hornVerts = tempXXP.horns;
                 eyeSize = tempXXP.eyeSize;
                 eyeHorizontalPosition = tempXXP.eyeHorizontalPosition;
                 neckAngle = tempXXP.neckAngle;
@@ -400,7 +400,7 @@ namespace Character_Making_File_Tool
                 waistVerts = tempXXP.waistVerts;
 
                 hands = tempXXP.hands;
-                horns = tempXXP.horns;
+                hornVerts = tempXXP.horns;
                 eyeSize = tempXXP.eyeSize;
                 eyeHorizontalPosition = tempXXP.eyeHorizontalPosition;
                 neckAngle = tempXXP.neckAngle;
@@ -456,7 +456,7 @@ namespace Character_Making_File_Tool
                 waistVerts = tempXXP.waistVerts;
 
                 hands = tempXXP.hands;
-                horns = tempXXP.horns;
+                hornVerts = tempXXP.horns;
                 eyeSize = tempXXP.eyeSize;
                 eyeHorizontalPosition = tempXXP.eyeHorizontalPosition;
                 neckAngle = tempXXP.neckAngle;
@@ -601,7 +601,7 @@ namespace Character_Making_File_Tool
                 tempXXP.neckVerts = neckVerts;
                 tempXXP.waistVerts = waistVerts;
                 tempXXP.hands = hands;
-                tempXXP.horns = horns;
+                tempXXP.horns = hornVerts;
                 tempXXP.eyeSize = eyeSize;
                 tempXXP.eyeHorizontalPosition = eyeHorizontalPosition;
                 tempXXP.neckAngle = neckAngle;
@@ -644,7 +644,7 @@ namespace Character_Making_File_Tool
                 tempXXP.neckVerts = neckVerts;
                 tempXXP.waistVerts = waistVerts;
                 tempXXP.hands = hands;
-                tempXXP.horns = horns;
+                tempXXP.horns = hornVerts;
                 tempXXP.eyeSize = eyeSize;
                 tempXXP.eyeHorizontalPosition = eyeHorizontalPosition;
                 tempXXP.neckAngle = neckAngle;
@@ -687,7 +687,7 @@ namespace Character_Making_File_Tool
                 tempXXP.neckVerts = neckVerts;
                 tempXXP.waistVerts = waistVerts;
                 tempXXP.hands = hands;
-                tempXXP.horns = horns;
+                tempXXP.horns = hornVerts;
                 tempXXP.eyeSize = eyeSize;
                 tempXXP.eyeHorizontalPosition = eyeHorizontalPosition;
                 tempXXP.neckAngle = neckAngle;
@@ -731,7 +731,7 @@ namespace Character_Making_File_Tool
                 tempXXP.neckVerts = neckVerts;
                 tempXXP.waistVerts = waistVerts;
                 tempXXP.hands = hands;
-                tempXXP.horns = horns;
+                tempXXP.horns = hornVerts;
                 tempXXP.eyeSize = eyeSize;
                 tempXXP.eyeHorizontalPosition = eyeHorizontalPosition;
                 tempXXP.neckAngle = neckAngle;
@@ -810,7 +810,7 @@ namespace Character_Making_File_Tool
                 faceFIGR.mouthVerts = baseFIGR.mouthVerts;
                 faceFIGR.ear_hornVerts = baseFIGR.ear_hornVerts;
                 faceFIGR.neckVerts = neckVerts;
-                faceFIGR.horns = horns;
+                faceFIGR.hornsVerts = hornVerts;
                 faceFIGR.unkFaceVerts = new Vec3Int();
 
                 return faceFIGR;
@@ -831,7 +831,7 @@ namespace Character_Making_File_Tool
                 baseFIGR.mouthVerts = faceData.mouthVerts;
                 baseFIGR.ear_hornVerts = faceData.ear_hornVerts;
                 neckVerts = faceData.neckVerts;
-                horns = faceData.horns;
+                hornVerts = faceData.hornsVerts;
             }
 
             public void SetAltFaceData(AltFaceFIGR faceData)

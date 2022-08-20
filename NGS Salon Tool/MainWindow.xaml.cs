@@ -186,58 +186,51 @@ namespace NGS_Salon_Tool
             fileOpen.InitialDirectory = openInitialDirectory;
             if (fileOpen.ShowDialog() == System.Windows.Forms.DialogResult.OK)
             {
-                //try
-                //{
-                    byte[] data;
+                byte[] data;
 
-                    //Handle encrypted files
-                    if(fileOpen.FileName.LastOrDefault() == 'p')
+                //Handle encrypted files
+                if(fileOpen.FileName.LastOrDefault() == 'p')
+                {
+                    data = CharacterHandler.DecryptXXP(fileOpen.FileName);
+                } else
+                {
+                    data = File.ReadAllBytes(fileOpen.FileName);
+                }
+
+                using (Stream stream = new MemoryStream(data))
+                using (var streamReader = new BufferedStreamReader(stream, 8192))
+                {
+                    string extension = Path.GetExtension(fileOpen.FileName).ToLower();
+                    switch (extension)
                     {
-                        data = CharacterHandler.DecryptXXP(fileOpen.FileName);
-                    } else
-                    {
-                        data = File.ReadAllBytes(fileOpen.FileName);
+                        case ".cml":
+                        case ".eml": //Rarely used "enemy" cml. Seemingly just the same format?
+                            xxpHandler = CMLHandler.ParseCML(streamReader);
+                            break;
+                        default:
+                            xxpHandler = OpenXXP(streamReader);
+                            break;
                     }
+                }
 
-                    using (Stream stream = new MemoryStream(data))
-                    using (var streamReader = new BufferedStreamReader(stream, 8192))
-                    {
-                        string extension = Path.GetExtension(fileOpen.FileName).ToLower();
-                        switch (extension)
-                        {
-                            case ".cml":
-                            case ".eml": //Rarely used "enemy" cml. Seemingly just the same format?
-                                xxpHandler = CMLHandler.ParseCML(streamReader);
-                                break;
-                            default:
-                                xxpHandler = OpenXXP(streamReader);
-                                break;
-                        }
-                    }
-
-                    openedFileName = Path.GetFileName(fileOpen.FileName);
-                    this.Title = "NGS Salon Tool - " + Path.GetFileName(fileOpen.FileName);
-                    saveAsButton.IsEnabled = true;
-                    saveButton.IsEnabled = true;
+                openedFileName = Path.GetFileName(fileOpen.FileName);
+                this.Title = "NGS Salon Tool - " + Path.GetFileName(fileOpen.FileName);
+                saveAsButton.IsEnabled = true;
+                saveButton.IsEnabled = true;
 
 
-                    //Ensure parts exist in the dropdowns if they don't
-                    PartCheck();
+                //Ensure parts exist in the dropdowns if they don't
+                PartCheck();
 
-                    //Assign data
-                    BasicSettings();
-                    ColorButtons();
-                    AccessoryWindows();
-                    Proportions();
-                    PartDropdowns();
-                    MotionDropdowns();
-                    ExpressionsData();
-                    SetEnabledState(true);
-                //}
-                //catch
-                //{
-                //    MessageBox.Show("Unable to open file. Check permissions and file type.");
-                //}
+                //Assign data
+                BasicSettings();
+                ColorButtons();
+                AccessoryWindows();
+                Proportions();
+                PartDropdowns();
+                MotionDropdowns();
+                ExpressionsData();
+                SetEnabledState(true);
                 savedInitialDirectory = Path.GetDirectoryName(fileOpen.FileName);
                 openInitialDirectory = Path.GetDirectoryName(fileOpen.FileName);
                 fileOpen.FileName = "";
@@ -753,7 +746,15 @@ namespace NGS_Salon_Tool
 
             if (openFileDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
             {
-                var data = File.ReadAllBytes(openFileDialog.FileName);
+                byte[] data;
+                if (openFileDialog.FileName.LastOrDefault() == 'p')
+                {
+                    data = CharacterHandler.DecryptXXP(openFileDialog.FileName);
+                }
+                else
+                {
+                    data = File.ReadAllBytes(openFileDialog.FileName);
+                }
                 CharacterHandlerReboot.xxpGeneralReboot faceSourceCharacterHandler;
                 using (Stream stream = new MemoryStream(data))
                 using (var streamReader = new BufferedStreamReader(stream, 8192))
@@ -777,14 +778,14 @@ namespace NGS_Salon_Tool
                 
                 if (faceOverwriteDialog.DialogResult.HasValue && faceOverwriteDialog.DialogResult.Value)
                 {
-                    CharacterDataStructsReboot.AltFaceFIGR sourceFaceFIGR = faceSourceCharacterHandler.GetFaceData();
+                    CharacterDataStructsReboot.AltFaceFIGR sourceFaceFIGR;
 
-                    if (faceOverwriteDialog.AltFaceSource)
+                    if (faceOverwriteDialog.AltFaceSource && faceSourceCharacterHandler.xxpVersion >= 12)
                     {
-                        if (faceSourceCharacterHandler.xxpVersion >= 12)
-                        {
-                            sourceFaceFIGR = faceSourceCharacterHandler.GetAltFaceData();
-                        }
+                        sourceFaceFIGR = faceSourceCharacterHandler.GetAltFaceData();
+                    } else
+                    {
+                        sourceFaceFIGR = faceSourceCharacterHandler.GetFaceData();
                     }
 
                     if (faceOverwriteDialog.OverwriteBaseFace)
@@ -1674,6 +1675,10 @@ namespace NGS_Salon_Tool
         {
             xxpHandler.ngsVISI.hideOuterwearOrnament = (bool)outerOrnCheck.IsChecked ? 1 : 0;
         }
+        private void InnerWearVisiChanged(object sender, RoutedEventArgs e)
+        {
+            xxpHandler.ngsVISI.hideInnerwear = (bool)innerCheck.IsChecked ? 1 : 0;
+        }
 
         public void SetGlobalMin(object sender, RoutedEventArgs e)
         {
@@ -1794,7 +1799,7 @@ namespace NGS_Salon_Tool
                     SetProportionsVec3UI(xxpHandler.hands);
                     break;
                 case "Horns":
-                    SetProportionsVec3UI(xxpHandler.horns);
+                    SetProportionsVec3UI(xxpHandler.hornVerts);
                     break;
                 case "Alt Face Head":
                     SetProportionsVec3UI(xxpHandler.altFace.headVerts);
@@ -1821,7 +1826,7 @@ namespace NGS_Salon_Tool
                     SetProportionsVec3UI(xxpHandler.altFace.neckVerts);
                     break;
                 case "Alt Face Horns":
-                    SetProportionsVec3UI(xxpHandler.altFace.horns);
+                    SetProportionsVec3UI(xxpHandler.altFace.hornsVerts);
                     break;
                 case "Alt Face Unknown":
                     SetProportionsVec3UI(xxpHandler.altFace.unkFaceVerts);
@@ -1888,7 +1893,7 @@ namespace NGS_Salon_Tool
                         xxpHandler.hands = vec3UI;
                         break;
                     case "Horns":
-                        xxpHandler.horns = vec3UI;
+                        xxpHandler.hornVerts = vec3UI;
                         break;
                     case "Alt Face Head":
                         xxpHandler.altFace.headVerts = vec3UI;
@@ -1915,7 +1920,7 @@ namespace NGS_Salon_Tool
                         xxpHandler.altFace.neckVerts = vec3UI;
                         break;
                     case "Alt Face Horns":
-                        xxpHandler.altFace.horns = vec3UI;
+                        xxpHandler.altFace.hornsVerts = vec3UI;
                         break;
                     case "Alt Face Unknown":
                         xxpHandler.altFace.unkFaceVerts = vec3UI;

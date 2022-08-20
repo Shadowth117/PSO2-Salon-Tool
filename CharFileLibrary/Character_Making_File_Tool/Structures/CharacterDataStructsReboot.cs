@@ -362,7 +362,7 @@ namespace Character_Making_File_Tool
             public Vec3Int ear_hornVerts;
             public Vec3Int neckVerts;
 
-            public Vec3Int horns;
+            public Vec3Int hornsVerts;
             public Vec3Int unkFaceVerts;
         }
 
@@ -403,7 +403,7 @@ namespace Character_Making_File_Tool
             public int jumpMotion;
         }
 
-        public struct VISI //VISI, stored as 0 or 1 in xxp. In CML, these are stored as bits in a single byte.
+        public struct VISI //VISI, stored as 0 or 1 in xxp. In CML, these are stored as bits with the first 8 being a single byte.
         {
             public int hideBasewearOrnament1;
             public int hideBasewearOrnament2;

@@ -60,11 +60,12 @@
                         <xctk:IntegerUpDown x:Name="genderUD" Margin="171,13,696,0" Maximum="1" Minimum="0" Value="0" VerticalAlignment="Top" ValueChanged="GenderUDChanged"/>
                         <CheckBox x:Name="bwOrn1Check" Content="Hide Basewear Ornament 1" HorizontalAlignment="Left" Margin="14,39,0,0" VerticalAlignment="Top" Checked="BaseWearOrn1Changed" Unchecked="BaseWearOrn1Changed"/>
                         <CheckBox x:Name="bwOrn2Check" Content="Hide Basewear Ornament 2" HorizontalAlignment="Left" Margin="14,54,0,0" VerticalAlignment="Top" Checked="BaseWearOrn2Changed" Unchecked="BaseWearOrn2Changed"/>
-                        <CheckBox x:Name="headOrnCheck" Content="Hide Head Ornament" HorizontalAlignment="Left" Margin="14,84,0,0" VerticalAlignment="Top" Checked="HeadOrnChanged" Unchecked="HeadOrnChanged"/>
-                        <CheckBox x:Name="bodyOrnCheck" Content="Hide Body Parts Ornament" HorizontalAlignment="Left" Margin="14,99,0,0" VerticalAlignment="Top" Checked="BodyOrnChanged" Unchecked="BodyOrnChanged"/>
-                        <CheckBox x:Name="armOrnCheck" Content="Hide Arm Parts Ornament" HorizontalAlignment="Left" Margin="14,114,0,0" VerticalAlignment="Top" Checked="ArmOrnChanged" Unchecked="ArmOrnChanged"/>
-                        <CheckBox x:Name="legOrnCheck" Content="Hide Leg Parts Ornament" HorizontalAlignment="Left" Margin="14,129,0,0" VerticalAlignment="Top" Checked="LegOrnChanged" Unchecked="LegOrnChanged"/>
+                        <CheckBox x:Name="headOrnCheck" Content="Hide Head Ornament" HorizontalAlignment="Left" Margin="14,99,0,0" VerticalAlignment="Top" Checked="HeadOrnChanged" Unchecked="HeadOrnChanged"/>
+                        <CheckBox x:Name="bodyOrnCheck" Content="Hide Body Parts Ornament" HorizontalAlignment="Left" Margin="14,114,0,0" VerticalAlignment="Top" Checked="BodyOrnChanged" Unchecked="BodyOrnChanged"/>
+                        <CheckBox x:Name="armOrnCheck" Content="Hide Arm Parts Ornament" HorizontalAlignment="Left" Margin="14,129,0,0" VerticalAlignment="Top" Checked="ArmOrnChanged" Unchecked="ArmOrnChanged"/>
+                        <CheckBox x:Name="legOrnCheck" Content="Hide Leg Parts Ornament" HorizontalAlignment="Left" Margin="14,144,0,0" VerticalAlignment="Top" Checked="LegOrnChanged" Unchecked="LegOrnChanged"/>
                         <CheckBox x:Name="outerOrnCheck" Content="Hide Outer Wear Ornament" HorizontalAlignment="Left" Margin="14,69,0,0" VerticalAlignment="Top" Checked="OuterWearOrnChanged" Unchecked="OuterWearOrnChanged"/>
+                        <CheckBox x:Name="innerCheck" Content="Hide Inner Wear" HorizontalAlignment="Left" Margin="14,84,0,0" VerticalAlignment="Top" Checked="InnerWearVisiChanged" Unchecked="InnerWearVisiChanged"/>
                         <Label x:Name="bpLabel" Content="Bodypaint/Innerwear order" HorizontalAlignment="Left" Margin="224,36,0,0" VerticalAlignment="Top"/>
                         <ComboBox x:Name="bpOrder0" HorizontalAlignment="Left" Margin="240,65,0,0" VerticalAlignment="Top" Width="120" SelectionChanged="bpOrder0_SelectionChanged"/>
                         <ComboBox x:Name="bpOrder1" HorizontalAlignment="Left" Margin="240,95,0,0" VerticalAlignment="Top" Width="120" SelectionChanged="bpOrder1_SelectionChanged"/>

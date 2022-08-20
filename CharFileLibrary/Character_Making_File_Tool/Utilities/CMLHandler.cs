@@ -103,17 +103,30 @@ namespace Character_Making_File_Tool
                         TryGetFromArray(ref xxp.neckVerts, figr, 0xC);
                         TryGetFromArray(ref xxp.waistVerts, figr, 0xD);
                         TryGetFromArray(ref xxp.hands, figr, 0x16);
-                        TryGetFromArray(ref xxp.horns, figr, 0x20);
+                        TryGetFromArray(ref xxp.hornVerts, figr, 0x20);
 
                         //Technically this is the same struct as the above, but its values are used ingame much differently
-                        if(figr.TryGetValue(0x21, out object extra))
+                        if (figr.TryGetValue(0x21, out object extra))
                         {
                             int[] extraArr = ((int[][])extra)[0];
                             xxp.eyeSize = extraArr[0];
                             xxp.eyeHorizontalPosition = extraArr[1];
                             xxp.neckAngle = extraArr[2];
                         }
-                        if(xxp.xxpVersion == 0)
+
+                        //Alt Face
+                        TryGetFromArray(ref xxp.altFace.headVerts, figr, 0x30);
+                        TryGetFromArray(ref xxp.altFace.faceShapeVerts, figr, 0x31);
+                        TryGetFromArray(ref xxp.altFace.eyeShapeVerts, figr, 0x32);
+                        TryGetFromArray(ref xxp.altFace.noseHeightVerts, figr, 0x33);
+                        TryGetFromArray(ref xxp.altFace.noseShapeVerts, figr, 0x34);
+                        TryGetFromArray(ref xxp.altFace.mouthVerts, figr, 0x35);
+                        TryGetFromArray(ref xxp.altFace.ear_hornVerts, figr, 0x36);
+                        TryGetFromArray(ref xxp.altFace.neckVerts, figr, 0x37);
+                        TryGetFromArray(ref xxp.altFace.hornsVerts, figr, 0x38);
+                        TryGetFromArray(ref xxp.altFace.unkFaceVerts, figr, 0x39); //Might just be padding
+
+                        if (xxp.xxpVersion == 0)
                         {
                             xxp.baseFIGR.ToNGS();
                         }
@@ -292,6 +305,7 @@ namespace Character_Making_File_Tool
                             xxp.ngsVISI.hideLegPartOrnament = (ornaments[0] & 0b00100000) > 0 ? 1 : 0;
 
                             xxp.ngsVISI.hideOuterwearOrnament = (ornaments[0] & 0b01000000) > 0 ? 1 : 0;
+                            xxp.ngsVISI.hideInnerwear = (ornaments[0] & 0b10000000) > 0 ? 1 : 0;
                         }
                         break;
                     case "EXPR":
@@ -464,10 +478,22 @@ namespace Character_Making_File_Tool
             VTBFMethods.addBytes(figr, 0xC, 0x48, 0x1, Reloaded.Memory.Struct.GetBytes(xxp.neckVerts));
             VTBFMethods.addBytes(figr, 0xD, 0x48, 0x1, Reloaded.Memory.Struct.GetBytes(xxp.waistVerts));
             VTBFMethods.addBytes(figr, 0x16, 0x48, 0x1, Reloaded.Memory.Struct.GetBytes(xxp.hands));
-            VTBFMethods.addBytes(figr, 0x20, 0x48, 0x1, Reloaded.Memory.Struct.GetBytes(xxp.horns));
+            VTBFMethods.addBytes(figr, 0x20, 0x48, 0x1, Reloaded.Memory.Struct.GetBytes(xxp.hornVerts));
             Vector3Int.Vec3Int vec3_21 = Vector3Int.Vec3Int.CreateVec3Int(xxp.eyeSize, xxp.eyeHorizontalPosition, xxp.neckAngle);
             VTBFMethods.addBytes(figr, 0x21, 0x48, 0x1, Reloaded.Memory.Struct.GetBytes(vec3_21));
-            VTBFMethods.WriteTagHeader(figr, "FIGR", 0, 0x10);
+
+            //FIGR Alt Face
+            VTBFMethods.addBytes(figr, 0x30, 0x48, 0x1, Reloaded.Memory.Struct.GetBytes(xxp.altFace.headVerts));
+            VTBFMethods.addBytes(figr, 0x31, 0x48, 0x1, Reloaded.Memory.Struct.GetBytes(xxp.altFace.faceShapeVerts));
+            VTBFMethods.addBytes(figr, 0x32, 0x48, 0x1, Reloaded.Memory.Struct.GetBytes(xxp.altFace.eyeShapeVerts));
+            VTBFMethods.addBytes(figr, 0x33, 0x48, 0x1, Reloaded.Memory.Struct.GetBytes(xxp.altFace.noseHeightVerts));
+            VTBFMethods.addBytes(figr, 0x34, 0x48, 0x1, Reloaded.Memory.Struct.GetBytes(xxp.altFace.noseShapeVerts));
+            VTBFMethods.addBytes(figr, 0x35, 0x48, 0x1, Reloaded.Memory.Struct.GetBytes(xxp.altFace.mouthVerts));
+            VTBFMethods.addBytes(figr, 0x36, 0x48, 0x1, Reloaded.Memory.Struct.GetBytes(xxp.altFace.ear_hornVerts));
+            VTBFMethods.addBytes(figr, 0x37, 0x48, 0x1, Reloaded.Memory.Struct.GetBytes(xxp.altFace.neckVerts));
+            VTBFMethods.addBytes(figr, 0x38, 0x48, 0x1, Reloaded.Memory.Struct.GetBytes(xxp.altFace.hornsVerts));
+
+            VTBFMethods.WriteTagHeader(figr, "FIGR", 0, 0x19);
             cml.AddRange(figr);
 
             //OFST - Scale
@@ -642,8 +668,9 @@ namespace Character_Making_File_Tool
             byte arm = (byte)(xxp.ngsVISI.hideHeadPartOrnament > 0 ? 0b00010000 : 0b00000000);
             byte leg = (byte)(xxp.ngsVISI.hideHeadPartOrnament > 0 ? 0b00100000 : 0b00000000);
             byte outer = (byte)(xxp.ngsVISI.hideOuterwearOrnament > 0 ? 0b01000000 : 0b00000000);
+            byte inner = (byte)(xxp.ngsVISI.hideInnerwear > 0 ? 0b10000000 : 0b00000000);
 
-            byte bitflags = (byte)(0 | base1 | base2 | head | body | arm | leg | outer);
+            byte bitflags = (byte)(0 | base1 | base2 | head | body | arm | leg | outer | inner);
 
             VTBFMethods.addBytes(visi, 0xC0, 0x8, new byte[] { bitflags, 0, 0, 0 });
             VTBFMethods.addBytes(visi, 0xC1, 0x8, new byte[] { 0, 0, 0, 0 });

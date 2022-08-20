@@ -23,5 +23,5 @@ Class AquaModelLibrary.Objects.Processing.Fbx.FbxExporterCore: AutoLayout, AnsiC
     AquaModelLibrary.Native.Fbx.Interfaces.IFbxExporter
     System.IDisposable
   Methods:
-    ExportToFile(AquaObject, AquaNode, String, Boolean(HasFieldMarshal)): PrivateScope, Public, Final, Virtual, HideBySig, VtableLayoutMask
+    ExportToFile(AquaObject, AquaNode, List`1, String, List`1, Boolean(HasFieldMarshal)): PrivateScope, Public, Final, Virtual, HideBySig, VtableLayoutMask
     Dispose(): PrivateScope, Public, Final, Virtual, HideBySig
