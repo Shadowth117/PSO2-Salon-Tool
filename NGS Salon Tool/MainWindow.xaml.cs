@@ -778,24 +778,24 @@ namespace NGS_Salon_Tool
                 
                 if (faceOverwriteDialog.DialogResult.HasValue && faceOverwriteDialog.DialogResult.Value)
                 {
-                    CharacterDataStructsReboot.AltFaceFIGR sourceFaceFIGR;
+                    CharacterDataStructsReboot.FaceFIGR sourceFaceFIGR;
 
                     if (faceOverwriteDialog.AltFaceSource && faceSourceCharacterHandler.xxpVersion >= 12)
                     {
-                        sourceFaceFIGR = faceSourceCharacterHandler.GetAltFaceData();
+                        sourceFaceFIGR = faceSourceCharacterHandler.GetClassicFaceData();
                     } else
                     {
-                        sourceFaceFIGR = faceSourceCharacterHandler.GetFaceData();
+                        sourceFaceFIGR = faceSourceCharacterHandler.GetNGSFaceData();
                     }
 
                     if (faceOverwriteDialog.OverwriteBaseFace)
                     {
-                        xxpHandler.SetFaceData(sourceFaceFIGR);
+                        xxpHandler.SetNGSFaceData(sourceFaceFIGR);
                     }
 
                     if (faceOverwriteDialog.OverwriteAltFace)
                     {
-                        xxpHandler.SetAltFaceData(sourceFaceFIGR);
+                        xxpHandler.SetClassicFaceData(sourceFaceFIGR);
                     }
                 }
             }
@@ -1802,34 +1802,34 @@ namespace NGS_Salon_Tool
                     SetProportionsVec3UI(xxpHandler.hornVerts);
                     break;
                 case "Alt Face Head":
-                    SetProportionsVec3UI(xxpHandler.altFace.headVerts);
+                    SetProportionsVec3UI(xxpHandler.classicFace.headVerts);
                     break;
                 case "Alt Face Face Shape":
-                    SetProportionsVec3UI(xxpHandler.altFace.faceShapeVerts);
+                    SetProportionsVec3UI(xxpHandler.classicFace.faceShapeVerts);
                     break;
                 case "Alt Face Eye Shape":
-                    SetProportionsVec3UI(xxpHandler.altFace.eyeShapeVerts);
+                    SetProportionsVec3UI(xxpHandler.classicFace.eyeShapeVerts);
                     break;
                 case "Alt Face Nose Height":
-                    SetProportionsVec3UI(xxpHandler.altFace.noseHeightVerts);
+                    SetProportionsVec3UI(xxpHandler.classicFace.noseHeightVerts);
                     break;
                 case "Alt Face Nose Shape":
-                    SetProportionsVec3UI(xxpHandler.altFace.noseShapeVerts);
+                    SetProportionsVec3UI(xxpHandler.classicFace.noseShapeVerts);
                     break;
                 case "Alt Face Mouth":
-                    SetProportionsVec3UI(xxpHandler.altFace.mouthVerts);
+                    SetProportionsVec3UI(xxpHandler.classicFace.mouthVerts);
                     break;
                 case "Alt Face Ears":
-                    SetProportionsVec3UI(xxpHandler.altFace.ear_hornVerts);
+                    SetProportionsVec3UI(xxpHandler.classicFace.ear_hornVerts);
                     break;
                 case "Alt Face Necks":
-                    SetProportionsVec3UI(xxpHandler.altFace.neckVerts);
+                    SetProportionsVec3UI(xxpHandler.classicFace.neckVerts);
                     break;
                 case "Alt Face Horns":
-                    SetProportionsVec3UI(xxpHandler.altFace.hornsVerts);
+                    SetProportionsVec3UI(xxpHandler.classicFace.hornVerts);
                     break;
                 case "Alt Face Unknown":
-                    SetProportionsVec3UI(xxpHandler.altFace.unkFaceVerts);
+                    SetProportionsVec3UI(xxpHandler.classicFace.unkFaceVerts);
                     break;
             }
         }
@@ -1896,34 +1896,34 @@ namespace NGS_Salon_Tool
                         xxpHandler.hornVerts = vec3UI;
                         break;
                     case "Alt Face Head":
-                        xxpHandler.altFace.headVerts = vec3UI;
+                        xxpHandler.classicFace.headVerts = vec3UI;
                         break;
                     case "Alt Face Face Shape":
-                        xxpHandler.altFace.faceShapeVerts = vec3UI;
+                        xxpHandler.classicFace.faceShapeVerts = vec3UI;
                         break;
                     case "Alt Face Eye Shape":
-                        xxpHandler.altFace.eyeShapeVerts = vec3UI;
+                        xxpHandler.classicFace.eyeShapeVerts = vec3UI;
                         break;
                     case "Alt Face Nose Height":
-                        xxpHandler.altFace.noseHeightVerts = vec3UI;
+                        xxpHandler.classicFace.noseHeightVerts = vec3UI;
                         break;
                     case "Alt Face Nose Shape":
-                        xxpHandler.altFace.noseShapeVerts = vec3UI;
+                        xxpHandler.classicFace.noseShapeVerts = vec3UI;
                         break;
                     case "Alt Face Mouth":
-                        xxpHandler.altFace.mouthVerts = vec3UI;
+                        xxpHandler.classicFace.mouthVerts = vec3UI;
                         break;
                     case "Alt Face Ears":
-                        xxpHandler.altFace.ear_hornVerts = vec3UI;
+                        xxpHandler.classicFace.ear_hornVerts = vec3UI;
                         break;
                     case "Alt Face Necks":
-                        xxpHandler.altFace.neckVerts = vec3UI;
+                        xxpHandler.classicFace.neckVerts = vec3UI;
                         break;
                     case "Alt Face Horns":
-                        xxpHandler.altFace.hornsVerts = vec3UI;
+                        xxpHandler.classicFace.hornVerts = vec3UI;
                         break;
                     case "Alt Face Unknown":
-                        xxpHandler.altFace.unkFaceVerts = vec3UI;
+                        xxpHandler.classicFace.unkFaceVerts = vec3UI;
                         break;
                 }
             }

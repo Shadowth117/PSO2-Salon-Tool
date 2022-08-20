@@ -37,7 +37,7 @@ namespace Character_Making_File_Tool
             public int eyeHorizontalPosition;
             public int neckAngle;
 
-            public AltFaceFIGR altFace;
+            public FaceFIGR classicFace;
 
             //COL2 - These are just standard RGBA in NGS as opposed to the original COLR slider positions
             public COL2 ngsCOL2;
@@ -118,6 +118,12 @@ namespace Character_Making_File_Tool
                 SetDefaultExpressions();
 
                 paintPriority = PaintPriority.GetDefault();
+
+                FaceFIGR face = GetNGSFaceData();
+                if (baseSLCT.faceTypePart < 100000)
+                {
+                    SetClassicFaceData(face);
+                }
             }
 
             public xxpGeneralReboot(XXPV5 tempXXP)
@@ -155,6 +161,12 @@ namespace Character_Making_File_Tool
                 accessorySlidersReboot = tempXXP.oldPosSliders.GetAccessorySlidersReboot();
 
                 paintPriority = PaintPriority.GetDefault();
+
+                FaceFIGR face = GetNGSFaceData();
+                if (baseSLCT.faceTypePart < 100000)
+                {
+                    SetClassicFaceData(face);
+                }
             }
 
             public xxpGeneralReboot(XXPV6 tempXXP)
@@ -196,6 +208,12 @@ namespace Character_Making_File_Tool
                 accessorySlidersReboot = tempXXP.oldAccessorySliders.GetAccessorySlidersReboot();
 
                 paintPriority = PaintPriority.GetDefault();
+
+                FaceFIGR face = GetNGSFaceData();
+                if (baseSLCT.faceTypePart < 100000)
+                {
+                    SetClassicFaceData(face);
+                }
             }
 
             public xxpGeneralReboot(XXPV7 tempXXP)
@@ -237,6 +255,12 @@ namespace Character_Making_File_Tool
                 accessorySlidersReboot = tempXXP.accessorySliders.GetAccessorySlidersReboot();
 
                 paintPriority = PaintPriority.GetDefault();
+
+                FaceFIGR face = GetNGSFaceData();
+                if (baseSLCT.faceTypePart < 100000)
+                {
+                    SetClassicFaceData(face);
+                }
             }
 
             public xxpGeneralReboot(XXPV9 tempXXP)
@@ -276,6 +300,12 @@ namespace Character_Making_File_Tool
                 accessorySlidersReboot = tempXXP.accessorySliders.GetAccessorySlidersReboot();
 
                 paintPriority = PaintPriority.GetDefault();
+
+                FaceFIGR face = GetNGSFaceData();
+                if (baseSLCT.faceTypePart < 100000)
+                {
+                    SetClassicFaceData(face);
+                }
             }
 
             public xxpGeneralReboot(XXPV10 tempXXP)
@@ -330,6 +360,12 @@ namespace Character_Making_File_Tool
                 ngsVISI = tempXXP.ngsVISI;
 
                 accessoryMiscData = tempXXP.accessoryMiscData;
+
+                FaceFIGR face = GetNGSFaceData();
+                if (baseSLCT.faceTypePart < 100000)
+                {
+                    SetClassicFaceData(face);
+                }
             }
 
             public xxpGeneralReboot(XXPV11 tempXXP)
@@ -384,6 +420,12 @@ namespace Character_Making_File_Tool
                 ngsVISI = tempXXP.ngsVISI;
 
                 accessoryMiscData = tempXXP.accessoryMiscData;
+
+                FaceFIGR face = GetNGSFaceData();
+                if (baseSLCT.faceTypePart < 100000)
+                {
+                    SetClassicFaceData(face);
+                }
             }
 
             public xxpGeneralReboot(XXPV12 tempXXP)
@@ -405,7 +447,7 @@ namespace Character_Making_File_Tool
                 eyeHorizontalPosition = tempXXP.eyeHorizontalPosition;
                 neckAngle = tempXXP.neckAngle;
 
-                altFace = tempXXP.altFace;
+                classicFace = tempXXP.classicFace;
 
                 ngsCOL2 = tempXXP.ngsCOL2;
 
@@ -461,7 +503,7 @@ namespace Character_Making_File_Tool
                 eyeHorizontalPosition = tempXXP.eyeHorizontalPosition;
                 neckAngle = tempXXP.neckAngle;
 
-                altFace = tempXXP.altFace;
+                classicFace = tempXXP.classicFace;
 
                 ngsCOL2 = tempXXP.ngsCOL2;
 
@@ -502,6 +544,12 @@ namespace Character_Making_File_Tool
 
             public XXPV2 GetXXPV2()
             {
+                FaceFIGR classicFace = GetClassicFaceData();
+                FaceFIGR ngsFace = GetNGSFaceData();
+                if (baseSLCT.faceTypePart < 100000)
+                {
+                    SetNGSFaceData(classicFace);
+                }
                 XXPV2 xxpv2 = new();
 
                 xxpv2.baseDOC = baseDOC;
@@ -510,11 +558,21 @@ namespace Character_Making_File_Tool
                 xxpv2.baseCOLR = ColorConversion.COL2ToCOLR(ngsCOL2, baseDOC.race);
                 xxpv2.baseSLCT = baseSLCT;
 
+                if (baseSLCT.faceTypePart < 100000)
+                {
+                    SetNGSFaceData(ngsFace);
+                }
                 return xxpv2;
             }
 
             public XXPV5 GetXXPV5()
             {
+                FaceFIGR classicFace = GetClassicFaceData();
+                FaceFIGR ngsFace = GetNGSFaceData();
+                if (baseSLCT.faceTypePart < 100000)
+                {
+                    SetNGSFaceData(classicFace);
+                }
                 XXPV5 xxpv5 = new();
 
                 xxpv5.baseDOC = baseDOC;
@@ -525,11 +583,21 @@ namespace Character_Making_File_Tool
                 xxpv5.baseSLCT2 = baseSLCT2;
                 xxpv5.oldPosSliders = accessorySlidersReboot.GetOldAccessoryPositionSliders();
 
+                if (baseSLCT.faceTypePart < 100000)
+                {
+                    SetNGSFaceData(ngsFace);
+                }
                 return xxpv5;
             }
 
             public XXPV6 GetXXPV6()
             {
+                FaceFIGR classicFace = GetClassicFaceData();
+                FaceFIGR ngsFace = GetNGSFaceData();
+                if (baseSLCT.faceTypePart < 100000)
+                {
+                    SetNGSFaceData(classicFace);
+                }
                 XXPV6 xxpv6 = new();
 
                 xxpv6.baseDOC = baseDOC;
@@ -553,11 +621,21 @@ namespace Character_Making_File_Tool
                 xxpv6.oldAccessorySliders = accessorySlidersReboot.GetOldAccessorySliders();
                 xxpv6.paintPriority = paintPriority;
 
+                if (baseSLCT.faceTypePart < 100000)
+                {
+                    SetNGSFaceData(ngsFace);
+                }
                 return xxpv6;
             }
 
             public XXPV9 GetXXPV9()
             {
+                FaceFIGR classicFace = GetClassicFaceData();
+                FaceFIGR ngsFace = GetNGSFaceData();
+                if (baseSLCT.faceTypePart < 100000)
+                {
+                    SetNGSFaceData(classicFace);
+                }
                 XXPV9 xxpv9 = new();
 
                 xxpv9.baseDOC = baseDOC;
@@ -586,11 +664,21 @@ namespace Character_Making_File_Tool
                 xxpv9.accessorySliders = accessorySlidersReboot.GetClassicAccessorySliders();
                 xxpv9.paintPriority = paintPriority;
 
+                if (baseSLCT.faceTypePart < 100000)
+                {
+                    SetNGSFaceData(ngsFace);
+                }
                 return xxpv9;
             }
 
             public XXPV10 GetXXPV10()
             {
+                FaceFIGR classicFace = GetClassicFaceData();
+                FaceFIGR ngsFace = GetNGSFaceData();
+                if (baseSLCT.faceTypePart < 100000)
+                {
+                    SetNGSFaceData(classicFace);
+                }
                 XXPV10 tempXXP = new();
 
                 tempXXP.baseDOC = baseDOC;
@@ -629,11 +717,21 @@ namespace Character_Making_File_Tool
                 tempXXP.ngsVISI = ngsVISI;
                 tempXXP.accessoryMiscData = accessoryMiscData;
 
+                if (baseSLCT.faceTypePart < 100000)
+                {
+                    SetNGSFaceData(ngsFace);
+                }
                 return tempXXP;
             }
 
             public XXPV11 GetXXPV11()
             {
+                FaceFIGR classicFace = GetClassicFaceData();
+                FaceFIGR ngsFace = GetNGSFaceData();
+                if (baseSLCT.faceTypePart < 100000)
+                {
+                    SetNGSFaceData(classicFace);
+                }
                 XXPV11 tempXXP = new();
 
                 tempXXP.baseDOC = baseDOC;
@@ -672,6 +770,10 @@ namespace Character_Making_File_Tool
                 tempXXP.ngsVISI = ngsVISI;
                 tempXXP.accessoryMiscData = accessoryMiscData;
 
+                if (baseSLCT.faceTypePart < 100000)
+                {
+                    SetNGSFaceData(ngsFace);
+                }
                 return tempXXP;
             }
 
@@ -691,7 +793,7 @@ namespace Character_Making_File_Tool
                 tempXXP.eyeSize = eyeSize;
                 tempXXP.eyeHorizontalPosition = eyeHorizontalPosition;
                 tempXXP.neckAngle = neckAngle;
-                tempXXP.altFace = altFace;
+                tempXXP.classicFace = classicFace;
                 tempXXP.ngsCOL2 = ngsCOL2;
                 tempXXP.baseSLCT = baseSLCT;
                 tempXXP.baseSLCT2 = baseSLCT2;
@@ -735,7 +837,7 @@ namespace Character_Making_File_Tool
                 tempXXP.eyeSize = eyeSize;
                 tempXXP.eyeHorizontalPosition = eyeHorizontalPosition;
                 tempXXP.neckAngle = neckAngle;
-                tempXXP.altFace = altFace;
+                tempXXP.classicFace = classicFace;
                 tempXXP.ngsCOL2 = ngsCOL2;
                 tempXXP.baseSLCT = baseSLCT;
                 tempXXP.baseSLCT2 = baseSLCT2;
@@ -798,9 +900,9 @@ namespace Character_Making_File_Tool
                 }
             }
 
-            public AltFaceFIGR GetFaceData()
+            public FaceFIGR GetNGSFaceData()
             {
-                AltFaceFIGR faceFIGR = new();
+                FaceFIGR faceFIGR = new();
 
                 faceFIGR.headVerts = baseFIGR.headVerts;
                 faceFIGR.faceShapeVerts = baseFIGR.faceShapeVerts;
@@ -810,18 +912,18 @@ namespace Character_Making_File_Tool
                 faceFIGR.mouthVerts = baseFIGR.mouthVerts;
                 faceFIGR.ear_hornVerts = baseFIGR.ear_hornVerts;
                 faceFIGR.neckVerts = neckVerts;
-                faceFIGR.hornsVerts = hornVerts;
+                faceFIGR.hornVerts = hornVerts;
                 faceFIGR.unkFaceVerts = new Vec3Int();
 
                 return faceFIGR;
             }
 
-            public AltFaceFIGR GetAltFaceData()
+            public FaceFIGR GetClassicFaceData()
             {
-                return altFace;
+                return classicFace;
             }
 
-            public void SetFaceData(AltFaceFIGR faceData)
+            public void SetNGSFaceData(FaceFIGR faceData)
             {
                 baseFIGR.headVerts = faceData.headVerts;
                 baseFIGR.faceShapeVerts = faceData.faceShapeVerts;
@@ -831,12 +933,12 @@ namespace Character_Making_File_Tool
                 baseFIGR.mouthVerts = faceData.mouthVerts;
                 baseFIGR.ear_hornVerts = faceData.ear_hornVerts;
                 neckVerts = faceData.neckVerts;
-                hornVerts = faceData.hornsVerts;
+                hornVerts = faceData.hornVerts;
             }
 
-            public void SetAltFaceData(AltFaceFIGR faceData)
+            public void SetClassicFaceData(FaceFIGR faceData)
             {
-                altFace = faceData;
+                classicFace = faceData;
             }
 
             public void GetXXPWildcards(out string letterOne, out string letterTwo)

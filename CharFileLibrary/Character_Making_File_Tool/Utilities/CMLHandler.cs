@@ -115,16 +115,16 @@ namespace Character_Making_File_Tool
                         }
 
                         //Alt Face
-                        TryGetFromArray(ref xxp.altFace.headVerts, figr, 0x30);
-                        TryGetFromArray(ref xxp.altFace.faceShapeVerts, figr, 0x31);
-                        TryGetFromArray(ref xxp.altFace.eyeShapeVerts, figr, 0x32);
-                        TryGetFromArray(ref xxp.altFace.noseHeightVerts, figr, 0x33);
-                        TryGetFromArray(ref xxp.altFace.noseShapeVerts, figr, 0x34);
-                        TryGetFromArray(ref xxp.altFace.mouthVerts, figr, 0x35);
-                        TryGetFromArray(ref xxp.altFace.ear_hornVerts, figr, 0x36);
-                        TryGetFromArray(ref xxp.altFace.neckVerts, figr, 0x37);
-                        TryGetFromArray(ref xxp.altFace.hornsVerts, figr, 0x38);
-                        TryGetFromArray(ref xxp.altFace.unkFaceVerts, figr, 0x39); //Might just be padding
+                        TryGetFromArray(ref xxp.classicFace.headVerts, figr, 0x30);
+                        TryGetFromArray(ref xxp.classicFace.faceShapeVerts, figr, 0x31);
+                        TryGetFromArray(ref xxp.classicFace.eyeShapeVerts, figr, 0x32);
+                        TryGetFromArray(ref xxp.classicFace.noseHeightVerts, figr, 0x33);
+                        TryGetFromArray(ref xxp.classicFace.noseShapeVerts, figr, 0x34);
+                        TryGetFromArray(ref xxp.classicFace.mouthVerts, figr, 0x35);
+                        TryGetFromArray(ref xxp.classicFace.ear_hornVerts, figr, 0x36);
+                        TryGetFromArray(ref xxp.classicFace.neckVerts, figr, 0x37);
+                        TryGetFromArray(ref xxp.classicFace.hornVerts, figr, 0x38);
+                        TryGetFromArray(ref xxp.classicFace.unkFaceVerts, figr, 0x39); //Might just be padding
 
                         if (xxp.xxpVersion == 0)
                         {
@@ -342,6 +342,12 @@ namespace Character_Making_File_Tool
                 }
             }
 
+            //At least up to xxp v13 era, cmls seem to still use the main face as the primary face, even though they have alt face slots. This will fix NPCs that use old type faces for v13+ xxp
+            if(xxp.baseSLCT.faceTypePart < 100000)
+            {
+                xxp.classicFace = xxp.GetNGSFaceData();
+            }
+
             return xxp;
         }
 
@@ -467,31 +473,40 @@ namespace Character_Making_File_Tool
             VTBFMethods.addBytes(figr, 0x2, 0x48, 0x1, Reloaded.Memory.Struct.GetBytes(xxp.baseFIGR.legVerts));
             VTBFMethods.addBytes(figr, 0x3, 0x48, 0x1, Reloaded.Memory.Struct.GetBytes(xxp.baseFIGR.bustVerts));
 
-            VTBFMethods.addBytes(figr, 0x4, 0x48, 0x1, Reloaded.Memory.Struct.GetBytes(xxp.baseFIGR.headVerts));
-            VTBFMethods.addBytes(figr, 0x5, 0x48, 0x1, Reloaded.Memory.Struct.GetBytes(xxp.baseFIGR.faceShapeVerts));
-            VTBFMethods.addBytes(figr, 0x6, 0x48, 0x1, Reloaded.Memory.Struct.GetBytes(xxp.baseFIGR.eyeShapeVerts));
-            VTBFMethods.addBytes(figr, 0x7, 0x48, 0x1, Reloaded.Memory.Struct.GetBytes(xxp.baseFIGR.noseHeightVerts));
+            FaceFIGR faceValues;
+            if(xxp.baseSLCT.faceTypePart >= 100000)
+            {
+                faceValues = xxp.GetNGSFaceData();
+            } else
+            {
+                //For CMLs, the game seems to still use the original face values, even though for character data it switches pending faceTypePart value.
+                faceValues = xxp.GetClassicFaceData();
+            }
+            VTBFMethods.addBytes(figr, 0x4, 0x48, 0x1, Reloaded.Memory.Struct.GetBytes(faceValues.headVerts));
+            VTBFMethods.addBytes(figr, 0x5, 0x48, 0x1, Reloaded.Memory.Struct.GetBytes(faceValues.faceShapeVerts));
+            VTBFMethods.addBytes(figr, 0x6, 0x48, 0x1, Reloaded.Memory.Struct.GetBytes(faceValues.eyeShapeVerts));
+            VTBFMethods.addBytes(figr, 0x7, 0x48, 0x1, Reloaded.Memory.Struct.GetBytes(faceValues.noseHeightVerts));
 
-            VTBFMethods.addBytes(figr, 0x8, 0x48, 0x1, Reloaded.Memory.Struct.GetBytes(xxp.baseFIGR.noseShapeVerts));
-            VTBFMethods.addBytes(figr, 0x9, 0x48, 0x1, Reloaded.Memory.Struct.GetBytes(xxp.baseFIGR.mouthVerts));
-            VTBFMethods.addBytes(figr, 0xA, 0x48, 0x1, Reloaded.Memory.Struct.GetBytes(xxp.baseFIGR.ear_hornVerts));
-            VTBFMethods.addBytes(figr, 0xC, 0x48, 0x1, Reloaded.Memory.Struct.GetBytes(xxp.neckVerts));
+            VTBFMethods.addBytes(figr, 0x8, 0x48, 0x1, Reloaded.Memory.Struct.GetBytes(faceValues.noseShapeVerts));
+            VTBFMethods.addBytes(figr, 0x9, 0x48, 0x1, Reloaded.Memory.Struct.GetBytes(faceValues.mouthVerts));
+            VTBFMethods.addBytes(figr, 0xA, 0x48, 0x1, Reloaded.Memory.Struct.GetBytes(faceValues.ear_hornVerts));
+            VTBFMethods.addBytes(figr, 0xC, 0x48, 0x1, Reloaded.Memory.Struct.GetBytes(faceValues.neckVerts));
             VTBFMethods.addBytes(figr, 0xD, 0x48, 0x1, Reloaded.Memory.Struct.GetBytes(xxp.waistVerts));
             VTBFMethods.addBytes(figr, 0x16, 0x48, 0x1, Reloaded.Memory.Struct.GetBytes(xxp.hands));
-            VTBFMethods.addBytes(figr, 0x20, 0x48, 0x1, Reloaded.Memory.Struct.GetBytes(xxp.hornVerts));
+            VTBFMethods.addBytes(figr, 0x20, 0x48, 0x1, Reloaded.Memory.Struct.GetBytes(faceValues.hornVerts));
             Vector3Int.Vec3Int vec3_21 = Vector3Int.Vec3Int.CreateVec3Int(xxp.eyeSize, xxp.eyeHorizontalPosition, xxp.neckAngle);
             VTBFMethods.addBytes(figr, 0x21, 0x48, 0x1, Reloaded.Memory.Struct.GetBytes(vec3_21));
 
             //FIGR Alt Face
-            VTBFMethods.addBytes(figr, 0x30, 0x48, 0x1, Reloaded.Memory.Struct.GetBytes(xxp.altFace.headVerts));
-            VTBFMethods.addBytes(figr, 0x31, 0x48, 0x1, Reloaded.Memory.Struct.GetBytes(xxp.altFace.faceShapeVerts));
-            VTBFMethods.addBytes(figr, 0x32, 0x48, 0x1, Reloaded.Memory.Struct.GetBytes(xxp.altFace.eyeShapeVerts));
-            VTBFMethods.addBytes(figr, 0x33, 0x48, 0x1, Reloaded.Memory.Struct.GetBytes(xxp.altFace.noseHeightVerts));
-            VTBFMethods.addBytes(figr, 0x34, 0x48, 0x1, Reloaded.Memory.Struct.GetBytes(xxp.altFace.noseShapeVerts));
-            VTBFMethods.addBytes(figr, 0x35, 0x48, 0x1, Reloaded.Memory.Struct.GetBytes(xxp.altFace.mouthVerts));
-            VTBFMethods.addBytes(figr, 0x36, 0x48, 0x1, Reloaded.Memory.Struct.GetBytes(xxp.altFace.ear_hornVerts));
-            VTBFMethods.addBytes(figr, 0x37, 0x48, 0x1, Reloaded.Memory.Struct.GetBytes(xxp.altFace.neckVerts));
-            VTBFMethods.addBytes(figr, 0x38, 0x48, 0x1, Reloaded.Memory.Struct.GetBytes(xxp.altFace.hornsVerts));
+            VTBFMethods.addBytes(figr, 0x30, 0x48, 0x1, Reloaded.Memory.Struct.GetBytes(xxp.classicFace.headVerts));
+            VTBFMethods.addBytes(figr, 0x31, 0x48, 0x1, Reloaded.Memory.Struct.GetBytes(xxp.classicFace.faceShapeVerts));
+            VTBFMethods.addBytes(figr, 0x32, 0x48, 0x1, Reloaded.Memory.Struct.GetBytes(xxp.classicFace.eyeShapeVerts));
+            VTBFMethods.addBytes(figr, 0x33, 0x48, 0x1, Reloaded.Memory.Struct.GetBytes(xxp.classicFace.noseHeightVerts));
+            VTBFMethods.addBytes(figr, 0x34, 0x48, 0x1, Reloaded.Memory.Struct.GetBytes(xxp.classicFace.noseShapeVerts));
+            VTBFMethods.addBytes(figr, 0x35, 0x48, 0x1, Reloaded.Memory.Struct.GetBytes(xxp.classicFace.mouthVerts));
+            VTBFMethods.addBytes(figr, 0x36, 0x48, 0x1, Reloaded.Memory.Struct.GetBytes(xxp.classicFace.ear_hornVerts));
+            VTBFMethods.addBytes(figr, 0x37, 0x48, 0x1, Reloaded.Memory.Struct.GetBytes(xxp.classicFace.neckVerts));
+            VTBFMethods.addBytes(figr, 0x38, 0x48, 0x1, Reloaded.Memory.Struct.GetBytes(xxp.classicFace.hornVerts));
 
             VTBFMethods.WriteTagHeader(figr, "FIGR", 0, 0x19);
             cml.AddRange(figr);

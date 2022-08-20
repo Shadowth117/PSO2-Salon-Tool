@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:NGS_Salon_Tool"
         mc:Ignorable="d"
-        Title="FaceOverwriteDialog" Height="250" Width="400">
+        Title="Face Import" Height="185" Width="249">
     <Grid VerticalAlignment="Center">
         <Grid.RowDefinitions>
             <RowDefinition Height="30"/>
@@ -20,8 +20,8 @@
                 <ColumnDefinition Width="100"/>
                 <ColumnDefinition Width="100"/>
             </Grid.ColumnDefinitions>
-            <RadioButton x:Name="BaseFaceSourceRadio" GroupName="FaceSource" Grid.Column="0" HorizontalAlignment="Center" VerticalAlignment="Center" IsChecked="True">Base Face</RadioButton>
-            <RadioButton x:Name="AltFaceSourceRadio" GroupName="FaceSource" Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Center">Alt Face</RadioButton>
+            <RadioButton x:Name="BaseFaceSourceRadio" GroupName="FaceSource" Grid.Column="0" HorizontalAlignment="Center" VerticalAlignment="Center" IsChecked="True">NGS Face</RadioButton>
+            <RadioButton x:Name="AltFaceSourceRadio" GroupName="FaceSource" Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Center">ClassicFace</RadioButton>
         </Grid>
         <Label x:Name="FaceDestLabel" Grid.Row="2" Content="Select Face to Overwrite" HorizontalAlignment="Center" VerticalAlignment="Center"/>
         <Grid Grid.Row="3" HorizontalAlignment="Center">
@@ -29,8 +29,8 @@
                 <ColumnDefinition Width="100"/>
                 <ColumnDefinition Width="100"/>
             </Grid.ColumnDefinitions>
-            <CheckBox x:Name="BaseFaceDestCheckbox" Grid.Column="0" HorizontalAlignment="Center" VerticalAlignment="Center">Base Face</CheckBox>
-            <CheckBox x:Name="AltFaceDestCheckbox" Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Center">Alt Face</CheckBox>
+            <CheckBox x:Name="BaseFaceDestCheckbox" Grid.Column="0" HorizontalAlignment="Center" VerticalAlignment="Center">NGS Face</CheckBox>
+            <CheckBox x:Name="AltFaceDestCheckbox" Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Center">Classic Face</CheckBox>
         </Grid>
         <Grid Grid.Row="4" HorizontalAlignment="Center">
             <Grid.ColumnDefinitions>

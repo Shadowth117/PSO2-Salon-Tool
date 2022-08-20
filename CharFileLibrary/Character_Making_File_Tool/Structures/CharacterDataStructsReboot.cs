@@ -350,7 +350,7 @@ namespace Character_Making_File_Tool
             public fixed byte hairColor2[4];
         }
 
-        public struct AltFaceFIGR
+        public struct FaceFIGR
         {
             public Vec3Int headVerts;
             public Vec3Int faceShapeVerts;
@@ -362,7 +362,7 @@ namespace Character_Making_File_Tool
             public Vec3Int ear_hornVerts;
             public Vec3Int neckVerts;
 
-            public Vec3Int hornsVerts;
+            public Vec3Int hornVerts;
             public Vec3Int unkFaceVerts;
         }
 

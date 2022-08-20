@@ -330,7 +330,7 @@ namespace Character_Making_File_Tool
             public int neckAngle;
 
             //0xE0 AltFaceFIGR
-            public AltFaceFIGR altFace;
+            public FaceFIGR classicFace;
 
             //0x158 COL2 - These are just standard RGBA in NGS as opposed to the original COLR slider positions
             public COL2 ngsCOL2;
@@ -425,7 +425,7 @@ namespace Character_Making_File_Tool
             public int neckAngle;
 
             //0xE0 AltFaceFIGR
-            public AltFaceFIGR altFace;
+            public FaceFIGR classicFace;
 
             //0x158 COL2 - These are just standard RGBA in NGS as opposed to the original COLR slider positions
             public COL2 ngsCOL2;
