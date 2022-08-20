@@ -38,8 +38,8 @@
     <Reference Include="AquaModelLibrary">
       <HintPath>..\CharFileLibrary\Libraries\AquaLib\AquaModelLibrary.dll</HintPath>
     </Reference>
-    <Reference Include="ZomboniLib">
-      <HintPath>..\CharFileLibrary\Libraries\AquaLib\ZomboniLib.dll</HintPath>
+    <Reference Include="ZamboniLib">
+      <HintPath>..\CharFileLibrary\Libraries\AquaLib\ZamboniLib.dll</HintPath>
     </Reference>
   </ItemGroup>
 

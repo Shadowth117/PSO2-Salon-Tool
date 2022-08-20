@@ -166,7 +166,7 @@ namespace NGS_Salon_Tool
                         if (magic == "ICE\0")
                         {
                             bool isRbFile = iceFilePath.Contains("datareboot") || iceFilePath.Contains("win32reboot");
-                            zamboni.IceFile ice = null;
+                            Zamboni.IceFile ice = null;
                             ice = IceHandler.GetIceFile(iceFilePath);
                             if (ice != null)
                             {
@@ -184,7 +184,7 @@ namespace NGS_Salon_Tool
                                     {
                                         continue;
                                     }
-                                    var fileName = zamboni.IceFile.getFileName(file);
+                                    var fileName = Zamboni.IceFile.getFileName(file);
                                     var ext = Path.GetExtension(fileName);
                                     switch (ext)
                                     {
