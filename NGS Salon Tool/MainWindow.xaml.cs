@@ -1951,7 +1951,7 @@ namespace NGS_Salon_Tool
                 case "Eyes Closed":
                     SetExpressionUI(xxpHandler.faceEyesClosed);
                     break;
-                case "Smile2":
+                case "Smile 2":
                     SetExpressionUI(xxpHandler.faceSmile2);
                     break;
                 case "Wink":
@@ -2043,7 +2043,7 @@ namespace NGS_Salon_Tool
                     case "Eyes Closed":
                         xxpHandler.faceEyesClosed = faceExp;
                         break;
-                    case "Smile2":
+                    case "Smile 2":
                         xxpHandler.faceSmile2 = faceExp;
                         break;
                     case "Wink":
