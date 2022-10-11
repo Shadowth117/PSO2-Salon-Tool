@@ -62,7 +62,7 @@ namespace Character_Making_File_Tool
                             Y = BitConverter.ToInt32(BitConverter.GetBytes(arr[1]));
                             if (arr.Length > 2)
                             {
-                                Z = BitConverter.ToInt32(BitConverter.GetBytes(arr[3]));
+                                Z = BitConverter.ToInt32(BitConverter.GetBytes(arr[2]));
                             }
                         }
                     }
