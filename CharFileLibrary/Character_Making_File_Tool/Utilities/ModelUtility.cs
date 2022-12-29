@@ -627,7 +627,7 @@ namespace CharFileLibrary.Character_Making_File_Tool.Utilities
                     {
                         for (int j = 0; j < data.vector4Keys.Count; j++)
                         {
-                            int frame = data.frameTimings[j] / 0x10;
+                            int frame = (int)(data.frameTimings[j] / 0x10);
                             TransformSet tfm;
                             if (!propTransforms[frame].ContainsKey(i))
                             {
@@ -725,7 +725,7 @@ namespace CharFileLibrary.Character_Making_File_Tool.Utilities
                     {
                         for (int j = 0; j < data.vector4Keys.Count; j++)
                         {
-                            int frame = data.frameTimings[j] / 0x10;
+                            int frame = (int)(data.frameTimings[j] / 0x10);
                             TransformSet tfm;
                             if (!propTransforms[frame].ContainsKey(i))
                             {

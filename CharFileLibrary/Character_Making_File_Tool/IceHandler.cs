@@ -205,7 +205,7 @@ namespace Character_Making_File_Tool
 
         private unsafe static BitmapSource GetDDSBitMapSource(byte[] trueFile)
         {
-            using (var image = Pfim.Pfim.FromStream(new MemoryStream(trueFile)))
+            using (var image = Pfim.Pfimage.FromStream(new MemoryStream(trueFile)))
             {
                 PixelFormat format;
 

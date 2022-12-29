@@ -73,6 +73,7 @@ namespace NGS_Salon_Tool
 #if !DEBUG
             menu.Items.Remove(debugOptions);
 #endif
+            Debug.WriteLine($"test");
 
             //Disable unused items
             saveButton.IsEnabled = false;
