@@ -1,0 +1,683 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Microsoft.Extensions.FileSystemGlobbing</name>
+    </assembly>
+    <members>
+        <member name="T:Microsoft.Extensions.FileSystemGlobbing.Abstractions.DirectoryInfoBase">
+            <summary>
+            Represents a directory
+            </summary>
+        </member>
+        <member name="M:Microsoft.Extensions.FileSystemGlobbing.Abstractions.DirectoryInfoBase.EnumerateFileSystemInfos">
+            <summary>
+            Enumerates all files and directories in the directory.
+            </summary>
+            <returns>Collection of files and directories</returns>
+        </member>
+        <member name="M:Microsoft.Extensions.FileSystemGlobbing.Abstractions.DirectoryInfoBase.GetDirectory(System.String)">
+            <summary>
+            Returns an instance of <see cref="T:Microsoft.Extensions.FileSystemGlobbing.Abstractions.DirectoryInfoBase" /> that represents a subdirectory
+            </summary>
+            <param name="path">The directory name</param>
+            <returns>Instance of <see cref="T:Microsoft.Extensions.FileSystemGlobbing.Abstractions.DirectoryInfoBase" /> even if directory does not exist</returns>
+        </member>
+        <member name="M:Microsoft.Extensions.FileSystemGlobbing.Abstractions.DirectoryInfoBase.GetFile(System.String)">
+            <summary>
+            Returns an instance of <see cref="T:Microsoft.Extensions.FileSystemGlobbing.Abstractions.FileInfoBase" /> that represents a file in the directory
+            </summary>
+            <param name="path">The file name</param>
+            <returns>Instance of <see cref="T:Microsoft.Extensions.FileSystemGlobbing.Abstractions.FileInfoBase" /> even if file does not exist</returns>
+        </member>
+        <member name="T:Microsoft.Extensions.FileSystemGlobbing.Abstractions.DirectoryInfoWrapper">
+            <summary>
+            Wraps an instance of <see cref="T:System.IO.DirectoryInfo" /> and provides implementation of
+            <see cref="T:Microsoft.Extensions.FileSystemGlobbing.Abstractions.DirectoryInfoBase" />.
+            </summary>
+        </member>
+        <member name="M:Microsoft.Extensions.FileSystemGlobbing.Abstractions.DirectoryInfoWrapper.#ctor(System.IO.DirectoryInfo)">
+            <summary>
+            Initializes an instance of <see cref="T:Microsoft.Extensions.FileSystemGlobbing.Abstractions.DirectoryInfoWrapper" />.
+            </summary>
+            <param name="directoryInfo">The <see cref="T:System.IO.DirectoryInfo" />.</param>
+        </member>
+        <member name="M:Microsoft.Extensions.FileSystemGlobbing.Abstractions.DirectoryInfoWrapper.EnumerateFileSystemInfos">
+            <inheritdoc />
+        </member>
+        <member name="M:Microsoft.Extensions.FileSystemGlobbing.Abstractions.DirectoryInfoWrapper.GetDirectory(System.String)">
+            <summary>
+            Returns an instance of <see cref="T:Microsoft.Extensions.FileSystemGlobbing.Abstractions.DirectoryInfoBase" /> that represents a subdirectory.
+            </summary>
+            <remarks>
+            If <paramref name="name" /> equals '..', this returns the parent directory.
+            </remarks>
+            <param name="name">The directory name</param>
+            <returns>The directory</returns>
+        </member>
+        <member name="M:Microsoft.Extensions.FileSystemGlobbing.Abstractions.DirectoryInfoWrapper.GetFile(System.String)">
+            <inheritdoc />
+        </member>
+        <member name="P:Microsoft.Extensions.FileSystemGlobbing.Abstractions.DirectoryInfoWrapper.Name">
+            <inheritdoc />
+        </member>
+        <member name="P:Microsoft.Extensions.FileSystemGlobbing.Abstractions.DirectoryInfoWrapper.FullName">
+            <summary>
+            Returns the full path to the directory.
+            </summary>
+            <remarks>
+            Equals the value of <seealso cref="P:System.IO.FileSystemInfo.FullName" />.
+            </remarks>
+        </member>
+        <member name="P:Microsoft.Extensions.FileSystemGlobbing.Abstractions.DirectoryInfoWrapper.ParentDirectory">
+            <summary>
+            Returns the parent directory.
+            </summary>
+            <remarks>
+            Equals the value of <seealso cref="P:System.IO.DirectoryInfo.Parent" />.
+            </remarks>
+        </member>
+        <member name="T:Microsoft.Extensions.FileSystemGlobbing.Abstractions.FileInfoBase">
+            <summary>
+            Represents a file
+            </summary>
+        </member>
+        <member name="T:Microsoft.Extensions.FileSystemGlobbing.Abstractions.FileInfoWrapper">
+            <summary>
+            Wraps an instance of <see cref="T:System.IO.FileInfo" /> to provide implementation of <see cref="T:Microsoft.Extensions.FileSystemGlobbing.Abstractions.FileInfoBase" />.
+            </summary>
+        </member>
+        <member name="M:Microsoft.Extensions.FileSystemGlobbing.Abstractions.FileInfoWrapper.#ctor(System.IO.FileInfo)">
+            <summary>
+            Initializes instance of <see cref="T:Microsoft.Extensions.FileSystemGlobbing.Abstractions.FileInfoWrapper" /> to wrap the specified object <see cref="T:System.IO.FileInfo" />.
+            </summary>
+            <param name="fileInfo">The <see cref="T:System.IO.FileInfo" /></param>
+        </member>
+        <member name="P:Microsoft.Extensions.FileSystemGlobbing.Abstractions.FileInfoWrapper.Name">
+            <summary>
+            The file name. (Overrides <see cref="P:Microsoft.Extensions.FileSystemGlobbing.Abstractions.FileSystemInfoBase.Name" />).
+            </summary>
+            <remarks>
+            Equals the value of <see cref="P:System.IO.FileInfo.Name" />.
+            </remarks>
+        </member>
+        <member name="P:Microsoft.Extensions.FileSystemGlobbing.Abstractions.FileInfoWrapper.FullName">
+            <summary>
+            The full path of the file. (Overrides <see cref="P:Microsoft.Extensions.FileSystemGlobbing.Abstractions.FileSystemInfoBase.FullName" />).
+            </summary>
+            <remarks>
+            Equals the value of <see cref="P:System.IO.FileSystemInfo.Name" />.
+            </remarks>
+        </member>
+        <member name="P:Microsoft.Extensions.FileSystemGlobbing.Abstractions.FileInfoWrapper.ParentDirectory">
+            <summary>
+            The directory containing the file. (Overrides <see cref="P:Microsoft.Extensions.FileSystemGlobbing.Abstractions.FileSystemInfoBase.ParentDirectory" />).
+            </summary>
+            <remarks>
+            Equals the value of <see cref="P:System.IO.FileInfo.Directory" />.
+            </remarks>
+        </member>
+        <member name="T:Microsoft.Extensions.FileSystemGlobbing.Abstractions.FileSystemInfoBase">
+            <summary>
+            Shared abstraction for files and directories
+            </summary>
+        </member>
+        <member name="P:Microsoft.Extensions.FileSystemGlobbing.Abstractions.FileSystemInfoBase.Name">
+            <summary>
+            A string containing the name of the file or directory
+            </summary>
+        </member>
+        <member name="P:Microsoft.Extensions.FileSystemGlobbing.Abstractions.FileSystemInfoBase.FullName">
+            <summary>
+            A string containing the full path of the file or directory
+            </summary>
+        </member>
+        <member name="P:Microsoft.Extensions.FileSystemGlobbing.Abstractions.FileSystemInfoBase.ParentDirectory">
+            <summary>
+            The parent directory for the current file or directory
+            </summary>
+        </member>
+        <member name="T:Microsoft.Extensions.FileSystemGlobbing.FilePatternMatch">
+            <summary>
+            Represents a file that was matched by searching using a globbing pattern
+            </summary>
+        </member>
+        <member name="P:Microsoft.Extensions.FileSystemGlobbing.FilePatternMatch.Path">
+            <summary>
+            The path to the file matched, relative to the beginning of the matching search pattern.
+            </summary>
+            <remarks>
+            If the matcher searched for "src/Project/**/*.cs" and the pattern matcher found "src/Project/Interfaces/IFile.cs",
+            then <see cref="P:Microsoft.Extensions.FileSystemGlobbing.FilePatternMatch.Stem" /> = "Interfaces/IFile.cs" and <see cref="P:Microsoft.Extensions.FileSystemGlobbing.FilePatternMatch.Path" /> = "src/Project/Interfaces/IFile.cs".
+            </remarks>
+        </member>
+        <member name="P:Microsoft.Extensions.FileSystemGlobbing.FilePatternMatch.Stem">
+            <summary>
+            The subpath to the file matched, relative to the first wildcard in the matching search pattern.
+            </summary>
+            <remarks>
+            If the matcher searched for "src/Project/**/*.cs" and the pattern matcher found "src/Project/Interfaces/IFile.cs",
+            then <see cref="P:Microsoft.Extensions.FileSystemGlobbing.FilePatternMatch.Stem" /> = "Interfaces/IFile.cs" and <see cref="P:Microsoft.Extensions.FileSystemGlobbing.FilePatternMatch.Path" /> = "src/Project/Interfaces/IFile.cs".
+            </remarks>
+        </member>
+        <member name="M:Microsoft.Extensions.FileSystemGlobbing.FilePatternMatch.#ctor(System.String,System.String)">
+            <summary>
+            Initializes new instance of <see cref="T:Microsoft.Extensions.FileSystemGlobbing.FilePatternMatch" />
+            </summary>
+            <param name="path">The path to the file matched, relative to the beginning of the matching search pattern.</param>
+            <param name="stem">The subpath to the file matched, relative to the first wildcard in the matching search pattern.</param>
+        </member>
+        <member name="M:Microsoft.Extensions.FileSystemGlobbing.FilePatternMatch.Equals(Microsoft.Extensions.FileSystemGlobbing.FilePatternMatch)">
+            <summary>
+            Determines if the specified match is equivalent to the current match using a case-insensitive comparison.
+            </summary>
+            <param name="other">The other match to be compared</param>
+            <returns>True if <see cref="P:Microsoft.Extensions.FileSystemGlobbing.FilePatternMatch.Path" /> and <see cref="P:Microsoft.Extensions.FileSystemGlobbing.FilePatternMatch.Stem" /> are equal using case-insensitive comparison</returns>
+        </member>
+        <member name="M:Microsoft.Extensions.FileSystemGlobbing.FilePatternMatch.Equals(System.Object)">
+            <summary>
+            Determines if the specified object is equivalent to the current match using a case-insensitive comparison.
+            </summary>
+            <param name="obj">The object to be compared</param>
+            <returns>True when <see cref="M:Microsoft.Extensions.FileSystemGlobbing.FilePatternMatch.Equals(Microsoft.Extensions.FileSystemGlobbing.FilePatternMatch)" /></returns>
+        </member>
+        <member name="M:Microsoft.Extensions.FileSystemGlobbing.FilePatternMatch.GetHashCode">
+            <summary>
+            Gets a hash for the file pattern match.
+            </summary>
+            <returns>Some number</returns>
+        </member>
+        <member name="T:Microsoft.Extensions.FileSystemGlobbing.InMemoryDirectoryInfo">
+            <summary>
+            Avoids using disk for uses like Pattern Matching.
+            </summary>
+        </member>
+        <member name="M:Microsoft.Extensions.FileSystemGlobbing.InMemoryDirectoryInfo.#ctor(System.String,System.Collections.Generic.IEnumerable{System.String})">
+            <summary>
+            Creates a new InMemoryDirectoryInfo with the root directory and files given.
+            </summary>
+            <param name="rootDir">The root directory that this FileSystem will use.</param>
+            <param name="files">Collection of file names. If relative paths <paramref name="rootDir"/> will be prepended to the paths.</param>
+        </member>
+        <member name="P:Microsoft.Extensions.FileSystemGlobbing.InMemoryDirectoryInfo.FullName">
+            <inheritdoc />
+        </member>
+        <member name="P:Microsoft.Extensions.FileSystemGlobbing.InMemoryDirectoryInfo.Name">
+            <inheritdoc />
+        </member>
+        <member name="P:Microsoft.Extensions.FileSystemGlobbing.InMemoryDirectoryInfo.ParentDirectory">
+            <inheritdoc />
+        </member>
+        <member name="M:Microsoft.Extensions.FileSystemGlobbing.InMemoryDirectoryInfo.EnumerateFileSystemInfos">
+            <inheritdoc />
+        </member>
+        <member name="M:Microsoft.Extensions.FileSystemGlobbing.InMemoryDirectoryInfo.GetDirectory(System.String)">
+            <inheritdoc />
+        </member>
+        <member name="M:Microsoft.Extensions.FileSystemGlobbing.InMemoryDirectoryInfo.GetFile(System.String)">
+            <summary>
+            Returns an instance of <see cref="T:Microsoft.Extensions.FileSystemGlobbing.Abstractions.FileInfoBase"/> that matches the <paramref name="path"/> given.
+            </summary>
+            <param name="path">The filename.</param>
+            <returns>Instance of <see cref="T:Microsoft.Extensions.FileSystemGlobbing.Abstractions.FileInfoBase"/> if the file exists, null otherwise.</returns>
+        </member>
+        <member name="T:Microsoft.Extensions.FileSystemGlobbing.Internal.ILinearPattern">
+            <summary>
+            This API supports infrastructure and is not intended to be used
+            directly from your code. This API may change or be removed in future releases.
+            </summary>
+        </member>
+        <member name="T:Microsoft.Extensions.FileSystemGlobbing.Internal.IPathSegment">
+            <summary>
+            This API supports infrastructure and is not intended to be used
+            directly from your code. This API may change or be removed in future releases.
+            </summary>
+        </member>
+        <member name="T:Microsoft.Extensions.FileSystemGlobbing.Internal.IPattern">
+            <summary>
+            This API supports infrastructure and is not intended to be used
+            directly from your code. This API may change or be removed in future releases.
+            </summary>
+        </member>
+        <member name="T:Microsoft.Extensions.FileSystemGlobbing.Internal.IPatternContext">
+            <summary>
+            This API supports infrastructure and is not intended to be used
+            directly from your code. This API may change or be removed in future releases.
+            </summary>
+        </member>
+        <member name="T:Microsoft.Extensions.FileSystemGlobbing.Internal.IRaggedPattern">
+            <summary>
+            This API supports infrastructure and is not intended to be used
+            directly from your code. This API may change or be removed in future releases.
+            </summary>
+        </member>
+        <member name="T:Microsoft.Extensions.FileSystemGlobbing.Internal.MatcherContext">
+            <summary>
+            This API supports infrastructure and is not intended to be used
+            directly from your code. This API may change or be removed in future releases.
+            </summary>
+        </member>
+        <member name="T:Microsoft.Extensions.FileSystemGlobbing.Internal.PatternTestResult">
+            <summary>
+            This API supports infrastructure and is not intended to be used
+            directly from your code. This API may change or be removed in future releases.
+            </summary>
+        </member>
+        <member name="T:Microsoft.Extensions.FileSystemGlobbing.Matcher">
+            <summary>
+            Searches the file system for files with names that match specified patterns.
+            </summary>
+            <remarks>
+                <para>
+                Patterns specified in <seealso cref="M:Microsoft.Extensions.FileSystemGlobbing.Matcher.AddInclude(System.String)" /> and <seealso cref="M:Microsoft.Extensions.FileSystemGlobbing.Matcher.AddExclude(System.String)" /> can use
+                the following formats to match multiple files or directories.
+                </para>
+                <list type="bullet">
+                    <item>
+                        <term>
+                        exact directory and file name
+                        </term>
+                        <description>
+                            <list type="bullet">
+                                <item>
+                                    <term>"one.txt"</term>
+                                </item>
+                                <item>
+                                    <term>"dir/two.txt"</term>
+                                </item>
+                            </list>
+                        </description>
+                    </item>
+                    <item>
+                        <term>
+                        wildcards (*) in file and directory names that represent zero to many characters not including
+                        directory separators characters
+                        </term>
+                        <description>
+                            <list type="bullet">
+                            <item>
+                                <term>"*.txt"</term><description>all files with .txt file extension</description>
+                            </item>
+                            <item>
+                                <term>"*.*"</term><description>all files with an extension</description>
+                            </item>
+                            <item>
+                                <term>"*"</term><description>all files in top level directory</description>
+                            </item>
+                            <item>
+                                <term>".*"</term><description>filenames beginning with '.'</description>
+                            </item>
+                            - "*word* - all files with 'word' in the filename
+                            <item>
+                                <term>"readme.*"</term>
+                                <description>all files named 'readme' with any file extension</description>
+                            </item>
+                            <item>
+                                <term>"styles/*.css"</term>
+                                <description>all files with extension '.css' in the directory 'styles/'</description>
+                            </item>
+                            <item>
+                                <term>"scripts/*/*"</term>
+                                <description>all files in 'scripts/' or one level of subdirectory under 'scripts/'</description>
+                            </item>
+                            <item>
+                                <term>"images*/*"</term>
+                                <description>all files in a folder with name that is or begins with 'images'</description>
+                            </item>
+                            </list>
+                        </description>
+                    </item>
+                    <item>
+                        <term>arbitrary directory depth ("/**/")</term>
+                        <description>
+                            <list type="bullet">
+                                <item>
+                                    <term>"**/*"</term><description>all files in any subdirectory</description>
+                                </item>
+                                <item>
+                                    <term>"dir/**/*"</term><description>all files in any subdirectory under 'dir/'</description>
+                                </item>
+                            </list>
+                        </description>
+                    </item>
+                    <item>
+                        <term>relative paths</term>
+                        <description>
+                        '../shared/*' - all files in a diretory named 'shared' at the sibling level to the base directory given
+                        to <see cref="M:Microsoft.Extensions.FileSystemGlobbing.Matcher.Execute(Microsoft.Extensions.FileSystemGlobbing.Abstractions.DirectoryInfoBase)" />
+                        </description>
+                    </item>
+                </list>
+            </remarks>
+        </member>
+        <member name="M:Microsoft.Extensions.FileSystemGlobbing.Matcher.#ctor">
+            <summary>
+            Initializes an instance of <see cref="T:Microsoft.Extensions.FileSystemGlobbing.Matcher" /> using case-insensitive matching
+            </summary>
+        </member>
+        <member name="M:Microsoft.Extensions.FileSystemGlobbing.Matcher.#ctor(System.StringComparison)">
+            <summary>
+            Initializes an instance of <see cref="T:Microsoft.Extensions.FileSystemGlobbing.Matcher" /> using the string comparison method specified
+            </summary>
+            <param name="comparisonType">The <see cref="T:System.StringComparison" /> to use</param>
+        </member>
+        <member name="M:Microsoft.Extensions.FileSystemGlobbing.Matcher.AddInclude(System.String)">
+            <summary>
+                <para>
+                Add a file name pattern that the matcher should use to discover files. Patterns are relative to the root
+                directory given when <see cref="M:Microsoft.Extensions.FileSystemGlobbing.Matcher.Execute(Microsoft.Extensions.FileSystemGlobbing.Abstractions.DirectoryInfoBase)" /> is called.
+                </para>
+                <para>
+                Use the forward slash '/' to represent directory separator. Use '*' to represent wildcards in file and
+                directory names. Use '**' to represent arbitrary directory depth. Use '..' to represent a parent directory.
+                </para>
+            </summary>
+            <param name="pattern">The globbing pattern</param>
+            <returns>The matcher</returns>
+        </member>
+        <member name="M:Microsoft.Extensions.FileSystemGlobbing.Matcher.AddExclude(System.String)">
+            <summary>
+                <para>
+                Add a file name pattern for files the matcher should exclude from the results. Patterns are relative to the
+                root directory given when <see cref="M:Microsoft.Extensions.FileSystemGlobbing.Matcher.Execute(Microsoft.Extensions.FileSystemGlobbing.Abstractions.DirectoryInfoBase)" /> is called.
+                </para>
+                <para>
+                Use the forward slash '/' to represent directory separator. Use '*' to represent wildcards in file and
+                directory names. Use '**' to represent arbitrary directory depth. Use '..' to represent a parent directory.
+                </para>
+            </summary>
+            <param name="pattern">The globbing pattern</param>
+            <returns>The matcher</returns>
+        </member>
+        <member name="M:Microsoft.Extensions.FileSystemGlobbing.Matcher.Execute(Microsoft.Extensions.FileSystemGlobbing.Abstractions.DirectoryInfoBase)">
+            <summary>
+            Searches the directory specified for all files matching patterns added to this instance of <see cref="T:Microsoft.Extensions.FileSystemGlobbing.Matcher" />
+            </summary>
+            <param name="directoryInfo">The root directory for the search</param>
+            <returns>Always returns instance of <see cref="T:Microsoft.Extensions.FileSystemGlobbing.PatternMatchingResult" />, even if no files were matched</returns>
+        </member>
+        <member name="M:Microsoft.Extensions.FileSystemGlobbing.MatcherExtensions.AddExcludePatterns(Microsoft.Extensions.FileSystemGlobbing.Matcher,System.Collections.Generic.IEnumerable{System.String}[])">
+            <summary>
+            Adds multiple exclude patterns to <see cref="T:Microsoft.Extensions.FileSystemGlobbing.Matcher" />. <seealso cref="M:Microsoft.Extensions.FileSystemGlobbing.Matcher.AddExclude(System.String)" />
+            </summary>
+            <param name="matcher">The matcher to which the exclude patterns are added</param>
+            <param name="excludePatternsGroups">A list of globbing patterns</param>
+        </member>
+        <member name="M:Microsoft.Extensions.FileSystemGlobbing.MatcherExtensions.AddIncludePatterns(Microsoft.Extensions.FileSystemGlobbing.Matcher,System.Collections.Generic.IEnumerable{System.String}[])">
+            <summary>
+            Adds multiple patterns to include in <see cref="T:Microsoft.Extensions.FileSystemGlobbing.Matcher" />. See <seealso cref="M:Microsoft.Extensions.FileSystemGlobbing.Matcher.AddInclude(System.String)" />
+            </summary>
+            <param name="matcher">The matcher to which the include patterns are added</param>
+            <param name="includePatternsGroups">A list of globbing patterns</param>
+        </member>
+        <member name="M:Microsoft.Extensions.FileSystemGlobbing.MatcherExtensions.GetResultsInFullPath(Microsoft.Extensions.FileSystemGlobbing.Matcher,System.String)">
+            <summary>
+            Searches the directory specified for all files matching patterns added to this instance of <see cref="T:Microsoft.Extensions.FileSystemGlobbing.Matcher" />
+            </summary>
+            <param name="matcher">The matcher</param>
+            <param name="directoryPath">The root directory for the search</param>
+            <returns>Absolute file paths of all files matched. Empty enumerable if no files matched given patterns.</returns>
+        </member>
+        <member name="M:Microsoft.Extensions.FileSystemGlobbing.MatcherExtensions.Match(Microsoft.Extensions.FileSystemGlobbing.Matcher,System.String)">
+            <summary>
+            Matches the file passed in with the patterns in the matcher without going to disk.
+            </summary>
+            <param name="matcher">The matcher that holds the patterns and pattern matching type.</param>
+            <param name="file">The file to run the matcher against.</param>
+            <returns>The match results.</returns>
+        </member>
+        <member name="M:Microsoft.Extensions.FileSystemGlobbing.MatcherExtensions.Match(Microsoft.Extensions.FileSystemGlobbing.Matcher,System.String,System.String)">
+            <summary>
+            Matches the file passed in with the patterns in the matcher without going to disk.
+            </summary>
+            <param name="matcher">The matcher that holds the patterns and pattern matching type.</param>
+            <param name="rootDir">The root directory for the matcher to match the file from.</param>
+            <param name="file">The file to run the matcher against.</param>
+            <returns>The match results.</returns>
+        </member>
+        <member name="M:Microsoft.Extensions.FileSystemGlobbing.MatcherExtensions.Match(Microsoft.Extensions.FileSystemGlobbing.Matcher,System.Collections.Generic.IEnumerable{System.String})">
+            <summary>
+            Matches the files passed in with the patterns in the matcher without going to disk.
+            </summary>
+            <param name="matcher">The matcher that holds the patterns and pattern matching type.</param>
+            <param name="files">The files to run the matcher against.</param>
+            <returns>The match results.</returns>
+        </member>
+        <member name="M:Microsoft.Extensions.FileSystemGlobbing.MatcherExtensions.Match(Microsoft.Extensions.FileSystemGlobbing.Matcher,System.String,System.Collections.Generic.IEnumerable{System.String})">
+            <summary>
+            Matches the files passed in with the patterns in the matcher without going to disk.
+            </summary>
+            <param name="matcher">The matcher that holds the patterns and pattern matching type.</param>
+            <param name="rootDir">The root directory for the matcher to match the files from.</param>
+            <param name="files">The files to run the matcher against.</param>
+            <returns>The match results.</returns>
+        </member>
+        <member name="T:Microsoft.Extensions.FileSystemGlobbing.PatternMatchingResult">
+            <summary>
+            Represents a collection of <see cref="T:Microsoft.Extensions.FileSystemGlobbing.FilePatternMatch" />
+            </summary>
+        </member>
+        <member name="M:Microsoft.Extensions.FileSystemGlobbing.PatternMatchingResult.#ctor(System.Collections.Generic.IEnumerable{Microsoft.Extensions.FileSystemGlobbing.FilePatternMatch})">
+            <summary>
+            Initializes the result with a collection of <see cref="T:Microsoft.Extensions.FileSystemGlobbing.FilePatternMatch" />
+            </summary>
+            <param name="files">A collection of <see cref="T:Microsoft.Extensions.FileSystemGlobbing.FilePatternMatch" /></param>
+        </member>
+        <member name="M:Microsoft.Extensions.FileSystemGlobbing.PatternMatchingResult.#ctor(System.Collections.Generic.IEnumerable{Microsoft.Extensions.FileSystemGlobbing.FilePatternMatch},System.Boolean)">
+            <summary>
+            Initializes the result with a collection of <see cref="T:Microsoft.Extensions.FileSystemGlobbing.FilePatternMatch" />
+            </summary>
+            <param name="files">A collection of <see cref="T:Microsoft.Extensions.FileSystemGlobbing.FilePatternMatch" /></param>
+            <param name="hasMatches">A value that determines if <see cref="T:Microsoft.Extensions.FileSystemGlobbing.PatternMatchingResult"/> has any matches.</param>
+        </member>
+        <member name="P:Microsoft.Extensions.FileSystemGlobbing.PatternMatchingResult.Files">
+            <summary>
+            A collection of <see cref="T:Microsoft.Extensions.FileSystemGlobbing.FilePatternMatch" />
+            </summary>
+        </member>
+        <member name="P:Microsoft.Extensions.FileSystemGlobbing.PatternMatchingResult.HasMatches">
+            <summary>
+            Gets a value that determines if this instance of <see cref="T:Microsoft.Extensions.FileSystemGlobbing.PatternMatchingResult"/> has any matches.
+            </summary>
+        </member>
+        <member name="M:System.ThrowHelper.ThrowIfNull(System.Object,System.String)">
+            <summary>Throws an <see cref="T:System.ArgumentNullException"/> if <paramref name="argument"/> is null.</summary>
+            <param name="argument">The reference type argument to validate as non-null.</param>
+            <param name="paramName">The name of the parameter with which <paramref name="argument"/> corresponds.</param>
+        </member>
+        <member name="T:System.Runtime.InteropServices.LibraryImportAttribute">
+            <summary>
+            Attribute used to indicate a source generator should create a function for marshalling
+            arguments instead of relying on the runtime to generate an equivalent marshalling function at run-time.
+            </summary>
+            <remarks>
+            This attribute is meaningless if the source generator associated with it is not enabled.
+            The current built-in source generator only supports C# and only supplies an implementation when
+            applied to static, partial, non-generic methods.
+            </remarks>
+        </member>
+        <member name="M:System.Runtime.InteropServices.LibraryImportAttribute.#ctor(System.String)">
+            <summary>
+            Initializes a new instance of the <see cref="T:System.Runtime.InteropServices.LibraryImportAttribute"/>.
+            </summary>
+            <param name="libraryName">Name of the library containing the import.</param>
+        </member>
+        <member name="P:System.Runtime.InteropServices.LibraryImportAttribute.LibraryName">
+            <summary>
+            Gets the name of the library containing the import.
+            </summary>
+        </member>
+        <member name="P:System.Runtime.InteropServices.LibraryImportAttribute.EntryPoint">
+            <summary>
+            Gets or sets the name of the entry point to be called.
+            </summary>
+        </member>
+        <member name="P:System.Runtime.InteropServices.LibraryImportAttribute.StringMarshalling">
+            <summary>
+            Gets or sets how to marshal string arguments to the method.
+            </summary>
+            <remarks>
+            If this field is set to a value other than <see cref="F:System.Runtime.InteropServices.StringMarshalling.Custom" />,
+            <see cref="P:System.Runtime.InteropServices.LibraryImportAttribute.StringMarshallingCustomType" /> must not be specified.
+            </remarks>
+        </member>
+        <member name="P:System.Runtime.InteropServices.LibraryImportAttribute.StringMarshallingCustomType">
+            <summary>
+            Gets or sets the <see cref="T:System.Type"/> used to control how string arguments to the method are marshalled.
+            </summary>
+            <remarks>
+            If this field is specified, <see cref="P:System.Runtime.InteropServices.LibraryImportAttribute.StringMarshalling" /> must not be specified
+            or must be set to <see cref="F:System.Runtime.InteropServices.StringMarshalling.Custom" />.
+            </remarks>
+        </member>
+        <member name="P:System.Runtime.InteropServices.LibraryImportAttribute.SetLastError">
+            <summary>
+            Gets or sets whether the callee sets an error (SetLastError on Windows or errno
+            on other platforms) before returning from the attributed method.
+            </summary>
+        </member>
+        <member name="T:System.Runtime.InteropServices.StringMarshalling">
+            <summary>
+            Specifies how strings should be marshalled for generated p/invokes
+            </summary>
+        </member>
+        <member name="F:System.Runtime.InteropServices.StringMarshalling.Custom">
+            <summary>
+            Indicates the user is suppling a specific marshaller in <see cref="P:System.Runtime.InteropServices.LibraryImportAttribute.StringMarshallingCustomType"/>.
+            </summary>
+        </member>
+        <member name="F:System.Runtime.InteropServices.StringMarshalling.Utf8">
+            <summary>
+            Use the platform-provided UTF-8 marshaller.
+            </summary>
+        </member>
+        <member name="F:System.Runtime.InteropServices.StringMarshalling.Utf16">
+            <summary>
+            Use the platform-provided UTF-16 marshaller.
+            </summary>
+        </member>
+        <member name="P:System.SR.CannotDeclarePathSegment">
+            <summary>Cannot declare path segment before entering a directory.</summary>
+        </member>
+        <member name="P:System.SR.CannotTestDirectory">
+            <summary>Cannot test directory before entering a directory.</summary>
+        </member>
+        <member name="P:System.SR.CannotTestFile">
+            <summary>Cannot test file before entering a directory.</summary>
+        </member>
+        <member name="P:System.SR.StringComparisonTypeShouldBeOrdinal">
+            <summary>Unexpected StringComparison type: '{0}'. Only 'Ordinal' and 'OrdinalIgnoreCase' are supported.</summary>
+        </member>
+        <member name="P:System.SR.UnexpectedStringComparisonType">
+            <summary>Unexpected StringComparison type: {0}</summary>
+        </member>
+        <member name="T:System.Diagnostics.CodeAnalysis.AllowNullAttribute">
+            <summary>Specifies that null is allowed as an input even if the corresponding type disallows it.</summary>
+        </member>
+        <member name="T:System.Diagnostics.CodeAnalysis.DisallowNullAttribute">
+            <summary>Specifies that null is disallowed as an input even if the corresponding type allows it.</summary>
+        </member>
+        <member name="T:System.Diagnostics.CodeAnalysis.MaybeNullAttribute">
+            <summary>Specifies that an output may be null even if the corresponding type disallows it.</summary>
+        </member>
+        <member name="T:System.Diagnostics.CodeAnalysis.NotNullAttribute">
+            <summary>Specifies that an output will not be null even if the corresponding type allows it. Specifies that an input argument was not null when the call returns.</summary>
+        </member>
+        <member name="T:System.Diagnostics.CodeAnalysis.MaybeNullWhenAttribute">
+            <summary>Specifies that when a method returns <see cref="P:System.Diagnostics.CodeAnalysis.MaybeNullWhenAttribute.ReturnValue"/>, the parameter may be null even if the corresponding type disallows it.</summary>
+        </member>
+        <member name="M:System.Diagnostics.CodeAnalysis.MaybeNullWhenAttribute.#ctor(System.Boolean)">
+            <summary>Initializes the attribute with the specified return value condition.</summary>
+            <param name="returnValue">
+            The return value condition. If the method returns this value, the associated parameter may be null.
+            </param>
+        </member>
+        <member name="P:System.Diagnostics.CodeAnalysis.MaybeNullWhenAttribute.ReturnValue">
+            <summary>Gets the return value condition.</summary>
+        </member>
+        <member name="T:System.Diagnostics.CodeAnalysis.NotNullWhenAttribute">
+            <summary>Specifies that when a method returns <see cref="P:System.Diagnostics.CodeAnalysis.NotNullWhenAttribute.ReturnValue"/>, the parameter will not be null even if the corresponding type allows it.</summary>
+        </member>
+        <member name="M:System.Diagnostics.CodeAnalysis.NotNullWhenAttribute.#ctor(System.Boolean)">
+            <summary>Initializes the attribute with the specified return value condition.</summary>
+            <param name="returnValue">
+            The return value condition. If the method returns this value, the associated parameter will not be null.
+            </param>
+        </member>
+        <member name="P:System.Diagnostics.CodeAnalysis.NotNullWhenAttribute.ReturnValue">
+            <summary>Gets the return value condition.</summary>
+        </member>
+        <member name="T:System.Diagnostics.CodeAnalysis.NotNullIfNotNullAttribute">
+            <summary>Specifies that the output will be non-null if the named parameter is non-null.</summary>
+        </member>
+        <member name="M:System.Diagnostics.CodeAnalysis.NotNullIfNotNullAttribute.#ctor(System.String)">
+            <summary>Initializes the attribute with the associated parameter name.</summary>
+            <param name="parameterName">
+            The associated parameter name.  The output will be non-null if the argument to the parameter specified is non-null.
+            </param>
+        </member>
+        <member name="P:System.Diagnostics.CodeAnalysis.NotNullIfNotNullAttribute.ParameterName">
+            <summary>Gets the associated parameter name.</summary>
+        </member>
+        <member name="T:System.Diagnostics.CodeAnalysis.DoesNotReturnAttribute">
+            <summary>Applied to a method that will never return under any circumstance.</summary>
+        </member>
+        <member name="T:System.Diagnostics.CodeAnalysis.DoesNotReturnIfAttribute">
+            <summary>Specifies that the method will not return if the associated Boolean parameter is passed the specified value.</summary>
+        </member>
+        <member name="M:System.Diagnostics.CodeAnalysis.DoesNotReturnIfAttribute.#ctor(System.Boolean)">
+            <summary>Initializes the attribute with the specified parameter value.</summary>
+            <param name="parameterValue">
+            The condition parameter value. Code after the method will be considered unreachable by diagnostics if the argument to
+            the associated parameter matches this value.
+            </param>
+        </member>
+        <member name="P:System.Diagnostics.CodeAnalysis.DoesNotReturnIfAttribute.ParameterValue">
+            <summary>Gets the condition parameter value.</summary>
+        </member>
+        <member name="T:System.Diagnostics.CodeAnalysis.MemberNotNullAttribute">
+            <summary>Specifies that the method or property will ensure that the listed field and property members have not-null values.</summary>
+        </member>
+        <member name="M:System.Diagnostics.CodeAnalysis.MemberNotNullAttribute.#ctor(System.String)">
+            <summary>Initializes the attribute with a field or property member.</summary>
+            <param name="member">
+            The field or property member that is promised to be not-null.
+            </param>
+        </member>
+        <member name="M:System.Diagnostics.CodeAnalysis.MemberNotNullAttribute.#ctor(System.String[])">
+            <summary>Initializes the attribute with the list of field and property members.</summary>
+            <param name="members">
+            The list of field and property members that are promised to be not-null.
+            </param>
+        </member>
+        <member name="P:System.Diagnostics.CodeAnalysis.MemberNotNullAttribute.Members">
+            <summary>Gets field or property member names.</summary>
+        </member>
+        <member name="T:System.Diagnostics.CodeAnalysis.MemberNotNullWhenAttribute">
+            <summary>Specifies that the method or property will ensure that the listed field and property members have not-null values when returning with the specified return value condition.</summary>
+        </member>
+        <member name="M:System.Diagnostics.CodeAnalysis.MemberNotNullWhenAttribute.#ctor(System.Boolean,System.String)">
+            <summary>Initializes the attribute with the specified return value condition and a field or property member.</summary>
+            <param name="returnValue">
+            The return value condition. If the method returns this value, the associated parameter will not be null.
+            </param>
+            <param name="member">
+            The field or property member that is promised to be not-null.
+            </param>
+        </member>
+        <member name="M:System.Diagnostics.CodeAnalysis.MemberNotNullWhenAttribute.#ctor(System.Boolean,System.String[])">
+            <summary>Initializes the attribute with the specified return value condition and list of field and property members.</summary>
+            <param name="returnValue">
+            The return value condition. If the method returns this value, the associated parameter will not be null.
+            </param>
+            <param name="members">
+            The list of field and property members that are promised to be not-null.
+            </param>
+        </member>
+        <member name="P:System.Diagnostics.CodeAnalysis.MemberNotNullWhenAttribute.ReturnValue">
+            <summary>Gets the return value condition.</summary>
+        </member>
+        <member name="P:System.Diagnostics.CodeAnalysis.MemberNotNullWhenAttribute.Members">
+            <summary>Gets field or property member names.</summary>
+        </member>
+    </members>
+</doc>

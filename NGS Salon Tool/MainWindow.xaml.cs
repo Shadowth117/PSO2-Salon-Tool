@@ -1024,7 +1024,7 @@ namespace NGS_Salon_Tool
                 return;
             }
             skinIcon.Source = IceHandler.GetIconFromIce(pso2_binDir, cmxHandler.skinDict[text], CharacterMakingIndex.skinIcon);
-            xxpHandler.baseSLCT.makeup2Part = (uint)cmxHandler.skinDict[text];
+            xxpHandler.baseSLCTNGS.skinTextureSet = (uint)cmxHandler.skinDict[text];
         }
         private void EarsSelectionChanged(object sender, SelectionChangedEventArgs e)
         {

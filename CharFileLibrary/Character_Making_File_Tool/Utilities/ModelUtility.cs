@@ -840,7 +840,7 @@ namespace CharFileLibrary.Character_Making_File_Tool.Utilities
                 string rebLinkedInnerHash = GetFileHash(rebLinkedInner);
                 string rebLinkedInnerExHash = GetFileHash(rebLinkedInnerEx);
 
-                GetBasewearExtraFileStrings(rebEx, out string rp, out string hn);
+                GetBasewearExtraFileStrings(rebEx, out string rp, out string hn, out string bm);
 
                 basewearFilename = rebExHash;
                 basewearLinkedInnerFilename = rebLinkedInnerExHash;
@@ -854,7 +854,7 @@ namespace CharFileLibrary.Character_Making_File_Tool.Utilities
                 string classic = $"{classicStart}bw_{finalId}.ice";
 
                 var classicHash = GetFileHash(classic);
-                GetBasewearExtraFileStrings(classic, out string rp, out string hn);
+                GetBasewearExtraFileStrings(classic, out string rp, out string hn, out string bm);
 
                 basewearFilename = classicHash;
                 basewearLinkedInnerFilename = null;

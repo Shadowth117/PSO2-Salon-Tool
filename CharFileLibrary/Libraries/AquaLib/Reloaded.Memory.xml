@@ -22,6 +22,9 @@
             </summary>
             <param name="type">The individual value to be byte reversed. The value will be modified directly.</param>
         </member>
+        <member name="T:Reloaded.Memory.Exceptions.BufferedStreamReaderException">
+            <inheritdoc />
+        </member>
         <member name="T:Reloaded.Memory.Exceptions.MemoryAllocationException">
             <inheritdoc />
         </member>
@@ -96,13 +99,27 @@
             </summary>
         </member>
         <member name="M:Reloaded.Memory.Interop.Pinnable`1.#ctor(`0[])">
-            <inheritdoc />
+            <summary>
+            Pins an array of values to the heap. 
+            </summary>
+            <param name="value">
+                The values to be pinned on the heap.
+                Depending on runtime used, these may be copied; so please use <see cref="P:Reloaded.Memory.Interop.Pinnable`1.Pointer"/> property.
+            </param>
         </member>
         <member name="M:Reloaded.Memory.Interop.Pinnable`1.#ctor(`0)">
-            <inheritdoc />
+            <summary>
+            Pins a value to the heap. 
+            </summary>
+            <param name="value">The value to be pinned on the heap.</param>
         </member>
         <member name="M:Reloaded.Memory.Interop.Pinnable`1.#ctor(`0@)">
-            <inheritdoc />
+            <summary>
+            Pins a value to the heap. 
+            </summary>
+            <param name="value">
+                The value to be pinned on the heap.
+            </param>
         </member>
         <member name="M:Reloaded.Memory.Interop.Pinnable`1.Finalize">
             <summary>Allows an object to try to free resources and perform other cleanup operations before it is reclaimed by garbage collection.</summary>
@@ -131,7 +148,7 @@
         <member name="T:Reloaded.Memory.Kernel32.Kernel32">
             <summary/>
         </member>
-        <member name="M:Reloaded.Memory.Kernel32.Kernel32.ReadProcessMemory(System.IntPtr,System.IntPtr,System.IntPtr,System.UIntPtr,System.UIntPtr@)">
+        <member name="M:Reloaded.Memory.Kernel32.Kernel32.ReadProcessMemory(System.IntPtr,System.UIntPtr,System.UIntPtr,System.UIntPtr,System.UIntPtr@)">
             <summary>Reads data from an area of memory in a specified process. The entire area to be read must be accessible or the operation fails.</summary>
             <param name="hProcess">A handle to the process with memory that is being read. The handle must have PROCESS_VM_READ access to the process.</param>
             <param name="lpBaseAddress">
@@ -150,7 +167,7 @@
             <para>The function fails if the requested read operation crosses into an area of the process that is inaccessible.</para>
             </returns>
         </member>
-        <member name="M:Reloaded.Memory.Kernel32.Kernel32.WriteProcessMemory(System.IntPtr,System.IntPtr,System.IntPtr,System.UIntPtr,System.UIntPtr@)">
+        <member name="M:Reloaded.Memory.Kernel32.Kernel32.WriteProcessMemory(System.IntPtr,System.UIntPtr,System.UIntPtr,System.UIntPtr,System.UIntPtr@)">
             <summary>Writes data to an area of memory in a specified process. The entire area to be written to must be accessible or the operation fails.</summary>
             <param name="hProcess">
             A handle to the process memory to be modified. The handle must have PROCESS_VM_WRITE and PROCESS_VM_OPERATION access to the process.
@@ -173,7 +190,7 @@
             </para>
             </returns>
         </member>
-        <member name="M:Reloaded.Memory.Kernel32.Kernel32.VirtualAllocEx(System.IntPtr,System.IntPtr,System.UIntPtr,Reloaded.Memory.Kernel32.Kernel32.MEM_ALLOCATION_TYPE,Reloaded.Memory.Kernel32.Kernel32.MEM_PROTECTION)">
+        <member name="M:Reloaded.Memory.Kernel32.Kernel32.VirtualAllocEx(System.IntPtr,System.UIntPtr,System.UIntPtr,Reloaded.Memory.Kernel32.Kernel32.MEM_ALLOCATION_TYPE,Reloaded.Memory.Kernel32.Kernel32.MEM_PROTECTION)">
             <summary>
             <para>
             Reserves, commits, or changes the state of a region of memory within the virtual address space of a specified process. The function initializes the
@@ -299,7 +316,7 @@
             <para>If the function fails, the return value is <c>NULL</c>. To get extended error information, call <c>GetLastError</c>.</para>
             </returns>
         </member>
-        <member name="M:Reloaded.Memory.Kernel32.Kernel32.VirtualFreeEx(System.IntPtr,System.IntPtr,System.UIntPtr,Reloaded.Memory.Kernel32.Kernel32.MEM_ALLOCATION_TYPE)">
+        <member name="M:Reloaded.Memory.Kernel32.Kernel32.VirtualFreeEx(System.IntPtr,System.UIntPtr,System.UIntPtr,Reloaded.Memory.Kernel32.Kernel32.MEM_ALLOCATION_TYPE)">
             <summary>Releases, decommits, or releases and decommits a region of memory within the virtual address space of a specified process.</summary>
             <param name="hProcess">
             <para>A handle to a process. The function frees memory within the virtual address space of the process.</para>
@@ -359,7 +376,7 @@
             <para>If the function fails, the return value is 0 (zero). To get extended error information, call <c>GetLastError</c>.</para>
             </returns>
         </member>
-        <member name="M:Reloaded.Memory.Kernel32.Kernel32.VirtualProtectEx(System.IntPtr,System.IntPtr,System.UIntPtr,Reloaded.Memory.Kernel32.Kernel32.MEM_PROTECTION,Reloaded.Memory.Kernel32.Kernel32.MEM_PROTECTION@)">
+        <member name="M:Reloaded.Memory.Kernel32.Kernel32.VirtualProtectEx(System.IntPtr,System.UIntPtr,System.UIntPtr,Reloaded.Memory.Kernel32.Kernel32.MEM_PROTECTION,Reloaded.Memory.Kernel32.Kernel32.MEM_PROTECTION@)">
             <summary>Changes the protection on a region of committed pages in the virtual address space of a specified process.</summary>
             <param name="hProcess">
             A handle to the process whose memory protection is to be changed. The handle must have the <c>PROCESS_VM_OPERATION</c> access right. For more
@@ -394,7 +411,7 @@
             <para>If the function fails, the return value is zero. To get extended error information, call <c>GetLastError</c>.</para>
             </returns>
         </member>
-        <member name="M:Reloaded.Memory.Kernel32.Kernel32.VirtualAlloc(System.IntPtr,System.UIntPtr,Reloaded.Memory.Kernel32.Kernel32.MEM_ALLOCATION_TYPE,Reloaded.Memory.Kernel32.Kernel32.MEM_PROTECTION)">
+        <member name="M:Reloaded.Memory.Kernel32.Kernel32.VirtualAlloc(System.UIntPtr,System.UIntPtr,Reloaded.Memory.Kernel32.Kernel32.MEM_ALLOCATION_TYPE,Reloaded.Memory.Kernel32.Kernel32.MEM_PROTECTION)">
             <summary>
             <para>
             Reserves, commits, or changes the state of a region of pages in the virtual address space of the calling process. Memory allocated by this function
@@ -521,7 +538,7 @@
             <para>If the function fails, the return value is <c>NULL</c>. To get extended error information, call <c>GetLastError</c>.</para>
             </returns>
         </member>
-        <member name="M:Reloaded.Memory.Kernel32.Kernel32.VirtualFree(System.IntPtr,System.UIntPtr,Reloaded.Memory.Kernel32.Kernel32.MEM_ALLOCATION_TYPE)">
+        <member name="M:Reloaded.Memory.Kernel32.Kernel32.VirtualFree(System.UIntPtr,System.UIntPtr,Reloaded.Memory.Kernel32.Kernel32.MEM_ALLOCATION_TYPE)">
             <summary>
             <para>Releases, decommits, or releases and decommits a region of pages within the virtual address space of the calling process.</para>
             <para>To free memory allocated in another process by the <c>VirtualAllocEx</c> function, use the <c>VirtualFreeEx</c> function.</para>
@@ -580,7 +597,7 @@
             <para>If the function fails, the return value is 0 (zero). To get extended error information, call <c>GetLastError</c>.</para>
             </returns>
         </member>
-        <member name="M:Reloaded.Memory.Kernel32.Kernel32.VirtualProtect(System.IntPtr,System.UIntPtr,Reloaded.Memory.Kernel32.Kernel32.MEM_PROTECTION,Reloaded.Memory.Kernel32.Kernel32.MEM_PROTECTION@)">
+        <member name="M:Reloaded.Memory.Kernel32.Kernel32.VirtualProtect(System.UIntPtr,System.UIntPtr,Reloaded.Memory.Kernel32.Kernel32.MEM_PROTECTION,Reloaded.Memory.Kernel32.Kernel32.MEM_PROTECTION@)">
             <summary>
             <para>Changes the protection on a region of committed pages in the virtual address space of the calling process.</para>
             <para>To change the access protection of any process, use the <c>VirtualProtectEx</c> function.</para>
@@ -877,7 +894,7 @@
         <member name="M:Reloaded.Memory.Pointers.ArrayPtr`1.Set(`0@,System.Int32)">
             <inheritdoc />
         </member>
-        <member name="M:Reloaded.Memory.Pointers.ArrayPtr`1.#ctor(System.UInt64,System.Boolean,Reloaded.Memory.Sources.IMemory)">
+        <member name="M:Reloaded.Memory.Pointers.ArrayPtr`1.#ctor(System.UIntPtr,System.Boolean,Reloaded.Memory.Sources.IMemory)">
             <summary>
             Constructs a new instance of <see cref="T:Reloaded.Memory.Pointers.ArrayPtr`1"/> given the address of the first element
             and whether elements should be marshaled or not as they are read.
@@ -921,6 +938,9 @@
         <member name="M:Reloaded.Memory.Pointers.BlittablePointer`1.op_Implicit(`0*)~Reloaded.Memory.Pointers.BlittablePointer{`0}">
             <summary/>
         </member>
+        <member name="M:Reloaded.Memory.Pointers.BlittablePointer`1.op_Implicit(Reloaded.Memory.Pointers.BlittablePointer{`0})~`0*">
+            <summary/>
+        </member>
         <member name="T:Reloaded.Memory.Pointers.FixedArrayPtr`1">
             <summary>
             Abstracts a native 'C' type array of a set size in memory to a more familiar interface.
@@ -960,7 +980,7 @@
         <member name="M:Reloaded.Memory.Pointers.FixedArrayPtr`1.Set(`0@,System.Int32)">
             <inheritdoc />
         </member>
-        <member name="M:Reloaded.Memory.Pointers.FixedArrayPtr`1.#ctor(System.UInt64,System.Int32,System.Boolean,Reloaded.Memory.Sources.IMemory)">
+        <member name="M:Reloaded.Memory.Pointers.FixedArrayPtr`1.#ctor(System.UIntPtr,System.Int32,System.Boolean,Reloaded.Memory.Sources.IMemory)">
             <summary>
             Constructs a new instance of <see cref="T:Reloaded.Memory.Pointers.FixedArrayPtr`1"/> given the address of the first element, 
             and the number of elements that follow it.
@@ -1168,7 +1188,7 @@
             Sets the value where the current pointer is pointing to.
             </summary>
         </member>
-        <member name="M:Reloaded.Memory.Pointers.Pointer`1.#ctor(System.UInt64,System.Boolean,Reloaded.Memory.Sources.IMemory)">
+        <member name="M:Reloaded.Memory.Pointers.Pointer`1.#ctor(System.UIntPtr,System.Boolean,Reloaded.Memory.Sources.IMemory)">
             <summary>
             Constructs a new instance of <see cref="T:Reloaded.Memory.Pointers.Pointer`1"/> given the address (pointer)
             at which the value of type <typeparamref name="TStruct"/> is stored.
@@ -1194,7 +1214,7 @@
             Returns a member of this array by reference.
             </summary>
         </member>
-        <member name="M:Reloaded.Memory.Pointers.RefArrayPtr`1.#ctor(System.UInt64)">
+        <member name="M:Reloaded.Memory.Pointers.RefArrayPtr`1.#ctor(System.UIntPtr)">
             <summary>
             Creates a by reference array pointer given the address of the first element of the array.
             </summary>
@@ -1229,7 +1249,7 @@
             Returns a member of this array by reference.
             </summary>
         </member>
-        <member name="M:Reloaded.Memory.Pointers.RefFixedArrayPtr`1.#ctor(System.UInt64,System.Int32)">
+        <member name="M:Reloaded.Memory.Pointers.RefFixedArrayPtr`1.#ctor(System.UIntPtr,System.Int32)">
             <summary>
             Creates a by reference array pointer given the address of the first element of the array.
             </summary>
@@ -1337,6 +1357,13 @@
             <param name="pointer">Pointer to the unmanaged structure.</param>
             <returns>A by reference variable for a given pointer.</returns>
         </member>
+        <member name="M:Reloaded.Memory.Pointers.RefPointer`1.Create(System.UIntPtr)">
+            <summary>
+            Converts a pointer into a by reference variable.
+            </summary>
+            <param name="pointer">Pointer to the unmanaged structure.</param>
+            <returns>A by reference variable for a given pointer.</returns>
+        </member>
         <member name="M:Reloaded.Memory.Pointers.RefPointer`1.op_Implicit(Reloaded.Memory.Pointers.BlittablePointer{`0})~Reloaded.Memory.Pointers.RefPointer{`0}">
             <summary/>
         </member>
@@ -1370,31 +1397,31 @@
             </summary>
             <param name="process">The individual process to read/write memory from.</param>
         </member>
-        <member name="M:Reloaded.Memory.Sources.ExternalMemory.Read``1(System.IntPtr,``0@)">
+        <member name="M:Reloaded.Memory.Sources.ExternalMemory.Read``1(System.UIntPtr,``0@)">
             <inheritdoc />
         </member>
-        <member name="M:Reloaded.Memory.Sources.ExternalMemory.Read``1(System.IntPtr,``0@,System.Boolean)">
+        <member name="M:Reloaded.Memory.Sources.ExternalMemory.Read``1(System.UIntPtr,``0@,System.Boolean)">
             <inheritdoc />
         </member>
-        <member name="M:Reloaded.Memory.Sources.ExternalMemory.ReadRaw(System.IntPtr,System.Byte[]@,System.Int32)">
+        <member name="M:Reloaded.Memory.Sources.ExternalMemory.ReadRaw(System.UIntPtr,System.Byte[]@,System.Int32)">
             <inheritdoc />
         </member>
-        <member name="M:Reloaded.Memory.Sources.ExternalMemory.Write``1(System.IntPtr,``0@)">
+        <member name="M:Reloaded.Memory.Sources.ExternalMemory.Write``1(System.UIntPtr,``0@)">
             <inheritdoc />
         </member>
-        <member name="M:Reloaded.Memory.Sources.ExternalMemory.Write``1(System.IntPtr,``0@,System.Boolean)">
+        <member name="M:Reloaded.Memory.Sources.ExternalMemory.Write``1(System.UIntPtr,``0@,System.Boolean)">
             <inheritdoc />
         </member>
-        <member name="M:Reloaded.Memory.Sources.ExternalMemory.WriteRaw(System.IntPtr,System.Byte[])">
+        <member name="M:Reloaded.Memory.Sources.ExternalMemory.WriteRaw(System.UIntPtr,System.Byte[])">
             <inheritdoc />
         </member>
         <member name="M:Reloaded.Memory.Sources.ExternalMemory.Allocate(System.Int32)">
             <inheritdoc />
         </member>
-        <member name="M:Reloaded.Memory.Sources.ExternalMemory.Free(System.IntPtr)">
+        <member name="M:Reloaded.Memory.Sources.ExternalMemory.Free(System.UIntPtr)">
             <inheritdoc />
         </member>
-        <member name="M:Reloaded.Memory.Sources.ExternalMemory.ChangePermission(System.IntPtr,System.Int32,Reloaded.Memory.Kernel32.Kernel32.MEM_PROTECTION)">
+        <member name="M:Reloaded.Memory.Sources.ExternalMemory.ChangePermission(System.UIntPtr,System.Int32,Reloaded.Memory.Kernel32.Kernel32.MEM_PROTECTION)">
             <inheritdoc />
         </member>
         <member name="T:Reloaded.Memory.Sources.IMemory">
@@ -1402,7 +1429,7 @@
             A simple interface that provides read/write access to arbitrary memory.
             </summary>
         </member>
-        <member name="M:Reloaded.Memory.Sources.IMemory.Read``1(System.IntPtr,``0@)">
+        <member name="M:Reloaded.Memory.Sources.IMemory.Read``1(System.UIntPtr,``0@)">
             <summary>
             Reads a generic type from a specified memory address.
             </summary>
@@ -1411,7 +1438,7 @@
             <param name="value">Local variable to receive the read in struct.</param>
             <exception cref="T:Reloaded.Memory.Exceptions.MemoryException">Failed to read memory.</exception>
         </member>
-        <member name="M:Reloaded.Memory.Sources.IMemory.Read``1(System.IntPtr,``0@,System.Boolean)">
+        <member name="M:Reloaded.Memory.Sources.IMemory.Read``1(System.UIntPtr,``0@,System.Boolean)">
             <summary>
             Reads a generic type from a specified memory address.
             </summary>
@@ -1421,7 +1448,7 @@
             <param name="marshal">Set this to true to enable struct marshalling.</param>
             <exception cref="T:Reloaded.Memory.Exceptions.MemoryException">Failed to read memory.</exception>
         </member>
-        <member name="M:Reloaded.Memory.Sources.IMemory.ReadRaw(System.IntPtr,System.Byte[]@,System.Int32)">
+        <member name="M:Reloaded.Memory.Sources.IMemory.ReadRaw(System.UIntPtr,System.Byte[]@,System.Int32)">
             <summary>
             Reads raw data from a specified memory address.
             </summary>
@@ -1430,7 +1457,7 @@
             <param name="length">The amount of bytes to read starting from the memoryAddress.</param>
             <exception cref="T:Reloaded.Memory.Exceptions.MemoryException">Failed to read memory.</exception>
         </member>
-        <member name="M:Reloaded.Memory.Sources.IMemory.Write``1(System.IntPtr,``0@)">
+        <member name="M:Reloaded.Memory.Sources.IMemory.Write``1(System.UIntPtr,``0@)">
             <summary>
             Writes a generic type to a specified memory address.
             </summary>
@@ -1439,7 +1466,7 @@
             <param name="item">The item to write to the address.</param>
             <exception cref="T:Reloaded.Memory.Exceptions.MemoryException">Failed to write memory.</exception>
         </member>
-        <member name="M:Reloaded.Memory.Sources.IMemory.Write``1(System.IntPtr,``0@,System.Boolean)">
+        <member name="M:Reloaded.Memory.Sources.IMemory.Write``1(System.UIntPtr,``0@,System.Boolean)">
             <summary>
             Writes a generic type to a specified memory address.
             </summary>
@@ -1449,7 +1476,7 @@
             <param name="marshal">Set this to true to enable struct marshalling.</param>
             <exception cref="T:Reloaded.Memory.Exceptions.MemoryException">Failed to write memory.</exception>
         </member>
-        <member name="M:Reloaded.Memory.Sources.IMemory.WriteRaw(System.IntPtr,System.Byte[])">
+        <member name="M:Reloaded.Memory.Sources.IMemory.WriteRaw(System.UIntPtr,System.Byte[])">
             <summary>
             Writes raw data to a specified memory address.
             </summary>
@@ -1467,7 +1494,7 @@
             <exception cref="T:Reloaded.Memory.Exceptions.MemoryAllocationException">Failed to allocate memory.</exception>
             <returns>Address to the newly allocated memory.</returns>
         </member>
-        <member name="M:Reloaded.Memory.Sources.IMemory.Free(System.IntPtr)">
+        <member name="M:Reloaded.Memory.Sources.IMemory.Free(System.UIntPtr)">
             <summary>
             Frees memory previously allocated with <see cref="M:Reloaded.Memory.Sources.IMemory.Allocate(System.Int32)"/>.
             </summary>
@@ -1475,7 +1502,7 @@
             <exception cref="T:System.NotImplementedException">Thrown if a deriving class does not implement this function.</exception>
             <returns>True if the operation is successful.</returns>
         </member>
-        <member name="M:Reloaded.Memory.Sources.IMemory.ChangePermission(System.IntPtr,System.Int32,Reloaded.Memory.Kernel32.Kernel32.MEM_PROTECTION)">
+        <member name="M:Reloaded.Memory.Sources.IMemory.ChangePermission(System.UIntPtr,System.Int32,Reloaded.Memory.Kernel32.Kernel32.MEM_PROTECTION)">
             <summary>
             Changes the page permissions for a specified combination of address and length.
             </summary>
@@ -1500,31 +1527,31 @@
             Allows you to access the memory for the currently running process.
             </summary>
         </member>
-        <member name="M:Reloaded.Memory.Sources.Memory.Read``1(System.IntPtr,``0@)">
+        <member name="M:Reloaded.Memory.Sources.Memory.Read``1(System.UIntPtr,``0@)">
             <inheritdoc />
         </member>
-        <member name="M:Reloaded.Memory.Sources.Memory.Read``1(System.IntPtr,``0@,System.Boolean)">
+        <member name="M:Reloaded.Memory.Sources.Memory.Read``1(System.UIntPtr,``0@,System.Boolean)">
             <inheritdoc />
         </member>
-        <member name="M:Reloaded.Memory.Sources.Memory.ReadRaw(System.IntPtr,System.Byte[]@,System.Int32)">
+        <member name="M:Reloaded.Memory.Sources.Memory.ReadRaw(System.UIntPtr,System.Byte[]@,System.Int32)">
             <inheritdoc />
         </member>
-        <member name="M:Reloaded.Memory.Sources.Memory.Write``1(System.IntPtr,``0@)">
+        <member name="M:Reloaded.Memory.Sources.Memory.Write``1(System.UIntPtr,``0@)">
             <inheritdoc />
         </member>
-        <member name="M:Reloaded.Memory.Sources.Memory.Write``1(System.IntPtr,``0@,System.Boolean)">
+        <member name="M:Reloaded.Memory.Sources.Memory.Write``1(System.UIntPtr,``0@,System.Boolean)">
             <inheritdoc />
         </member>
-        <member name="M:Reloaded.Memory.Sources.Memory.WriteRaw(System.IntPtr,System.Byte[])">
+        <member name="M:Reloaded.Memory.Sources.Memory.WriteRaw(System.UIntPtr,System.Byte[])">
             <inheritdoc />
         </member>
         <member name="M:Reloaded.Memory.Sources.Memory.Allocate(System.Int32)">
             <inheritdoc />
         </member>
-        <member name="M:Reloaded.Memory.Sources.Memory.Free(System.IntPtr)">
+        <member name="M:Reloaded.Memory.Sources.Memory.Free(System.UIntPtr)">
             <inheritdoc />
         </member>
-        <member name="M:Reloaded.Memory.Sources.Memory.ChangePermission(System.IntPtr,System.Int32,Reloaded.Memory.Kernel32.Kernel32.MEM_PROTECTION)">
+        <member name="M:Reloaded.Memory.Sources.Memory.ChangePermission(System.UIntPtr,System.Int32,Reloaded.Memory.Kernel32.Kernel32.MEM_PROTECTION)">
             <inheritdoc />
         </member>
         <member name="T:Reloaded.Memory.Sources.MemoryExtensions">
@@ -1535,45 +1562,48 @@
         </member>
         <member name="T:Reloaded.Memory.Sources.MemoryExtensions.ReadFunction`1">
             <summary>
-            See <see cref="M:Reloaded.Memory.Sources.IMemory.Read``1(System.IntPtr,``0@)"/>
+            See <see cref="M:Reloaded.Memory.Sources.IMemory.Read``1(System.UIntPtr,``0@)"/>
             </summary>
         </member>
         <member name="T:Reloaded.Memory.Sources.MemoryExtensions.WriteFunction`1">
             <summary>
-            See <see cref="M:Reloaded.Memory.Sources.IMemory.Write``1(System.IntPtr,``0@)"/>
+            See <see cref="M:Reloaded.Memory.Sources.IMemory.Write``1(System.UIntPtr,``0@)"/>
             </summary>
         </member>
-        <member name="M:Reloaded.Memory.Sources.MemoryExtensions.Read``1(Reloaded.Memory.Sources.IMemory,System.IntPtr,``0[]@,System.Int32,System.Boolean)">
+        <member name="M:Reloaded.Memory.Sources.MemoryExtensions.Read``2(``0,System.UIntPtr,``1[]@,System.Int32,System.Boolean)">
             <summary>
             Reads a generic type array from a specified memory address.
             </summary>
             <typeparam name="T">An individual struct type of a class with an explicit StructLayout.LayoutKind attribute.</typeparam>
+            <typeparam name="TMemory">Type which inherits from <see cref="T:Reloaded.Memory.Sources.IMemory"/>.</typeparam>
             <param name="value">Local variable to receive the read in struct array.</param>
             <param name="memory"></param>
             <param name="memoryAddress">The memory address to read from.</param>
             <param name="arrayLength">The amount of array items to read.</param>
             <param name="marshal">Set this to true to enable struct marshalling.</param>
         </member>
-        <member name="M:Reloaded.Memory.Sources.MemoryExtensions.SafeRead``1(Reloaded.Memory.Sources.IMemory,System.IntPtr,``0@,System.Boolean)">
+        <member name="M:Reloaded.Memory.Sources.MemoryExtensions.SafeRead``2(``0,System.UIntPtr,``1@,System.Boolean)">
             <summary>
             Changes memory permissions to ensure memory can be read and reads a generic type from a specified memory address.
             </summary>
             <typeparam name="T">An individual struct type of a class with an explicit StructLayout.LayoutKind attribute.</typeparam>
+            <typeparam name="TMemory">Type which inherits from <see cref="T:Reloaded.Memory.Sources.IMemory"/>.</typeparam>
             <param name="memory"></param>
             <param name="memoryAddress">The memory address to read from.</param>
             <param name="value">Local variable to receive the read in struct.</param>
             <param name="marshal">Set this to true to enable struct marshalling.</param>
         </member>
-        <member name="M:Reloaded.Memory.Sources.MemoryExtensions.SafeRead``1(Reloaded.Memory.Sources.IMemory,System.IntPtr,``0@)">
+        <member name="M:Reloaded.Memory.Sources.MemoryExtensions.SafeRead``2(``0,System.UIntPtr,``1@)">
             <summary>
             Changes memory permissions to ensure memory can be read and reads a generic type from a specified memory address.
             </summary>
             <typeparam name="T">An individual struct type of a class with an explicit StructLayout.LayoutKind attribute.</typeparam>
+            <typeparam name="TMemory">Type which inherits from <see cref="T:Reloaded.Memory.Sources.IMemory"/>.</typeparam>
             <param name="memory"></param>
             <param name="memoryAddress">The memory address to read from.</param>
             <param name="value">Local variable to receive the read in struct.</param>
         </member>
-        <member name="M:Reloaded.Memory.Sources.MemoryExtensions.SafeReadRaw(Reloaded.Memory.Sources.IMemory,System.IntPtr,System.Byte[]@,System.Int32)">
+        <member name="M:Reloaded.Memory.Sources.MemoryExtensions.SafeReadRaw``1(``0,System.UIntPtr,System.Byte[]@,System.Int32)">
             <summary>
             Changes memory permissions to ensure memory can be read and reads bytes from a specified memory address.
             </summary>
@@ -1582,109 +1612,239 @@
             <param name="value">Local variable to receive the read in bytes.</param>
             <param name="length">The amount of bytes to read from the executable.</param>
         </member>
-        <member name="M:Reloaded.Memory.Sources.MemoryExtensions.SafeRead``1(Reloaded.Memory.Sources.IMemory,System.IntPtr,``0[]@,System.Int32,System.Boolean)">
+        <member name="M:Reloaded.Memory.Sources.MemoryExtensions.SafeRead``2(``0,System.UIntPtr,``1[]@,System.Int32,System.Boolean)">
             <summary>
             Changes memory permissions to ensure memory can be read and reads a generic type array from a specified memory address.
             </summary>
             <typeparam name="T">An individual struct type of a class with an explicit StructLayout.LayoutKind attribute.</typeparam>
+            <typeparam name="TMemory">Type which inherits from <see cref="T:Reloaded.Memory.Sources.IMemory"/>.</typeparam>
             <param name="memory"></param>
             <param name="memoryAddress">The memory address to read from.</param>
             <param name="value">Local variable to receive the read in struct array.</param>
             <param name="arrayLength">The amount of array items to read.</param>
             <param name="marshal">Set this to true to enable struct marshalling.</param>
         </member>
-        <member name="M:Reloaded.Memory.Sources.MemoryExtensions.Write``1(Reloaded.Memory.Sources.IMemory,System.IntPtr,``0[],System.Boolean)">
+        <member name="M:Reloaded.Memory.Sources.MemoryExtensions.Write``2(``0,System.UIntPtr,``1[],System.Boolean)">
             <summary>
             Writes a generic type array to a specified memory address.
             </summary>
             <typeparam name="T">An individual struct type of a class with an explicit StructLayout.LayoutKind attribute.</typeparam>
+            <typeparam name="TMemory">Type which inherits from <see cref="T:Reloaded.Memory.Sources.IMemory"/>.</typeparam>
             <param name="memory"></param>
             <param name="memoryAddress">The memory address to write to.</param>
             <param name="items">The array of items to write to the address.</param>
             <param name="marshal">Set this to true to enable struct marshalling.</param>
         </member>
-        <member name="M:Reloaded.Memory.Sources.MemoryExtensions.SafeWrite``1(Reloaded.Memory.Sources.IMemory,System.IntPtr,``0@,System.Boolean)">
+        <member name="M:Reloaded.Memory.Sources.MemoryExtensions.Write``2(``0,System.UIntPtr,``1[])">
+            <summary>
+            Writes a generic type array to a specified memory address.
+            </summary>
+            <typeparam name="T">An individual struct type of a class with an explicit StructLayout.LayoutKind attribute.</typeparam>
+            <typeparam name="TMemory">Type which inherits from <see cref="T:Reloaded.Memory.Sources.IMemory"/>.</typeparam>
+            <param name="memory"></param>
+            <param name="memoryAddress">The memory address to write to.</param>
+            <param name="items">The array of items to write to the address.</param>
+        </member>
+        <member name="M:Reloaded.Memory.Sources.MemoryExtensions.SafeWrite``2(``0,System.UIntPtr,``1@,System.Boolean)">
             <summary>
             Changes memory permissions to ensure memory can be written and writes a generic type to a specified memory address.
             </summary>
             <typeparam name="T">An individual struct type of a class with an explicit StructLayout.LayoutKind attribute.</typeparam>
+            <typeparam name="TMemory">Type which inherits from <see cref="T:Reloaded.Memory.Sources.IMemory"/>.</typeparam>
             <param name="memory"></param>
             <param name="memoryAddress">The memory address to write to.</param>
             <param name="item">The items to write to the address.</param>
             <param name="marshal">Set this to true to enable struct marshalling.</param>
         </member>
-        <member name="M:Reloaded.Memory.Sources.MemoryExtensions.SafeWrite``1(Reloaded.Memory.Sources.IMemory,System.IntPtr,``0@)">
+        <member name="M:Reloaded.Memory.Sources.MemoryExtensions.SafeWrite``2(``0,System.UIntPtr,``1@)">
             <summary>
             Changes memory permissions to ensure memory can be written and writes a generic type to a specified memory address.
             </summary>
             <typeparam name="T">An individual struct type of a class with an explicit StructLayout.LayoutKind attribute.</typeparam>
+            <typeparam name="TMemory">Type which inherits from <see cref="T:Reloaded.Memory.Sources.IMemory"/>.</typeparam>
             <param name="memory"></param>
             <param name="memoryAddress">The memory address to write to.</param>
             <param name="item">The items to write to the address.</param>
         </member>
-        <member name="M:Reloaded.Memory.Sources.MemoryExtensions.SafeWriteRaw(Reloaded.Memory.Sources.IMemory,System.IntPtr,System.Byte[])">
+        <member name="M:Reloaded.Memory.Sources.MemoryExtensions.SafeWriteRaw``1(``0,System.UIntPtr,System.Byte[])">
             <summary>
             Changes memory permissions to ensure memory can be written and writes a generic type to a specified memory address.
             </summary>
+            <typeparam name="TMemory">Type which inherits from <see cref="T:Reloaded.Memory.Sources.IMemory"/>.</typeparam>
             <param name="memory"></param>
             <param name="memoryAddress">The memory address to write to.</param>
             <param name="data">The data to write to the specified address.</param>
         </member>
-        <member name="M:Reloaded.Memory.Sources.MemoryExtensions.SafeWrite``1(Reloaded.Memory.Sources.IMemory,System.IntPtr,``0[],System.Boolean)">
+        <member name="M:Reloaded.Memory.Sources.MemoryExtensions.SafeWrite``2(``0,System.UIntPtr,``1[],System.Boolean)">
             <summary>
             Changes memory permissions to ensure memory can be written and writes a generic type array to a specified memory address.
             </summary>
             <typeparam name="T">An individual struct type of a class with an explicit StructLayout.LayoutKind attribute.</typeparam>
+            <typeparam name="TMemory">Type which inherits from <see cref="T:Reloaded.Memory.Sources.IMemory"/>.</typeparam>
             <param name="memory"></param>
             <param name="memoryAddress">The memory address to write to.</param>
             <param name="items">The array of items to write to the address.</param>
             <param name="marshal">Set this to true to enable struct marshalling.</param>
         </member>
-        <member name="M:Reloaded.Memory.Sources.MemoryExtensions.Read``1(Reloaded.Memory.Sources.IMemory,System.IntPtr)">
+        <member name="M:Reloaded.Memory.Sources.MemoryExtensions.Read``2(``0,System.Int32)">
             <summary>
             Reads a generic type from a specified memory address.
             </summary>
             <typeparam name="T">An individual struct type of a class with an explicit StructLayout.LayoutKind attribute.</typeparam>
+            <typeparam name="TMemory">Type which inherits from <see cref="T:Reloaded.Memory.Sources.IMemory"/>.</typeparam>
             <param name="memory">Memory instance to read from.</param>
             <param name="memoryAddress">The memory address to read from.</param>
         </member>
-        <member name="M:Reloaded.Memory.Sources.MemoryExtensions.Read``1(Reloaded.Memory.Sources.IMemory,System.IntPtr,System.Boolean)">
+        <member name="M:Reloaded.Memory.Sources.MemoryExtensions.Read``2(``0,System.Int32,System.Boolean)">
             <summary>
             Reads a generic type from a specified memory address.
             </summary>
             <typeparam name="T">An individual struct type of a class with an explicit StructLayout.LayoutKind attribute.</typeparam>
+            <typeparam name="TMemory">Type which inherits from <see cref="T:Reloaded.Memory.Sources.IMemory"/>.</typeparam>
             <param name="memory">Memory instance to read from.</param>
             <param name="memoryAddress">The memory address to read from.</param>
             <param name="marshal">Set true to marshal memory, else false.</param>
         </member>
-        <member name="M:Reloaded.Memory.Sources.MemoryExtensions.Write``1(Reloaded.Memory.Sources.IMemory,System.IntPtr,``0)">
+        <member name="M:Reloaded.Memory.Sources.MemoryExtensions.Read``2(``0,System.Int64)">
+            <summary>
+            Reads a generic type from a specified memory address.
+            </summary>
+            <typeparam name="T">An individual struct type of a class with an explicit StructLayout.LayoutKind attribute.</typeparam>
+            <typeparam name="TMemory">Type which inherits from <see cref="T:Reloaded.Memory.Sources.IMemory"/>.</typeparam>
+            <param name="memory">Memory instance to read from.</param>
+            <param name="memoryAddress">The memory address to read from.</param>
+        </member>
+        <member name="M:Reloaded.Memory.Sources.MemoryExtensions.Read``2(``0,System.Int64,System.Boolean)">
+            <summary>
+            Reads a generic type from a specified memory address.
+            </summary>
+            <typeparam name="T">An individual struct type of a class with an explicit StructLayout.LayoutKind attribute.</typeparam>
+            <typeparam name="TMemory">Type which inherits from <see cref="T:Reloaded.Memory.Sources.IMemory"/>.</typeparam>
+            <param name="memory">Memory instance to read from.</param>
+            <param name="memoryAddress">The memory address to read from.</param>
+            <param name="marshal">Set true to marshal memory, else false.</param>
+        </member>
+        <member name="M:Reloaded.Memory.Sources.MemoryExtensions.Read``2(``0,System.UIntPtr)">
+            <summary>
+            Reads a generic type from a specified memory address.
+            </summary>
+            <typeparam name="T">An individual struct type of a class with an explicit StructLayout.LayoutKind attribute.</typeparam>
+            <typeparam name="TMemory">Type which inherits from <see cref="T:Reloaded.Memory.Sources.IMemory"/>.</typeparam>
+            <param name="memory">Memory instance to read from.</param>
+            <param name="memoryAddress">The memory address to read from.</param>
+        </member>
+        <member name="M:Reloaded.Memory.Sources.MemoryExtensions.Read``2(``0,System.UIntPtr,System.Boolean)">
+            <summary>
+            Reads a generic type from a specified memory address.
+            </summary>
+            <typeparam name="T">An individual struct type of a class with an explicit StructLayout.LayoutKind attribute.</typeparam>
+            <typeparam name="TMemory">Type which inherits from <see cref="T:Reloaded.Memory.Sources.IMemory"/>.</typeparam>
+            <param name="memory">Memory instance to read from.</param>
+            <param name="memoryAddress">The memory address to read from.</param>
+            <param name="marshal">Set true to marshal memory, else false.</param>
+        </member>
+        <member name="M:Reloaded.Memory.Sources.MemoryExtensions.Write``2(``0,System.Int32,``1)">
             <summary>
             Writes a generic type to a specified memory address.
             </summary>
             <typeparam name="T">An individual struct type of a class with an explicit StructLayout.LayoutKind attribute.</typeparam>
+            <typeparam name="TMemory">Type which inherits from <see cref="T:Reloaded.Memory.Sources.IMemory"/>.</typeparam>
             <param name="memory"></param>
             <param name="memoryAddress">The memory address to write to.</param>
             <param name="item">The item to write to the address.</param>
         </member>
-        <member name="M:Reloaded.Memory.Sources.MemoryExtensions.Write``1(Reloaded.Memory.Sources.IMemory,System.IntPtr,``0,System.Boolean)">
+        <member name="M:Reloaded.Memory.Sources.MemoryExtensions.Write``2(``0,System.Int32,``1,System.Boolean)">
             <summary>
             Writes a generic type to a specified memory address.
             </summary>
             <typeparam name="T">An individual struct type of a class with an explicit StructLayout.LayoutKind attribute.</typeparam>
+            <typeparam name="TMemory">Type which inherits from <see cref="T:Reloaded.Memory.Sources.IMemory"/>.</typeparam>
             <param name="memory"></param>
             <param name="memoryAddress">The memory address to write to.</param>
             <param name="item">The item to write to the address.</param>
             <param name="marshal">True to marshal the element, else false.</param>
         </member>
-        <member name="M:Reloaded.Memory.Sources.MemoryExtensions.SafeWrite``1(Reloaded.Memory.Sources.IMemory,System.IntPtr,``0,System.Boolean)">
+        <member name="M:Reloaded.Memory.Sources.MemoryExtensions.SafeWrite``2(``0,System.Int32,``1,System.Boolean)">
             <summary>
-            See <see cref="M:Reloaded.Memory.Sources.MemoryExtensions.SafeWrite``1(Reloaded.Memory.Sources.IMemory,System.IntPtr,``0@,System.Boolean)"/> />
+            Changes memory permissions to ensure memory can be written and writes a generic type to a specified memory address.
             </summary>
+            <typeparam name="T">An individual struct type of a class with an explicit StructLayout.LayoutKind attribute.</typeparam>
+            <typeparam name="TMemory">Type which inherits from <see cref="T:Reloaded.Memory.Sources.IMemory"/>.</typeparam>
+            <param name="memory"></param>
+            <param name="memoryAddress">The memory address to write to.</param>
+            <param name="item">The items to write to the address.</param>
+            <param name="marshal">Set this to true to enable struct marshalling.</param>
         </member>
-        <member name="M:Reloaded.Memory.Sources.MemoryExtensions.ChangePermission``1(Reloaded.Memory.Sources.IMemory,System.IntPtr,``0@,Reloaded.Memory.Kernel32.Kernel32.MEM_PROTECTION,System.Boolean)">
+        <member name="M:Reloaded.Memory.Sources.MemoryExtensions.Write``2(``0,System.Int64,``1)">
+            <summary>
+            Writes a generic type to a specified memory address.
+            </summary>
+            <typeparam name="T">An individual struct type of a class with an explicit StructLayout.LayoutKind attribute.</typeparam>
+            <typeparam name="TMemory">Type which inherits from <see cref="T:Reloaded.Memory.Sources.IMemory"/>.</typeparam>
+            <param name="memory"></param>
+            <param name="memoryAddress">The memory address to write to.</param>
+            <param name="item">The item to write to the address.</param>
+        </member>
+        <member name="M:Reloaded.Memory.Sources.MemoryExtensions.Write``2(``0,System.Int64,``1,System.Boolean)">
+            <summary>
+            Writes a generic type to a specified memory address.
+            </summary>
+            <typeparam name="T">An individual struct type of a class with an explicit StructLayout.LayoutKind attribute.</typeparam>
+            <typeparam name="TMemory">Type which inherits from <see cref="T:Reloaded.Memory.Sources.IMemory"/>.</typeparam>
+            <param name="memory"></param>
+            <param name="memoryAddress">The memory address to write to.</param>
+            <param name="item">The item to write to the address.</param>
+            <param name="marshal">True to marshal the element, else false.</param>
+        </member>
+        <member name="M:Reloaded.Memory.Sources.MemoryExtensions.SafeWrite``2(``0,System.Int64,``1,System.Boolean)">
+            <summary>
+            Changes memory permissions to ensure memory can be written and writes a generic type to a specified memory address.
+            </summary>
+            <typeparam name="T">An individual struct type of a class with an explicit StructLayout.LayoutKind attribute.</typeparam>
+            <typeparam name="TMemory">Type which inherits from <see cref="T:Reloaded.Memory.Sources.IMemory"/>.</typeparam>
+            <param name="memory"></param>
+            <param name="memoryAddress">The memory address to write to.</param>
+            <param name="item">The items to write to the address.</param>
+            <param name="marshal">Set this to true to enable struct marshalling.</param>
+        </member>
+        <member name="M:Reloaded.Memory.Sources.MemoryExtensions.Write``2(``0,System.UIntPtr,``1)">
+            <summary>
+            Writes a generic type to a specified memory address.
+            </summary>
+            <typeparam name="T">An individual struct type of a class with an explicit StructLayout.LayoutKind attribute.</typeparam>
+            <typeparam name="TMemory">Type which inherits from <see cref="T:Reloaded.Memory.Sources.IMemory"/>.</typeparam>
+            <param name="memory"></param>
+            <param name="memoryAddress">The memory address to write to.</param>
+            <param name="item">The item to write to the address.</param>
+        </member>
+        <member name="M:Reloaded.Memory.Sources.MemoryExtensions.Write``2(``0,System.UIntPtr,``1,System.Boolean)">
+            <summary>
+            Writes a generic type to a specified memory address.
+            </summary>
+            <typeparam name="T">An individual struct type of a class with an explicit StructLayout.LayoutKind attribute.</typeparam>
+            <typeparam name="TMemory">Type which inherits from <see cref="T:Reloaded.Memory.Sources.IMemory"/>.</typeparam>
+            <param name="memory"></param>
+            <param name="memoryAddress">The memory address to write to.</param>
+            <param name="item">The item to write to the address.</param>
+            <param name="marshal">True to marshal the element, else false.</param>
+        </member>
+        <member name="M:Reloaded.Memory.Sources.MemoryExtensions.SafeWrite``2(``0,System.UIntPtr,``1,System.Boolean)">
+            <summary>
+            Changes memory permissions to ensure memory can be written and writes a generic type to a specified memory address.
+            </summary>
+            <typeparam name="T">An individual struct type of a class with an explicit StructLayout.LayoutKind attribute.</typeparam>
+            <typeparam name="TMemory">Type which inherits from <see cref="T:Reloaded.Memory.Sources.IMemory"/>.</typeparam>
+            <param name="memory"></param>
+            <param name="memoryAddress">The memory address to write to.</param>
+            <param name="item">The items to write to the address.</param>
+            <param name="marshal">Set this to true to enable struct marshalling.</param>
+        </member>
+        <member name="M:Reloaded.Memory.Sources.MemoryExtensions.ChangePermission``2(``0,System.UIntPtr,``1@,Reloaded.Memory.Kernel32.Kernel32.MEM_PROTECTION,System.Boolean)">
             <summary>
             Changes the page permissions for a specified combination of address and element from which to deduce size.
             </summary>
+            <typeparam name="T">An individual struct type of a class with an explicit StructLayout.LayoutKind attribute.</typeparam>
+            <typeparam name="TMemory">Type which inherits from <see cref="T:Reloaded.Memory.Sources.IMemory"/>.</typeparam>
             <param name="memory"></param>
             <param name="memoryAddress">The memory address for which to change page permissions for.</param>
             <param name="baseElement">The struct element from which the region size to change permissions for will be calculated.</param>
@@ -2198,7 +2358,7 @@
         </member>
         <member name="M:Reloaded.Memory.Streams.ExtendedMemoryStream.AddPadding(System.Byte,System.Int32)">
             <summary>
-            Pads the stream with <see cref="!:value"/> bytes until it is aligned.
+            Pads the stream with <see paramref="value"/> bytes until it is aligned.
             </summary>
         </member>
         <member name="M:Reloaded.Memory.Streams.ExtendedMemoryStream.Write``1(``0[])">
@@ -2262,6 +2422,11 @@
             </summary>
         </member>
         <member name="M:Reloaded.Memory.Streams.Readers.BigEndianStreamReader.#ctor(Reloaded.Memory.Streams.BufferedStreamReader)">
+            <summary>
+            Constructs a <see cref="T:Reloaded.Memory.Streams.Readers.EndianStreamReader"/> given an existing stream reader.
+            </summary>
+        </member>
+        <member name="M:Reloaded.Memory.Streams.Readers.BigEndianStreamReader.#ctor(Reloaded.Memory.Streams.BufferedStreamReader,System.Boolean)">
             <summary>
             Constructs a <see cref="T:Reloaded.Memory.Streams.Readers.EndianStreamReader"/> given an existing stream reader.
             </summary>
@@ -2413,6 +2578,11 @@
             The underlying Stream Reader assigned to this reader.
             </summary>
         </member>
+        <member name="P:Reloaded.Memory.Streams.Readers.EndianStreamReader.DisposeUnderlyingStream">
+            <summary>
+            If this is set, the underlying stream will be disposed.
+            </summary>
+        </member>
         <member name="M:Reloaded.Memory.Streams.Readers.EndianStreamReader.BaseStream">
             <summary>
             Gets the stream this class was instantiated with.
@@ -2434,6 +2604,11 @@
             </summary>
         </member>
         <member name="M:Reloaded.Memory.Streams.Readers.EndianStreamReader.#ctor(Reloaded.Memory.Streams.BufferedStreamReader)">
+            <summary>
+            Constructs a <see cref="T:Reloaded.Memory.Streams.Readers.EndianStreamReader"/> given an existing stream reader.
+            </summary>
+        </member>
+        <member name="M:Reloaded.Memory.Streams.Readers.EndianStreamReader.#ctor(Reloaded.Memory.Streams.BufferedStreamReader,System.Boolean)">
             <summary>
             Constructs a <see cref="T:Reloaded.Memory.Streams.Readers.EndianStreamReader"/> given an existing stream reader.
             </summary>
@@ -2675,6 +2850,11 @@
             Constructs a <see cref="T:Reloaded.Memory.Streams.Readers.EndianStreamReader"/> given an existing stream reader.
             </summary>
         </member>
+        <member name="M:Reloaded.Memory.Streams.Readers.LittleEndianStreamReader.#ctor(Reloaded.Memory.Streams.BufferedStreamReader,System.Boolean)">
+            <summary>
+            Constructs a <see cref="T:Reloaded.Memory.Streams.Readers.EndianStreamReader"/> given an existing stream reader.
+            </summary>
+        </member>
         <member name="M:Reloaded.Memory.Streams.Readers.LittleEndianStreamReader.Read``1(``0@)">
             <inheritdoc />
         </member>
@@ -2825,7 +3005,7 @@
         </member>
         <member name="M:Reloaded.Memory.Streams.StreamExtensions.AddPadding(System.IO.Stream,System.Byte,System.Int32)">
             <summary>
-            Pads the stream with <see cref="!:value"/> bytes until it is aligned.
+            Pads the stream with <see paramref="value"/> bytes until it is aligned.
             </summary>
         </member>
         <member name="M:Reloaded.Memory.Streams.StreamExtensions.Write``1(System.IO.Stream,``0[])">
@@ -2883,6 +3063,13 @@
             Appends a managed/marshalled structure onto the given <see cref="T:System.IO.MemoryStream"/> and advances the position.
             </summary>
         </member>
+        <member name="M:Reloaded.Memory.Streams.StreamExtensions.TryReadSafe(System.IO.Stream,System.Byte[])">
+            <summary>
+            Reads a given number of bytes from a stream.
+            </summary>
+            <param name="stream">The stream to read the value from.</param>
+            <param name="result">The buffer to receive the bytes.</param>
+        </member>
         <member name="T:Reloaded.Memory.Streams.Writers.BigEndianMemoryStream">
             <summary>
             A version of <see cref="T:Reloaded.Memory.Streams.Writers.EndianMemoryStream"/> that writes data in Big Endian mode.
@@ -2892,6 +3079,9 @@
             </summary>
         </member>
         <member name="M:Reloaded.Memory.Streams.Writers.BigEndianMemoryStream.#ctor(Reloaded.Memory.Streams.ExtendedMemoryStream)">
+            <inheritdoc />
+        </member>
+        <member name="M:Reloaded.Memory.Streams.Writers.BigEndianMemoryStream.#ctor(Reloaded.Memory.Streams.ExtendedMemoryStream,System.Boolean)">
             <inheritdoc />
         </member>
         <member name="M:Reloaded.Memory.Streams.Writers.BigEndianMemoryStream.Write``1(``0[])">
@@ -2960,7 +3150,17 @@
             The underlying Stream.
             </summary>
         </member>
+        <member name="P:Reloaded.Memory.Streams.Writers.EndianMemoryStream.DisposeUnderlyingStream">
+            <summary>
+            If this is set, the underlying stream will be disposed.
+            </summary>
+        </member>
         <member name="M:Reloaded.Memory.Streams.Writers.EndianMemoryStream.#ctor(Reloaded.Memory.Streams.ExtendedMemoryStream)">
+            <summary>
+            Constructs a <see cref="T:Reloaded.Memory.Streams.Writers.EndianMemoryStream"/> given an existing stream.
+            </summary>
+        </member>
+        <member name="M:Reloaded.Memory.Streams.Writers.EndianMemoryStream.#ctor(Reloaded.Memory.Streams.ExtendedMemoryStream,System.Boolean)">
             <summary>
             Constructs a <see cref="T:Reloaded.Memory.Streams.Writers.EndianMemoryStream"/> given an existing stream.
             </summary>
@@ -2978,7 +3178,7 @@
         </member>
         <member name="M:Reloaded.Memory.Streams.Writers.EndianMemoryStream.AddPadding(System.Byte,System.Int32)">
             <summary>
-            Pads the stream with <see cref="!:value"/> bytes until it is aligned.
+            Pads the stream with <see paramref="value"/> bytes until it is aligned.
             </summary>
         </member>
         <member name="M:Reloaded.Memory.Streams.Writers.EndianMemoryStream.Write(System.Byte[])">
@@ -3052,6 +3252,9 @@
         <member name="M:Reloaded.Memory.Streams.Writers.LittleEndianMemoryStream.#ctor(Reloaded.Memory.Streams.ExtendedMemoryStream)">
             <inheritdoc />
         </member>
+        <member name="M:Reloaded.Memory.Streams.Writers.LittleEndianMemoryStream.#ctor(Reloaded.Memory.Streams.ExtendedMemoryStream,System.Boolean)">
+            <inheritdoc />
+        </member>
         <member name="M:Reloaded.Memory.Streams.Writers.LittleEndianMemoryStream.Write``1(``0[])">
             <inheritdoc />
         </member>
@@ -3116,11 +3319,11 @@
         </member>
         <member name="P:Reloaded.Memory.Struct.Source">
             <summary>
-            Defines the source for the default memory reading and writing <see cref="M:Reloaded.Memory.Struct.ToPtr``1(System.IntPtr,``0,System.Boolean)"/> and <see cref="M:Reloaded.Memory.Struct.FromPtr``1(System.IntPtr,``0@,System.Boolean)"/> functions.
+            Defines the source for the default memory reading and writing <see cref="M:Reloaded.Memory.Struct.ToPtr``1(System.UIntPtr,``0,System.Boolean)"/> and <see cref="M:Reloaded.Memory.Struct.FromPtr``1(System.UIntPtr,``0@,System.Boolean)"/> functions.
             This also affects the <see cref="T:Reloaded.Memory.StructArray"/> class.
             </summary>
         </member>
-        <member name="M:Reloaded.Memory.Struct.ToPtr``1(System.IntPtr,``0,System.Boolean)">
+        <member name="M:Reloaded.Memory.Struct.ToPtr``1(System.UIntPtr,``0,System.Boolean)">
             <summary>
             Writes an item with a specified structure or class type with explicit StructLayout attribute to a pointer/memory address.
             </summary>
@@ -3128,7 +3331,7 @@
             <param name="item">T</param>
             <param name="marshalElement">Set to true to marshal the element.</param>
         </member>
-        <member name="M:Reloaded.Memory.Struct.ToPtr``1(System.IntPtr,``0@,System.Boolean)">
+        <member name="M:Reloaded.Memory.Struct.ToPtr``1(System.UIntPtr,``0@,System.Boolean)">
             <summary>
             Writes an item with a specified structure or class type with explicit StructLayout attribute to a pointer/memory address.
             </summary>
@@ -3136,7 +3339,7 @@
             <param name="item">The item to write to a specified pointer.</param>
             <param name="marshalElement">Set to true to marshal the element.</param>
         </member>
-        <member name="M:Reloaded.Memory.Struct.FromPtr``1(System.IntPtr,``0@,System.Boolean)">
+        <member name="M:Reloaded.Memory.Struct.FromPtr``1(System.UIntPtr,``0@,System.Boolean)">
             <summary>
             Converts a pointer/memory address to a specified structure or class type with explicit StructLayout attribute.
             </summary>
@@ -3144,7 +3347,7 @@
             <param name="value">Local variable to receive the read in struct.</param>
             <param name="marshalElement">Set to true to marshal the element.</param>
         </member>
-        <member name="M:Reloaded.Memory.Struct.ToPtr``1(System.IntPtr,``0@,Reloaded.Memory.Sources.MemoryExtensions.WriteFunction{``0},System.Boolean)">
+        <member name="M:Reloaded.Memory.Struct.ToPtr``1(System.UIntPtr,``0@,Reloaded.Memory.Sources.MemoryExtensions.WriteFunction{``0},System.Boolean)">
             <summary>
             Writes an item with a specified structure or class type with explicit StructLayout attribute to a pointer/memory address.
             </summary>
@@ -3153,7 +3356,7 @@
             <param name="marshalElement">Set to true to marshal the element.</param>
             <param name="writeFunction">The function to use that writes data to memory given a pointer, item, type and marshal option.</param>
         </member>
-        <member name="M:Reloaded.Memory.Struct.FromPtr``1(System.IntPtr,``0@,Reloaded.Memory.Sources.MemoryExtensions.ReadFunction{``0},System.Boolean)">
+        <member name="M:Reloaded.Memory.Struct.FromPtr``1(System.UIntPtr,``0@,Reloaded.Memory.Sources.MemoryExtensions.ReadFunction{``0},System.Boolean)">
             <summary>
             Converts a pointer/memory address to a specified structure or class type with explicit StructLayout attribute.
             </summary>
@@ -3171,12 +3374,44 @@
             <param name="marshalElement">Set to true to marshal the element.</param>
             <param name="startIndex">The index in the byte array to read the element from.</param>
         </member>
+        <member name="M:Reloaded.Memory.Struct.FromArray``1(System.Byte[],``0@,System.Boolean)">
+            <summary>
+            Converts a byte array to a specified structure or class type with explicit StructLayout attribute.
+            </summary>
+            <param name="data">A byte array containing data from which to extract a structure from.</param>
+            <param name="value">Local variable to receive the read in struct.</param>
+            <param name="marshalElement">Set to true to marshal the element.</param>
+        </member>
         <member name="M:Reloaded.Memory.Struct.FromArray``1(System.Byte[],``0@,System.Int32)">
             <summary>
             Converts a byte array to a specified structure or class type with explicit StructLayout attribute.
             </summary>
             <param name="value">Local variable to receive the read in struct.</param>
             <param name="data">A byte array containing data from which to extract a structure from.</param>
+            <param name="startIndex">The index in the byte array to read the element from.</param>
+        </member>
+        <member name="M:Reloaded.Memory.Struct.FromArray``1(System.Byte[],``0@)">
+            <summary>
+            Converts a byte array to a specified structure or class type with explicit StructLayout attribute.
+            </summary>
+            <param name="value">Local variable to receive the read in struct.</param>
+            <param name="data">A byte array containing data from which to extract a structure from.</param>
+        </member>
+        <member name="M:Reloaded.Memory.Struct.FromArray``1(System.Span{System.Byte},``0@,System.Boolean)">
+            <summary>
+            Converts a byte array to a specified structure or class type with explicit StructLayout attribute.
+            </summary>
+            <param name="data">A byte array containing data from which to extract a structure from.</param>
+            <param name="value">Local variable to receive the read in struct.</param>
+            <param name="marshalElement">Set to true to marshal the element.</param>
+        </member>
+        <member name="M:Reloaded.Memory.Struct.FromArray``1(System.Span{System.Byte},``0@,System.Boolean,System.Int32)">
+            <summary>
+            Converts a byte array to a specified structure or class type with explicit StructLayout attribute.
+            </summary>
+            <param name="data">A byte array containing data from which to extract a structure from.</param>
+            <param name="value">Local variable to receive the read in struct.</param>
+            <param name="marshalElement">Set to true to marshal the element.</param>
             <param name="startIndex">The index in the byte array to read the element from.</param>
         </member>
         <member name="M:Reloaded.Memory.Struct.FromArray``1(System.Span{System.Byte},``0@)">
@@ -3261,7 +3496,7 @@
             Utility class for working with struct arrays.
             </summary>
         </member>
-        <member name="M:Reloaded.Memory.StructArray.FromPtr``1(System.IntPtr,``0[]@,System.Int32,System.Boolean)">
+        <member name="M:Reloaded.Memory.StructArray.FromPtr``1(System.UIntPtr,``0[]@,System.Int32,System.Boolean)">
             <summary>
             Reads a generic type array from a specified memory address.
             </summary>
@@ -3271,7 +3506,7 @@
             <param name="arrayLength">The number of items to read from memory.</param>
             <param name="marshal">Set to true to marshal the element.</param>
         </member>
-        <member name="M:Reloaded.Memory.StructArray.ToPtr``1(System.IntPtr,``0[],System.Boolean)">
+        <member name="M:Reloaded.Memory.StructArray.ToPtr``1(System.UIntPtr,``0[],System.Boolean)">
             <summary>
             Writes a generic type array to a specified memory address.
             </summary>
@@ -3290,6 +3525,50 @@
             <param name="length">The amount of elements to read from the byte array.</param>
             <param name="startIndex">The index in the byte array to read the element(s) from.</param>
         </member>
+        <member name="M:Reloaded.Memory.StructArray.FromArray``1(System.Byte[],``0[]@,System.Boolean,System.Int32)">
+            <summary>
+            Converts a byte array to a specified structure or class type with explicit StructLayout attribute.
+            </summary>
+            <param name="data">A byte array containing data from which to extract a structure from.</param>
+            <param name="value">Local variable to receive the read in struct array.</param>
+            <param name="marshalElement">Set to true to marshal the element.</param>
+            <param name="length">The amount of elements to read from the byte array.</param>
+        </member>
+        <member name="M:Reloaded.Memory.StructArray.FromArray``1(System.Byte[],``0[]@,System.Boolean)">
+            <summary>
+            Converts a byte array to a specified structure or class type with explicit StructLayout attribute.
+            </summary>
+            <param name="data">A byte array containing data from which to extract a structure from.</param>
+            <param name="value">Local variable to receive the read in struct array.</param>
+            <param name="marshalElement">Set to true to marshal the element.</param>
+        </member>
+        <member name="M:Reloaded.Memory.StructArray.FromArray``1(System.Span{System.Byte},``0[]@,System.Boolean,System.Int32,System.Int32)">
+            <summary>
+            Converts a byte array to a specified structure or class type with explicit StructLayout attribute.
+            </summary>
+            <param name="data">A byte array containing data from which to extract a structure from.</param>
+            <param name="value">Local variable to receive the read in struct array.</param>
+            <param name="marshalElement">Set to true to marshal the element.</param>
+            <param name="length">The amount of elements to read from the byte array.</param>
+            <param name="startIndex">The index in the byte array to read the element(s) from.</param>
+        </member>
+        <member name="M:Reloaded.Memory.StructArray.FromArray``1(System.Span{System.Byte},``0[]@,System.Boolean,System.Int32)">
+            <summary>
+            Converts a byte array to a specified structure or class type with explicit StructLayout attribute.
+            </summary>
+            <param name="data">A byte array containing data from which to extract a structure from.</param>
+            <param name="value">Local variable to receive the read in struct array.</param>
+            <param name="marshalElement">Set to true to marshal the element.</param>
+            <param name="length">The amount of elements to read from the byte array.</param>
+        </member>
+        <member name="M:Reloaded.Memory.StructArray.FromArray``1(System.Span{System.Byte},``0[]@,System.Boolean)">
+            <summary>
+            Converts a byte array to a specified structure or class type with explicit StructLayout attribute.
+            </summary>
+            <param name="data">A byte array containing data from which to extract a structure from.</param>
+            <param name="value">Local variable to receive the read in struct array.</param>
+            <param name="marshalElement">Set to true to marshal the element.</param>
+        </member>
         <member name="M:Reloaded.Memory.StructArray.FromArray``1(System.Byte[],``0[]@,System.Int32,System.Int32)">
             <summary>
             Converts a byte array to a specified structure or class type with explicit StructLayout attribute.
@@ -3299,6 +3578,21 @@
             <param name="startIndex">The index in the byte array to read the element(s) from.</param>
             <param name="length">The amount of elements to read from the byte array.</param>
         </member>
+        <member name="M:Reloaded.Memory.StructArray.FromArray``1(System.Byte[],``0[]@,System.Int32)">
+            <summary>
+            Converts a byte array to a specified structure or class type with explicit StructLayout attribute.
+            </summary>
+            <param name="value">Local variable to receive the read in struct array.</param>
+            <param name="data">A byte array containing data from which to extract a structure from.</param>
+            <param name="startIndex">The index in the byte array to read the element(s) from.</param>
+        </member>
+        <member name="M:Reloaded.Memory.StructArray.FromArray``1(System.Byte[],``0[]@)">
+            <summary>
+            Converts a byte array to a specified structure or class type with explicit StructLayout attribute.
+            </summary>
+            <param name="value">Local variable to receive the read in struct array.</param>
+            <param name="data">A byte array containing data from which to extract a structure from.</param>
+        </member>
         <member name="M:Reloaded.Memory.StructArray.FromArray``1(System.Span{System.Byte},``0[]@,System.Int32)">
             <summary>
             Converts a span to a specified structure or class type with explicit StructLayout attribute.
@@ -3306,6 +3600,13 @@
             <param name="value">Local variable to receive the read in struct array.</param>
             <param name="data">A byte array containing data from which to extract a structure from.</param>
             <param name="length">The amount of elements to read from the span.</param>
+        </member>
+        <member name="M:Reloaded.Memory.StructArray.FromArray``1(System.Span{System.Byte},``0[]@)">
+            <summary>
+            Converts a span to a specified structure or class type with explicit StructLayout attribute.
+            </summary>
+            <param name="value">Local variable to receive the read in struct array.</param>
+            <param name="data">A byte array containing data from which to extract a structure from.</param>
         </member>
         <member name="M:Reloaded.Memory.StructArray.FromArrayBigEndianPrimitive``1(System.Byte[],``0[]@,System.Int32,System.Int32)">
             <summary>
@@ -3316,6 +3617,21 @@
             <param name="startIndex">The index in the byte array to read the element(s) from.</param>
             <param name="length">The amount of elements to read from the byte array.</param>
         </member>
+        <member name="M:Reloaded.Memory.StructArray.FromArrayBigEndianPrimitive``1(System.Byte[],``0[]@,System.Int32)">
+            <summary>
+            Converts a byte array to a specified Big Endian primitive.
+            </summary>
+            <param name="value">Local variable to receive the read in struct array.</param>
+            <param name="data">A byte array containing data from which to extract a structure from.</param>
+            <param name="startIndex">The index in the byte array to read the element(s) from.</param>
+        </member>
+        <member name="M:Reloaded.Memory.StructArray.FromArrayBigEndianPrimitive``1(System.Byte[],``0[]@)">
+            <summary>
+            Converts a byte array to a specified Big Endian primitive.
+            </summary>
+            <param name="value">Local variable to receive the read in struct array.</param>
+            <param name="data">A byte array containing data from which to extract a structure from.</param>
+        </member>
         <member name="M:Reloaded.Memory.StructArray.FromArrayBigEndianPrimitive``1(System.Span{System.Byte},``0[]@,System.Int32)">
             <summary>
             Converts a span to a specified Big Endian primitive.
@@ -3323,6 +3639,13 @@
             <param name="value">Local variable to receive the read in struct array.</param>
             <param name="data">A byte array containing data from which to extract a structure from.</param>
             <param name="length">The amount of elements to read from the span.</param>
+        </member>
+        <member name="M:Reloaded.Memory.StructArray.FromArrayBigEndianPrimitive``1(System.Span{System.Byte},``0[]@)">
+            <summary>
+            Converts a span to a specified Big Endian primitive.
+            </summary>
+            <param name="value">Local variable to receive the read in struct array.</param>
+            <param name="data">A byte array containing data from which to extract a structure from.</param>
         </member>
         <member name="M:Reloaded.Memory.StructArray.FromArrayBigEndianStruct``1(System.Byte[],``0[]@,System.Int32,System.Int32)">
             <summary>
@@ -3333,6 +3656,14 @@
             <param name="startIndex">The index in the byte array to read the element(s) from.</param>
             <param name="length">The amount of elements to read from the byte array.</param>
         </member>
+        <member name="M:Reloaded.Memory.StructArray.FromArrayBigEndianStruct``1(System.Byte[],``0[]@,System.Int32)">
+            <summary>
+            Converts a byte array to a specified Big Endian structure or class type with explicit StructLayout attribute and <see cref="T:Reloaded.Memory.IEndianReversible"/>.
+            </summary>
+            <param name="value">Local variable to receive the read in struct array.</param>
+            <param name="data">A byte array containing data from which to extract a structure from.</param>
+            <param name="startIndex">The index in the byte array to read the element(s) from.</param>
+        </member>
         <member name="M:Reloaded.Memory.StructArray.FromArrayBigEndianStruct``1(System.Span{System.Byte},``0[]@,System.Int32)">
             <summary>
             Converts a span to a specified Big Endian structure or class type with explicit StructLayout attribute and <see cref="T:Reloaded.Memory.IEndianReversible"/>..
@@ -3340,6 +3671,13 @@
             <param name="value">Local variable to receive the read in struct array.</param>
             <param name="data">A byte array containing data from which to extract a structure from.</param>
             <param name="length">The amount of elements to read from the span.</param>
+        </member>
+        <member name="M:Reloaded.Memory.StructArray.FromArrayBigEndianStruct``1(System.Span{System.Byte},``0[]@)">
+            <summary>
+            Converts a span to a specified Big Endian structure or class type with explicit StructLayout attribute and <see cref="T:Reloaded.Memory.IEndianReversible"/>..
+            </summary>
+            <param name="value">Local variable to receive the read in struct array.</param>
+            <param name="data">A byte array containing data from which to extract a structure from.</param>
         </member>
         <member name="M:Reloaded.Memory.StructArray.GetSize``1(System.Int32,System.Boolean)">
             <summary>

@@ -32,7 +32,6 @@ namespace Character_Making_File_Tool
                 case "bodypaint02_":
                     typeString = GetStickerIconString(finalId);
                     break;
-                //case CharacterMakingIndex.costumeIcon: //Preview feature only. Maybe in .NET 6...
                 case "costume01_":
                     typeString = GetCostumeOuterIconString(pso2_bin, finalId);
                     break;
