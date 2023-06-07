@@ -113,7 +113,7 @@ namespace Character_Making_File_Tool
             {
                 GenerateDictionaries(pso2_binPath);
             }
-            catch
+            catch(Exception e)
             {
                 if (messageBox != null)
                 {

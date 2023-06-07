@@ -218,8 +218,8 @@ namespace CharFileLibrary.Character_Making_File_Tool.Utilities
             {
                 aqu.aquaModels[0].models[0].splitVSETPerMesh();
             }
-            FbxExporter.ExportToFile(aqu.aquaModels[0].models[0], compositeBones, new List<AquaMotion>() { bodyProps }, "C:/TestBaseAnim.fbx", new List<string>() { "CharProportions.aqm" }, true);
-            FbxExporter.ExportToFile(aqu.aquaModels[0].models[0], compositeBones, new List<AquaMotion>() { propMotion }, "C:/Test.fbx", new List<string>() { "CharProportions.aqm" }, true);
+            FbxExporter.ExportToFile(aqu.aquaModels[0].models[0], compositeBones, new List<AquaMotion>() { bodyProps }, "C:/TestBaseAnim.fbx", new List<string>() { "CharProportions.aqm" }, new List<Matrix4x4>(), true);
+            FbxExporter.ExportToFile(aqu.aquaModels[0].models[0], compositeBones, new List<AquaMotion>() { propMotion }, "C:/Test.fbx", new List<string>() { "CharProportions.aqm" }, new List<Matrix4x4>(), true);
         }
 
         public AquaMotion ApplyProportionsToAnimation(List<TransformSet> props, AquaNode aquaNode, AquaMotion proportionAqm)

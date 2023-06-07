@@ -12716,6 +12716,1256 @@
             Creates a deep copy of the region.
             </summary>
         </member>
+        <member name="T:SoulsFormats.MSBDR">
+            <summary>
+            A map layout file used in DeS Remake. Extension: .msb
+            </summary>
+        </member>
+        <member name="T:SoulsFormats.MSBDR.EventParam">
+            <summary>
+            Contains abstract entities that control various dynamic elements in the map.
+            </summary>
+        </member>
+        <member name="P:SoulsFormats.MSBDR.EventParam.Lights">
+            <summary>
+            Fixed point light sources.
+            </summary>
+        </member>
+        <member name="P:SoulsFormats.MSBDR.EventParam.Sounds">
+            <summary>
+            Background music and area-based sounds.
+            </summary>
+        </member>
+        <member name="P:SoulsFormats.MSBDR.EventParam.SFX">
+            <summary>
+            Particle effects.
+            </summary>
+        </member>
+        <member name="P:SoulsFormats.MSBDR.EventParam.Wind">
+            <summary>
+            Wind that affects SFX in the map; should only be one per map, if any.
+            </summary>
+        </member>
+        <member name="P:SoulsFormats.MSBDR.EventParam.Treasures">
+            <summary>
+            Item pickups in the open or in chests.
+            </summary>
+        </member>
+        <member name="P:SoulsFormats.MSBDR.EventParam.Generators">
+            <summary>
+            Repeated enemy spawners.
+            </summary>
+        </member>
+        <member name="P:SoulsFormats.MSBDR.EventParam.Messages">
+            <summary>
+            Static soapstone messages.
+            </summary>
+        </member>
+        <member name="M:SoulsFormats.MSBDR.EventParam.#ctor">
+            <summary>
+            Creates an empty EventParam.
+            </summary>
+        </member>
+        <member name="M:SoulsFormats.MSBDR.EventParam.Add(SoulsFormats.MSBDR.Event)">
+            <summary>
+            Adds an event to the appropriate list for its type; returns the event.
+            </summary>
+        </member>
+        <member name="M:SoulsFormats.MSBDR.EventParam.GetEntries">
+            <summary>
+            Returns a list of every event in the order they'll be written.
+            </summary>
+        </member>
+        <member name="T:SoulsFormats.MSBDR.Event">
+            <summary>
+            Common data for all dynamic events.
+            </summary>
+        </member>
+        <member name="P:SoulsFormats.MSBDR.Event.Name">
+            <summary>
+            The name of the event.
+            </summary>
+        </member>
+        <member name="P:SoulsFormats.MSBDR.Event.EventID">
+            <summary>
+            Unknown, should be unique.
+            </summary>
+        </member>
+        <member name="P:SoulsFormats.MSBDR.Event.PartName">
+            <summary>
+            Part referenced by the event.
+            </summary>
+        </member>
+        <member name="P:SoulsFormats.MSBDR.Event.RegionName">
+            <summary>
+            Region referenced by the event.
+            </summary>
+        </member>
+        <member name="P:SoulsFormats.MSBDR.Event.EntityID">
+            <summary>
+            Identifies the event in external files.
+            </summary>
+        </member>
+        <member name="M:SoulsFormats.MSBDR.Event.DeepCopy">
+            <summary>
+            Creates a deep copy of the event.
+            </summary>
+        </member>
+        <member name="M:SoulsFormats.MSBDR.Event.ToString">
+            <summary>
+            Returns a string representation of the event.
+            </summary>
+        </member>
+        <member name="T:SoulsFormats.MSBDR.Event.Light">
+            <summary>
+            A fixed point light.
+            </summary>
+        </member>
+        <member name="P:SoulsFormats.MSBDR.Event.Light.PointLightID">
+            <summary>
+            Unknown.
+            </summary>
+        </member>
+        <member name="P:SoulsFormats.MSBDR.Event.Light.UnkT04">
+            <summary>
+            Unknown.
+            </summary>
+        </member>
+        <member name="M:SoulsFormats.MSBDR.Event.Light.#ctor">
+            <summary>
+            Creates a Light with default values.
+            </summary>
+        </member>
+        <member name="T:SoulsFormats.MSBDR.Event.Sound">
+            <summary>
+            An area-based music or sound effect.
+            </summary>
+        </member>
+        <member name="P:SoulsFormats.MSBDR.Event.Sound.UnkT00">
+            <summary>
+            Unknown.
+            </summary>
+        </member>
+        <member name="P:SoulsFormats.MSBDR.Event.Sound.SoundType">
+            <summary>
+            Category of sound.
+            </summary>
+        </member>
+        <member name="P:SoulsFormats.MSBDR.Event.Sound.SoundID">
+            <summary>
+            ID of the sound file in the FSBs.
+            </summary>
+        </member>
+        <member name="M:SoulsFormats.MSBDR.Event.Sound.#ctor">
+            <summary>
+            Creates a Sound with default values.
+            </summary>
+        </member>
+        <member name="T:SoulsFormats.MSBDR.Event.SFX">
+            <summary>
+            A fixed particle effect.
+            </summary>
+        </member>
+        <member name="P:SoulsFormats.MSBDR.Event.SFX.UnkT00">
+            <summary>
+            Unknown.
+            </summary>
+        </member>
+        <member name="P:SoulsFormats.MSBDR.Event.SFX.EffectID">
+            <summary>
+            ID of the effect in the ffxbnds.
+            </summary>
+        </member>
+        <member name="M:SoulsFormats.MSBDR.Event.SFX.#ctor">
+            <summary>
+            Creates an SFX with default values.
+            </summary>
+        </member>
+        <member name="T:SoulsFormats.MSBDR.Event.Wind">
+            <summary>
+            Wind that affects particle effects.
+            </summary>
+        </member>
+        <member name="P:SoulsFormats.MSBDR.Event.Wind.WindVecMin">
+            <summary>
+            Unknown.
+            </summary>
+        </member>
+        <member name="P:SoulsFormats.MSBDR.Event.Wind.UnkT0C">
+            <summary>
+            Unknown.
+            </summary>
+        </member>
+        <member name="P:SoulsFormats.MSBDR.Event.Wind.WindVecMax">
+            <summary>
+            Unknown.
+            </summary>
+        </member>
+        <member name="P:SoulsFormats.MSBDR.Event.Wind.UnkT1C">
+            <summary>
+            Unknown.
+            </summary>
+        </member>
+        <member name="P:SoulsFormats.MSBDR.Event.Wind.WindSwingCycle0">
+            <summary>
+            Unknown.
+            </summary>
+        </member>
+        <member name="P:SoulsFormats.MSBDR.Event.Wind.WindSwingCycle1">
+            <summary>
+            Unknown.
+            </summary>
+        </member>
+        <member name="P:SoulsFormats.MSBDR.Event.Wind.WindSwingCycle2">
+            <summary>
+            Unknown.
+            </summary>
+        </member>
+        <member name="P:SoulsFormats.MSBDR.Event.Wind.WindSwingCycle3">
+            <summary>
+            Unknown.
+            </summary>
+        </member>
+        <member name="P:SoulsFormats.MSBDR.Event.Wind.WindSwingPow0">
+            <summary>
+            Unknown.
+            </summary>
+        </member>
+        <member name="P:SoulsFormats.MSBDR.Event.Wind.WindSwingPow1">
+            <summary>
+            Unknown.
+            </summary>
+        </member>
+        <member name="P:SoulsFormats.MSBDR.Event.Wind.WindSwingPow2">
+            <summary>
+            Unknown.
+            </summary>
+        </member>
+        <member name="P:SoulsFormats.MSBDR.Event.Wind.WindSwingPow3">
+            <summary>
+            Unknown.
+            </summary>
+        </member>
+        <member name="M:SoulsFormats.MSBDR.Event.Wind.#ctor">
+            <summary>
+            Creates a Wind with default values.
+            </summary>
+        </member>
+        <member name="T:SoulsFormats.MSBDR.Event.Treasure">
+            <summary>
+            A pick-uppable item.
+            </summary>
+        </member>
+        <member name="P:SoulsFormats.MSBDR.Event.Treasure.TreasurePartName">
+            <summary>
+            The part that the treasure is attached to, such as an item corpse.
+            </summary>
+        </member>
+        <member name="P:SoulsFormats.MSBDR.Event.Treasure.ItemLots">
+            <summary>
+            Five ItemLotParam IDs.
+            </summary>
+        </member>
+        <member name="M:SoulsFormats.MSBDR.Event.Treasure.#ctor">
+            <summary>
+            Creates a Treasure with default values.
+            </summary>
+        </member>
+        <member name="T:SoulsFormats.MSBDR.Event.Generator">
+            <summary>
+            A repeating enemy spawner.
+            </summary>
+        </member>
+        <member name="P:SoulsFormats.MSBDR.Event.Generator.MaxNum">
+            <summary>
+            Unknown.
+            </summary>
+        </member>
+        <member name="P:SoulsFormats.MSBDR.Event.Generator.GenType">
+            <summary>
+            Unknown.
+            </summary>
+        </member>
+        <member name="P:SoulsFormats.MSBDR.Event.Generator.LimitNum">
+            <summary>
+            Unknown.
+            </summary>
+        </member>
+        <member name="P:SoulsFormats.MSBDR.Event.Generator.MinGenNum">
+            <summary>
+            Unknown.
+            </summary>
+        </member>
+        <member name="P:SoulsFormats.MSBDR.Event.Generator.MaxGenNum">
+            <summary>
+            Unknown.
+            </summary>
+        </member>
+        <member name="P:SoulsFormats.MSBDR.Event.Generator.MinInterval">
+            <summary>
+            Unknown.
+            </summary>
+        </member>
+        <member name="P:SoulsFormats.MSBDR.Event.Generator.MaxInterval">
+            <summary>
+            Unknown.
+            </summary>
+        </member>
+        <member name="P:SoulsFormats.MSBDR.Event.Generator.InitialSpawnCount">
+            <summary>
+            Unknown.
+            </summary>
+        </member>
+        <member name="P:SoulsFormats.MSBDR.Event.Generator.SpawnPointNames">
+            <summary>
+            Points that enemies may be spawned at.
+            </summary>
+        </member>
+        <member name="P:SoulsFormats.MSBDR.Event.Generator.SpawnPartNames">
+            <summary>
+            Enemies to be respawned.
+            </summary>
+        </member>
+        <member name="M:SoulsFormats.MSBDR.Event.Generator.#ctor">
+            <summary>
+            Creates a Generator with default values.
+            </summary>
+        </member>
+        <member name="T:SoulsFormats.MSBDR.Event.Message">
+            <summary>
+            A fixed orange soapstone message.
+            </summary>
+        </member>
+        <member name="P:SoulsFormats.MSBDR.Event.Message.UnkT00">
+            <summary>
+            Unknown.
+            </summary>
+        </member>
+        <member name="P:SoulsFormats.MSBDR.Event.Message.MessageID">
+            <summary>
+            FMG text ID to display.
+            </summary>
+        </member>
+        <member name="P:SoulsFormats.MSBDR.Event.Message.MessageParam">
+            <summary>
+            Unknown.
+            </summary>
+        </member>
+        <member name="M:SoulsFormats.MSBDR.Event.Message.#ctor">
+            <summary>
+            Creates a Message with default values.
+            </summary>
+        </member>
+        <member name="T:SoulsFormats.MSBDR.Tree">
+            <summary>
+            Unknown.
+            </summary>
+        </member>
+        <member name="P:SoulsFormats.MSBDR.Tree.Unk00">
+            <summary>
+            Unknown.
+            </summary>
+        </member>
+        <member name="P:SoulsFormats.MSBDR.Tree.Unk04">
+            <summary>
+            Unknown.
+            </summary>
+        </member>
+        <member name="P:SoulsFormats.MSBDR.Tree.Unk08">
+            <summary>
+            Unknown.
+            </summary>
+        </member>
+        <member name="P:SoulsFormats.MSBDR.Tree.Unk0C">
+            <summary>
+            Unknown.
+            </summary>
+        </member>
+        <member name="P:SoulsFormats.MSBDR.Tree.Unk10">
+            <summary>
+            Unknown.
+            </summary>
+        </member>
+        <member name="P:SoulsFormats.MSBDR.Tree.Unk14">
+            <summary>
+            Unknown.
+            </summary>
+        </member>
+        <member name="P:SoulsFormats.MSBDR.Tree.Unk18">
+            <summary>
+            Unknown.
+            </summary>
+        </member>
+        <member name="P:SoulsFormats.MSBDR.Tree.Unk1C">
+            <summary>
+            Unknown.
+            </summary>
+        </member>
+        <member name="P:SoulsFormats.MSBDR.Tree.Unk20">
+            <summary>
+            Unknown.
+            </summary>
+        </member>
+        <member name="P:SoulsFormats.MSBDR.Tree.Unk24">
+            <summary>
+            Unknown.
+            </summary>
+        </member>
+        <member name="P:SoulsFormats.MSBDR.Tree.Unk28">
+            <summary>
+            Unknown.
+            </summary>
+        </member>
+        <member name="P:SoulsFormats.MSBDR.Tree.Unk2C">
+            <summary>
+            Unknown.
+            </summary>
+        </member>
+        <member name="P:SoulsFormats.MSBDR.Tree.Unk30">
+            <summary>
+            Unknown.
+            </summary>
+        </member>
+        <member name="P:SoulsFormats.MSBDR.Tree.UnkShorts">
+            <summary>
+            Unknown.
+            </summary>
+        </member>
+        <member name="M:SoulsFormats.MSBDR.Tree.#ctor">
+            <summary>
+            Creates a Tree with default values.
+            </summary>
+        </member>
+        <member name="M:SoulsFormats.MSBDR.Tree.DeepCopy">
+            <summary>
+            Creates a deep copy of the tree.
+            </summary>
+        </member>
+        <member name="T:SoulsFormats.MSBDR.ModelParam">
+            <summary>
+            Model files that are available for parts to use.
+            </summary>
+        </member>
+        <member name="P:SoulsFormats.MSBDR.ModelParam.MapPieces">
+            <summary>
+            Models for fixed terrain and scenery.
+            </summary>
+        </member>
+        <member name="P:SoulsFormats.MSBDR.ModelParam.Objects">
+            <summary>
+            Models for dynamic props.
+            </summary>
+        </member>
+        <member name="P:SoulsFormats.MSBDR.ModelParam.Enemies">
+            <summary>
+            Models for non-player entities.
+            </summary>
+        </member>
+        <member name="P:SoulsFormats.MSBDR.ModelParam.Players">
+            <summary>
+            Models for player spawn points, I think.
+            </summary>
+        </member>
+        <member name="P:SoulsFormats.MSBDR.ModelParam.Collisions">
+            <summary>
+            Models for physics collision.
+            </summary>
+        </member>
+        <member name="P:SoulsFormats.MSBDR.ModelParam.Navmeshes">
+            <summary>
+            Models for AI navigation.
+            </summary>
+        </member>
+        <member name="P:SoulsFormats.MSBDR.ModelParam.DummyObjects">
+            <summary>
+            Models for dummy dynamic props.
+            </summary>
+        </member>
+        <member name="P:SoulsFormats.MSBDR.ModelParam.DummyEnemies">
+            <summary>
+            Models for dummy non-player entities.
+            </summary>
+        </member>
+        <member name="M:SoulsFormats.MSBDR.ModelParam.#ctor">
+            <summary>
+            Creates an empty ModelParam.
+            </summary>
+        </member>
+        <member name="M:SoulsFormats.MSBDR.ModelParam.Add(SoulsFormats.MSBDR.Model)">
+            <summary>
+            Adds a model to the appropriate list for its type; returns the model.
+            </summary>
+        </member>
+        <member name="M:SoulsFormats.MSBDR.ModelParam.GetEntries">
+            <summary>
+            Returns every Model in the order they will be written.
+            </summary>
+        </member>
+        <member name="T:SoulsFormats.MSBDR.Model">
+            <summary>
+            A model file available for parts to reference.
+            </summary>
+        </member>
+        <member name="P:SoulsFormats.MSBDR.Model.Name">
+            <summary>
+            The name of the model.
+            </summary>
+        </member>
+        <member name="P:SoulsFormats.MSBDR.Model.SibPath">
+            <summary>
+            A path to a .sib file, presumed to be some kind of editor placeholder.
+            </summary>
+        </member>
+        <member name="M:SoulsFormats.MSBDR.Model.DeepCopy">
+            <summary>
+            Creates a deep copy of the model.
+            </summary>
+        </member>
+        <member name="M:SoulsFormats.MSBDR.Model.ToString">
+            <summary>
+            Returns a string representation of the model.
+            </summary>
+        </member>
+        <member name="T:SoulsFormats.MSBDR.Model.MapPiece">
+            <summary>
+            A model for a static piece of visual map geometry.
+            </summary>
+        </member>
+        <member name="M:SoulsFormats.MSBDR.Model.MapPiece.#ctor">
+            <summary>
+            Creates a MapPiece with default values.
+            </summary>
+        </member>
+        <member name="T:SoulsFormats.MSBDR.Model.Object">
+            <summary>
+            A model for a dynamic or interactible part.
+            </summary>
+        </member>
+        <member name="M:SoulsFormats.MSBDR.Model.Object.#ctor">
+            <summary>
+            Creates an Object with default values.
+            </summary>
+        </member>
+        <member name="T:SoulsFormats.MSBDR.Model.Enemy">
+            <summary>
+            A model for any non-player character.
+            </summary>
+        </member>
+        <member name="M:SoulsFormats.MSBDR.Model.Enemy.#ctor">
+            <summary>
+            Creates an Enemy with default values.
+            </summary>
+        </member>
+        <member name="T:SoulsFormats.MSBDR.Model.Player">
+            <summary>
+            A model for a player spawn point.
+            </summary>
+        </member>
+        <member name="M:SoulsFormats.MSBDR.Model.Player.#ctor">
+            <summary>
+            Creates a Player with default values.
+            </summary>
+        </member>
+        <member name="T:SoulsFormats.MSBDR.Model.Collision">
+            <summary>
+            A model for a static piece of physical map geometry.
+            </summary>
+        </member>
+        <member name="M:SoulsFormats.MSBDR.Model.Collision.#ctor">
+            <summary>
+            Creates a Collision with default values.
+            </summary>
+        </member>
+        <member name="T:SoulsFormats.MSBDR.Model.Navmesh">
+            <summary>
+            A model for an AI navigation mesh.
+            </summary>
+        </member>
+        <member name="M:SoulsFormats.MSBDR.Model.Navmesh.#ctor">
+            <summary>
+            Creates a Navmesh with default values.
+            </summary>
+        </member>
+        <member name="T:SoulsFormats.MSBDR.Model.DummyObject">
+            <summary>
+            A model for a dummy dynamic or interactible part.
+            </summary>
+        </member>
+        <member name="M:SoulsFormats.MSBDR.Model.DummyObject.#ctor">
+            <summary>
+            Creates a DummyObject with default values.
+            </summary>
+        </member>
+        <member name="T:SoulsFormats.MSBDR.Model.DummyEnemy">
+            <summary>
+            A model for a dummy non-player character.
+            </summary>
+        </member>
+        <member name="M:SoulsFormats.MSBDR.Model.DummyEnemy.#ctor">
+            <summary>
+            Creates a DummyEnemy with default values.
+            </summary>
+        </member>
+        <member name="P:SoulsFormats.MSBDR.Models">
+            <summary>
+            Model files that are available for parts to use.
+            </summary>
+        </member>
+        <member name="P:SoulsFormats.MSBDR.Events">
+            <summary>
+            Dynamic or interactive systems such as item pickups, levers, enemy spawners, etc.
+            </summary>
+        </member>
+        <member name="P:SoulsFormats.MSBDR.Regions">
+            <summary>
+            Points or areas of space that trigger some sort of behavior.
+            </summary>
+        </member>
+        <member name="P:SoulsFormats.MSBDR.Parts">
+            <summary>
+            Instances of actual things in the map.
+            </summary>
+        </member>
+        <member name="P:SoulsFormats.MSBDR.Trees">
+            <summary>
+            Unknown.
+            </summary>
+        </member>
+        <member name="M:SoulsFormats.MSBDR.#ctor">
+            <summary>
+            Creates an empty MSBD.
+            </summary>
+        </member>
+        <member name="M:SoulsFormats.MSBDR.Read(SoulsFormats.BinaryReaderEx)">
+            <summary>
+            Deserializes file data from a stream.
+            </summary>
+        </member>
+        <member name="M:SoulsFormats.MSBDR.Write(SoulsFormats.BinaryWriterEx)">
+            <summary>
+            Serializes file data to a stream.
+            </summary>
+        </member>
+        <member name="T:SoulsFormats.MSBDR.Param`1">
+            <summary>
+            A generic group of entries in an MSB.
+            </summary>
+        </member>
+        <member name="M:SoulsFormats.MSBDR.Param`1.GetEntries">
+            <summary>
+            Returns all of the entries in this param, in the order they will be written to the file.
+            </summary>
+        </member>
+        <member name="M:SoulsFormats.MSBDR.Param`1.ToString">
+            <summary>
+            Returns the name of the param as a string.
+            </summary>
+        </member>
+        <member name="T:SoulsFormats.MSBDR.Entry">
+            <summary>
+            A generic entry in an MSB param.
+            </summary>
+        </member>
+        <member name="T:SoulsFormats.MSBDR.PartsParam">
+            <summary>
+            All instances of concrete things in the map.
+            </summary>
+        </member>
+        <member name="P:SoulsFormats.MSBDR.PartsParam.MapPieces">
+            <summary>
+            All of the fixed visual geometry of the map.
+            </summary>
+        </member>
+        <member name="P:SoulsFormats.MSBDR.PartsParam.Objects">
+            <summary>
+            Dynamic props and interactive things.
+            </summary>
+        </member>
+        <member name="P:SoulsFormats.MSBDR.PartsParam.Enemies">
+            <summary>
+            All non-player characters.
+            </summary>
+        </member>
+        <member name="P:SoulsFormats.MSBDR.PartsParam.Players">
+            <summary>
+            These have something to do with player spawn points.
+            </summary>
+        </member>
+        <member name="P:SoulsFormats.MSBDR.PartsParam.Collisions">
+            <summary>
+            Invisible physical geometry of the map.
+            </summary>
+        </member>
+        <member name="P:SoulsFormats.MSBDR.PartsParam.Protobosses">
+            <summary>
+            Unknown.
+            </summary>
+        </member>
+        <member name="P:SoulsFormats.MSBDR.PartsParam.Navmeshes">
+            <summary>
+            AI navigation meshes.
+            </summary>
+        </member>
+        <member name="P:SoulsFormats.MSBDR.PartsParam.DummyObjects">
+            <summary>
+            Objects that don't appear normally; either unused, or used for cutscenes.
+            </summary>
+        </member>
+        <member name="P:SoulsFormats.MSBDR.PartsParam.DummyEnemies">
+            <summary>
+            Enemies that don't appear normally; either unused, or used for cutscenes.
+            </summary>
+        </member>
+        <member name="P:SoulsFormats.MSBDR.PartsParam.ConnectCollisions">
+            <summary>
+            Dummy parts that reference an actual collision and cause it to load another map.
+            </summary>
+        </member>
+        <member name="M:SoulsFormats.MSBDR.PartsParam.#ctor">
+            <summary>
+            Creates an empty PartsParam.
+            </summary>
+        </member>
+        <member name="M:SoulsFormats.MSBDR.PartsParam.Add(SoulsFormats.MSBDR.Part)">
+            <summary>
+            Adds a part to the appropriate list for its type; returns the part.
+            </summary>
+        </member>
+        <member name="M:SoulsFormats.MSBDR.PartsParam.GetEntries">
+            <summary>
+            Returns every Part in the order they'll be written.
+            </summary>
+        </member>
+        <member name="T:SoulsFormats.MSBDR.Part">
+            <summary>
+            Common information for all concrete entities.
+            </summary>
+        </member>
+        <member name="P:SoulsFormats.MSBDR.Part.Name">
+            <summary>
+            The name of the part.
+            </summary>
+        </member>
+        <member name="P:SoulsFormats.MSBDR.Part.ModelName">
+            <summary>
+            The model of the Part, corresponding to an entry in the ModelParam.
+            </summary>
+        </member>
+        <member name="P:SoulsFormats.MSBDR.Part.SibPath">
+            <summary>
+            A path to a .sib file, presumed to be some kind of editor placeholder.
+            </summary>
+        </member>
+        <member name="P:SoulsFormats.MSBDR.Part.Position">
+            <summary>
+            Location of the part.
+            </summary>
+        </member>
+        <member name="P:SoulsFormats.MSBDR.Part.Rotation">
+            <summary>
+            Rotation of the part, in degrees.
+            </summary>
+        </member>
+        <member name="P:SoulsFormats.MSBDR.Part.Scale">
+            <summary>
+            Scale of the part, only meaningful for map pieces and objects.
+            </summary>
+        </member>
+        <member name="P:SoulsFormats.MSBDR.Part.DrawGroups">
+            <summary>
+            Controls when the part is visible.
+            </summary>
+        </member>
+        <member name="P:SoulsFormats.MSBDR.Part.DispGroups">
+            <summary>
+            Controls when the part is visible.
+            </summary>
+        </member>
+        <member name="P:SoulsFormats.MSBDR.Part.EntityID">
+            <summary>
+            Identifies the part in external files.
+            </summary>
+        </member>
+        <member name="P:SoulsFormats.MSBDR.Part.LightID">
+            <summary>
+            Unknown.
+            </summary>
+        </member>
+        <member name="P:SoulsFormats.MSBDR.Part.FogID">
+            <summary>
+            Unknown.
+            </summary>
+        </member>
+        <member name="P:SoulsFormats.MSBDR.Part.ScatterID">
+            <summary>
+            Unknown.
+            </summary>
+        </member>
+        <member name="P:SoulsFormats.MSBDR.Part.LensFlareID">
+            <summary>
+            Unknown.
+            </summary>
+        </member>
+        <member name="P:SoulsFormats.MSBDR.Part.ShadowID">
+            <summary>
+            Unknown.
+            </summary>
+        </member>
+        <member name="P:SoulsFormats.MSBDR.Part.DofID">
+            <summary>
+            Unknown.
+            </summary>
+        </member>
+        <member name="P:SoulsFormats.MSBDR.Part.ToneMapID">
+            <summary>
+            Unknown.
+            </summary>
+        </member>
+        <member name="P:SoulsFormats.MSBDR.Part.ToneCorrectID">
+            <summary>
+            Unknown.
+            </summary>
+        </member>
+        <member name="P:SoulsFormats.MSBDR.Part.LanternID">
+            <summary>
+            Unknown.
+            </summary>
+        </member>
+        <member name="P:SoulsFormats.MSBDR.Part.LodParamID">
+            <summary>
+            Unknown.
+            </summary>
+        </member>
+        <member name="P:SoulsFormats.MSBDR.Part.UnkE0E">
+            <summary>
+            Unknown.
+            </summary>
+        </member>
+        <member name="P:SoulsFormats.MSBDR.Part.IsShadowSrc">
+            <summary>
+            Unknown.
+            </summary>
+        </member>
+        <member name="P:SoulsFormats.MSBDR.Part.IsShadowDest">
+            <summary>
+            Unknown.
+            </summary>
+        </member>
+        <member name="P:SoulsFormats.MSBDR.Part.IsShadowOnly">
+            <summary>
+            Unknown.
+            </summary>
+        </member>
+        <member name="P:SoulsFormats.MSBDR.Part.DrawByReflectCam">
+            <summary>
+            Unknown.
+            </summary>
+        </member>
+        <member name="P:SoulsFormats.MSBDR.Part.DrawOnlyReflectCam">
+            <summary>
+            Unknown.
+            </summary>
+        </member>
+        <member name="M:SoulsFormats.MSBDR.Part.DeepCopy">
+            <summary>
+            Creates a deep copy of the part.
+            </summary>
+        </member>
+        <member name="M:SoulsFormats.MSBDR.Part.ToString">
+            <summary>
+            Returns a string representation of the part.
+            </summary>
+        </member>
+        <member name="T:SoulsFormats.MSBDR.Part.MapPiece">
+            <summary>
+            A visible but not physical model making up the map.
+            </summary>
+        </member>
+        <member name="M:SoulsFormats.MSBDR.Part.MapPiece.#ctor">
+            <summary>
+            Creates a MapPiece with default values.
+            </summary>
+        </member>
+        <member name="T:SoulsFormats.MSBDR.Part.ObjectBase">
+            <summary>
+            Common base data for objects and dummy objects.
+            </summary>
+        </member>
+        <member name="P:SoulsFormats.MSBDR.Part.ObjectBase.BreakTerm">
+            <summary>
+            Unknown.
+            </summary>
+        </member>
+        <member name="P:SoulsFormats.MSBDR.Part.ObjectBase.NetSyncType">
+            <summary>
+            Unknown.
+            </summary>
+        </member>
+        <member name="P:SoulsFormats.MSBDR.Part.ObjectBase.InitAnimID">
+            <summary>
+            Unknown.
+            </summary>
+        </member>
+        <member name="P:SoulsFormats.MSBDR.Part.ObjectBase.UnkT0E">
+            <summary>
+            Unknown.
+            </summary>
+        </member>
+        <member name="P:SoulsFormats.MSBDR.Part.ObjectBase.UnkT10">
+            <summary>
+            Unknown.
+            </summary>
+        </member>
+        <member name="T:SoulsFormats.MSBDR.Part.Object">
+            <summary>
+            A dynamic or interactible part of the map.
+            </summary>
+        </member>
+        <member name="M:SoulsFormats.MSBDR.Part.Object.#ctor">
+            <summary>
+            Creates an Object with default values.
+            </summary>
+        </member>
+        <member name="T:SoulsFormats.MSBDR.Part.EnemyBase">
+            <summary>
+            Common base data for enemies and dummy enemies.
+            </summary>
+        </member>
+        <member name="P:SoulsFormats.MSBDR.Part.EnemyBase.UnkT00">
+            <summary>
+            Unknown.
+            </summary>
+        </member>
+        <member name="P:SoulsFormats.MSBDR.Part.EnemyBase.UnkT04">
+            <summary>
+            Unknown.
+            </summary>
+        </member>
+        <member name="P:SoulsFormats.MSBDR.Part.EnemyBase.UnkT08">
+            <summary>
+            Unknown.
+            </summary>
+        </member>
+        <member name="P:SoulsFormats.MSBDR.Part.EnemyBase.NPCParamID">
+            <summary>
+            ID in NPCParam determining character properties.
+            </summary>
+        </member>
+        <member name="P:SoulsFormats.MSBDR.Part.EnemyBase.TalkID">
+            <summary>
+            ID of a talk ESD used by the character.
+            </summary>
+        </member>
+        <member name="P:SoulsFormats.MSBDR.Part.EnemyBase.PointMoveType">
+            <summary>
+            Unknown.
+            </summary>
+        </member>
+        <member name="P:SoulsFormats.MSBDR.Part.EnemyBase.PlatoonID">
+            <summary>
+            Unknown.
+            </summary>
+        </member>
+        <member name="P:SoulsFormats.MSBDR.Part.EnemyBase.CharaInitID">
+            <summary>
+            ID in CharaInitParam determining equipment and stats for humans.
+            </summary>
+        </member>
+        <member name="P:SoulsFormats.MSBDR.Part.EnemyBase.CollisionName">
+            <summary>
+            Collision that controls loading of the enemy.
+            </summary>
+        </member>
+        <member name="P:SoulsFormats.MSBDR.Part.EnemyBase.MovePointNames">
+            <summary>
+            Regions for the enemy to patrol.
+            </summary>
+        </member>
+        <member name="P:SoulsFormats.MSBDR.Part.EnemyBase.InitAnimID">
+            <summary>
+            Unknown.
+            </summary>
+        </member>
+        <member name="P:SoulsFormats.MSBDR.Part.EnemyBase.DamageAnimID">
+            <summary>
+            Unknown.
+            </summary>
+        </member>
+        <member name="T:SoulsFormats.MSBDR.Part.Enemy">
+            <summary>
+            Any living entity besides the player character.
+            </summary>
+        </member>
+        <member name="M:SoulsFormats.MSBDR.Part.Enemy.#ctor">
+            <summary>
+            Creates an Enemy with default values.
+            </summary>
+        </member>
+        <member name="T:SoulsFormats.MSBDR.Part.Player">
+            <summary>
+            Unknown exactly what these do.
+            </summary>
+        </member>
+        <member name="P:SoulsFormats.MSBDR.Part.Player.UnkT00">
+            <summary>
+            Unknown.
+            </summary>
+        </member>
+        <member name="M:SoulsFormats.MSBDR.Part.Player.#ctor">
+            <summary>
+            Creates a Player with default values.
+            </summary>
+        </member>
+        <member name="T:SoulsFormats.MSBDR.Part.Collision">
+            <summary>
+            Invisible but physical geometry.
+            </summary>
+        </member>
+        <member name="P:SoulsFormats.MSBDR.Part.Collision.HitFilterID">
+            <summary>
+            Unknown.
+            </summary>
+        </member>
+        <member name="P:SoulsFormats.MSBDR.Part.Collision.SoundSpaceType">
+            <summary>
+            Causes sounds to be modulated when standing on the collision.
+            </summary>
+        </member>
+        <member name="P:SoulsFormats.MSBDR.Part.Collision.EnvLightMapSpotIndex">
+            <summary>
+            Unknown.
+            </summary>
+        </member>
+        <member name="P:SoulsFormats.MSBDR.Part.Collision.ReflectPlaneHeight">
+            <summary>
+            Unknown.
+            </summary>
+        </member>
+        <member name="P:SoulsFormats.MSBDR.Part.Collision.NvmGroups">
+            <summary>
+            Unknown.
+            </summary>
+        </member>
+        <member name="P:SoulsFormats.MSBDR.Part.Collision.RefTexIDs">
+            <summary>
+            Unknown.
+            </summary>
+        </member>
+        <member name="P:SoulsFormats.MSBDR.Part.Collision.UnkT38">
+            <summary>
+            Unknown.
+            </summary>
+        </member>
+        <member name="P:SoulsFormats.MSBDR.Part.Collision.MapNameID">
+            <summary>
+            Controls displays of the map name on screen or the loading menu.
+            </summary>
+        </member>
+        <member name="M:SoulsFormats.MSBDR.Part.Collision.#ctor">
+            <summary>
+            Creates a Collision with default values.
+            </summary>
+        </member>
+        <member name="T:SoulsFormats.MSBDR.Part.Protoboss">
+            <summary>
+            Unknown.
+            </summary>
+        </member>
+        <member name="P:SoulsFormats.MSBDR.Part.Protoboss.UnkT00">
+            <summary>
+            Unknown.
+            </summary>
+        </member>
+        <member name="P:SoulsFormats.MSBDR.Part.Protoboss.UnkT04">
+            <summary>
+            Unknown.
+            </summary>
+        </member>
+        <member name="P:SoulsFormats.MSBDR.Part.Protoboss.UnkT08">
+            <summary>
+            Unknown.
+            </summary>
+        </member>
+        <member name="P:SoulsFormats.MSBDR.Part.Protoboss.UnkT0C">
+            <summary>
+            Unknown.
+            </summary>
+        </member>
+        <member name="P:SoulsFormats.MSBDR.Part.Protoboss.UnkT10">
+            <summary>
+            Unknown.
+            </summary>
+        </member>
+        <member name="P:SoulsFormats.MSBDR.Part.Protoboss.UnkT14">
+            <summary>
+            Unknown.
+            </summary>
+        </member>
+        <member name="P:SoulsFormats.MSBDR.Part.Protoboss.UnkT18">
+            <summary>
+            Unknown.
+            </summary>
+        </member>
+        <member name="P:SoulsFormats.MSBDR.Part.Protoboss.UnkT1C">
+            <summary>
+            Unknown.
+            </summary>
+        </member>
+        <member name="P:SoulsFormats.MSBDR.Part.Protoboss.UnkT20">
+            <summary>
+            Unknown.
+            </summary>
+        </member>
+        <member name="P:SoulsFormats.MSBDR.Part.Protoboss.UnkT24">
+            <summary>
+            Unknown.
+            </summary>
+        </member>
+        <member name="P:SoulsFormats.MSBDR.Part.Protoboss.UnkT28">
+            <summary>
+            Unknown.
+            </summary>
+        </member>
+        <member name="P:SoulsFormats.MSBDR.Part.Protoboss.UnkT2C">
+            <summary>
+            Unknown.
+            </summary>
+        </member>
+        <member name="P:SoulsFormats.MSBDR.Part.Protoboss.UnkT30">
+            <summary>
+            Unknown.
+            </summary>
+        </member>
+        <member name="M:SoulsFormats.MSBDR.Part.Protoboss.#ctor">
+            <summary>
+            Creates a Protoboss with default values.
+            </summary>
+        </member>
+        <member name="T:SoulsFormats.MSBDR.Part.Navmesh">
+            <summary>
+            An AI navigation mesh.
+            </summary>
+        </member>
+        <member name="P:SoulsFormats.MSBDR.Part.Navmesh.NvmGroups">
+            <summary>
+            Unknown.
+            </summary>
+        </member>
+        <member name="M:SoulsFormats.MSBDR.Part.Navmesh.#ctor">
+            <summary>
+            Creates a Navmesh with default values.
+            </summary>
+        </member>
+        <member name="T:SoulsFormats.MSBDR.Part.DummyObject">
+            <summary>
+            A normally invisible object, either unused or for a cutscene.
+            </summary>
+        </member>
+        <member name="M:SoulsFormats.MSBDR.Part.DummyObject.#ctor">
+            <summary>
+            Creates a DummyObject with default values.
+            </summary>
+        </member>
+        <member name="T:SoulsFormats.MSBDR.Part.DummyEnemy">
+            <summary>
+            A normally invisible enemy, either unused or for a cutscene.
+            </summary>
+        </member>
+        <member name="M:SoulsFormats.MSBDR.Part.DummyEnemy.#ctor">
+            <summary>
+            Creates a DummyEnemy with default values.
+            </summary>
+        </member>
+        <member name="T:SoulsFormats.MSBDR.Part.ConnectCollision">
+            <summary>
+            Attaches to an actual Collision and causes another map to be loaded when standing on it.
+            </summary>
+        </member>
+        <member name="P:SoulsFormats.MSBDR.Part.ConnectCollision.CollisionName">
+            <summary>
+            The collision which will load another map.
+            </summary>
+        </member>
+        <member name="P:SoulsFormats.MSBDR.Part.ConnectCollision.MapID">
+            <summary>
+            Four bytes specifying the map ID to load.
+            </summary>
+        </member>
+        <member name="M:SoulsFormats.MSBDR.Part.ConnectCollision.#ctor">
+            <summary>
+            Creates a ConnectCollision with default values.
+            </summary>
+        </member>
+        <member name="T:SoulsFormats.MSBDR.PointParam">
+            <summary>
+            A collection of points and trigger volumes used by scripts and events.
+            </summary>
+        </member>
+        <member name="P:SoulsFormats.MSBDR.PointParam.Regions">
+            <summary>
+            All regions in the map.
+            </summary>
+        </member>
+        <member name="M:SoulsFormats.MSBDR.PointParam.#ctor">
+            <summary>
+            Creates an empty PointParam.
+            </summary>
+        </member>
+        <member name="M:SoulsFormats.MSBDR.PointParam.Add(SoulsFormats.MSBDR.Region)">
+            <summary>
+            Adds a region to the list; returns the region.
+            </summary>
+        </member>
+        <member name="M:SoulsFormats.MSBDR.PointParam.GetEntries">
+            <summary>
+            Returns the list of regions.
+            </summary>
+        </member>
+        <member name="T:SoulsFormats.MSBDR.Region">
+            <summary>
+            A point or volume used by scripts or events.
+            </summary>
+        </member>
+        <member name="P:SoulsFormats.MSBDR.Region.Name">
+            <summary>
+            The name of the region.
+            </summary>
+        </member>
+        <member name="P:SoulsFormats.MSBDR.Region.Shape">
+            <summary>
+            Describes the physical shape of the region.
+            </summary>
+        </member>
+        <member name="P:SoulsFormats.MSBDR.Region.Position">
+            <summary>
+            Location of the region.
+            </summary>
+        </member>
+        <member name="P:SoulsFormats.MSBDR.Region.Rotation">
+            <summary>
+            Rotation of the region, in degrees.
+            </summary>
+        </member>
+        <member name="P:SoulsFormats.MSBDR.Region.EntityID">
+            <summary>
+            Identifies the region in external files.
+            </summary>
+        </member>
+        <member name="M:SoulsFormats.MSBDR.Region.#ctor">
+            <summary>
+            Creates a Region with default values.
+            </summary>
+        </member>
+        <member name="M:SoulsFormats.MSBDR.Region.DeepCopy">
+            <summary>
+            Creates a deep copy of the region.
+            </summary>
+        </member>
+        <member name="M:SoulsFormats.MSBDR.Region.ToString">
+            <summary>
+            Returns a string representation of the region.
+            </summary>
+        </member>
         <member name="T:SoulsFormats.MSBD">
             <summary>
             A map layout file used in DeS. Extension: .msb
@@ -17092,6 +18342,11 @@
             A navmesh format used in DeS and DS1.
             </summary>
         </member>
+        <member name="F:SoulsFormats.NVM.fileName">
+            <summary>
+            Filename. The exact name is decidedly important for the game.
+            </summary>
+        </member>
         <member name="F:SoulsFormats.NVM.BigEndian">
             <summary>
             True for DeS format, false for DS1.
@@ -17187,12 +18442,12 @@
             A rectangular prism in a tree structure encompassing the navmesh.
             </summary>
         </member>
-        <member name="F:SoulsFormats.NVM.Box.Corner1">
+        <member name="F:SoulsFormats.NVM.Box.MinValueCorner">
             <summary>
             One of two corners defining the extent of the box.
             </summary>
         </member>
-        <member name="F:SoulsFormats.NVM.Box.Corner2">
+        <member name="F:SoulsFormats.NVM.Box.MaxValueCorner">
             <summary>
             One of two corners defining the extent of the box.
             </summary>
@@ -17205,21 +18460,25 @@
         <member name="F:SoulsFormats.NVM.Box.ChildBox1">
             <summary>
             The four boxes that subdivide this one.
+            Boxes are always separated horizontally so Y/Vertical values remain constant.
             </summary>
         </member>
         <member name="F:SoulsFormats.NVM.Box.ChildBox2">
             <summary>
             The four boxes that subdivide this one.
+            Boxes are always separated horizontally so Y/Vertical values remain constant.
             </summary>
         </member>
         <member name="F:SoulsFormats.NVM.Box.ChildBox3">
             <summary>
             The four boxes that subdivide this one.
+            Boxes are always separated horizontally so Y/Vertical values remain constant.
             </summary>
         </member>
         <member name="F:SoulsFormats.NVM.Box.ChildBox4">
             <summary>
             The four boxes that subdivide this one.
+            Boxes are always separated horizontally so Y/Vertical values remain constant.
             </summary>
         </member>
         <member name="T:SoulsFormats.NVM.Entity">
@@ -19490,6 +20749,11 @@
         <member name="M:SoulsFormats.BinaryWriterEx.Pad(System.Int32)">
             <summary>
             Writes 0x00 bytes until the stream position meets the specified alignment.
+            </summary>
+        </member>
+        <member name="M:SoulsFormats.BinaryWriterEx.PadFF(System.Int32)">
+            <summary>
+            Writes 0xFF bytes until the stream position meets the specified alignment. BluePoint files do this.
             </summary>
         </member>
         <member name="M:SoulsFormats.BinaryWriterEx.PadRelative(System.Int64,System.Int32)">
