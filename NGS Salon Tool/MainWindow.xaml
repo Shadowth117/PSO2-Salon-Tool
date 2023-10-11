@@ -18,7 +18,7 @@
             <Menu x:Name="menu" Height="18" Margin="0,0,0,0" VerticalAlignment="Top">
                 <MenuItem Header="File">
                     <MenuItem Header="Open" Click="OpenCharacterFile"/>
-                    <MenuItem Header="Set pso2_bin directory" Click="SetPSO2Bin"/>
+                    <MenuItem Name="setPSO2Button" Header="Set pso2_bin directory" Click="SetPSO2Bin"/>
                     <MenuItem Name="saveButton" Header="Save" Click="SaveCurrentCharFile"/>
                     <MenuItem Name="saveAsButton" Header="Save As" Click="SaveCharFileAs"/>
                 </MenuItem>
@@ -66,6 +66,7 @@
                         <CheckBox x:Name="legOrnCheck" Content="Hide Leg Parts Ornament" HorizontalAlignment="Left" Margin="14,144,0,0" VerticalAlignment="Top" Checked="LegOrnChanged" Unchecked="LegOrnChanged"/>
                         <CheckBox x:Name="outerOrnCheck" Content="Hide Outer Wear Ornament" HorizontalAlignment="Left" Margin="14,69,0,0" VerticalAlignment="Top" Checked="OuterWearOrnChanged" Unchecked="OuterWearOrnChanged"/>
                         <CheckBox x:Name="innerCheck" Content="Hide Inner Wear" HorizontalAlignment="Left" Margin="14,84,0,0" VerticalAlignment="Top" Checked="InnerWearVisiChanged" Unchecked="InnerWearVisiChanged"/>
+                        <CheckBox x:Name="celShadingIsEnabledCheck" Content="Cel Shading Enabled" HorizontalAlignment="Left" Margin="14,174,0,0" VerticalAlignment="Top" Checked="CelShadingEnabledChanged" Unchecked="CelShadingEnabledChanged"/>
                         <Label x:Name="bpLabel" Content="Bodypaint/Innerwear order" HorizontalAlignment="Left" Margin="224,36,0,0" VerticalAlignment="Top"/>
                         <ComboBox x:Name="bpOrder0" HorizontalAlignment="Left" Margin="240,65,0,0" VerticalAlignment="Top" Width="120" SelectionChanged="bpOrder0_SelectionChanged"/>
                         <ComboBox x:Name="bpOrder1" HorizontalAlignment="Left" Margin="240,95,0,0" VerticalAlignment="Top" Width="120" SelectionChanged="bpOrder1_SelectionChanged"/>

@@ -13,8 +13,6 @@ Assembly System.Numerics, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5
 	hash=None, flags=None
 Assembly netstandard, Version=2.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51: 
 	hash=None, flags=None
-Assembly System, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089: 
-	hash=None, flags=None
 Class AquaModelLibrary.NativeContext: AutoLayout, AnsiClass, Class, Public, BeforeFieldInit
     Void .ctor(): PrivateScope, Public, HideBySig, SpecialName, RTSpecialName
   Methods:
@@ -26,4 +24,5 @@ Class AquaModelLibrary.Objects.Processing.Fbx.FbxExporterCore: AutoLayout, AnsiC
     System.IDisposable
   Methods:
     ExportToFile(AquaObject, AquaNode, List`1, String, List`1, List`1, Boolean(HasFieldMarshal)): PrivateScope, Public, Final, Virtual, HideBySig, VtableLayoutMask
+    ExportToFileSets(List`1, List`1, List`1, String, List`1, Boolean(HasFieldMarshal)): PrivateScope, Public, Final, Virtual, HideBySig, VtableLayoutMask
     Dispose(): PrivateScope, Public, Final, Virtual, HideBySig

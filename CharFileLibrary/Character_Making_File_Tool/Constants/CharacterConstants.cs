@@ -48,6 +48,7 @@ namespace Character_Making_File_Tool
             { 0xB, 0x3C0},
             { 0xC, 0x438},
             { 0xD, 0x448},
+            { 0xE, 0x44C},
         };
 
         //Stores palette colors [column, row]

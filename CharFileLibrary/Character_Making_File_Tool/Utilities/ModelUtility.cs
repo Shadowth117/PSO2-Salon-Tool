@@ -15,6 +15,7 @@ using static AquaModelLibrary.Utility.AquaUtilData;
 using static Character_Making_File_Tool.CharacterConstants;
 using static Character_Making_File_Tool.CharacterHandlerReboot;
 using static CharFileLibrary.Character_Making_File_Tool.Constants.CharacterProportionConstants;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace CharFileLibrary.Character_Making_File_Tool.Utilities
 {
@@ -30,11 +31,17 @@ namespace CharFileLibrary.Character_Making_File_Tool.Utilities
         public string basewearRPFilename = null;
         public string basewearHNFilename = null;
         public string basewearLinkedInnerFilename = null;
+        public string basewearSound = null;
+        public string costumeOuterFilename = null;
+        public string costumeOuterHNFilename = null;
+        public string costumeOuterLinkedInnerFilename = null;
+        public string costumeOuterSound = null;
 
+        //Models
         public AquaObject compositeModel = null;
-        public AquaObject basewearModel = null;
+
+        //Bones
         public AquaNode compositeBones = null;
-        public AquaNode basewearNode = null;
 
         public class TransformSet
         {
@@ -141,16 +148,30 @@ namespace CharFileLibrary.Character_Making_File_Tool.Utilities
             switch (bodyCategory)
             {
                 case basewearStr: //Basewear is base, Outer wear is attached
-                    basewearModel = GetModel(xxp, Path.Combine(pso2_binDir, dataDir, basewearFilename), new List<string>() { ".aqp", ".aqn" }, out basewearNode);
+                    var basewearModel = GetModel(xxp, Path.Combine(pso2_binDir, dataDir, basewearFilename), new List<string>() { ".aqp", ".aqn" }, out var basewearNode);
+                    var outerwearModel = GetModel(xxp, Path.Combine(pso2_binDir, dataDir, costumeOuterFilename), new List<string>() { ".aqp", ".aqn" }, out var outerwearNode);
+
+                    compositeModel = basewearModel;
+                    compositeBones = basewearNode;
+
+                    //TODO Combine outerwear model into composite model and bones
                     break;
                 case costumeStr: //On its own
+                    var costumeModel = GetModel(xxp, Path.Combine(pso2_binDir, dataDir, costumeOuterFilename), new List<string>() { ".aqp", ".aqn" }, out var costumeNode);
+
+                    compositeModel = costumeModel;
+                    compositeBones = costumeNode;
                     break;
                 case castStr: //Legs are base, Body and Arms are to be attached
+
+                    //var legsModel = GetModel(xxp, Path.Combine(pso2_binDir, dataDir, legsFilename), new List<string>() { ".aqp", ".aqn" }, out var legsNode);
+                    //var bodyModel = GetModel(xxp, Path.Combine(pso2_binDir, dataDir, costumeOuterFilename), new List<string>() { ".aqp", ".aqn" }, out var bodyNode);
+                    //var armsModel = GetModel(xxp, Path.Combine(pso2_binDir, dataDir, armsFilename), new List<string>() { ".aqp", ".aqn" }, out var armsNode);
+
+                    //compositeModel = legModel;
+                    //compositeBones = legNode;
                     break;
             }
-
-            compositeModel = basewearModel;
-            compositeBones = basewearNode;
 
             //Calc final transformation matrices per bone
             var finalBodyTransforms = CalcBodyTransforms(bodyProps, compositeBones);
@@ -809,6 +830,8 @@ namespace CharFileLibrary.Character_Making_File_Tool.Utilities
         public void GetCharacterFilenames()
         {
             GetBasewearFilenames();
+            GetCostumeOuterFilenames(costume: true);
+            GetCostumeOuterFilenames(costume: false);
         }
 
         public void GetBasewearFilenames()
@@ -829,6 +852,7 @@ namespace CharFileLibrary.Character_Making_File_Tool.Utilities
             }
 
             //Decide if it needs to be handled as a reboot file or not
+            PartData partData = new PartData();
             if (id >= 100000)
             {
                 string reb = $"{rebootStart}bw_{adjustedId}.ice";
@@ -840,13 +864,11 @@ namespace CharFileLibrary.Character_Making_File_Tool.Utilities
                 string rebLinkedInnerHash = GetFileHash(rebLinkedInner);
                 string rebLinkedInnerExHash = GetFileHash(rebLinkedInnerEx);
 
-                GetBasewearExtraFileStrings(rebEx, out string rp, out string hn, out string bm);
+                AddBasewearExtraFiles(partData, rebEx, pso2_binDir, isClassic: false);
+                AddOutfitSound(partData, pso2_binDir, soundId);
 
                 basewearFilename = rebExHash;
                 basewearLinkedInnerFilename = rebLinkedInnerExHash;
-
-                basewearRPFilename = rp;
-                basewearHNFilename = hn;
             }
             else
             {
@@ -854,14 +876,93 @@ namespace CharFileLibrary.Character_Making_File_Tool.Utilities
                 string classic = $"{classicStart}bw_{finalId}.ice";
 
                 var classicHash = GetFileHash(classic);
-                GetBasewearExtraFileStrings(classic, out string rp, out string hn, out string bm);
+                AddBasewearExtraFiles(partData, classic, pso2_binDir, isClassic: true);
+                AddOutfitSound(partData, pso2_binDir, soundId);
 
                 basewearFilename = classicHash;
                 basewearLinkedInnerFilename = null;
-
-                basewearRPFilename = rp;
-                basewearHNFilename = hn;
             }
+
+            basewearRPFilename = partData.partRpHash;
+            basewearHNFilename = partData.handsHash;
+            basewearSound = partData.soundHash;
+        }
+
+        public void GetCostumeOuterFilenames(bool costume = true)
+        {
+            string typeStr = costume ? "_bd_" : "_ow_";
+            int id = (int)xxp.baseSLCT.costumePart;
+            //Get SoundID
+            int soundId = -1;
+            int adjustedId = -1;
+
+            if (costume)
+            {
+                if (cmx.costumeDict.ContainsKey(id))
+                {
+                    soundId = cmx.costumeDict[id].body2.costumeSoundId;
+                }
+
+                //Double check these ids and use an adjustedId if needed
+                adjustedId = id;
+                if (cmx.costumeIdLink.ContainsKey(id))
+                {
+                    adjustedId = cmx.costumeIdLink[id].bcln.fileId;
+                }
+            } else
+            {
+                if (cmx.outerDict.ContainsKey(id))
+                {
+                    soundId = cmx.outerDict[id].body2.costumeSoundId;
+                }
+
+                //Double check these ids and use an adjustedId if needed
+                adjustedId = id;
+                if (cmx.outerWearIdLink.ContainsKey(id))
+                {
+                    adjustedId = cmx.outerWearIdLink[id].bcln.fileId;
+                }
+            }
+
+            //Decide if it needs to be handled as a reboot file or not
+            PartData partData = new PartData();
+            if (id >= 100000)
+            {
+                string reb = $"{rebootStart}{typeStr}{adjustedId}.ice";
+                string rebEx = $"{rebootExStart}{typeStr}{adjustedId}_ex.ice";
+                string rebHash = GetFileHash(reb);
+                string rebExHash = GetFileHash(rebEx);
+
+                string rebLinkedInner = $"{rebootStart}b1_{adjustedId + 50000}.ice";
+                string rebLinkedInnerEx = $"{rebootExStart}b1_{adjustedId + 50000}_ex.ice";
+                string rebLinkedInnerHash = GetFileHash(rebLinkedInner);
+                string rebLinkedInnerExHash = GetFileHash(rebLinkedInnerEx);
+
+
+                AddBodyExtraFiles(partData, rebEx, pso2_binDir, "_" + typeStr, isClassic: true);
+                AddOutfitSound(partData, pso2_binDir, soundId);
+
+                costumeOuterFilename = rebExHash;
+
+                if(costume == false)
+                {
+                    costumeOuterLinkedInnerFilename = rebLinkedInnerExHash;
+                }
+            }
+            else
+            {
+                string finalId = $"{adjustedId:D5}";
+                string classic = $"{classicStart}{typeStr}{finalId}.ice";
+
+                var classicHash = GetFileHash(classic);
+                AddBodyExtraFiles(partData, classic, pso2_binDir, "_" + typeStr, isClassic: true);
+                AddOutfitSound(partData, pso2_binDir, soundId);
+
+                costumeOuterFilename = classicHash;
+                costumeOuterLinkedInnerFilename = null;
+            }
+            costumeOuterHNFilename = partData.handsHash;
+            costumeOuterSound = partData.soundHash;
         }
 
         //String 0 should be the aqp, string 1 should be the aqn

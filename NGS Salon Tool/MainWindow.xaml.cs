@@ -84,6 +84,7 @@ namespace NGS_Salon_Tool
             if (File.Exists(pso2BinCachePath))
             {
                 LoadGameData();
+                setPSO2Button.Header = $"Set pso2_bin directory. Current dir is: {File.ReadAllText(pso2BinCachePath)}";
             }
             else
             {
@@ -257,9 +258,10 @@ namespace NGS_Salon_Tool
             + "|V11 Salon files (*." + letterOne + letterTwo + "p)|*." + letterOne + letterTwo + "p"
             + "|V12 Salon files (*." + letterOne + letterTwo + "p)|*." + letterOne + letterTwo + "p"
             + "|V13 Salon files (*." + letterOne + letterTwo + "p)|*." + letterOne + letterTwo + "p"
+            + "|V14 Salon files (*." + letterOne + letterTwo + "p)|*." + letterOne + letterTwo + "p"
             + "|cml files (*.cml)|*.cml";
 
-            saveFileDialog.FilterIndex = 8; 
+            saveFileDialog.FilterIndex = 9;
             //+ "|Data Dump (*.txt)|*.txt";
 
             if (saveFileDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
@@ -299,6 +301,10 @@ namespace NGS_Salon_Tool
                         SaveXXP(saveFileDialog.FileName);
                         break;
                     case 9:
+                        xxpHandler.xxpVersion = 0xE;
+                        SaveXXP(saveFileDialog.FileName);
+                        break;
+                    case 10:
                         SaveCML(saveFileDialog.FileName);
                         break;
                     default:
@@ -396,6 +402,8 @@ namespace NGS_Salon_Tool
                     return new CharacterHandlerReboot.xxpGeneralReboot(streamReader.Read<CharacterMainStructs.XXPV12>());
                 case 13:
                     return new CharacterHandlerReboot.xxpGeneralReboot(streamReader.Read<CharacterMainStructs.XXPV13>());
+                case 14:
+                    return new CharacterHandlerReboot.xxpGeneralReboot(streamReader.Read<CharacterMainStructs.XXPV14>());
                 default:
                     MessageBox.Show("Error: File version unknown. If this is a proper salon file, please report this!");
                     return null;
@@ -507,6 +515,7 @@ namespace NGS_Salon_Tool
             skinVariantUD.Value = xxpHandler.skinVariant;
             cmlVariableUD.Value = xxpHandler.cmlVariant;
             eyebrowDensityUD.Value = xxpHandler.eyebrowDensity;
+            celShadingIsEnabledCheck.IsChecked = xxpHandler.celShadingIsEnabled > 0 ? true : false;
 
             //VISI
             bwOrn1Check.IsChecked = xxpHandler.ngsVISI.hideBasewearOrnament1 > 0 ? true : false;
@@ -637,7 +646,16 @@ namespace NGS_Salon_Tool
         private void LoadGameData()
         {
             pso2_binDir = File.ReadAllText(pso2BinCachePath);
-            if(wipBox == null)
+            if (!Directory.Exists(pso2_binDir))
+            {
+                MessageBox.Show("pso2_bin path is invalid!\n" +
+                    "Without it, character part names and icons won't appear!\n" +
+                    "It can be set through File->Set pso2_bin directory");
+                
+                return;
+            }
+
+            if (wipBox == null)
             {
                 wipBox = new WIPBox("Generating name cache.");
             }
@@ -694,6 +712,7 @@ namespace NGS_Salon_Tool
 
                 File.WriteAllText(pso2BinCachePath, pso2BinSelect.FileName);
                 LoadGameData();
+                setPSO2Button.Header = $"Set pso2_bin directory. Current is: {pso2BinSelect.FileName}";
             }
         }
 
@@ -1679,6 +1698,10 @@ namespace NGS_Salon_Tool
         private void InnerWearVisiChanged(object sender, RoutedEventArgs e)
         {
             xxpHandler.ngsVISI.hideInnerwear = (bool)innerCheck.IsChecked ? 1 : 0;
+        }
+        private void CelShadingEnabledChanged(object sender, RoutedEventArgs e)
+        {
+            xxpHandler.celShadingIsEnabled = (bool)celShadingIsEnabledCheck.IsChecked ? 1 : 0;
         }
 
         public void SetGlobalMin(object sender, RoutedEventArgs e)
