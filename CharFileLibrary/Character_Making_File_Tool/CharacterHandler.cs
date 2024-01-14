@@ -339,6 +339,51 @@ namespace Character_Making_File_Tool
             return fileData;
         }
 
+        public static byte[] DecryptINC(string inFilename)
+        {
+            byte[] header;
+            byte[] sizeBuffer = new byte[4];
+            byte[] encryptedData;
+            byte[] decryptedData;
+            byte[] fileData;
+            uint key;
+            int dataSize;
+
+            using (Stream stream = (Stream)new FileStream(inFilename, FileMode.Open))
+            {
+                stream.Seek(4, SeekOrigin.Begin);
+
+                stream.Read(sizeBuffer, 0, 4);
+                key = BitConverter.ToUInt32(((IEnumerable<byte>)sizeBuffer).Reverse<byte>().ToArray<byte>(), 0);
+                dataSize = BitConverter.ToInt32(sizeBuffer, 0);
+
+                encryptedData = new byte[dataSize];
+                header = new byte[8];
+
+                stream.Seek(0L, SeekOrigin.Begin);
+                stream.Read(header, 0, 8);
+                stream.Seek(8, SeekOrigin.Begin);
+                stream.Read(encryptedData, 0, dataSize);
+            }
+            if (inFilename.LastOrDefault() == 'u')
+            {
+                decryptedData = encryptedData;
+            }
+            else
+            {
+                decryptedData = new BlewFish(key ^ CharacterBlowfishKey).decryptBlock(encryptedData);
+            }
+
+            using (MemoryStream memoryStream = new MemoryStream())
+            {
+                memoryStream.Write(header, 0, 8);
+                memoryStream.Write(decryptedData, 0, dataSize);
+                fileData = memoryStream.ToArray();
+            }
+
+            return fileData;
+        }
+
         public void DumpData(string filename, byte[] fileData)
         {
             var fileDumpPath = Path.Combine(Path.GetDirectoryName(filename), Path.GetFileNameWithoutExtension(filename) + "_decrypted.txt");
