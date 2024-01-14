@@ -732,6 +732,22 @@ namespace NGS_Salon_Tool
                 }
             }
         }
+        private void DecryptINC(object sender, RoutedEventArgs e)
+        {
+            System.Windows.Forms.OpenFileDialog openFileDialog = new System.Windows.Forms.OpenFileDialog()
+            {
+                Title = "Select data file(s)",
+                Filter = "File |*.dat",
+                Multiselect = true
+            };
+            if (openFileDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            {
+                foreach (var file in openFileDialog.FileNames)
+                {
+                    File.WriteAllBytes(file + "u", CharacterHandler.DecryptINC(file));
+                }
+            }
+        }
 
         private void EncryptXXPs(object sender, RoutedEventArgs e)
         {
@@ -1792,28 +1808,28 @@ namespace NGS_Salon_Tool
                 case "Bust":
                     SetProportionsVec3UI(xxpHandler.baseFIGR.bustVerts);
                     break;
-                case "Head":
+                case "NGS Face Head":
                     SetProportionsVec3UI(xxpHandler.baseFIGR.headVerts);
                     break;
-                case "Face Shape":
+                case "NGS Face Face Shape":
                     SetProportionsVec3UI(xxpHandler.baseFIGR.faceShapeVerts);
                     break;
-                case "Eye Shape":
+                case "NGS Face Eye Shape":
                     SetProportionsVec3UI(xxpHandler.baseFIGR.eyeShapeVerts);
                     break;
-                case "Nose Height":
+                case "NGS Face Nose Height":
                     SetProportionsVec3UI(xxpHandler.baseFIGR.noseHeightVerts);
                     break;
-                case "Nose Shape":
+                case "NGS Face Nose Shape":
                     SetProportionsVec3UI(xxpHandler.baseFIGR.noseShapeVerts);
                     break;
-                case "Mouth":
+                case "NGS Face Mouth":
                     SetProportionsVec3UI(xxpHandler.baseFIGR.mouthVerts);
                     break;
-                case "Ears":
+                case "NGS Face Ears":
                     SetProportionsVec3UI(xxpHandler.baseFIGR.ear_hornVerts);
                     break;
-                case "Neck":
+                case "NGS Face Neck":
                     SetProportionsVec3UI(xxpHandler.neckVerts);
                     break;
                 case "Waist":
@@ -1822,39 +1838,41 @@ namespace NGS_Salon_Tool
                 case "Hands":
                     SetProportionsVec3UI(xxpHandler.hands);
                     break;
-                case "Horns":
+                case "NGS Face Horns":
                     SetProportionsVec3UI(xxpHandler.hornVerts);
                     break;
-                case "Alt Face Head":
+                case "Classic Face Head":
                     SetProportionsVec3UI(xxpHandler.classicFace.headVerts);
                     break;
-                case "Alt Face Face Shape":
+                case "Classic Face Face Shape":
                     SetProportionsVec3UI(xxpHandler.classicFace.faceShapeVerts);
                     break;
-                case "Alt Face Eye Shape":
+                case "Classic Face Eye Shape":
                     SetProportionsVec3UI(xxpHandler.classicFace.eyeShapeVerts);
                     break;
-                case "Alt Face Nose Height":
+                case "Classic Face Nose Height":
                     SetProportionsVec3UI(xxpHandler.classicFace.noseHeightVerts);
                     break;
-                case "Alt Face Nose Shape":
+                case "Classic Face Nose Shape":
                     SetProportionsVec3UI(xxpHandler.classicFace.noseShapeVerts);
                     break;
-                case "Alt Face Mouth":
+                case "Classic Face Mouth":
                     SetProportionsVec3UI(xxpHandler.classicFace.mouthVerts);
                     break;
-                case "Alt Face Ears":
+                case "Classic Face Ears":
                     SetProportionsVec3UI(xxpHandler.classicFace.ear_hornVerts);
                     break;
-                case "Alt Face Necks":
+                case "Classic Face Neck":
                     SetProportionsVec3UI(xxpHandler.classicFace.neckVerts);
                     break;
-                case "Alt Face Horns":
+                case "Classic Face Horns":
                     SetProportionsVec3UI(xxpHandler.classicFace.hornVerts);
                     break;
-                case "Alt Face Unknown":
+                case "Classic Face Unknown":
                     SetProportionsVec3UI(xxpHandler.classicFace.unkFaceVerts);
                     break;
+                default:
+                    throw new Exception();
             }
         }
 
