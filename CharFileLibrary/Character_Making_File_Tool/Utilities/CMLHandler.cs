@@ -69,7 +69,7 @@ namespace Character_Making_File_Tool
 
             //Seek past vtbf tag
             streamReader.Seek(0x10, SeekOrigin.Current);          //VTBF + CMLP tags
-
+            bool hasClassicFaceData = false; //Track if classic face data is stored in an NGS file. If not, this is a classic file and we copy the face values into the old slots.
             //Previous CML iterations had unique ids for each variable in the file. However now they simply have unique ids per tag type.
             //There often are multiple of the same tag type placed about the file, though these shouldn't ever overlap.
             while (streamReader.Position() < dataEnd)
@@ -114,7 +114,12 @@ namespace Character_Making_File_Tool
                             xxp.neckAngle = extraArr[2];
                         }
 
-                        //Alt Face
+                        //Classic Face
+                        if (figr.ContainsKey(0x30))
+                        {
+                            hasClassicFaceData = true;
+                        }
+
                         TryGetFromArray(ref xxp.classicFace.headVerts, figr, 0x30);
                         TryGetFromArray(ref xxp.classicFace.faceShapeVerts, figr, 0x31);
                         TryGetFromArray(ref xxp.classicFace.eyeShapeVerts, figr, 0x32);
@@ -133,7 +138,7 @@ namespace Character_Making_File_Tool
                         break;
                     case "OFST":
                         var ofst = data[0];
-                        foreach(int key in ofst.Keys)
+                        foreach (int key in ofst.Keys)
                         {
                             TryGetFromOFST(ref xxp.accessorySlidersReboot, ofst, key);
                         }
@@ -241,14 +246,14 @@ namespace Character_Making_File_Tool
                             TryGet(ref xxp.baseSLCT.eyePart, slct, 0x43);
                             TryGet(ref xxp.leftEyePart, slct, 0x63);
                         }
-                        else if(slct.ContainsKey(0x43))
+                        else if (slct.ContainsKey(0x43))
                         {
                             if (xxp.cmlVariant >= 0x9 || xxp.baseDOC.race != 0x3)
                             {
                                 TryGet(ref xxp.baseSLCT.eyePart, slct, 0x43);
                                 TryGet(ref xxp.leftEyePart, slct, 0x43);
                             }
-                            else 
+                            else
                             {
                                 var eyeBytes = BitConverter.GetBytes((int)slct[0x43]);
                                 xxp.baseSLCT.eyePart = eyeBytes[0];
@@ -293,7 +298,7 @@ namespace Character_Making_File_Tool
                         //VISI values are stored in the first byte of the int as bitflags. Why? I don't know!
                         var visi = data[0];
                         //Usually has 0xC0 and 0xC1. Unsure if 0xC1 is used.
-                        if(visi.ContainsKey(0xC0))
+                        if (visi.ContainsKey(0xC0))
                         {
                             byte[] ornaments = BitConverter.GetBytes((int)visi[0xC0]);
                             xxp.ngsVISI.hideBasewearOrnament1 = (ornaments[0] & 0b00000001) > 0 ? 1 : 0;
@@ -310,10 +315,11 @@ namespace Character_Making_File_Tool
                         break;
                     case "EXPR":
                         FaceExpressionV11[] expressions;
-                        if(xxp.baseDOC.gender == 0)
+                        if (xxp.baseDOC.gender == 0)
                         {
                             expressions = CharacterStructConstants.defaultMaleExpressions;
-                        } else
+                        }
+                        else
                         {
                             expressions = CharacterStructConstants.defaultFemaleExpressions;
                         }
@@ -336,19 +342,24 @@ namespace Character_Making_File_Tool
                         //Data being null signfies that the last thing read wasn't a proper tag. This should mean the end of the VTBF stream if nothing else.
                         if (data == null)
                         {
+                            CopyToClassicFace(xxp, hasClassicFaceData);
                             return xxp;
                         }
                         throw new System.Exception($"Unexpected tag at {streamReader.Position().ToString("X")}! {tagType} Please report!");
                 }
             }
+            CopyToClassicFace(xxp, hasClassicFaceData);
 
+            return xxp;
+        }
+
+        private static unsafe void CopyToClassicFace(CharacterHandlerReboot.xxpGeneralReboot xxp, bool hasClassicFaceData)
+        {
             //At least up to xxp v13 era, cmls seem to still use the main face as the primary face, even though they have alt face slots. This will fix NPCs that use old type faces for v13+ xxp
-            if(xxp.baseSLCT.faceTypePart < 100000)
+            if (!hasClassicFaceData)
             {
                 xxp.classicFace = xxp.GetNGSFaceData();
             }
-
-            return xxp;
         }
 
         public static void TryGet<T>(ref T value, Dictionary<int, object> dict, int key)
