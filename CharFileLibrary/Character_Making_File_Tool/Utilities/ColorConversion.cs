@@ -162,6 +162,14 @@ namespace Character_Making_File_Tool
         {
             double horizontalSlider = (double)vec3.X / MaxSliderClassicHue * 6;
             double verticalSlider = (double)vec3.Y / MaxSliderClassicLightness * 5;
+            if (horizontalSlider < 0)
+            {
+                horizontalSlider = 0;
+            }
+            if (verticalSlider < 0)
+            {
+                verticalSlider = 0;
+            }
             int leftColumn = (int)Math.Floor(horizontalSlider);
             int rightColumn = (int)Math.Ceiling(horizontalSlider);
             int topRow = (int)Math.Floor(verticalSlider);
