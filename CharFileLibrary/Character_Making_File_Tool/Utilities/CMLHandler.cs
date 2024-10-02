@@ -1,17 +1,14 @@
 ﻿using AquaModelLibrary;
+using AquaModelLibrary.AquaMethods;
 using Reloaded.Memory.Streams;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Runtime.InteropServices;
 using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
+using static Character_Making_File_Tool.CharacterConstants;
 using static Character_Making_File_Tool.CharacterDataStructs;
 using static Character_Making_File_Tool.CharacterDataStructsReboot;
-using static Character_Making_File_Tool.CharacterConstants;
-using AquaModelLibrary.AquaMethods;
 
 namespace Character_Making_File_Tool
 {
@@ -140,14 +137,14 @@ namespace Character_Making_File_Tool
                         var ofst = data[0];
                         foreach (int key in ofst.Keys)
                         {
-                            TryGetFromOFST(ref xxp.accessorySlidersReboot, ofst, key);
+                            TryGetFromOFST(ref xxp.accessorySlidersRebootExtended, ofst, key);
                         }
                         break;
                     case "ACWK":
                         var acwk = data[0];
                         foreach (int key in acwk.Keys)
                         {
-                            TryGetFromACWK(ref xxp.accessoryMiscData, acwk, key);
+                            TryGetFromACWK(ref xxp.accessoryMiscDataExtended, acwk, key);
                         }
                         break;
                     case "COLR":
@@ -234,6 +231,14 @@ namespace Character_Making_File_Tool
                         TryGet(ref xxp.baseSLCTNGS.acc10Part, slct, 0x9);
                         TryGet(ref xxp.baseSLCTNGS.acc11Part, slct, 0xA);
                         TryGet(ref xxp.baseSLCTNGS.acc12Part, slct, 0xB);
+
+                        //Guesses on these
+                        TryGet(ref xxp.slctNGSExtended.acc13Part, slct, 0xC);
+                        TryGet(ref xxp.slctNGSExtended.acc14Part, slct, 0xD);
+                        TryGet(ref xxp.slctNGSExtended.acc15Part, slct, 0xE);
+                        TryGet(ref xxp.slctNGSExtended.acc16Part, slct, 0xF);
+                        TryGet(ref xxp.slctNGSExtended.acc17Part, slct, 0x10);
+                        TryGet(ref xxp.slctNGSExtended.acc18Part, slct, 0x11);
 
                         //Paint priority
                         TryGet(ref xxp.paintPriority.priority1, slct, 0x60);
@@ -364,7 +369,7 @@ namespace Character_Making_File_Tool
 
         public static void TryGet<T>(ref T value, Dictionary<int, object> dict, int key)
         {
-            if(dict.TryGetValue(key, out object dictValue))
+            if (dict.TryGetValue(key, out object dictValue))
             {
                 value = (T)Convert.ChangeType(dictValue, typeof(T));
             }
@@ -378,7 +383,7 @@ namespace Character_Making_File_Tool
             }
         }
 
-        public static unsafe void TryGetFromACWK(ref CharacterDataStructsReboot.AccessoryMisc misc, Dictionary<int, object> dict, int key)
+        public static unsafe void TryGetFromACWK(ref CharacterDataStructsReboot.AccessoryMiscExtended misc, Dictionary<int, object> dict, int key)
         {
             if (dict.TryGetValue(key, out object dictValue))
             {
@@ -388,14 +393,14 @@ namespace Character_Making_File_Tool
             }
         }
 
-        public static unsafe void TryGetFromOFST(ref CharacterDataStructsReboot.AccessorySlidersReboot sliders, Dictionary<int, object> dict, int key)
+        public static unsafe void TryGetFromOFST(ref CharacterDataStructsReboot.AccessorySlidersRebootExtended sliders, Dictionary<int, object> dict, int key)
         {
             int set = key / 0x10;
             int idMult = key % 0x10;
             if (dict.TryGetValue(key, out object dictValue))
             {
                 sbyte[] sbytes = (sbyte[])dictValue;
-                switch(set)
+                switch (set)
                 {
                     //Pos
                     case 0xB:
@@ -428,7 +433,7 @@ namespace Character_Making_File_Tool
             if (dict.TryGetValue(key, out object dictValue))
             {
                 var bytes = BitConverter.GetBytes((int)dictValue);
-                for(int i = 0; i < 4; i++)
+                for (int i = 0; i < 4; i++)
                 {
                     value[i] = bytes[i];
                 }
@@ -437,17 +442,17 @@ namespace Character_Making_File_Tool
 
         public static unsafe FaceExpressionV11 TryGetEXPR(Dictionary<int, object> dict, int key, FaceExpressionV11 defaultExpression)
         {
-            if(dict.TryGetValue(key, out object dictValue))
+            if (dict.TryGetValue(key, out object dictValue))
             {
                 List<sbyte> values = new List<sbyte>();
                 if (dictValue is byte[][])
                 {
-                    foreach(var arr in (sbyte[][])dictValue)
+                    foreach (var arr in (sbyte[][])dictValue)
                     {
                         values.AddRange(arr);
                     }
                 }
-                else if(dictValue is byte[] || dictValue is sbyte[])
+                else if (dictValue is byte[] || dictValue is sbyte[])
                 {
                     values.AddRange((sbyte[])dictValue);
                 }
@@ -485,10 +490,11 @@ namespace Character_Making_File_Tool
             VTBFMethods.addBytes(figr, 0x3, 0x48, 0x1, Reloaded.Memory.Struct.GetBytes(xxp.baseFIGR.bustVerts));
 
             FaceFIGR faceValues;
-            if(xxp.baseSLCT.faceTypePart >= 100000)
+            if (xxp.baseSLCT.faceTypePart >= 100000)
             {
                 faceValues = xxp.GetNGSFaceData();
-            } else
+            }
+            else
             {
                 //For CMLs, the game seems to still use the original face values, even though for character data it switches pending faceTypePart value.
                 faceValues = xxp.GetClassicFaceData();
@@ -524,10 +530,10 @@ namespace Character_Making_File_Tool
 
             //OFST - Scale
             List<byte> ofstScale = new List<byte>();
-            for(int i = 0; i < 0x24; i += 3)
+            for (int i = 0; i < 0x24; i += 3)
             {
-                VTBFMethods.addBytes(ofstScale, (byte)(0x90 + (i / 3)), 0x83, 0x8, 0x2, 
-                    new byte[] { (byte)xxp.accessorySlidersReboot.posSliders[i], (byte)xxp.accessorySlidersReboot.posSliders[i + 1], (byte)xxp.accessorySlidersReboot.posSliders[i + 2] } );
+                VTBFMethods.addBytes(ofstScale, (byte)(0x90 + (i / 3)), 0x83, 0x8, 0x2,
+                    new byte[] { (byte)xxp.accessorySlidersRebootExtended.posSliders[i], (byte)xxp.accessorySlidersRebootExtended.posSliders[i + 1], (byte)xxp.accessorySlidersRebootExtended.posSliders[i + 2] });
             }
             VTBFMethods.WriteTagHeader(ofstScale, "OFST", 0, 0xC);
             cml.AddRange(ofstScale);
@@ -537,7 +543,7 @@ namespace Character_Making_File_Tool
             for (int i = 0; i < 0x24; i += 3)
             {
                 VTBFMethods.addBytes(ofstPos, (byte)(0xA0 + (i / 3)), 0x83, 0x8, 0x2,
-                    new byte[] { (byte)xxp.accessorySlidersReboot.rotSliders[i], (byte)xxp.accessorySlidersReboot.rotSliders[i + 1], (byte)xxp.accessorySlidersReboot.rotSliders[i + 2] });
+                    new byte[] { (byte)xxp.accessorySlidersRebootExtended.rotSliders[i], (byte)xxp.accessorySlidersRebootExtended.rotSliders[i + 1], (byte)xxp.accessorySlidersRebootExtended.rotSliders[i + 2] });
             }
             VTBFMethods.WriteTagHeader(ofstPos, "OFST", 0, 0xC);
             cml.AddRange(ofstPos);
@@ -547,20 +553,20 @@ namespace Character_Making_File_Tool
             for (int i = 0; i < 0x24; i += 3)
             {
                 VTBFMethods.addBytes(ofstRot, (byte)(0xB0 + (i / 3)), 0x83, 0x8, 0x2,
-                    new byte[] { (byte)xxp.accessorySlidersReboot.scaleSliders[i], (byte)xxp.accessorySlidersReboot.scaleSliders[i + 1], (byte)xxp.accessorySlidersReboot.scaleSliders[i + 2] });
+                    new byte[] { (byte)xxp.accessorySlidersRebootExtended.scaleSliders[i], (byte)xxp.accessorySlidersRebootExtended.scaleSliders[i + 1], (byte)xxp.accessorySlidersRebootExtended.scaleSliders[i + 2] });
             }
             VTBFMethods.WriteTagHeader(ofstRot, "OFST", 0, 0xC);
             cml.AddRange(ofstRot);
 
             //ACWK
             List<byte> acwk = new List<byte>();
-            for(int i = 0; i < 0xC; i++)
+            for (int i = 0; i < 0x12; i++)
             {
-                VTBFMethods.addBytes(acwk, (byte)(0x0 + i), 0x48, 0x1, BitConverter.GetBytes((int)xxp.accessoryMiscData.accessoryAttach[i]));
-                acwk.AddRange(BitConverter.GetBytes((int)xxp.accessoryMiscData.accessoryColorChoices[i * 2]));
-                acwk.AddRange(BitConverter.GetBytes((int)xxp.accessoryMiscData.accessoryColorChoices[i * 2 + 1]));
+                VTBFMethods.addBytes(acwk, (byte)(0x0 + i), 0x48, 0x1, BitConverter.GetBytes((int)xxp.accessoryMiscDataExtended.accessoryAttach[i]));
+                acwk.AddRange(BitConverter.GetBytes((int)xxp.accessoryMiscDataExtended.accessoryColorChoices[i * 2]));
+                acwk.AddRange(BitConverter.GetBytes((int)xxp.accessoryMiscDataExtended.accessoryColorChoices[i * 2 + 1]));
             }
-            VTBFMethods.WriteTagHeader(acwk, "ACWK", 0, 0xC);
+            VTBFMethods.WriteTagHeader(acwk, "ACWK", 0, 0x12);
             cml.AddRange(acwk);
 
             //COL2
@@ -636,7 +642,15 @@ namespace Character_Making_File_Tool
             VTBFMethods.addBytes(slct, 0xA, 0x8, BitConverter.GetBytes(xxp.baseSLCTNGS.acc11Part));
             VTBFMethods.addBytes(slct, 0xB, 0x8, BitConverter.GetBytes(xxp.baseSLCTNGS.acc12Part));
 
-            VTBFMethods.WriteTagHeader(slct, "SLCT", 0, 0x21);
+            //NGS Extended Accessories
+            VTBFMethods.addBytes(slct, 0xC, 0x8, BitConverter.GetBytes(xxp.slctNGSExtended.acc13Part));
+            VTBFMethods.addBytes(slct, 0xD, 0x8, BitConverter.GetBytes(xxp.slctNGSExtended.acc14Part));
+            VTBFMethods.addBytes(slct, 0xD, 0x8, BitConverter.GetBytes(xxp.slctNGSExtended.acc15Part));
+            VTBFMethods.addBytes(slct, 0xD, 0x8, BitConverter.GetBytes(xxp.slctNGSExtended.acc16Part));
+            VTBFMethods.addBytes(slct, 0xD, 0x8, BitConverter.GetBytes(xxp.slctNGSExtended.acc17Part));
+            VTBFMethods.addBytes(slct, 0xD, 0x8, BitConverter.GetBytes(xxp.slctNGSExtended.acc18Part));
+
+            VTBFMethods.WriteTagHeader(slct, "SLCT", 0, 0x27);
             cml.AddRange(slct);
 
             //SLCT - Paint Priority
@@ -706,7 +720,7 @@ namespace Character_Making_File_Tool
             //EXPR
             List<byte> expr = new List<byte>();
 
-            switch(version)
+            switch (version)
             {
                 case 0xA:
                     VTBFMethods.addBytes(expr, 0x0, 0x83, 0x8, 0x11, Reloaded.Memory.Struct.GetBytes(xxp.faceNatural.expStruct));

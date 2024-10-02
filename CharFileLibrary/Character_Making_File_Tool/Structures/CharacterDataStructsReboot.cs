@@ -5,11 +5,139 @@ namespace Character_Making_File_Tool
 {
     public unsafe class CharacterDataStructsReboot
     {
+        public struct AccessorySlidersRebootExtended
+        {
+            public fixed sbyte posSliders[0x36];
+            public fixed sbyte scaleSliders[0x36];
+            public fixed sbyte rotSliders[0x36];
+            /// <summary>
+            /// Probably just padding to 0x4
+            /// </summary>
+            public ushort padding;
+
+            public AccessorySlidersReboot GetRebootAccessorySliders()
+            {
+                AccessorySlidersReboot acceSl = new();
+                for (int i = 0; i < 0x24; i++)
+                {
+                    acceSl.posSliders[i] = posSliders[i];
+                    acceSl.scaleSliders[i] = scaleSliders[i];
+                    acceSl.rotSliders[i] = rotSliders[i];
+                }
+
+                return acceSl;
+            }
+
+            public AccessorySliders GetClassicAccessorySliders()
+            {
+                AccessorySliders acceSl = new();
+                for (int i = 0; i < 0xC; i++)
+                {
+                    acceSl.sliders[i] = posSliders[i];
+                    acceSl.sliders[i + 0xC] = scaleSliders[i];
+                    acceSl.sliders[i + 0x18] = rotSliders[i];
+                }
+
+                return acceSl;
+            }
+
+            public OldAccessorySliders GetOldAccessorySliders()
+            {
+                OldAccessorySliders oldSliders = new();
+
+                //Position
+                //Accessory 1 Y+Z
+                oldSliders.oldSliders[0] = SignednibblePack(posSliders[1], posSliders[2]);
+                //Accessory 4 X + Accessory 1 X
+                oldSliders.oldSliders[1] = SignednibblePack(posSliders[9], posSliders[0]);
+
+                //Accessory 2 Y+Z
+                oldSliders.oldSliders[2] = SignednibblePack(posSliders[4], posSliders[5]);
+                //Accessory 4 Y + Accessory 2 X
+                oldSliders.oldSliders[3] = SignednibblePack(posSliders[10], posSliders[3]);
+
+                //Accessory 3 Y+Z
+                oldSliders.oldSliders[4] = SignednibblePack(posSliders[7], posSliders[8]);
+                //Accessory 4 Y + Accessory 3 X
+                oldSliders.oldSliders[5] = SignednibblePack(posSliders[11], posSliders[6]);
+
+                //Scale
+                //Accessory 1 Y+Z
+                oldSliders.oldSliders[6] = SignednibblePack(scaleSliders[1], scaleSliders[2]);
+                //Accessory 4 X + Accessory 1 X
+                oldSliders.oldSliders[7] = SignednibblePack(scaleSliders[9], scaleSliders[0]);
+
+                //Accessory 2 Y+Z
+                oldSliders.oldSliders[8] = SignednibblePack(scaleSliders[4], scaleSliders[5]);
+                //Accessory 4 Y + Accessory 2 X
+                oldSliders.oldSliders[9] = SignednibblePack(scaleSliders[10], scaleSliders[3]);
+
+                //Accessory 3 Y+Z
+                oldSliders.oldSliders[10] = SignednibblePack(scaleSliders[7], scaleSliders[8]);
+                //Accessory 4 Y + Accessory 3 X
+                oldSliders.oldSliders[11] = SignednibblePack(scaleSliders[11], scaleSliders[6]);
+
+                //Rotation
+                //Accessory 1 Y+Z
+                oldSliders.oldSliders[12] = SignednibblePack(rotSliders[1], rotSliders[2]);
+                //Accessory 4 X + Accessory 1 X
+                oldSliders.oldSliders[13] = SignednibblePack(rotSliders[9], rotSliders[0]);
+
+                //Accessory 2 Y+Z
+                oldSliders.oldSliders[14] = SignednibblePack(rotSliders[4], rotSliders[5]);
+                //Accessory 4 Y + Accessory 2 X
+                oldSliders.oldSliders[15] = SignednibblePack(rotSliders[10], rotSliders[3]);
+
+                //Accessory 3 Y+Z
+                oldSliders.oldSliders[16] = SignednibblePack(rotSliders[7], rotSliders[8]);
+                //Accessory 4 Y + Accessory 3 X
+                oldSliders.oldSliders[17] = SignednibblePack(rotSliders[11], rotSliders[6]);
+
+                return oldSliders;
+            }
+
+            public OldAccessoryPositionSliders GetOldAccessoryPositionSliders()
+            {
+                OldAccessoryPositionSliders oldSliders = new();
+
+                //Accessory 1 Y+Z
+                oldSliders.oldSliders[0] = SignednibblePack(posSliders[1], posSliders[2]);
+                //Accessory 4 X + Accessory 1 X
+                oldSliders.oldSliders[1] = SignednibblePack(posSliders[9], posSliders[0]);
+
+                //Accessory 2 Y+Z
+                oldSliders.oldSliders[2] = SignednibblePack(posSliders[4], posSliders[5]);
+                //Accessory 4 Y + Accessory 2 X
+                oldSliders.oldSliders[3] = SignednibblePack(posSliders[10], posSliders[3]);
+
+                //Accessory 3 Y+Z
+                oldSliders.oldSliders[4] = SignednibblePack(posSliders[7], posSliders[8]);
+                //Accessory 4 Y + Accessory 3 X
+                oldSliders.oldSliders[5] = SignednibblePack(posSliders[11], posSliders[6]);
+
+
+                return oldSliders;
+            }
+        }
+
         public struct AccessorySlidersReboot
         {
             public fixed sbyte posSliders[0x24];
             public fixed sbyte scaleSliders[0x24];
             public fixed sbyte rotSliders[0x24];
+
+            public AccessorySlidersRebootExtended GetRebootExtendedSliders()
+            {
+                AccessorySlidersRebootExtended acceSl = new();
+                for (int i = 0; i < 0x24; i++)
+                {
+                    acceSl.posSliders[i] = posSliders[i];
+                    acceSl.scaleSliders[i] = scaleSliders[i];
+                    acceSl.rotSliders[i] = rotSliders[i];
+                }
+
+                return acceSl;
+            }
 
             public AccessorySliders GetClassicAccessorySliders()
             {
@@ -108,6 +236,19 @@ namespace Character_Making_File_Tool
             //Position, Scale, and Rotation arrays 0xC bytes each, in that order.
             public fixed sbyte sliders[0x24];
 
+            public AccessorySlidersRebootExtended GetAccessorySlidersRebootExtended()
+            {
+                AccessorySlidersRebootExtended acceSl = new AccessorySlidersRebootExtended();
+                for (int i = 0; i < 0xC; i++)
+                {
+                    acceSl.posSliders[i] = sliders[i];
+                    acceSl.scaleSliders[i] = sliders[i + 0xC];
+                    acceSl.rotSliders[i] = sliders[i + 0x18];
+                }
+
+                return acceSl;
+            }
+
             public AccessorySlidersReboot GetAccessorySlidersReboot()
             {
                 AccessorySlidersReboot acceSl = new AccessorySlidersReboot();
@@ -169,6 +310,11 @@ namespace Character_Making_File_Tool
         public struct OldAccessorySliders
         {
             public fixed byte oldSliders[0x12];
+
+            public AccessorySlidersRebootExtended GetAccessorySlidersRebootExtended()
+            {
+                return GetAccessorySlidersReboot().GetRebootExtendedSliders();
+            }
 
             public AccessorySlidersReboot GetAccessorySlidersReboot()
             {
@@ -248,6 +394,11 @@ namespace Character_Making_File_Tool
         {
             public fixed byte oldSliders[0x6];
 
+            public AccessorySlidersRebootExtended GetAccessorySlidersRebootExtended()
+            {
+                return GetAccessorySlidersReboot().GetRebootExtendedSliders();
+            }
+
             public AccessorySlidersReboot GetAccessorySlidersReboot()
             {
                 AccessorySlidersReboot acceSL = new();
@@ -294,16 +445,46 @@ namespace Character_Making_File_Tool
         {
             public fixed byte accessoryAttach[0xC];
             public fixed byte accessoryColorChoices[0x18]; //Each accessory has choice 1 and choice 2 next to each other
+
+            public AccessoryMiscExtended GetAccessoryMiscExtended()
+            {
+                AccessoryMiscExtended am = new AccessoryMiscExtended();
+                for (int i = 0; i < 0xC; i++)
+                {
+                    am.accessoryAttach[i] = accessoryAttach[i];
+                }
+                for (int i = 0; i < 0x18; i++)
+                {
+                    am.accessoryColorChoices[i] = accessoryColorChoices[i];
+                }
+
+                return am;
+            }
         }
 
-        public struct AccessoryMiscAttach
+        public struct AccessoryMiscExtended
         {
-            public fixed byte accessoryAttach[0xC];
-        }
+            public fixed byte accessoryAttach[0x12];
+            public fixed byte accessoryColorChoices[0x24]; //Each accessory has choice 1 and choice 2 next to each other
+            /// <summary>
+            /// Probably just padding to 0x4
+            /// </summary>
+            public ushort padding;
 
-        public struct AccessoryMiscColor
-        {
-            public fixed byte accessoryColorChoices[0x18];
+            public AccessoryMisc GetAccessoryMisc()
+            {
+                AccessoryMisc am = new AccessoryMisc();
+                for(int i = 0; i < 0xC; i++)
+                {
+                    am.accessoryAttach[i] = accessoryAttach[i];
+                }
+                for (int i = 0; i < 0x18; i++)
+                {
+                    am.accessoryColorChoices[i] = accessoryColorChoices[i];
+                }
+
+                return am;
+            }
         }
 
         public struct BaseSLCTNGS
@@ -324,6 +505,18 @@ namespace Character_Making_File_Tool
             public uint acc11Part;
             public uint acc12Part;
         }
+
+        public struct SLCTNGSExtended
+        {
+            public uint acc13Part;
+            public uint acc14Part;
+            public uint acc15Part;
+            public uint acc16Part;
+
+            public uint acc17Part;
+            public uint acc18Part;
+        }
+
         public struct COL2
         {
             public fixed byte outerColor1[4];

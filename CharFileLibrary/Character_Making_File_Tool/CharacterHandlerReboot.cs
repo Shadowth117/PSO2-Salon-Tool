@@ -1,18 +1,9 @@
-﻿using Reloaded.Memory.Streams;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
-using static Character_Making_File_Tool.Vector3Int;
-using static Character_Making_File_Tool.CharacterHandlerUtilityMethods;
-using static Character_Making_File_Tool.CharacterMainStructs;
+﻿using System;
 using static Character_Making_File_Tool.CharacterDataStructs;
 using static Character_Making_File_Tool.CharacterDataStructsReboot;
+using static Character_Making_File_Tool.CharacterMainStructs;
 using static Character_Making_File_Tool.CharacterStructConstants;
-using System.Diagnostics;
+using static Character_Making_File_Tool.Vector3Int;
 
 namespace Character_Making_File_Tool
 {
@@ -20,7 +11,7 @@ namespace Character_Making_File_Tool
     {
         public class xxpGeneralReboot
         {
-            public int xxpVersion; 
+            public int xxpVersion;
 
             public BaseDOC baseDOC;
             public byte skinVariant; //0 or above 3 for default, 1 for human, 2 for dewman, 3 for cast. This decides the color map used for the skin. 
@@ -49,8 +40,9 @@ namespace Character_Making_File_Tool
 
             //SLCT continued
             public BaseSLCTNGS baseSLCTNGS;
+            public SLCTNGSExtended slctNGSExtended;
 
-            public AccessorySlidersReboot accessorySlidersReboot;
+            public AccessorySlidersRebootExtended accessorySlidersRebootExtended;
 
             public FaceExpressionV11 faceNatural;
             public FaceExpressionV11 faceSmile;
@@ -79,7 +71,7 @@ namespace Character_Making_File_Tool
 
             public VISI ngsVISI;
 
-            public AccessoryMisc accessoryMiscData;
+            public AccessoryMiscExtended accessoryMiscDataExtended;
 
             public CastColorIdSet castColorIds;
 
@@ -108,10 +100,11 @@ namespace Character_Making_File_Tool
                 //Eye parts 
                 byte[] eyes = BitConverter.GetBytes(baseSLCT.eyePart);
                 baseSLCT.eyePart = eyes[0];
-                if(baseDOC.race == 3)
+                if (baseDOC.race == 3)
                 {
                     leftEyePart = eyes[1];
-                } else
+                }
+                else
                 {
                     leftEyePart = eyes[0];
                 }
@@ -160,7 +153,7 @@ namespace Character_Making_File_Tool
                 //Conditionally assign premade expressions based on gender
                 SetDefaultExpressions();
 
-                accessorySlidersReboot = tempXXP.oldPosSliders.GetAccessorySlidersReboot();
+                accessorySlidersRebootExtended = tempXXP.oldPosSliders.GetAccessorySlidersRebootExtended();
 
                 paintPriority = PaintPriority.GetDefault();
 
@@ -207,7 +200,7 @@ namespace Character_Making_File_Tool
                 //Conditionally assign premade expressions based on gender
                 SetDefaultExpressions();
 
-                accessorySlidersReboot = tempXXP.oldAccessorySliders.GetAccessorySlidersReboot();
+                accessorySlidersRebootExtended = tempXXP.oldAccessorySliders.GetAccessorySlidersRebootExtended();
 
                 paintPriority = PaintPriority.GetDefault();
 
@@ -254,7 +247,7 @@ namespace Character_Making_File_Tool
                 //Conditionally assign premade expressions based on gender
                 SetDefaultExpressions();
 
-                accessorySlidersReboot = tempXXP.accessorySliders.GetAccessorySlidersReboot();
+                accessorySlidersRebootExtended = tempXXP.accessorySliders.GetAccessorySlidersRebootExtended();
 
                 paintPriority = PaintPriority.GetDefault();
 
@@ -299,7 +292,7 @@ namespace Character_Making_File_Tool
                 //Conditionally assign premade expressions based on gender
                 SetDefaultExpressions();
 
-                accessorySlidersReboot = tempXXP.accessorySliders.GetAccessorySlidersReboot();
+                accessorySlidersRebootExtended = tempXXP.accessorySliders.GetAccessorySlidersRebootExtended();
 
                 paintPriority = PaintPriority.GetDefault();
 
@@ -337,7 +330,7 @@ namespace Character_Making_File_Tool
 
                 baseSLCTNGS = tempXXP.baseSLCTNGS;
 
-                accessorySlidersReboot = tempXXP.accessorySlidersReboot;
+                accessorySlidersRebootExtended = tempXXP.accessorySlidersReboot.GetRebootExtendedSliders();
 
                 faceNatural = FaceExpressionV11.CreateExpression(tempXXP.faceNatural);
                 faceSmile = FaceExpressionV11.CreateExpression(tempXXP.faceSmile);
@@ -361,7 +354,7 @@ namespace Character_Making_File_Tool
                 int_354 = tempXXP.int_354;
                 ngsVISI = tempXXP.ngsVISI;
 
-                accessoryMiscData = tempXXP.accessoryMiscData;
+                accessoryMiscDataExtended = tempXXP.accessoryMiscData.GetAccessoryMiscExtended();
 
                 FaceFIGR face = GetNGSFaceData();
                 if (baseSLCT.faceTypePart < 100000)
@@ -397,7 +390,7 @@ namespace Character_Making_File_Tool
 
                 baseSLCTNGS = tempXXP.baseSLCTNGS;
 
-                accessorySlidersReboot = tempXXP.accessorySlidersReboot;
+                accessorySlidersRebootExtended = tempXXP.accessorySlidersReboot.GetRebootExtendedSliders();
 
                 faceNatural = tempXXP.faceNatural;
                 faceSmile = tempXXP.faceSmile;
@@ -421,7 +414,7 @@ namespace Character_Making_File_Tool
                 int_354 = tempXXP.int_354;
                 ngsVISI = tempXXP.ngsVISI;
 
-                accessoryMiscData = tempXXP.accessoryMiscData;
+                accessoryMiscDataExtended = tempXXP.accessoryMiscData.GetAccessoryMiscExtended();
 
                 FaceFIGR face = GetNGSFaceData();
                 if (baseSLCT.faceTypePart < 100000)
@@ -459,7 +452,7 @@ namespace Character_Making_File_Tool
 
                 baseSLCTNGS = tempXXP.baseSLCTNGS;
 
-                accessorySlidersReboot = tempXXP.accessorySlidersReboot;
+                accessorySlidersRebootExtended = tempXXP.accessorySlidersReboot.GetRebootExtendedSliders();
 
                 faceNatural = tempXXP.faceNatural;
                 faceSmile = tempXXP.faceSmile;
@@ -483,7 +476,7 @@ namespace Character_Making_File_Tool
                 int_354 = tempXXP.int_354;
                 ngsVISI = tempXXP.ngsVISI;
 
-                accessoryMiscData = tempXXP.accessoryMiscData;
+                accessoryMiscDataExtended = tempXXP.accessoryMiscData.GetAccessoryMiscExtended();
             }
 
             public xxpGeneralReboot(XXPV13 tempXXP)
@@ -515,7 +508,7 @@ namespace Character_Making_File_Tool
 
                 baseSLCTNGS = tempXXP.baseSLCTNGS;
 
-                accessorySlidersReboot = tempXXP.accessorySlidersReboot;
+                accessorySlidersRebootExtended = tempXXP.accessorySlidersReboot.GetRebootExtendedSliders();
 
                 faceNatural = tempXXP.faceNatural;
                 faceSmile = tempXXP.faceSmile;
@@ -539,14 +532,14 @@ namespace Character_Making_File_Tool
                 int_354 = tempXXP.int_354;
                 ngsVISI = tempXXP.ngsVISI;
 
-                accessoryMiscData = tempXXP.accessoryMiscData;
+                accessoryMiscDataExtended = tempXXP.accessoryMiscData.GetAccessoryMiscExtended();
 
                 castColorIds = tempXXP.castColorIds;
             }
 
             public xxpGeneralReboot(XXPV14 tempXXP)
             {
-                xxpVersion = 13;
+                xxpVersion = 14;
 
                 baseDOC = tempXXP.baseDOC;
                 skinVariant = tempXXP.skinVariant;
@@ -573,7 +566,7 @@ namespace Character_Making_File_Tool
 
                 baseSLCTNGS = tempXXP.baseSLCTNGS;
 
-                accessorySlidersReboot = tempXXP.accessorySlidersReboot;
+                accessorySlidersRebootExtended = tempXXP.accessorySlidersReboot.GetRebootExtendedSliders();
 
                 faceNatural = tempXXP.faceNatural;
                 faceSmile = tempXXP.faceSmile;
@@ -597,7 +590,69 @@ namespace Character_Making_File_Tool
                 int_354 = tempXXP.int_354;
                 ngsVISI = tempXXP.ngsVISI;
 
-                accessoryMiscData = tempXXP.accessoryMiscData;
+                accessoryMiscDataExtended = tempXXP.accessoryMiscData.GetAccessoryMiscExtended();
+
+                castColorIds = tempXXP.castColorIds;
+
+                celShadingIsEnabled = tempXXP.celShadingIsEnabled;
+            }
+
+            public xxpGeneralReboot(XXPV15 tempXXP)
+            {
+                xxpVersion = 15;
+
+                baseDOC = tempXXP.baseDOC;
+                skinVariant = tempXXP.skinVariant;
+                eyebrowDensity = tempXXP.eyebrowDensity;
+                cmlVariant = tempXXP.cmlVariant;
+
+                baseFIGR = tempXXP.baseFIGR;
+                neckVerts = tempXXP.neckVerts;
+                waistVerts = tempXXP.waistVerts;
+
+                hands = tempXXP.hands;
+                hornVerts = tempXXP.horns;
+                eyeSize = tempXXP.eyeSize;
+                eyeHorizontalPosition = tempXXP.eyeHorizontalPosition;
+                neckAngle = tempXXP.neckAngle;
+
+                classicFace = tempXXP.classicFace;
+
+                ngsCOL2 = tempXXP.ngsCOL2;
+
+                baseSLCT = tempXXP.baseSLCT;
+                baseSLCT2 = tempXXP.baseSLCT2;
+                leftEyePart = tempXXP.leftEyePart;
+
+                baseSLCTNGS = tempXXP.baseSLCTNGS;
+                
+                slctNGSExtended = tempXXP.slctNGSExtended;
+
+                accessorySlidersRebootExtended = tempXXP.accessorySlidersRebootExtended;
+
+                faceNatural = tempXXP.faceNatural;
+                faceSmile = tempXXP.faceSmile;
+                faceAngry = tempXXP.faceAngry;
+                faceSad = tempXXP.faceSad;
+
+                faceSus = tempXXP.faceSus;
+                faceEyesClosed = tempXXP.faceEyesClosed;
+                faceSmile2 = tempXXP.faceSmile2;
+                faceWink = tempXXP.faceWink;
+
+                faceUnused1 = tempXXP.faceUnused1;
+                faceUnused2 = tempXXP.faceUnused2;
+
+                paintPriority = tempXXP.paintPriority;
+
+                ngsSLID = tempXXP.ngsSLID;
+                ngsMTON = tempXXP.ngsMTON;
+
+                int_350 = tempXXP.int_350;
+                int_354 = tempXXP.int_354;
+                ngsVISI = tempXXP.ngsVISI;
+
+                accessoryMiscDataExtended = tempXXP.accessoryMiscDataExtended;
 
                 castColorIds = tempXXP.castColorIds;
 
@@ -643,7 +698,7 @@ namespace Character_Making_File_Tool
                 xxpv5.baseCOLR = ColorConversion.COL2ToCOLR(ngsCOL2, baseDOC.race);
                 xxpv5.baseSLCT = baseSLCT;
                 xxpv5.baseSLCT2 = baseSLCT2;
-                xxpv5.oldPosSliders = accessorySlidersReboot.GetOldAccessoryPositionSliders();
+                xxpv5.oldPosSliders = accessorySlidersRebootExtended.GetOldAccessoryPositionSliders();
 
                 if (baseSLCT.faceTypePart < 100000)
                 {
@@ -678,9 +733,9 @@ namespace Character_Making_File_Tool
                 xxpv6.baseFIGR2.ToOld();
 
                 xxpv6.baseCOLR = ColorConversion.COL2ToCOLR(ngsCOL2, baseDOC.race);
-                xxpv6.baseSLCT = baseSLCT; 
+                xxpv6.baseSLCT = baseSLCT;
                 xxpv6.baseSLCT2 = baseSLCT2;
-                xxpv6.oldAccessorySliders = accessorySlidersReboot.GetOldAccessorySliders();
+                xxpv6.oldAccessorySliders = accessorySlidersRebootExtended.GetOldAccessorySliders();
                 xxpv6.paintPriority = paintPriority;
 
                 if (baseSLCT.faceTypePart < 100000)
@@ -704,7 +759,7 @@ namespace Character_Making_File_Tool
                 xxpv9.skinVariant = 2; //Hack to deal with limitations of backwards conversion
                 xxpv9.eyebrowDensity = eyebrowDensity;
                 xxpv9.cmlVariant = cmlVariant;
-                
+
                 xxpv9.baseFIGR = baseFIGR;
                 xxpv9.baseFIGR.ToOld();
 
@@ -723,7 +778,7 @@ namespace Character_Making_File_Tool
                 xxpv9.baseSLCT = baseSLCT;
                 xxpv9.baseSLCT2 = baseSLCT2;
                 xxpv9.leftEyePart = leftEyePart;
-                xxpv9.accessorySliders = accessorySlidersReboot.GetClassicAccessorySliders();
+                xxpv9.accessorySliders = accessorySlidersRebootExtended.GetClassicAccessorySliders();
                 xxpv9.paintPriority = paintPriority;
 
                 if (baseSLCT.faceTypePart < 100000)
@@ -760,7 +815,7 @@ namespace Character_Making_File_Tool
                 tempXXP.baseSLCT2 = baseSLCT2;
                 tempXXP.leftEyePart = leftEyePart;
                 tempXXP.baseSLCTNGS = baseSLCTNGS;
-                tempXXP.accessorySlidersReboot = accessorySlidersReboot;
+                tempXXP.accessorySlidersReboot = accessorySlidersRebootExtended.GetRebootAccessorySliders();
                 tempXXP.faceNatural = faceNatural.expStruct;
                 tempXXP.faceSmile = faceSmile.expStruct;
                 tempXXP.faceAngry = faceAngry.expStruct;
@@ -777,7 +832,7 @@ namespace Character_Making_File_Tool
                 tempXXP.int_350 = int_350;
                 tempXXP.int_354 = int_354;
                 tempXXP.ngsVISI = ngsVISI;
-                tempXXP.accessoryMiscData = accessoryMiscData;
+                tempXXP.accessoryMiscData = accessoryMiscDataExtended.GetAccessoryMisc();
 
                 if (baseSLCT.faceTypePart < 100000)
                 {
@@ -813,7 +868,7 @@ namespace Character_Making_File_Tool
                 tempXXP.baseSLCT2 = baseSLCT2;
                 tempXXP.leftEyePart = leftEyePart;
                 tempXXP.baseSLCTNGS = baseSLCTNGS;
-                tempXXP.accessorySlidersReboot = accessorySlidersReboot;
+                tempXXP.accessorySlidersReboot = accessorySlidersRebootExtended.GetRebootAccessorySliders();
                 tempXXP.faceNatural = faceNatural;
                 tempXXP.faceSmile = faceSmile;
                 tempXXP.faceAngry = faceAngry;
@@ -830,7 +885,7 @@ namespace Character_Making_File_Tool
                 tempXXP.int_350 = int_350;
                 tempXXP.int_354 = int_354;
                 tempXXP.ngsVISI = ngsVISI;
-                tempXXP.accessoryMiscData = accessoryMiscData;
+                tempXXP.accessoryMiscData = accessoryMiscDataExtended.GetAccessoryMisc();
 
                 if (baseSLCT.faceTypePart < 100000)
                 {
@@ -861,7 +916,7 @@ namespace Character_Making_File_Tool
                 tempXXP.baseSLCT2 = baseSLCT2;
                 tempXXP.leftEyePart = leftEyePart;
                 tempXXP.baseSLCTNGS = baseSLCTNGS;
-                tempXXP.accessorySlidersReboot = accessorySlidersReboot;
+                tempXXP.accessorySlidersReboot = accessorySlidersRebootExtended.GetRebootAccessorySliders();
                 tempXXP.faceNatural = faceNatural;
                 tempXXP.faceSmile = faceSmile;
                 tempXXP.faceAngry = faceAngry;
@@ -878,7 +933,7 @@ namespace Character_Making_File_Tool
                 tempXXP.int_350 = int_350;
                 tempXXP.int_354 = int_354;
                 tempXXP.ngsVISI = ngsVISI;
-                tempXXP.accessoryMiscData = accessoryMiscData;
+                tempXXP.accessoryMiscData = accessoryMiscDataExtended.GetAccessoryMisc();
 
                 return tempXXP;
             }
@@ -905,7 +960,7 @@ namespace Character_Making_File_Tool
                 tempXXP.baseSLCT2 = baseSLCT2;
                 tempXXP.leftEyePart = leftEyePart;
                 tempXXP.baseSLCTNGS = baseSLCTNGS;
-                tempXXP.accessorySlidersReboot = accessorySlidersReboot;
+                tempXXP.accessorySlidersReboot = accessorySlidersRebootExtended.GetRebootAccessorySliders();
                 tempXXP.faceNatural = faceNatural;
                 tempXXP.faceSmile = faceSmile;
                 tempXXP.faceAngry = faceAngry;
@@ -922,7 +977,7 @@ namespace Character_Making_File_Tool
                 tempXXP.int_350 = int_350;
                 tempXXP.int_354 = int_354;
                 tempXXP.ngsVISI = ngsVISI;
-                tempXXP.accessoryMiscData = accessoryMiscData;
+                tempXXP.accessoryMiscData = accessoryMiscDataExtended.GetAccessoryMisc();
                 tempXXP.castColorIds = castColorIds;
 
                 return tempXXP;
@@ -950,7 +1005,7 @@ namespace Character_Making_File_Tool
                 tempXXP.baseSLCT2 = baseSLCT2;
                 tempXXP.leftEyePart = leftEyePart;
                 tempXXP.baseSLCTNGS = baseSLCTNGS;
-                tempXXP.accessorySlidersReboot = accessorySlidersReboot;
+                tempXXP.accessorySlidersReboot = accessorySlidersRebootExtended.GetRebootAccessorySliders();
                 tempXXP.faceNatural = faceNatural;
                 tempXXP.faceSmile = faceSmile;
                 tempXXP.faceAngry = faceAngry;
@@ -967,7 +1022,54 @@ namespace Character_Making_File_Tool
                 tempXXP.int_350 = int_350;
                 tempXXP.int_354 = int_354;
                 tempXXP.ngsVISI = ngsVISI;
-                tempXXP.accessoryMiscData = accessoryMiscData;
+                tempXXP.accessoryMiscData = accessoryMiscDataExtended.GetAccessoryMisc();
+                tempXXP.castColorIds = castColorIds;
+                tempXXP.celShadingIsEnabled = celShadingIsEnabled;
+
+                return tempXXP;
+            }
+
+            public XXPV15 GetXXPV15()
+            {
+                XXPV15 tempXXP = new();
+
+                tempXXP.baseDOC = baseDOC;
+                tempXXP.skinVariant = skinVariant;
+                tempXXP.eyebrowDensity = eyebrowDensity;
+                tempXXP.cmlVariant = cmlVariant;
+                tempXXP.baseFIGR = baseFIGR;
+                tempXXP.neckVerts = neckVerts;
+                tempXXP.waistVerts = waistVerts;
+                tempXXP.hands = hands;
+                tempXXP.horns = hornVerts;
+                tempXXP.eyeSize = eyeSize;
+                tempXXP.eyeHorizontalPosition = eyeHorizontalPosition;
+                tempXXP.neckAngle = neckAngle;
+                tempXXP.classicFace = classicFace;
+                tempXXP.ngsCOL2 = ngsCOL2;
+                tempXXP.baseSLCT = baseSLCT;
+                tempXXP.baseSLCT2 = baseSLCT2;
+                tempXXP.leftEyePart = leftEyePart;
+                tempXXP.baseSLCTNGS = baseSLCTNGS;
+                tempXXP.slctNGSExtended = slctNGSExtended;
+                tempXXP.accessorySlidersRebootExtended = accessorySlidersRebootExtended;
+                tempXXP.faceNatural = faceNatural;
+                tempXXP.faceSmile = faceSmile;
+                tempXXP.faceAngry = faceAngry;
+                tempXXP.faceSad = faceSad;
+                tempXXP.faceSus = faceSus;
+                tempXXP.faceEyesClosed = faceEyesClosed;
+                tempXXP.faceSmile2 = faceSmile2;
+                tempXXP.faceWink = faceWink;
+                tempXXP.faceUnused1 = faceUnused1;
+                tempXXP.faceUnused2 = faceUnused2;
+                tempXXP.paintPriority = paintPriority;
+                tempXXP.ngsSLID = ngsSLID;
+                tempXXP.ngsMTON = ngsMTON;
+                tempXXP.int_350 = int_350;
+                tempXXP.int_354 = int_354;
+                tempXXP.ngsVISI = ngsVISI;
+                tempXXP.accessoryMiscDataExtended = accessoryMiscDataExtended;
                 tempXXP.castColorIds = castColorIds;
                 tempXXP.celShadingIsEnabled = celShadingIsEnabled;
 
@@ -1086,7 +1188,7 @@ namespace Character_Making_File_Tool
 
             public byte[] GetBytes()
             {
-                switch(xxpVersion)
+                switch (xxpVersion)
                 {
                     case 2:
                         return Reloaded.Memory.Struct.GetBytes(GetXXPV2());
@@ -1106,8 +1208,10 @@ namespace Character_Making_File_Tool
                         return Reloaded.Memory.Struct.GetBytes(GetXXPV13());
                     case 14:
                         return Reloaded.Memory.Struct.GetBytes(GetXXPV14());
+                    case 15:
+                        return Reloaded.Memory.Struct.GetBytes(GetXXPV15());
                     default:
-                        return Reloaded.Memory.Struct.GetBytes(GetXXPV14());
+                        return Reloaded.Memory.Struct.GetBytes(GetXXPV15());
                 }
                 throw new NotImplementedException();
             }

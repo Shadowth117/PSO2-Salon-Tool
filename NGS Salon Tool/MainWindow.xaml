@@ -471,6 +471,60 @@
                             </ComboBox>
                             <Image x:Name="acce12Icon" HorizontalAlignment="Left" Height="64" Margin="770,751,0,0" VerticalAlignment="Top" Width="64"/>
                             <Label x:Name="acce12Label" Content="Accessory 12" HorizontalAlignment="Left" Margin="565,747,0,0" VerticalAlignment="Top"/>
+                            <ComboBox x:Name="acce13CB" HorizontalAlignment="Left" Margin="5,849,0,0" VerticalAlignment="Top" Width="200" SelectedIndex="0" SelectionChanged="Acce13SelectionChanged">
+                                <ComboBox.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <VirtualizingStackPanel />
+                                    </ItemsPanelTemplate>
+                                </ComboBox.ItemsPanel>
+                            </ComboBox>
+                            <Image x:Name="acce13Icon" HorizontalAlignment="Left" Height="64" Margin="210,827,0,0" VerticalAlignment="Top" Width="64"/>
+                            <Label x:Name="acce13Label" Content="Accessory 13" HorizontalAlignment="Left" Margin="5,823,0,0" VerticalAlignment="Top"/>
+                            <ComboBox x:Name="acce14CB" HorizontalAlignment="Left" Margin="285,849,0,0" VerticalAlignment="Top" Width="200" SelectedIndex="0" SelectionChanged="Acce14SelectionChanged">
+                                <ComboBox.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <VirtualizingStackPanel />
+                                    </ItemsPanelTemplate>
+                                </ComboBox.ItemsPanel>
+                            </ComboBox>
+                            <Image x:Name="acce14Icon" HorizontalAlignment="Left" Height="64" Margin="490,827,0,0" VerticalAlignment="Top" Width="64"/>
+                            <Label x:Name="acce14Label" Content="Accessory 14" HorizontalAlignment="Left" Margin="285,823,0,0" VerticalAlignment="Top"/>
+                            <ComboBox x:Name="acce15CB" HorizontalAlignment="Left" Margin="565,849,0,0" VerticalAlignment="Top" Width="200" SelectedIndex="0" SelectionChanged="Acce15SelectionChanged">
+                                <ComboBox.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <VirtualizingStackPanel />
+                                    </ItemsPanelTemplate>
+                                </ComboBox.ItemsPanel>
+                            </ComboBox>
+                            <Image x:Name="acce15Icon" HorizontalAlignment="Left" Height="64" Margin="770,827,0,0" VerticalAlignment="Top" Width="64"/>
+                            <Label x:Name="acce15Label" Content="Accessory 15" HorizontalAlignment="Left" Margin="565,823,0,0" VerticalAlignment="Top"/>
+                            <ComboBox x:Name="acce16CB" HorizontalAlignment="Left" Margin="5,925,0,0" VerticalAlignment="Top" Width="200" SelectedIndex="0" SelectionChanged="Acce16SelectionChanged">
+                                <ComboBox.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <VirtualizingStackPanel />
+                                    </ItemsPanelTemplate>
+                                </ComboBox.ItemsPanel>
+                            </ComboBox>
+                            <Image x:Name="acce16Icon" HorizontalAlignment="Left" Height="64" Margin="210,903,0,0" VerticalAlignment="Top" Width="64"/>
+                            <Label x:Name="acce16Label" Content="Accessory 16" HorizontalAlignment="Left" Margin="5,899,0,0" VerticalAlignment="Top"/>
+                            <ComboBox x:Name="acce17CB" HorizontalAlignment="Left" Margin="285,925,0,0" VerticalAlignment="Top" Width="200" SelectedIndex="0" SelectionChanged="Acce17SelectionChanged">
+                                <ComboBox.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <VirtualizingStackPanel />
+                                    </ItemsPanelTemplate>
+                                </ComboBox.ItemsPanel>
+                            </ComboBox>
+                            <Image x:Name="acce17Icon" HorizontalAlignment="Left" Height="64" Margin="490,903,0,0" VerticalAlignment="Top" Width="64"/>
+                            <Label x:Name="acce17Label" Content="Accessory 17" HorizontalAlignment="Left" Margin="285,899,0,0" VerticalAlignment="Top"/>
+                            <ComboBox x:Name="acce18CB" HorizontalAlignment="Left" Margin="565,925,0,0" VerticalAlignment="Top" Width="200" SelectedIndex="0" SelectionChanged="Acce18SelectionChanged">
+                                <ComboBox.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <VirtualizingStackPanel />
+                                    </ItemsPanelTemplate>
+                                </ComboBox.ItemsPanel>
+                            </ComboBox>
+                            <Image x:Name="acce18Icon" HorizontalAlignment="Left" Height="64" Margin="770,903,0,0" VerticalAlignment="Top" Width="64"/>
+                            <Label x:Name="acce18Label" Content="Accessory 18" HorizontalAlignment="Left" Margin="565,899,0,0" VerticalAlignment="Top"/>
 
                             <Button x:Name="acce1Extra" Content="Accessory 1 Settings" HorizontalAlignment="Left" Margin="5,570,0,0" VerticalAlignment="Top" Click="acceExtra_Click" Tag="0"/>
                             <Button x:Name="acce2Extra" Content="Accessory 2 Settings"  HorizontalAlignment="Left" Margin="285,570,0,0" VerticalAlignment="Top" Click="acceExtra_Click" Tag="1"/>
@@ -488,6 +542,13 @@
                             <Button x:Name="acce11Extra" Content="Accessory 11 Settings" HorizontalAlignment="Left" Margin="285,798,0,0" VerticalAlignment="Top" Click="acceExtra_Click" Tag="10"/>
                             <Button x:Name="acce12Extra" Content="Accessory 12 Settings" HorizontalAlignment="Left" Margin="565,798,0,0" VerticalAlignment="Top" Click="acceExtra_Click" Tag="11"/>
 
+                            <Button x:Name="acce13Extra" Content="Accessory 13 Settings" HorizontalAlignment="Left" Margin="5,874,0,0" VerticalAlignment="Top" Click="acceExtra_Click" Tag="12"/>
+                            <Button x:Name="acce14Extra" Content="Accessory 14 Settings" HorizontalAlignment="Left" Margin="285,874,0,0" VerticalAlignment="Top" Click="acceExtra_Click" Tag="13"/>
+                            <Button x:Name="acce15Extra" Content="Accessory 15 Settings" HorizontalAlignment="Left" Margin="565,874,0,0" VerticalAlignment="Top" Click="acceExtra_Click" Tag="14"/>
+
+                            <Button x:Name="acce16Extra" Content="Accessory 16 Settings" HorizontalAlignment="Left" Margin="5,950,0,0" VerticalAlignment="Top" Click="acceExtra_Click" Tag="15"/>
+                            <Button x:Name="acce17Extra" Content="Accessory 17 Settings" HorizontalAlignment="Left" Margin="285,950,0,0" VerticalAlignment="Top" Click="acceExtra_Click" Tag="16"/>
+                            <Button x:Name="acce18Extra" Content="Accessory 18 Settings" HorizontalAlignment="Left" Margin="565,950,0,0" VerticalAlignment="Top" Click="acceExtra_Click" Tag="17"/>
                         </Grid>
                     </ScrollViewer>
                 </TabItem>

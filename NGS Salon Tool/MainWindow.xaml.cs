@@ -5,7 +5,6 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
@@ -62,7 +61,7 @@ namespace NGS_Salon_Tool
         private bool canReorderPaint = false;
         WIPBox wipBox = null;
         ColorPicker colorPicker = null;
-        AccessoryWindow[] accWindows = new AccessoryWindow[0xC];
+        AccessoryWindow[] accWindows = new AccessoryWindow[0x12];
 
         private bool motionWait = false; //Used to avoid loops when changing motion controls
 
@@ -259,9 +258,10 @@ namespace NGS_Salon_Tool
             + "|V12 Salon files (*." + letterOne + letterTwo + "p)|*." + letterOne + letterTwo + "p"
             + "|V13 Salon files (*." + letterOne + letterTwo + "p)|*." + letterOne + letterTwo + "p"
             + "|V14 Salon files (*." + letterOne + letterTwo + "p)|*." + letterOne + letterTwo + "p"
+            + "|V15 Salon files (*." + letterOne + letterTwo + "p)|*." + letterOne + letterTwo + "p"
             + "|cml files (*.cml)|*.cml";
 
-            saveFileDialog.FilterIndex = 9;
+            saveFileDialog.FilterIndex = 10;
             //+ "|Data Dump (*.txt)|*.txt";
 
             if (saveFileDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
@@ -305,6 +305,10 @@ namespace NGS_Salon_Tool
                         SaveXXP(saveFileDialog.FileName);
                         break;
                     case 10:
+                        xxpHandler.xxpVersion = 0xF;
+                        SaveXXP(saveFileDialog.FileName);
+                        break;
+                    case 11:
                         SaveCML(saveFileDialog.FileName);
                         break;
                     default:
@@ -404,6 +408,8 @@ namespace NGS_Salon_Tool
                     return new CharacterHandlerReboot.xxpGeneralReboot(streamReader.Read<CharacterMainStructs.XXPV13>());
                 case 14:
                     return new CharacterHandlerReboot.xxpGeneralReboot(streamReader.Read<CharacterMainStructs.XXPV14>());
+                case 15:
+                    return new CharacterHandlerReboot.xxpGeneralReboot(streamReader.Read<CharacterMainStructs.XXPV15>());
                 default:
                     MessageBox.Show("Error: File version unknown. If this is a proper salon file, please report this!");
                     return null;
@@ -457,6 +463,12 @@ namespace NGS_Salon_Tool
             int acc10Part = (int)xxpHandler.baseSLCTNGS.acc10Part;
             int acc11Part = (int)xxpHandler.baseSLCTNGS.acc11Part;
             int acc12Part = (int)xxpHandler.baseSLCTNGS.acc12Part;
+            int acc13Part = (int)xxpHandler.slctNGSExtended.acc13Part;
+            int acc14Part = (int)xxpHandler.slctNGSExtended.acc14Part;
+            int acc15Part = (int)xxpHandler.slctNGSExtended.acc15Part;
+            int acc16Part = (int)xxpHandler.slctNGSExtended.acc16Part;
+            int acc17Part = (int)xxpHandler.slctNGSExtended.acc17Part;
+            int acc18Part = (int)xxpHandler.slctNGSExtended.acc18Part;
             if(cmxHandler == null)
             {
                 cmxHandler = new CharacterMakingIndexHandler();
@@ -494,6 +506,12 @@ namespace NGS_Salon_Tool
             AddPartIfMissing(acc10Part, cmxHandler.accessoryDict, cmxHandler.accessoryDictReverse);
             AddPartIfMissing(acc11Part, cmxHandler.accessoryDict, cmxHandler.accessoryDictReverse);
             AddPartIfMissing(acc12Part, cmxHandler.accessoryDict, cmxHandler.accessoryDictReverse);
+            AddPartIfMissing(acc13Part, cmxHandler.accessoryDict, cmxHandler.accessoryDictReverse);
+            AddPartIfMissing(acc14Part, cmxHandler.accessoryDict, cmxHandler.accessoryDictReverse);
+            AddPartIfMissing(acc15Part, cmxHandler.accessoryDict, cmxHandler.accessoryDictReverse);
+            AddPartIfMissing(acc16Part, cmxHandler.accessoryDict, cmxHandler.accessoryDictReverse);
+            AddPartIfMissing(acc17Part, cmxHandler.accessoryDict, cmxHandler.accessoryDictReverse);
+            AddPartIfMissing(acc18Part, cmxHandler.accessoryDict, cmxHandler.accessoryDictReverse);
         }
 
         private void AddPartIfMissing(int key, Dictionary<string, int> dict, Dictionary<int, string> dictReverse)
@@ -623,6 +641,13 @@ namespace NGS_Salon_Tool
             acce10CB.SelectedIndex = acce10CB.Items.IndexOf(cmxHandler.accessoryDictReverse[(int)xxpHandler.baseSLCTNGS.acc10Part]);
             acce11CB.SelectedIndex = acce11CB.Items.IndexOf(cmxHandler.accessoryDictReverse[(int)xxpHandler.baseSLCTNGS.acc11Part]);
             acce12CB.SelectedIndex = acce12CB.Items.IndexOf(cmxHandler.accessoryDictReverse[(int)xxpHandler.baseSLCTNGS.acc12Part]);
+
+            acce13CB.SelectedIndex = acce13CB.Items.IndexOf(cmxHandler.accessoryDictReverse[(int)xxpHandler.slctNGSExtended.acc13Part]);
+            acce14CB.SelectedIndex = acce14CB.Items.IndexOf(cmxHandler.accessoryDictReverse[(int)xxpHandler.slctNGSExtended.acc14Part]);
+            acce15CB.SelectedIndex = acce15CB.Items.IndexOf(cmxHandler.accessoryDictReverse[(int)xxpHandler.slctNGSExtended.acc15Part]);
+            acce16CB.SelectedIndex = acce16CB.Items.IndexOf(cmxHandler.accessoryDictReverse[(int)xxpHandler.slctNGSExtended.acc16Part]);
+            acce17CB.SelectedIndex = acce17CB.Items.IndexOf(cmxHandler.accessoryDictReverse[(int)xxpHandler.slctNGSExtended.acc17Part]);
+            acce18CB.SelectedIndex = acce18CB.Items.IndexOf(cmxHandler.accessoryDictReverse[(int)xxpHandler.slctNGSExtended.acc18Part]);
         }
 
         private void MotionDropdowns()
@@ -695,6 +720,12 @@ namespace NGS_Salon_Tool
             acce10CB.ItemsSource = cmxHandler.accessoryDict.Keys;
             acce11CB.ItemsSource = cmxHandler.accessoryDict.Keys;
             acce12CB.ItemsSource = cmxHandler.accessoryDict.Keys;
+            acce13CB.ItemsSource = cmxHandler.accessoryDict.Keys;
+            acce14CB.ItemsSource = cmxHandler.accessoryDict.Keys;
+            acce15CB.ItemsSource = cmxHandler.accessoryDict.Keys;
+            acce16CB.ItemsSource = cmxHandler.accessoryDict.Keys;
+            acce17CB.ItemsSource = cmxHandler.accessoryDict.Keys;
+            acce18CB.ItemsSource = cmxHandler.accessoryDict.Keys;
             swimCB.ItemsSource = cmxHandler.swimDict.Keys;
             glideCB.ItemsSource = cmxHandler.glideDict.Keys;
             jumpCB.ItemsSource = cmxHandler.jumpDict.Keys;
@@ -1345,6 +1376,132 @@ namespace NGS_Salon_Tool
                 nullAccessoryExtra(11);
             }
         }
+        private void Acce13SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            string text = (sender as ComboBox).SelectedItem as string;
+            if (text == null)
+            {
+                acce13Icon.Source = null;
+                return;
+            }
+            acce13Icon.Source = IceHandler.GetIconFromIce(pso2_binDir, cmxHandler.accessoryDict[text], CharacterMakingIndex.accessoryIcon);
+            xxpHandler.slctNGSExtended.acc13Part = (uint)cmxHandler.accessoryDict[text];
+
+            if (xxpHandler.slctNGSExtended.acc13Part > 0)
+            {
+                acce13Extra.IsEnabled = true;
+            }
+            else
+            {
+                acce13Extra.IsEnabled = false;
+                nullAccessoryExtra(12);
+            }
+        }
+        private void Acce14SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            string text = (sender as ComboBox).SelectedItem as string;
+            if (text == null)
+            {
+                acce14Icon.Source = null;
+                return;
+            }
+            acce14Icon.Source = IceHandler.GetIconFromIce(pso2_binDir, cmxHandler.accessoryDict[text], CharacterMakingIndex.accessoryIcon);
+            xxpHandler.slctNGSExtended.acc14Part = (uint)cmxHandler.accessoryDict[text];
+
+            if (xxpHandler.slctNGSExtended.acc14Part > 0)
+            {
+                acce14Extra.IsEnabled = true;
+            }
+            else
+            {
+                acce14Extra.IsEnabled = false;
+                nullAccessoryExtra(13);
+            }
+        }
+        private void Acce15SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            string text = (sender as ComboBox).SelectedItem as string;
+            if (text == null)
+            {
+                acce15Icon.Source = null;
+                return;
+            }
+            acce15Icon.Source = IceHandler.GetIconFromIce(pso2_binDir, cmxHandler.accessoryDict[text], CharacterMakingIndex.accessoryIcon);
+            xxpHandler.slctNGSExtended.acc15Part = (uint)cmxHandler.accessoryDict[text];
+
+            if (xxpHandler.slctNGSExtended.acc15Part > 0)
+            {
+                acce15Extra.IsEnabled = true;
+            }
+            else
+            {
+                acce15Extra.IsEnabled = false;
+                nullAccessoryExtra(14);
+            }
+        }
+        private void Acce16SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            string text = (sender as ComboBox).SelectedItem as string;
+            if (text == null)
+            {
+                acce16Icon.Source = null;
+                return;
+            }
+            acce16Icon.Source = IceHandler.GetIconFromIce(pso2_binDir, cmxHandler.accessoryDict[text], CharacterMakingIndex.accessoryIcon);
+            xxpHandler.slctNGSExtended.acc16Part = (uint)cmxHandler.accessoryDict[text];
+
+            if (xxpHandler.slctNGSExtended.acc16Part > 0)
+            {
+                acce16Extra.IsEnabled = true;
+            }
+            else
+            {
+                acce16Extra.IsEnabled = false;
+                nullAccessoryExtra(15);
+            }
+        }
+        private void Acce17SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            string text = (sender as ComboBox).SelectedItem as string;
+            if (text == null)
+            {
+                acce17Icon.Source = null;
+                return;
+            }
+            acce17Icon.Source = IceHandler.GetIconFromIce(pso2_binDir, cmxHandler.accessoryDict[text], CharacterMakingIndex.accessoryIcon);
+            xxpHandler.slctNGSExtended.acc17Part = (uint)cmxHandler.accessoryDict[text];
+
+            if (xxpHandler.slctNGSExtended.acc17Part > 0)
+            {
+                acce17Extra.IsEnabled = true;
+            }
+            else
+            {
+                acce17Extra.IsEnabled = false;
+                nullAccessoryExtra(16);
+            }
+        }
+        private void Acce18SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            string text = (sender as ComboBox).SelectedItem as string;
+            if (text == null)
+            {
+                acce18Icon.Source = null;
+                return;
+            }
+            acce18Icon.Source = IceHandler.GetIconFromIce(pso2_binDir, cmxHandler.accessoryDict[text], CharacterMakingIndex.accessoryIcon);
+            xxpHandler.slctNGSExtended.acc18Part = (uint)cmxHandler.accessoryDict[text];
+
+            if (xxpHandler.slctNGSExtended.acc18Part > 0)
+            {
+                acce18Extra.IsEnabled = true;
+            }
+            else
+            {
+                acce18Extra.IsEnabled = false;
+                nullAccessoryExtra(17);
+            }
+        }
         private void SwimSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if(motionWait == false && cmxHandler != null && cmxHandler.swimDict.Count > 0 && swimCB.SelectedIndex != -1)
@@ -1769,21 +1926,21 @@ namespace NGS_Salon_Tool
         //Game does NOT like when these are filled with nothing in the slot so we null them
         private unsafe void nullAccessoryExtra(int num)
         {
-            xxpHandler.accessorySlidersReboot.rotSliders[num * 3] = 0;
-            xxpHandler.accessorySlidersReboot.rotSliders[(num * 3) + 1] = 0;
-            xxpHandler.accessorySlidersReboot.rotSliders[(num * 3) + 2] = 0;
+            xxpHandler.accessorySlidersRebootExtended.rotSliders[num * 3] = 0;
+            xxpHandler.accessorySlidersRebootExtended.rotSliders[(num * 3) + 1] = 0;
+            xxpHandler.accessorySlidersRebootExtended.rotSliders[(num * 3) + 2] = 0;
 
-            xxpHandler.accessorySlidersReboot.scaleSliders[num * 3] = 0;
-            xxpHandler.accessorySlidersReboot.scaleSliders[(num * 3) + 1] = 0;
-            xxpHandler.accessorySlidersReboot.scaleSliders[(num * 3) + 2] = 0;
+            xxpHandler.accessorySlidersRebootExtended.scaleSliders[num * 3] = 0;
+            xxpHandler.accessorySlidersRebootExtended.scaleSliders[(num * 3) + 1] = 0;
+            xxpHandler.accessorySlidersRebootExtended.scaleSliders[(num * 3) + 2] = 0;
 
-            xxpHandler.accessorySlidersReboot.posSliders[num * 3] = 0;
-            xxpHandler.accessorySlidersReboot.posSliders[(num * 3) + 1] = 0;
-            xxpHandler.accessorySlidersReboot.posSliders[(num * 3) + 2] = 0;
+            xxpHandler.accessorySlidersRebootExtended.posSliders[num * 3] = 0;
+            xxpHandler.accessorySlidersRebootExtended.posSliders[(num * 3) + 1] = 0;
+            xxpHandler.accessorySlidersRebootExtended.posSliders[(num * 3) + 2] = 0;
 
-            xxpHandler.accessoryMiscData.accessoryAttach[num] = 0;
-            xxpHandler.accessoryMiscData.accessoryColorChoices[num * 2] = 0;
-            xxpHandler.accessoryMiscData.accessoryColorChoices[(num * 2) + 1] = 0;
+            xxpHandler.accessoryMiscDataExtended.accessoryAttach[num] = 0;
+            xxpHandler.accessoryMiscDataExtended.accessoryColorChoices[num * 2] = 0;
+            xxpHandler.accessoryMiscDataExtended.accessoryColorChoices[(num * 2) + 1] = 0;
         }
 
         public void ExportCharModel(object sender, RoutedEventArgs e)

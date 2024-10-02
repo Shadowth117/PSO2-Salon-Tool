@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 
 namespace Character_Making_File_Tool
 {
@@ -49,6 +45,7 @@ namespace Character_Making_File_Tool
             { 0xC, 0x438},
             { 0xD, 0x448},
             { 0xE, 0x44C},
+            { 0xF, 0x49C},
         };
 
         //Stores palette colors [column, row]
