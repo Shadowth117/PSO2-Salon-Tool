@@ -466,10 +466,6 @@ namespace Character_Making_File_Tool
         {
             public fixed byte accessoryAttach[0x12];
             public fixed byte accessoryColorChoices[0x24]; //Each accessory has choice 1 and choice 2 next to each other
-            /// <summary>
-            /// Probably just padding to 0x4
-            /// </summary>
-            public ushort padding;
 
             public AccessoryMisc GetAccessoryMisc()
             {

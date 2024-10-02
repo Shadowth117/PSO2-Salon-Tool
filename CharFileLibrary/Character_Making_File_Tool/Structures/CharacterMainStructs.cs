@@ -656,18 +656,10 @@ namespace Character_Making_File_Tool
             //0x224 18 Accessory slot extension
             public SLCTNGSExtended slctNGSExtended;
 
-            //0x23C Padding?
-            public uint padding0;
-
-            public uint padding1;
-            public uint padding2;
-            public uint padding3;
-            public uint padding4;
-
-            //0x250
+            //0x23C 
             public AccessorySlidersRebootExtended accessorySlidersRebootExtended;
 
-            //0x2F4
+            //0x2E0
             public FaceExpressionV11 faceNatural;
             public FaceExpressionV11 faceSmile;
             public FaceExpressionV11 faceAngry;
@@ -681,7 +673,7 @@ namespace Character_Making_File_Tool
             public FaceExpressionV11 faceUnused1;
             public FaceExpressionV11 faceUnused2;
 
-            //0x3BC
+            //0x3A8
             public PaintPriority paintPriority;
             public ushort padding14;
             public uint padding15;
@@ -697,13 +689,19 @@ namespace Character_Making_File_Tool
             public int int_350;
             public int int_354;
 
-            //0x434 Ornament Display - VISI, stored as 0 or 1 in xxp. In CML, these are stored as bits in a single byte.
+            //0x420 Ornament Display - VISI, stored as 0 or 1 in xxp. In CML, these are stored as bits in a single byte.
             public VISI ngsVISI;
 
-            //0x454
+            //0x440
             public uint padding18;
             public uint padding19;
             public uint padding20;
+            public uint padding21;
+
+            public uint padding22;
+            public uint padding23;
+            public uint padding24;
+            public uint padding25;
 
             //0x460 - Accessory attach points followed by color choices
             public AccessoryMiscExtended accessoryMiscDataExtended;
