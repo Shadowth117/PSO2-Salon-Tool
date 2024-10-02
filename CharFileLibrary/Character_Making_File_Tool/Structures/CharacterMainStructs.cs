@@ -7,7 +7,7 @@ namespace Character_Making_File_Tool
     public unsafe class CharacterMainStructs
     {
         /// <summary>
-        /// First public, savable format. Released with the Closed Beta Test.
+        /// First public, savable format. Released with the Closed Beta Test. Same fields as V3
         /// </summary>
         public struct XXPV2
         {

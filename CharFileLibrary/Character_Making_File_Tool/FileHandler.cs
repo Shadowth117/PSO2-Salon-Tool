@@ -1,12 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Numerics;
 using System.Security.Cryptography;
 using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
 using static Character_Making_File_Tool.CharacterHandler;
 
 namespace Character_Making_File_Tool
@@ -14,7 +10,7 @@ namespace Character_Making_File_Tool
     public class FileHandler
     {
         private string costumeDir;
-        
+
         public bool useWin32_na = false;
         public string pso2_binDirectory;
         public CharacterMakingIndexHandler cmxReader;
@@ -101,7 +97,7 @@ namespace Character_Making_File_Tool
         {
             string path = pso2_binDirectory;
 
-            if(useWin32_na)
+            if (useWin32_na)
             {
                 string win32NAStr = Path.Combine(path, @"\data\win32_na\" + str);
                 if (File.Exists(win32NAStr))
@@ -112,7 +108,7 @@ namespace Character_Making_File_Tool
 
             path = Path.Combine(path, @"\data\win32\" + str);
 
-            if(File.Exists(path))
+            if (File.Exists(path))
             {
                 return path;
             }
@@ -123,7 +119,7 @@ namespace Character_Making_File_Tool
 
         public string GetFileHash(string str)
         {
-            if(str == null)
+            if (str == null)
             {
                 return "";
             }
@@ -137,9 +133,9 @@ namespace Character_Making_File_Tool
         {
             var cmx = cmxReader.cmx;
             //Costumes, cast bodies, outers
-            if(cmx.costumeIdLink.ContainsKey((int)xxpGeneral.baseSLCT.costumePart))
+            if (cmx.costumeIdLink.ContainsKey((int)xxpGeneral.baseSLCT.costumePart))
             {
-                xxpGeneral.baseSLCT.costumePart =  (uint)cmx.costumeIdLink[(int)xxpGeneral.baseSLCT.costumePart].bcln.fileId;
+                xxpGeneral.baseSLCT.costumePart = (uint)cmx.costumeIdLink[(int)xxpGeneral.baseSLCT.costumePart].bcln.fileId;
             }
             else if (cmx.outerWearIdLink.ContainsKey((int)xxpGeneral.baseSLCT.costumePart))
             {
@@ -170,7 +166,7 @@ namespace Character_Making_File_Tool
         public string ToFive(uint num)
         {
             string numString = num.ToString();
-            while(numString.Length < 5)
+            while (numString.Length < 5)
             {
                 numString = numString.Insert(0, "0");
             }

@@ -1,14 +1,8 @@
 ﻿using Microsoft.WindowsAPICodePack.Dialogs;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
 using System.IO;
-using System.Linq;
 using System.Security;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace Character_Making_File_Tool
@@ -87,9 +81,9 @@ namespace Character_Making_File_Tool
                 try
                 {
                     string extension = Path.GetExtension(openFileDialog.FileName).ToLower();
-                    switch(extension)
+                    switch (extension)
                     {
-                        case  ".cml":
+                        case ".cml":
                             characterHandler.ParseCML(openFileDialog.FileName);
                             break;
                         case ".bin":
@@ -99,7 +93,7 @@ namespace Character_Making_File_Tool
                             characterHandler.ParseToStruct(characterHandler.DecryptFile(openFileDialog.FileName));
                             break;
                     }
-                    
+
                     //Setup UI
                     genderButtons[(int)characterHandler.xxpGeneral.baseDOC.gender].Checked = true;
                     raceButtons[(int)characterHandler.xxpGeneral.baseDOC.race].Checked = true;
@@ -107,7 +101,8 @@ namespace Character_Making_File_Tool
                     if (characterHandler.getVersion() != -1)
                     {
                         versionLabel.Text = "Version: " + characterHandler.getVersion();
-                    } else
+                    }
+                    else
                     {
                         versionLabel.Text = "Version: cml";
                     }
@@ -124,7 +119,7 @@ namespace Character_Making_File_Tool
                 }
             }
 
-            
+
         }
 
         private void saveButton_Click(object sender, EventArgs e)
@@ -207,7 +202,7 @@ namespace Character_Making_File_Tool
         {
             if (fileButtonSubmenu.Visible == true)
                 fileButtonSubmenu.Visible = false;
-            
+
         }
         //Show 'File'Contents
         private void showFileSubmenu(Panel subMenu)
@@ -217,7 +212,7 @@ namespace Character_Making_File_Tool
                 hideFileSubmenu();
                 subMenu.Visible = true;
                 quitButton.Visible = true;
-            }    
+            }
             else
             {
                 subMenu.Visible = false;
@@ -261,14 +256,14 @@ namespace Character_Making_File_Tool
             };
             if (goodFolderDialog.ShowDialog() == CommonFileDialogResult.Ok)
             {
-                string[] extensions = new string[] { "*.mhp", "*.fhp", "*.mcp", "*.fcp", "*.mnp", "*.fnp", "*.mdp", "*.fdp"};
+                string[] extensions = new string[] { "*.mhp", "*.fhp", "*.mcp", "*.fcp", "*.mnp", "*.fnp", "*.mdp", "*.fdp" };
                 List<string> files = new List<string>();
-                foreach(string ext in extensions)
+                foreach (string ext in extensions)
                 {
                     files.AddRange(Directory.GetFiles(goodFolderDialog.FileName, ext));
                 }
 
-                foreach(var file in files)
+                foreach (var file in files)
                 {
                     characterHandler.DecryptFile(file);
                 }

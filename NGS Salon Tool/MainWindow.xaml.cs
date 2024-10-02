@@ -388,6 +388,7 @@ namespace NGS_Salon_Tool
             switch (version)
             {
                 case 2:
+                case 3:
                     return new CharacterHandlerReboot.xxpGeneralReboot(streamReader.Read<CharacterMainStructs.XXPV2>());
                 case 5:
                     return new CharacterHandlerReboot.xxpGeneralReboot(streamReader.Read<CharacterMainStructs.XXPV5>());

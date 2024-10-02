@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using static Character_Making_File_Tool.CharacterDataStructs;
+﻿using static Character_Making_File_Tool.CharacterDataStructs;
 
 namespace Character_Making_File_Tool
 {
