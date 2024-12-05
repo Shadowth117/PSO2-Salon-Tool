@@ -1,5 +1,4 @@
-﻿using AquaModelLibrary;
-using AquaModelLibrary.Native.Fbx;
+﻿using AquaModelLibrary.Data.PSO2.Aqua;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -7,15 +6,15 @@ using System.IO;
 using System.Linq;
 using System.Numerics;
 using Zamboni;
-using static AquaExtras.FilenameConstants;
-using static AquaModelLibrary.AquaMethods.AquaGeneralMethods;
-using static AquaModelLibrary.CharacterMakingIndex;
-using static AquaModelLibrary.Extra.ReferenceGenerator;
-using static AquaModelLibrary.Utility.AquaUtilData;
 using static Character_Making_File_Tool.CharacterConstants;
 using static Character_Making_File_Tool.CharacterHandlerReboot;
 using static CharFileLibrary.Character_Making_File_Tool.Constants.CharacterProportionConstants;
-using static System.Net.Mime.MediaTypeNames;
+using static AquaModelLibrary.Helpers.HashHelpers;
+using static AquaModelLibrary.Data.PSO2.Constants.GeneralFilenames;
+using AquaModelLibrary.Core.General;
+using AquaModelLibrary.Data.PSO2.Aqua.AquaMotionData;
+using static AquaModelLibrary.Data.Utility.ReferenceGenerator;
+using static AquaModelLibrary.Data.PSO2.Constants.CharacterMakingDynamic;
 
 namespace CharFileLibrary.Character_Making_File_Tool.Utilities
 {
@@ -137,7 +136,7 @@ namespace CharFileLibrary.Character_Making_File_Tool.Utilities
             xxp = xxpIn;
             cmx = cmxIn;
             //Load Proportions ICE
-            string proportionsPath = Path.Combine(pso2_binDir, dataDir, GetFileHash(classicSystemData));
+            string proportionsPath = Path.Combine(pso2_binDir, CharacterMakingIndex.dataDir, GetFileHash(classicSystemData));
             string bodyTypeString = GetBodyTypeString(xxp, out string bodyCategory);
             AquaMotion bodyProps = GetMotion(xxp, proportionsPath, bodyTypeString);
 
@@ -148,8 +147,8 @@ namespace CharFileLibrary.Character_Making_File_Tool.Utilities
             switch (bodyCategory)
             {
                 case basewearStr: //Basewear is base, Outer wear is attached
-                    var basewearModel = GetModel(xxp, Path.Combine(pso2_binDir, dataDir, basewearFilename), new List<string>() { ".aqp", ".aqn" }, out var basewearNode);
-                    var outerwearModel = GetModel(xxp, Path.Combine(pso2_binDir, dataDir, costumeOuterFilename), new List<string>() { ".aqp", ".aqn" }, out var outerwearNode);
+                    var basewearModel = GetModel(xxp, Path.Combine(pso2_binDir, CharacterMakingIndex.dataDir, basewearFilename), new List<string>() { ".aqp", ".aqn" }, out var basewearNode);
+                    var outerwearModel = GetModel(xxp, Path.Combine(pso2_binDir, CharacterMakingIndex.dataDir, costumeOuterFilename), new List<string>() { ".aqp", ".aqn" }, out var outerwearNode);
 
                     compositeModel = basewearModel;
                     compositeBones = basewearNode;
@@ -157,7 +156,7 @@ namespace CharFileLibrary.Character_Making_File_Tool.Utilities
                     //TODO Combine outerwear model into composite model and bones
                     break;
                 case costumeStr: //On its own
-                    var costumeModel = GetModel(xxp, Path.Combine(pso2_binDir, dataDir, costumeOuterFilename), new List<string>() { ".aqp", ".aqn" }, out var costumeNode);
+                    var costumeModel = GetModel(xxp, Path.Combine(pso2_binDir, CharacterMakingIndex.dataDir, costumeOuterFilename), new List<string>() { ".aqp", ".aqn" }, out var costumeNode);
 
                     compositeModel = costumeModel;
                     compositeBones = costumeNode;
@@ -221,26 +220,14 @@ namespace CharFileLibrary.Character_Making_File_Tool.Utilities
             //Blend face textures - cast and special head/full coverage hairs should NOT have blending
 
             //Color accessory textures
-
-            AquaUtil aqu = new AquaUtil();
-            ModelSet ms = new ModelSet();
-            ms.models.Add(compositeModel);
-            aqu.aquaModels.Add(ms);
-            if (compositeModel.objc.type >= 0xC32)
+            File.WriteAllBytes("C:/Test.aqp", compositeModel.GetBytesNIFL());
+            File.WriteAllBytes("C:/Test.aqn", compositeBones.GetBytesNIFL());
+            if (compositeModel.objc.type > 0xC32)
             {
-                aqu.WriteNGSNIFLModel("C:/Test.aqp", "C:/Test.aqp");
+                compositeModel.splitVSETPerMesh();
             }
-            else
-            {
-                aqu.WriteClassicNIFLModel("C:/Test.aqp", "C:/Test.aqp");
-            }
-            AquaUtil.WriteBones("C:/Test.aqn", compositeBones);
-            if (aqu.aquaModels[0].models[0].objc.type > 0xC32)
-            {
-                aqu.aquaModels[0].models[0].splitVSETPerMesh();
-            }
-            FbxExporter.ExportToFile(aqu.aquaModels[0].models[0], compositeBones, new List<AquaMotion>() { bodyProps }, "C:/TestBaseAnim.fbx", new List<string>() { "CharProportions.aqm" }, new List<Matrix4x4>(), true);
-            FbxExporter.ExportToFile(aqu.aquaModels[0].models[0], compositeBones, new List<AquaMotion>() { propMotion }, "C:/Test.fbx", new List<string>() { "CharProportions.aqm" }, new List<Matrix4x4>(), true);
+            FbxExporterNative.ExportToFile(compositeModel, compositeBones, new List<AquaMotion>() { bodyProps }, "C:/TestBaseAnim.fbx", new List<string>() { "CharProportions.aqm" }, new List<Matrix4x4>(), true);
+            FbxExporterNative.ExportToFile(compositeModel, compositeBones, new List<AquaMotion>() { propMotion }, "C:/Test.fbx", new List<string>() { "CharProportions.aqm" }, new List<Matrix4x4>(), true);
         }
 
         public AquaMotion ApplyProportionsToAnimation(List<TransformSet> props, AquaNode aquaNode, AquaMotion proportionAqm)
@@ -261,12 +248,12 @@ namespace CharFileLibrary.Character_Making_File_Tool.Utilities
                 }
                 var prop = props[i];
                 var node = aquaNode.nodeList[i];
-                AquaMotion.KeyData kd = new AquaMotion.KeyData();
+                KeyData kd = new KeyData();
                 kd.mseg.nodeName = node.boneName;
                 kd.mseg.nodeDataCount = 3;
                 kd.mseg.nodeId = i;
 
-                AquaMotion.MKEY posKey = new AquaMotion.MKEY();
+                MKEY posKey = new MKEY();
                 posKey.keyType = 1;
                 posKey.dataType = 1;
                 posKey.keyCount = 1;
@@ -279,7 +266,7 @@ namespace CharFileLibrary.Character_Making_File_Tool.Utilities
                     posKey.vector4Keys.Add(new Vector4((finalPos), 0));
                 //}
                 
-                AquaMotion.MKEY rotKey = new AquaMotion.MKEY();
+                MKEY rotKey = new MKEY();
                 rotKey.keyType = 2;
                 rotKey.dataType = 3;
                 rotKey.keyCount = 1;
@@ -292,7 +279,7 @@ namespace CharFileLibrary.Character_Making_File_Tool.Utilities
                     rotKey.vector4Keys.Add(new Vector4(finalRot.X, finalRot.Y, finalRot.Z, finalRot.W));
                 }*/
 
-                AquaMotion.MKEY sclKey = new AquaMotion.MKEY();
+                MKEY sclKey = new MKEY();
                 sclKey.keyType = 3;
                 sclKey.dataType = 1;
                 sclKey.keyCount = 1;
@@ -968,7 +955,6 @@ namespace CharFileLibrary.Character_Making_File_Tool.Utilities
         //String 0 should be the aqp, string 1 should be the aqn
         private static AquaObject GetModel(xxpGeneralReboot xxp, string icePath, List<string> modelStrings, out AquaNode aqn)
         {
-            AquaUtil aqua = new AquaUtil();
             var files = GetFilesFromIceLooseMatch(icePath, modelStrings);
             byte[] aqp = new byte[0];
             byte[] aqnode = new byte[0];
@@ -983,21 +969,18 @@ namespace CharFileLibrary.Character_Making_File_Tool.Utilities
                     aqnode = file.Value;
                 }
             }
-            aqua.BeginReadModel(aqp);
-            AquaObject model = aqua.aquaModels[0].models[0];
-            aqua.ReadBones(aqnode);
-            aqn = aqua.aquaBones[0];
+            var package = new AquaPackage(aqp);
+            AquaObject model = package.models[0];
+            aqn = new AquaNode(aqnode);
 
             return model;
         }
 
         private static AquaMotion GetMotion(xxpGeneralReboot xxp, string icePath, string motionString)
         {
-            AquaUtil aqua = new AquaUtil();
             byte[] foundFile = GetFilesFromIce(icePath, new List<string>() { motionString })[motionString];
-            aqua.ReadMotion(foundFile);
+            AquaMotion motion = new AquaMotion(foundFile);
             foundFile = null;
-            AquaMotion motion = aqua.aquaMotions[0].anims[0];
 
             return motion;
         }

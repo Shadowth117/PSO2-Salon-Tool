@@ -9,6 +9,9 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using AquaModelLibrary;
+using AquaModelLibrary.Data.PSO2.Aqua;
+using AquaModelLibrary.Data.PSO2.Constants;
+using AquaModelLibrary.Helpers.Readers;
 using Character_Making_File_Tool;
 using CharFileLibrary.Character_Making_File_Tool.Utilities;
 using Microsoft.WindowsAPICodePack.Dialogs;
@@ -140,8 +143,8 @@ namespace NGS_Salon_Tool
                     }
 
                     CharacterHandlerReboot.xxpGeneralReboot tempxxp;
-                    using (Stream stream = new MemoryStream(data))
-                    using (var streamReader = new BufferedStreamReader(stream, 8192))
+                    using (MemoryStream stream = new MemoryStream(data))
+                    using (var streamReader = new BufferedStreamReaderBE<MemoryStream>(stream))
                     {
                         tempxxp = OpenXXP(streamReader);
                     }
@@ -166,8 +169,8 @@ namespace NGS_Salon_Tool
                 foreach (string file in files)
                 {
                     CharacterHandlerReboot.xxpGeneralReboot tempxxp;
-                    using (Stream stream = new MemoryStream(File.ReadAllBytes(file)))
-                    using (var streamReader = new BufferedStreamReader(stream, 8192))
+                    using (MemoryStream stream = new MemoryStream(File.ReadAllBytes(file)))
+                    using (var streamReader = new BufferedStreamReaderBE<MemoryStream>(stream))
                     {
                         tempxxp = CMLHandler.ParseCML(streamReader);
                     }
@@ -198,8 +201,8 @@ namespace NGS_Salon_Tool
                     data = File.ReadAllBytes(fileOpen.FileName);
                 }
 
-                using (Stream stream = new MemoryStream(data))
-                using (var streamReader = new BufferedStreamReader(stream, 8192))
+                using (MemoryStream stream = new MemoryStream(data))
+                using (var streamReader = new BufferedStreamReaderBE<MemoryStream>(stream))
                 {
                     string extension = Path.GetExtension(fileOpen.FileName).ToLower();
                     switch (extension)
@@ -380,7 +383,7 @@ namespace NGS_Salon_Tool
             File.WriteAllBytes(fileName, fileData.ToArray());
         }
 
-        private static CharacterHandlerReboot.xxpGeneralReboot OpenXXP(BufferedStreamReader streamReader)
+        private static CharacterHandlerReboot.xxpGeneralReboot OpenXXP(BufferedStreamReaderBE<MemoryStream> streamReader)
         {
             int version = streamReader.Read<int>();
             streamReader.Seek(0x10, SeekOrigin.Begin);
@@ -824,8 +827,8 @@ namespace NGS_Salon_Tool
                     data = File.ReadAllBytes(openFileDialog.FileName);
                 }
                 CharacterHandlerReboot.xxpGeneralReboot faceSourceCharacterHandler;
-                using (Stream stream = new MemoryStream(data))
-                using (var streamReader = new BufferedStreamReader(stream, 8192))
+                using (MemoryStream stream = new MemoryStream(data))
+                using (var streamReader = new BufferedStreamReaderBE<MemoryStream>(stream))
                 {
                     faceSourceCharacterHandler = OpenXXP(streamReader);
                 }
@@ -907,7 +910,7 @@ namespace NGS_Salon_Tool
                 costumeIcon.Source = null;
                 return;
             }
-            costumeIcon.Source = IceHandler.GetIconFromIce(pso2_binDir, cmxHandler.costumeOuterDict[text], CharacterMakingIndex.costumeIcon);
+            costumeIcon.Source = IceHandler.GetIconFromIce(pso2_binDir, cmxHandler.costumeOuterDict[text], CharacterMakingDynamic.costumeIcon);
             xxpHandler.baseSLCT.costumePart = (uint)cmxHandler.costumeOuterDict[text];
         }
         private void BasewearSelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -918,7 +921,7 @@ namespace NGS_Salon_Tool
                 basewearIcon.Source = null;
                 return;
             }
-            basewearIcon.Source = IceHandler.GetIconFromIce(pso2_binDir, cmxHandler.basewearDict[text], CharacterMakingIndex.basewearIcon);
+            basewearIcon.Source = IceHandler.GetIconFromIce(pso2_binDir, cmxHandler.basewearDict[text], CharacterMakingDynamic.basewearIcon);
             xxpHandler.baseSLCT2.basewearPart = (uint)cmxHandler.basewearDict[text];
         }
         private void InnerwearSelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -929,7 +932,7 @@ namespace NGS_Salon_Tool
                 innerwearIcon.Source = null;
                 return;
             }
-            innerwearIcon.Source = IceHandler.GetIconFromIce(pso2_binDir, cmxHandler.innerwearDict[text], CharacterMakingIndex.innerwearIcon);
+            innerwearIcon.Source = IceHandler.GetIconFromIce(pso2_binDir, cmxHandler.innerwearDict[text], CharacterMakingDynamic.innerwearIcon);
             xxpHandler.baseSLCT2.innerwearPart = (uint)cmxHandler.innerwearDict[text];
         }
         private void CastArmSelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -940,7 +943,7 @@ namespace NGS_Salon_Tool
                 castArmIcon.Source = null;
                 return;
             }
-            castArmIcon.Source = IceHandler.GetIconFromIce(pso2_binDir, cmxHandler.castArmDict[text], CharacterMakingIndex.castArmIcon);
+            castArmIcon.Source = IceHandler.GetIconFromIce(pso2_binDir, cmxHandler.castArmDict[text], CharacterMakingDynamic.castArmIcon);
             xxpHandler.baseSLCT.armPart = (uint)cmxHandler.castArmDict[text];
         }
         private void CastLegSelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -951,7 +954,7 @@ namespace NGS_Salon_Tool
                 castLegIcon.Source = null;
                 return;
             }
-            castLegIcon.Source = IceHandler.GetIconFromIce(pso2_binDir, cmxHandler.castLegDict[text], CharacterMakingIndex.castLegIcon);
+            castLegIcon.Source = IceHandler.GetIconFromIce(pso2_binDir, cmxHandler.castLegDict[text], CharacterMakingDynamic.castLegIcon);
             xxpHandler.baseSLCT.legPart = (uint)cmxHandler.castLegDict[text];
         }
         private void BodyPaint1SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -962,7 +965,7 @@ namespace NGS_Salon_Tool
                 bodyPaintIcon.Source = null;
                 return;
             }
-            bodyPaintIcon.Source = IceHandler.GetIconFromIce(pso2_binDir, cmxHandler.bodyPaintDict[text], CharacterMakingIndex.bodyPaintIcon);
+            bodyPaintIcon.Source = IceHandler.GetIconFromIce(pso2_binDir, cmxHandler.bodyPaintDict[text], CharacterMakingDynamic.bodyPaintIcon);
             xxpHandler.baseSLCT.bodyPaintPart = (uint)cmxHandler.bodyPaintDict[text];
         }
         private void BodyPaint2SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -973,7 +976,7 @@ namespace NGS_Salon_Tool
                 bodyPaint2Icon.Source = null;
                 return;
             }
-            bodyPaint2Icon.Source = IceHandler.GetIconFromIce(pso2_binDir, cmxHandler.bodyPaintDict[text], CharacterMakingIndex.bodyPaintIcon);
+            bodyPaint2Icon.Source = IceHandler.GetIconFromIce(pso2_binDir, cmxHandler.bodyPaintDict[text], CharacterMakingDynamic.bodyPaintIcon);
             xxpHandler.baseSLCT2.bodyPaint2Part = (uint)cmxHandler.bodyPaintDict[text];
         }
         private void StickerSelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -984,7 +987,7 @@ namespace NGS_Salon_Tool
                 stickerIcon.Source = null;
                 return;
             }
-            stickerIcon.Source = IceHandler.GetIconFromIce(pso2_binDir, cmxHandler.stickerDict[text], CharacterMakingIndex.stickerIcon);
+            stickerIcon.Source = IceHandler.GetIconFromIce(pso2_binDir, cmxHandler.stickerDict[text], CharacterMakingDynamic.stickerIcon);
             xxpHandler.baseSLCT.stickerPart = (uint)cmxHandler.stickerDict[text];
         }
         private void HairSelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -995,7 +998,7 @@ namespace NGS_Salon_Tool
                 hairIcon.Source = null;
                 return;
             }
-            hairIcon.Source = IceHandler.GetIconFromIce(pso2_binDir, cmxHandler.hairDict[text], CharacterMakingIndex.hairIcon);
+            hairIcon.Source = IceHandler.GetIconFromIce(pso2_binDir, cmxHandler.hairDict[text], CharacterMakingDynamic.hairIcon);
             xxpHandler.baseSLCT.hairPart = (uint)cmxHandler.hairDict[text];
         }
         private void RightEyeSelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -1006,7 +1009,7 @@ namespace NGS_Salon_Tool
                 rightEyeIcon.Source = null;
                 return;
             }
-            rightEyeIcon.Source = IceHandler.GetIconFromIce(pso2_binDir, cmxHandler.eyeDict[text], CharacterMakingIndex.eyeIcon);
+            rightEyeIcon.Source = IceHandler.GetIconFromIce(pso2_binDir, cmxHandler.eyeDict[text], CharacterMakingDynamic.eyeIcon);
             xxpHandler.baseSLCT.eyePart = (uint)cmxHandler.eyeDict[text];
         }
         private void EyebrowsSelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -1017,7 +1020,7 @@ namespace NGS_Salon_Tool
                 eyebrowsIcon.Source = null;
                 return;
             }
-            eyebrowsIcon.Source = IceHandler.GetIconFromIce(pso2_binDir, cmxHandler.eyebrowDict[text], CharacterMakingIndex.eyeBrowsIcon);
+            eyebrowsIcon.Source = IceHandler.GetIconFromIce(pso2_binDir, cmxHandler.eyebrowDict[text], CharacterMakingDynamic.eyeBrowsIcon);
             xxpHandler.baseSLCT.eyebrowPart = (uint)cmxHandler.eyebrowDict[text];
         }
         private void EyelashesSelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -1028,7 +1031,7 @@ namespace NGS_Salon_Tool
                 eyelashesIcon.Source = null;
                 return;
             }
-            eyelashesIcon.Source = IceHandler.GetIconFromIce(pso2_binDir, cmxHandler.eyelashDict[text], CharacterMakingIndex.eyelashesIcon);
+            eyelashesIcon.Source = IceHandler.GetIconFromIce(pso2_binDir, cmxHandler.eyelashDict[text], CharacterMakingDynamic.eyelashesIcon);
             xxpHandler.baseSLCT.eyelashPart = (uint)cmxHandler.eyelashDict[text];
         }
         private void LeftEyeSelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -1039,7 +1042,7 @@ namespace NGS_Salon_Tool
                 leftEyeIcon.Source = null;
                 return;
             }
-            leftEyeIcon.Source = IceHandler.GetIconFromIce(pso2_binDir, cmxHandler.eyeDict[text], CharacterMakingIndex.eyeIcon);
+            leftEyeIcon.Source = IceHandler.GetIconFromIce(pso2_binDir, cmxHandler.eyeDict[text], CharacterMakingDynamic.eyeIcon);
             xxpHandler.leftEyePart = (uint)cmxHandler.eyeDict[text];
         }
         private void FaceModelSelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -1068,7 +1071,7 @@ namespace NGS_Salon_Tool
                 facePaintIcon.Source = null;
                 return;
             }
-            facePaintIcon.Source = IceHandler.GetIconFromIce(pso2_binDir, cmxHandler.facePaintDict[text], CharacterMakingIndex.facePaintIcon);
+            facePaintIcon.Source = IceHandler.GetIconFromIce(pso2_binDir, cmxHandler.facePaintDict[text], CharacterMakingDynamic.facePaintIcon);
             xxpHandler.baseSLCT.makeup1Part = (uint)cmxHandler.facePaintDict[text];
         }
         private void FacePaint2SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -1079,7 +1082,7 @@ namespace NGS_Salon_Tool
                 facePaint2Icon.Source = null;
                 return;
             }
-            facePaint2Icon.Source = IceHandler.GetIconFromIce(pso2_binDir, cmxHandler.facePaintDict[text], CharacterMakingIndex.facePaintIcon);
+            facePaint2Icon.Source = IceHandler.GetIconFromIce(pso2_binDir, cmxHandler.facePaintDict[text], CharacterMakingDynamic.facePaintIcon);
             xxpHandler.baseSLCT.makeup2Part = (uint)cmxHandler.facePaintDict[text];
         }
         private void SkinSelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -1090,7 +1093,7 @@ namespace NGS_Salon_Tool
                 skinIcon.Source = null;
                 return;
             }
-            skinIcon.Source = IceHandler.GetIconFromIce(pso2_binDir, cmxHandler.skinDict[text], CharacterMakingIndex.skinIcon);
+            skinIcon.Source = IceHandler.GetIconFromIce(pso2_binDir, cmxHandler.skinDict[text], CharacterMakingDynamic.skinIcon);
             xxpHandler.baseSLCTNGS.skinTextureSet = (uint)cmxHandler.skinDict[text];
         }
         private void EarsSelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -1101,7 +1104,7 @@ namespace NGS_Salon_Tool
                 earsIcon.Source = null;
                 return;
             }
-            earsIcon.Source = IceHandler.GetIconFromIce(pso2_binDir, cmxHandler.earDict[text], CharacterMakingIndex.earIcon);
+            earsIcon.Source = IceHandler.GetIconFromIce(pso2_binDir, cmxHandler.earDict[text], CharacterMakingDynamic.earIcon);
             xxpHandler.baseSLCTNGS.earsPart = (uint)cmxHandler.earDict[text];
         }
         private void HornsSelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -1112,7 +1115,7 @@ namespace NGS_Salon_Tool
                 hornsIcon.Source = null;
                 return;
             }
-            hornsIcon.Source = IceHandler.GetIconFromIce(pso2_binDir, cmxHandler.hornDict[text], CharacterMakingIndex.hornIcon);
+            hornsIcon.Source = IceHandler.GetIconFromIce(pso2_binDir, cmxHandler.hornDict[text], CharacterMakingDynamic.hornIcon);
             xxpHandler.baseSLCTNGS.hornPart = (uint)cmxHandler.hornDict[text];
         }
         private void TeethSelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -1123,7 +1126,7 @@ namespace NGS_Salon_Tool
                 teethIcon.Source = null;
                 return;
             }
-            teethIcon.Source = IceHandler.GetIconFromIce(pso2_binDir, cmxHandler.teethDict[text], CharacterMakingIndex.teethIcon);
+            teethIcon.Source = IceHandler.GetIconFromIce(pso2_binDir, cmxHandler.teethDict[text], CharacterMakingDynamic.teethIcon);
             xxpHandler.baseSLCTNGS.teethPart = (uint)cmxHandler.teethDict[text];
         }
         private void Acce1SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -1134,7 +1137,7 @@ namespace NGS_Salon_Tool
                 acce1Icon.Source = null;
                 return;
             }
-            acce1Icon.Source = IceHandler.GetIconFromIce(pso2_binDir, cmxHandler.accessoryDict[text], CharacterMakingIndex.accessoryIcon);
+            acce1Icon.Source = IceHandler.GetIconFromIce(pso2_binDir, cmxHandler.accessoryDict[text], CharacterMakingDynamic.accessoryIcon);
             xxpHandler.baseSLCT.acc1Part = (uint)cmxHandler.accessoryDict[text];
 
             if(xxpHandler.baseSLCT.acc1Part > 0)
@@ -1154,7 +1157,7 @@ namespace NGS_Salon_Tool
                 acce2Icon.Source = null;
                 return;
             }
-            acce2Icon.Source = IceHandler.GetIconFromIce(pso2_binDir, cmxHandler.accessoryDict[text], CharacterMakingIndex.accessoryIcon);
+            acce2Icon.Source = IceHandler.GetIconFromIce(pso2_binDir, cmxHandler.accessoryDict[text], CharacterMakingDynamic.accessoryIcon);
             xxpHandler.baseSLCT.acc2Part = (uint)cmxHandler.accessoryDict[text];
 
             if (xxpHandler.baseSLCT.acc2Part > 0)
@@ -1175,7 +1178,7 @@ namespace NGS_Salon_Tool
                 acce3Icon.Source = null;
                 return;
             }
-            acce3Icon.Source = IceHandler.GetIconFromIce(pso2_binDir, cmxHandler.accessoryDict[text], CharacterMakingIndex.accessoryIcon);
+            acce3Icon.Source = IceHandler.GetIconFromIce(pso2_binDir, cmxHandler.accessoryDict[text], CharacterMakingDynamic.accessoryIcon);
             xxpHandler.baseSLCT.acc3Part = (uint)cmxHandler.accessoryDict[text];
 
             if (xxpHandler.baseSLCT.acc3Part > 0)
@@ -1196,7 +1199,7 @@ namespace NGS_Salon_Tool
                 acce4Icon.Source = null;
                 return;
             }
-            acce4Icon.Source = IceHandler.GetIconFromIce(pso2_binDir, cmxHandler.accessoryDict[text], CharacterMakingIndex.accessoryIcon);
+            acce4Icon.Source = IceHandler.GetIconFromIce(pso2_binDir, cmxHandler.accessoryDict[text], CharacterMakingDynamic.accessoryIcon);
             xxpHandler.baseSLCT2.acc4Part = (uint)cmxHandler.accessoryDict[text];
 
             if (xxpHandler.baseSLCT2.acc4Part > 0)
@@ -1217,7 +1220,7 @@ namespace NGS_Salon_Tool
                 acce5Icon.Source = null;
                 return;
             }
-            acce5Icon.Source = IceHandler.GetIconFromIce(pso2_binDir, cmxHandler.accessoryDict[text], CharacterMakingIndex.accessoryIcon);
+            acce5Icon.Source = IceHandler.GetIconFromIce(pso2_binDir, cmxHandler.accessoryDict[text], CharacterMakingDynamic.accessoryIcon);
             xxpHandler.baseSLCTNGS.acc5Part = (uint)cmxHandler.accessoryDict[text];
 
             if (xxpHandler.baseSLCTNGS.acc5Part > 0)
@@ -1238,7 +1241,7 @@ namespace NGS_Salon_Tool
                 acce6Icon.Source = null;
                 return;
             }
-            acce6Icon.Source = IceHandler.GetIconFromIce(pso2_binDir, cmxHandler.accessoryDict[text], CharacterMakingIndex.accessoryIcon);
+            acce6Icon.Source = IceHandler.GetIconFromIce(pso2_binDir, cmxHandler.accessoryDict[text], CharacterMakingDynamic.accessoryIcon);
             xxpHandler.baseSLCTNGS.acc6Part = (uint)cmxHandler.accessoryDict[text];
 
             if (xxpHandler.baseSLCTNGS.acc6Part > 0)
@@ -1259,7 +1262,7 @@ namespace NGS_Salon_Tool
                 acce7Icon.Source = null;
                 return;
             }
-            acce7Icon.Source = IceHandler.GetIconFromIce(pso2_binDir, cmxHandler.accessoryDict[text], CharacterMakingIndex.accessoryIcon);
+            acce7Icon.Source = IceHandler.GetIconFromIce(pso2_binDir, cmxHandler.accessoryDict[text], CharacterMakingDynamic.accessoryIcon);
             xxpHandler.baseSLCTNGS.acc7Part = (uint)cmxHandler.accessoryDict[text];
 
             if (xxpHandler.baseSLCTNGS.acc7Part > 0)
@@ -1280,7 +1283,7 @@ namespace NGS_Salon_Tool
                 acce8Icon.Source = null;
                 return;
             }
-            acce8Icon.Source = IceHandler.GetIconFromIce(pso2_binDir, cmxHandler.accessoryDict[text], CharacterMakingIndex.accessoryIcon);
+            acce8Icon.Source = IceHandler.GetIconFromIce(pso2_binDir, cmxHandler.accessoryDict[text], CharacterMakingDynamic.accessoryIcon);
             xxpHandler.baseSLCTNGS.acc8Part = (uint)cmxHandler.accessoryDict[text];
 
             if (xxpHandler.baseSLCTNGS.acc8Part > 0)
@@ -1301,7 +1304,7 @@ namespace NGS_Salon_Tool
                 acce9Icon.Source = null;
                 return;
             }
-            acce9Icon.Source = IceHandler.GetIconFromIce(pso2_binDir, cmxHandler.accessoryDict[text], CharacterMakingIndex.accessoryIcon);
+            acce9Icon.Source = IceHandler.GetIconFromIce(pso2_binDir, cmxHandler.accessoryDict[text], CharacterMakingDynamic.accessoryIcon);
             xxpHandler.baseSLCTNGS.acc9Part = (uint)cmxHandler.accessoryDict[text];
 
             if (xxpHandler.baseSLCTNGS.acc9Part > 0)
@@ -1322,7 +1325,7 @@ namespace NGS_Salon_Tool
                 acce10Icon.Source = null;
                 return;
             }
-            acce10Icon.Source = IceHandler.GetIconFromIce(pso2_binDir, cmxHandler.accessoryDict[text], CharacterMakingIndex.accessoryIcon);
+            acce10Icon.Source = IceHandler.GetIconFromIce(pso2_binDir, cmxHandler.accessoryDict[text], CharacterMakingDynamic.accessoryIcon);
             xxpHandler.baseSLCTNGS.acc10Part = (uint)cmxHandler.accessoryDict[text];
 
             if (xxpHandler.baseSLCTNGS.acc10Part > 0)
@@ -1343,7 +1346,7 @@ namespace NGS_Salon_Tool
                 acce11Icon.Source = null;
                 return;
             }
-            acce11Icon.Source = IceHandler.GetIconFromIce(pso2_binDir, cmxHandler.accessoryDict[text], CharacterMakingIndex.accessoryIcon);
+            acce11Icon.Source = IceHandler.GetIconFromIce(pso2_binDir, cmxHandler.accessoryDict[text], CharacterMakingDynamic.accessoryIcon);
             xxpHandler.baseSLCTNGS.acc11Part = (uint)cmxHandler.accessoryDict[text];
 
             if (xxpHandler.baseSLCTNGS.acc11Part > 0)
@@ -1364,7 +1367,7 @@ namespace NGS_Salon_Tool
                 acce12Icon.Source = null;
                 return;
             }
-            acce12Icon.Source = IceHandler.GetIconFromIce(pso2_binDir, cmxHandler.accessoryDict[text], CharacterMakingIndex.accessoryIcon);
+            acce12Icon.Source = IceHandler.GetIconFromIce(pso2_binDir, cmxHandler.accessoryDict[text], CharacterMakingDynamic.accessoryIcon);
             xxpHandler.baseSLCTNGS.acc12Part = (uint)cmxHandler.accessoryDict[text];
 
             if (xxpHandler.baseSLCTNGS.acc12Part > 0)
@@ -1385,7 +1388,7 @@ namespace NGS_Salon_Tool
                 acce13Icon.Source = null;
                 return;
             }
-            acce13Icon.Source = IceHandler.GetIconFromIce(pso2_binDir, cmxHandler.accessoryDict[text], CharacterMakingIndex.accessoryIcon);
+            acce13Icon.Source = IceHandler.GetIconFromIce(pso2_binDir, cmxHandler.accessoryDict[text], CharacterMakingDynamic.accessoryIcon);
             xxpHandler.slctNGSExtended.acc13Part = (uint)cmxHandler.accessoryDict[text];
 
             if (xxpHandler.slctNGSExtended.acc13Part > 0)
@@ -1406,7 +1409,7 @@ namespace NGS_Salon_Tool
                 acce14Icon.Source = null;
                 return;
             }
-            acce14Icon.Source = IceHandler.GetIconFromIce(pso2_binDir, cmxHandler.accessoryDict[text], CharacterMakingIndex.accessoryIcon);
+            acce14Icon.Source = IceHandler.GetIconFromIce(pso2_binDir, cmxHandler.accessoryDict[text], CharacterMakingDynamic.accessoryIcon);
             xxpHandler.slctNGSExtended.acc14Part = (uint)cmxHandler.accessoryDict[text];
 
             if (xxpHandler.slctNGSExtended.acc14Part > 0)
@@ -1427,7 +1430,7 @@ namespace NGS_Salon_Tool
                 acce15Icon.Source = null;
                 return;
             }
-            acce15Icon.Source = IceHandler.GetIconFromIce(pso2_binDir, cmxHandler.accessoryDict[text], CharacterMakingIndex.accessoryIcon);
+            acce15Icon.Source = IceHandler.GetIconFromIce(pso2_binDir, cmxHandler.accessoryDict[text], CharacterMakingDynamic.accessoryIcon);
             xxpHandler.slctNGSExtended.acc15Part = (uint)cmxHandler.accessoryDict[text];
 
             if (xxpHandler.slctNGSExtended.acc15Part > 0)
@@ -1448,7 +1451,7 @@ namespace NGS_Salon_Tool
                 acce16Icon.Source = null;
                 return;
             }
-            acce16Icon.Source = IceHandler.GetIconFromIce(pso2_binDir, cmxHandler.accessoryDict[text], CharacterMakingIndex.accessoryIcon);
+            acce16Icon.Source = IceHandler.GetIconFromIce(pso2_binDir, cmxHandler.accessoryDict[text], CharacterMakingDynamic.accessoryIcon);
             xxpHandler.slctNGSExtended.acc16Part = (uint)cmxHandler.accessoryDict[text];
 
             if (xxpHandler.slctNGSExtended.acc16Part > 0)
@@ -1469,7 +1472,7 @@ namespace NGS_Salon_Tool
                 acce17Icon.Source = null;
                 return;
             }
-            acce17Icon.Source = IceHandler.GetIconFromIce(pso2_binDir, cmxHandler.accessoryDict[text], CharacterMakingIndex.accessoryIcon);
+            acce17Icon.Source = IceHandler.GetIconFromIce(pso2_binDir, cmxHandler.accessoryDict[text], CharacterMakingDynamic.accessoryIcon);
             xxpHandler.slctNGSExtended.acc17Part = (uint)cmxHandler.accessoryDict[text];
 
             if (xxpHandler.slctNGSExtended.acc17Part > 0)
@@ -1490,7 +1493,7 @@ namespace NGS_Salon_Tool
                 acce18Icon.Source = null;
                 return;
             }
-            acce18Icon.Source = IceHandler.GetIconFromIce(pso2_binDir, cmxHandler.accessoryDict[text], CharacterMakingIndex.accessoryIcon);
+            acce18Icon.Source = IceHandler.GetIconFromIce(pso2_binDir, cmxHandler.accessoryDict[text], CharacterMakingDynamic.accessoryIcon);
             xxpHandler.slctNGSExtended.acc18Part = (uint)cmxHandler.accessoryDict[text];
 
             if (xxpHandler.slctNGSExtended.acc18Part > 0)

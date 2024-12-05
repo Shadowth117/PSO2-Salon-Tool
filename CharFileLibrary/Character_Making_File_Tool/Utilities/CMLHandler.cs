@@ -1,5 +1,7 @@
-﻿using AquaModelLibrary;
-using AquaModelLibrary.AquaMethods;
+﻿using AquaModelLibrary.Helpers;
+using AquaModelLibrary.Helpers.Extensions;
+using AquaModelLibrary.Helpers.PSO2;
+using AquaModelLibrary.Helpers.Readers;
 using Reloaded.Memory.Streams;
 using System;
 using System.Collections.Generic;
@@ -17,12 +19,12 @@ namespace Character_Making_File_Tool
         public static CharacterHandlerReboot.xxpGeneralReboot ParseCML(byte[] bytes)
         {
             using (MemoryStream strm = new MemoryStream(bytes))
-            using (BufferedStreamReader sr = new BufferedStreamReader(strm, 8192))
+            using (BufferedStreamReaderBE<MemoryStream> sr = new BufferedStreamReaderBE<MemoryStream>(strm))
             {
                 return ParseCML(sr);
             }
         }
-        public static CharacterHandlerReboot.xxpGeneralReboot ParseCML(BufferedStreamReader streamReader)
+        public static CharacterHandlerReboot.xxpGeneralReboot ParseCML(BufferedStreamReaderBE<MemoryStream> streamReader)
         {
             CharacterHandlerReboot.xxpGeneralReboot xxp = new CharacterHandlerReboot.xxpGeneralReboot();
 
@@ -58,18 +60,18 @@ namespace Character_Making_File_Tool
             return null;
         }
 
-        public static unsafe CharacterHandlerReboot.xxpGeneralReboot ParseVTBFCML(BufferedStreamReader streamReader)
+        public static unsafe CharacterHandlerReboot.xxpGeneralReboot ParseVTBFCML(BufferedStreamReaderBE<MemoryStream> streamReader)
         {
             CharacterHandlerReboot.xxpGeneralReboot xxp = new();
 
-            int dataEnd = (int)streamReader.BaseStream().Length;
+            int dataEnd = (int)streamReader.BaseStream.Length;
 
             //Seek past vtbf tag
             streamReader.Seek(0x10, SeekOrigin.Current);          //VTBF + CMLP tags
             bool hasClassicFaceData = false; //Track if classic face data is stored in an NGS file. If not, this is a classic file and we copy the face values into the old slots.
             //Previous CML iterations had unique ids for each variable in the file. However now they simply have unique ids per tag type.
             //There often are multiple of the same tag type placed about the file, though these shouldn't ever overlap.
-            while (streamReader.Position() < dataEnd)
+            while (streamReader.Position < dataEnd)
             {
                 var data = VTBFMethods.ReadVTBFTag(streamReader, out string tagType, out int ptrCount, out int entryCount);
                 switch (tagType)
@@ -350,7 +352,7 @@ namespace Character_Making_File_Tool
                             CopyToClassicFace(xxp, hasClassicFaceData);
                             return xxp;
                         }
-                        throw new System.Exception($"Unexpected tag at {streamReader.Position().ToString("X")}! {tagType} Please report!");
+                        throw new System.Exception($"Unexpected tag at {streamReader.Position.ToString("X")}! {tagType} Please report!");
                 }
             }
             CopyToClassicFace(xxp, hasClassicFaceData);
@@ -472,22 +474,22 @@ namespace Character_Making_File_Tool
 
             //DOC
             List<byte> doc = new List<byte>();
-            VTBFMethods.addBytes(doc, 0x70, 0x8, BitConverter.GetBytes(xxp.baseDOC.race));
-            VTBFMethods.addBytes(doc, 0x71, 0x8, BitConverter.GetBytes(xxp.baseDOC.gender));
-            VTBFMethods.addBytes(doc, 0x72, 0x8, BitConverter.GetBytes((int)xxp.baseDOC.muscleMass));
-            VTBFMethods.addBytes(doc, 0x73, 0x8, BitConverter.GetBytes((int)0x9));
-            VTBFMethods.addBytes(doc, 0xFF, 0x8, BitConverter.GetBytes(version));
-            VTBFMethods.addBytes(doc, 0x74, 0x8, BitConverter.GetBytes((int)xxp.skinVariant));
-            VTBFMethods.addBytes(doc, 0x75, 0x8, BitConverter.GetBytes((int)xxp.eyebrowDensity));
+            VTBFMethods.AddBytes(doc, 0x70, 0x8, BitConverter.GetBytes(xxp.baseDOC.race));
+            VTBFMethods.AddBytes(doc, 0x71, 0x8, BitConverter.GetBytes(xxp.baseDOC.gender));
+            VTBFMethods.AddBytes(doc, 0x72, 0x8, BitConverter.GetBytes((int)xxp.baseDOC.muscleMass));
+            VTBFMethods.AddBytes(doc, 0x73, 0x8, BitConverter.GetBytes((int)0x9));
+            VTBFMethods.AddBytes(doc, 0xFF, 0x8, BitConverter.GetBytes(version));
+            VTBFMethods.AddBytes(doc, 0x74, 0x8, BitConverter.GetBytes((int)xxp.skinVariant));
+            VTBFMethods.AddBytes(doc, 0x75, 0x8, BitConverter.GetBytes((int)xxp.eyebrowDensity));
             VTBFMethods.WriteTagHeader(doc, "DOC ", 0xC, 0x7);
             cml.AddRange(doc);
 
             //FIGR
             List<byte> figr = new List<byte>();
-            VTBFMethods.addBytes(figr, 0x0, 0x48, 0x1, Reloaded.Memory.Struct.GetBytes(xxp.baseFIGR.bodyVerts));
-            VTBFMethods.addBytes(figr, 0x1, 0x48, 0x1, Reloaded.Memory.Struct.GetBytes(xxp.baseFIGR.armVerts));
-            VTBFMethods.addBytes(figr, 0x2, 0x48, 0x1, Reloaded.Memory.Struct.GetBytes(xxp.baseFIGR.legVerts));
-            VTBFMethods.addBytes(figr, 0x3, 0x48, 0x1, Reloaded.Memory.Struct.GetBytes(xxp.baseFIGR.bustVerts));
+            VTBFMethods.AddBytes(figr, 0x0, 0x48, 0x1, DataHelpers.ConvertStruct(xxp.baseFIGR.bodyVerts));
+            VTBFMethods.AddBytes(figr, 0x1, 0x48, 0x1, DataHelpers.ConvertStruct(xxp.baseFIGR.armVerts));
+            VTBFMethods.AddBytes(figr, 0x2, 0x48, 0x1, DataHelpers.ConvertStruct(xxp.baseFIGR.legVerts));
+            VTBFMethods.AddBytes(figr, 0x3, 0x48, 0x1, DataHelpers.ConvertStruct(xxp.baseFIGR.bustVerts));
 
             FaceFIGR faceValues;
             if (xxp.baseSLCT.faceTypePart >= 100000)
@@ -499,31 +501,31 @@ namespace Character_Making_File_Tool
                 //For CMLs, the game seems to still use the original face values, even though for character data it switches pending faceTypePart value.
                 faceValues = xxp.GetClassicFaceData();
             }
-            VTBFMethods.addBytes(figr, 0x4, 0x48, 0x1, Reloaded.Memory.Struct.GetBytes(faceValues.headVerts));
-            VTBFMethods.addBytes(figr, 0x5, 0x48, 0x1, Reloaded.Memory.Struct.GetBytes(faceValues.faceShapeVerts));
-            VTBFMethods.addBytes(figr, 0x6, 0x48, 0x1, Reloaded.Memory.Struct.GetBytes(faceValues.eyeShapeVerts));
-            VTBFMethods.addBytes(figr, 0x7, 0x48, 0x1, Reloaded.Memory.Struct.GetBytes(faceValues.noseHeightVerts));
-
-            VTBFMethods.addBytes(figr, 0x8, 0x48, 0x1, Reloaded.Memory.Struct.GetBytes(faceValues.noseShapeVerts));
-            VTBFMethods.addBytes(figr, 0x9, 0x48, 0x1, Reloaded.Memory.Struct.GetBytes(faceValues.mouthVerts));
-            VTBFMethods.addBytes(figr, 0xA, 0x48, 0x1, Reloaded.Memory.Struct.GetBytes(faceValues.ear_hornVerts));
-            VTBFMethods.addBytes(figr, 0xC, 0x48, 0x1, Reloaded.Memory.Struct.GetBytes(faceValues.neckVerts));
-            VTBFMethods.addBytes(figr, 0xD, 0x48, 0x1, Reloaded.Memory.Struct.GetBytes(xxp.waistVerts));
-            VTBFMethods.addBytes(figr, 0x16, 0x48, 0x1, Reloaded.Memory.Struct.GetBytes(xxp.hands));
-            VTBFMethods.addBytes(figr, 0x20, 0x48, 0x1, Reloaded.Memory.Struct.GetBytes(faceValues.hornVerts));
+            VTBFMethods.AddBytes(figr, 0x4, 0x48, 0x1, DataHelpers.ConvertStruct(faceValues.headVerts));
+            VTBFMethods.AddBytes(figr, 0x5, 0x48, 0x1, DataHelpers.ConvertStruct(faceValues.faceShapeVerts));
+            VTBFMethods.AddBytes(figr, 0x6, 0x48, 0x1, DataHelpers.ConvertStruct(faceValues.eyeShapeVerts));
+            VTBFMethods.AddBytes(figr, 0x7, 0x48, 0x1, DataHelpers.ConvertStruct(faceValues.noseHeightVerts));
+                                                       
+            VTBFMethods.AddBytes(figr, 0x8, 0x48, 0x1, DataHelpers.ConvertStruct(faceValues.noseShapeVerts));
+            VTBFMethods.AddBytes(figr, 0x9, 0x48, 0x1, DataHelpers.ConvertStruct(faceValues.mouthVerts));
+            VTBFMethods.AddBytes(figr, 0xA, 0x48, 0x1, DataHelpers.ConvertStruct(faceValues.ear_hornVerts));
+            VTBFMethods.AddBytes(figr, 0xC, 0x48, 0x1, DataHelpers.ConvertStruct(faceValues.neckVerts));
+            VTBFMethods.AddBytes(figr, 0xD, 0x48, 0x1, DataHelpers.ConvertStruct(xxp.waistVerts));
+            VTBFMethods.AddBytes(figr, 0x16, 0x48, 0x1, DataHelpers.ConvertStruct(xxp.hands));
+            VTBFMethods.AddBytes(figr, 0x20, 0x48, 0x1, DataHelpers.ConvertStruct(faceValues.hornVerts));
             Vector3Int.Vec3Int vec3_21 = Vector3Int.Vec3Int.CreateVec3Int(xxp.eyeSize, xxp.eyeHorizontalPosition, xxp.neckAngle);
-            VTBFMethods.addBytes(figr, 0x21, 0x48, 0x1, Reloaded.Memory.Struct.GetBytes(vec3_21));
+            VTBFMethods.AddBytes(figr, 0x21, 0x48, 0x1, DataHelpers.ConvertStruct(vec3_21));
 
             //FIGR Alt Face
-            VTBFMethods.addBytes(figr, 0x30, 0x48, 0x1, Reloaded.Memory.Struct.GetBytes(xxp.classicFace.headVerts));
-            VTBFMethods.addBytes(figr, 0x31, 0x48, 0x1, Reloaded.Memory.Struct.GetBytes(xxp.classicFace.faceShapeVerts));
-            VTBFMethods.addBytes(figr, 0x32, 0x48, 0x1, Reloaded.Memory.Struct.GetBytes(xxp.classicFace.eyeShapeVerts));
-            VTBFMethods.addBytes(figr, 0x33, 0x48, 0x1, Reloaded.Memory.Struct.GetBytes(xxp.classicFace.noseHeightVerts));
-            VTBFMethods.addBytes(figr, 0x34, 0x48, 0x1, Reloaded.Memory.Struct.GetBytes(xxp.classicFace.noseShapeVerts));
-            VTBFMethods.addBytes(figr, 0x35, 0x48, 0x1, Reloaded.Memory.Struct.GetBytes(xxp.classicFace.mouthVerts));
-            VTBFMethods.addBytes(figr, 0x36, 0x48, 0x1, Reloaded.Memory.Struct.GetBytes(xxp.classicFace.ear_hornVerts));
-            VTBFMethods.addBytes(figr, 0x37, 0x48, 0x1, Reloaded.Memory.Struct.GetBytes(xxp.classicFace.neckVerts));
-            VTBFMethods.addBytes(figr, 0x38, 0x48, 0x1, Reloaded.Memory.Struct.GetBytes(xxp.classicFace.hornVerts));
+            VTBFMethods.AddBytes(figr, 0x30, 0x48, 0x1, DataHelpers.ConvertStruct(xxp.classicFace.headVerts));
+            VTBFMethods.AddBytes(figr, 0x31, 0x48, 0x1, DataHelpers.ConvertStruct(xxp.classicFace.faceShapeVerts));
+            VTBFMethods.AddBytes(figr, 0x32, 0x48, 0x1, DataHelpers.ConvertStruct(xxp.classicFace.eyeShapeVerts));
+            VTBFMethods.AddBytes(figr, 0x33, 0x48, 0x1, DataHelpers.ConvertStruct(xxp.classicFace.noseHeightVerts));
+            VTBFMethods.AddBytes(figr, 0x34, 0x48, 0x1, DataHelpers.ConvertStruct(xxp.classicFace.noseShapeVerts));
+            VTBFMethods.AddBytes(figr, 0x35, 0x48, 0x1, DataHelpers.ConvertStruct(xxp.classicFace.mouthVerts));
+            VTBFMethods.AddBytes(figr, 0x36, 0x48, 0x1, DataHelpers.ConvertStruct(xxp.classicFace.ear_hornVerts));
+            VTBFMethods.AddBytes(figr, 0x37, 0x48, 0x1, DataHelpers.ConvertStruct(xxp.classicFace.neckVerts));
+            VTBFMethods.AddBytes(figr, 0x38, 0x48, 0x1, DataHelpers.ConvertStruct(xxp.classicFace.hornVerts));
 
             VTBFMethods.WriteTagHeader(figr, "FIGR", 0, 0x19);
             cml.AddRange(figr);
@@ -532,7 +534,7 @@ namespace Character_Making_File_Tool
             List<byte> ofstScale = new List<byte>();
             for (int i = 0; i < 0x24; i += 3)
             {
-                VTBFMethods.addBytes(ofstScale, (byte)(0x90 + (i / 3)), 0x83, 0x8, 0x2,
+                VTBFMethods.AddBytes(ofstScale, (byte)(0x90 + (i / 3)), 0x83, 0x8, 0x2,
                     new byte[] { (byte)xxp.accessorySlidersRebootExtended.posSliders[i], (byte)xxp.accessorySlidersRebootExtended.posSliders[i + 1], (byte)xxp.accessorySlidersRebootExtended.posSliders[i + 2] });
             }
             VTBFMethods.WriteTagHeader(ofstScale, "OFST", 0, 0xC);
@@ -542,7 +544,7 @@ namespace Character_Making_File_Tool
             List<byte> ofstPos = new List<byte>();
             for (int i = 0; i < 0x24; i += 3)
             {
-                VTBFMethods.addBytes(ofstPos, (byte)(0xA0 + (i / 3)), 0x83, 0x8, 0x2,
+                VTBFMethods.AddBytes(ofstPos, (byte)(0xA0 + (i / 3)), 0x83, 0x8, 0x2,
                     new byte[] { (byte)xxp.accessorySlidersRebootExtended.rotSliders[i], (byte)xxp.accessorySlidersRebootExtended.rotSliders[i + 1], (byte)xxp.accessorySlidersRebootExtended.rotSliders[i + 2] });
             }
             VTBFMethods.WriteTagHeader(ofstPos, "OFST", 0, 0xC);
@@ -552,7 +554,7 @@ namespace Character_Making_File_Tool
             List<byte> ofstRot = new List<byte>();
             for (int i = 0; i < 0x24; i += 3)
             {
-                VTBFMethods.addBytes(ofstRot, (byte)(0xB0 + (i / 3)), 0x83, 0x8, 0x2,
+                VTBFMethods.AddBytes(ofstRot, (byte)(0xB0 + (i / 3)), 0x83, 0x8, 0x2,
                     new byte[] { (byte)xxp.accessorySlidersRebootExtended.scaleSliders[i], (byte)xxp.accessorySlidersRebootExtended.scaleSliders[i + 1], (byte)xxp.accessorySlidersRebootExtended.scaleSliders[i + 2] });
             }
             VTBFMethods.WriteTagHeader(ofstRot, "OFST", 0, 0xC);
@@ -562,7 +564,7 @@ namespace Character_Making_File_Tool
             List<byte> acwk = new List<byte>();
             for (int i = 0; i < 0x12; i++)
             {
-                VTBFMethods.addBytes(acwk, (byte)(0x0 + i), 0x48, 0x1, BitConverter.GetBytes((int)xxp.accessoryMiscDataExtended.accessoryAttach[i]));
+                VTBFMethods.AddBytes(acwk, (byte)(0x0 + i), 0x48, 0x1, BitConverter.GetBytes((int)xxp.accessoryMiscDataExtended.accessoryAttach[i]));
                 acwk.AddRange(BitConverter.GetBytes((int)xxp.accessoryMiscDataExtended.accessoryColorChoices[i * 2]));
                 acwk.AddRange(BitConverter.GetBytes((int)xxp.accessoryMiscDataExtended.accessoryColorChoices[i * 2 + 1]));
             }
@@ -572,129 +574,129 @@ namespace Character_Making_File_Tool
             //COL2
             List<byte> col2Bytes = new List<byte>();
             var col2 = xxp.ngsCOL2;
-            VTBFMethods.addBytes(col2Bytes, 0x27, 0x09, ColorConversion.BytesFromFixed(col2.outerColor1));
-            VTBFMethods.addBytes(col2Bytes, 0x20, 0x09, ColorConversion.BytesFromFixed(col2.baseColor1));
-            VTBFMethods.addBytes(col2Bytes, 0x21, 0x09, ColorConversion.BytesFromFixed(col2.mainColor));
-            VTBFMethods.addBytes(col2Bytes, 0x22, 0x09, ColorConversion.BytesFromFixed(col2.subColor1));
+            VTBFMethods.AddBytes(col2Bytes, 0x27, 0x09, ColorConversion.BytesFromFixed(col2.outerColor1));
+            VTBFMethods.AddBytes(col2Bytes, 0x20, 0x09, ColorConversion.BytesFromFixed(col2.baseColor1));
+            VTBFMethods.AddBytes(col2Bytes, 0x21, 0x09, ColorConversion.BytesFromFixed(col2.mainColor));
+            VTBFMethods.AddBytes(col2Bytes, 0x22, 0x09, ColorConversion.BytesFromFixed(col2.subColor1));
 
-            VTBFMethods.addBytes(col2Bytes, 0x23, 0x09, ColorConversion.BytesFromFixed(col2.subColor2));
-            VTBFMethods.addBytes(col2Bytes, 0x24, 0x09, ColorConversion.BytesFromFixed(col2.subColor3));
-            VTBFMethods.addBytes(col2Bytes, 0x25, 0x09, ColorConversion.BytesFromFixed(col2.rightEyeColor));
-            VTBFMethods.addBytes(col2Bytes, 0x26, 0x09, ColorConversion.BytesFromFixed(col2.hairColor1));
+            VTBFMethods.AddBytes(col2Bytes, 0x23, 0x09, ColorConversion.BytesFromFixed(col2.subColor2));
+            VTBFMethods.AddBytes(col2Bytes, 0x24, 0x09, ColorConversion.BytesFromFixed(col2.subColor3));
+            VTBFMethods.AddBytes(col2Bytes, 0x25, 0x09, ColorConversion.BytesFromFixed(col2.rightEyeColor));
+            VTBFMethods.AddBytes(col2Bytes, 0x26, 0x09, ColorConversion.BytesFromFixed(col2.hairColor1));
 
-            VTBFMethods.addBytes(col2Bytes, 0x38, 0x09, ColorConversion.BytesFromFixed(col2.eyebrowColor));
-            VTBFMethods.addBytes(col2Bytes, 0x39, 0x09, ColorConversion.BytesFromFixed(col2.eyelashColor));
-            VTBFMethods.addBytes(col2Bytes, 0x35, 0x09, ColorConversion.BytesFromFixed(col2.skinColor1));
-            VTBFMethods.addBytes(col2Bytes, 0x30, 0x09, ColorConversion.BytesFromFixed(col2.skinColor2));
+            VTBFMethods.AddBytes(col2Bytes, 0x38, 0x09, ColorConversion.BytesFromFixed(col2.eyebrowColor));
+            VTBFMethods.AddBytes(col2Bytes, 0x39, 0x09, ColorConversion.BytesFromFixed(col2.eyelashColor));
+            VTBFMethods.AddBytes(col2Bytes, 0x35, 0x09, ColorConversion.BytesFromFixed(col2.skinColor1));
+            VTBFMethods.AddBytes(col2Bytes, 0x30, 0x09, ColorConversion.BytesFromFixed(col2.skinColor2));
 
-            VTBFMethods.addBytes(col2Bytes, 0x31, 0x09, ColorConversion.BytesFromFixed(col2.baseColor2));
-            VTBFMethods.addBytes(col2Bytes, 0x32, 0x09, ColorConversion.BytesFromFixed(col2.outerColor2));
-            VTBFMethods.addBytes(col2Bytes, 0x33, 0x09, ColorConversion.BytesFromFixed(col2.innerColor1));
-            VTBFMethods.addBytes(col2Bytes, 0x34, 0x09, ColorConversion.BytesFromFixed(col2.innerColor2));
+            VTBFMethods.AddBytes(col2Bytes, 0x31, 0x09, ColorConversion.BytesFromFixed(col2.baseColor2));
+            VTBFMethods.AddBytes(col2Bytes, 0x32, 0x09, ColorConversion.BytesFromFixed(col2.outerColor2));
+            VTBFMethods.AddBytes(col2Bytes, 0x33, 0x09, ColorConversion.BytesFromFixed(col2.innerColor1));
+            VTBFMethods.AddBytes(col2Bytes, 0x34, 0x09, ColorConversion.BytesFromFixed(col2.innerColor2));
 
-            VTBFMethods.addBytes(col2Bytes, 0x36, 0x09, ColorConversion.BytesFromFixed(col2.leftEyeColor));
-            VTBFMethods.addBytes(col2Bytes, 0x37, 0x09, ColorConversion.BytesFromFixed(col2.hairColor2));
+            VTBFMethods.AddBytes(col2Bytes, 0x36, 0x09, ColorConversion.BytesFromFixed(col2.leftEyeColor));
+            VTBFMethods.AddBytes(col2Bytes, 0x37, 0x09, ColorConversion.BytesFromFixed(col2.hairColor2));
             VTBFMethods.WriteTagHeader(col2Bytes, "COL2", 0, 0x12);
             cml.AddRange(col2Bytes);
 
             //SLCT
             List<byte> slct = new List<byte>();
-            VTBFMethods.addBytes(slct, 0x40, 0x8, BitConverter.GetBytes(xxp.baseSLCT.costumePart));
-            VTBFMethods.addBytes(slct, 0x41, 0x8, BitConverter.GetBytes(xxp.baseSLCT.bodyPaintPart));
-            VTBFMethods.addBytes(slct, 0x42, 0x8, BitConverter.GetBytes(xxp.baseSLCT.stickerPart));
-            VTBFMethods.addBytes(slct, 0x43, 0x8, BitConverter.GetBytes(xxp.baseSLCT.eyePart));
-            VTBFMethods.addBytes(slct, 0x44, 0x8, BitConverter.GetBytes(xxp.baseSLCT.eyebrowPart));
-            VTBFMethods.addBytes(slct, 0x45, 0x8, BitConverter.GetBytes(xxp.baseSLCT.eyelashPart));
-            VTBFMethods.addBytes(slct, 0x46, 0x8, BitConverter.GetBytes(xxp.baseSLCT.faceTypePart));
-            VTBFMethods.addBytes(slct, 0x47, 0x8, BitConverter.GetBytes(xxp.baseSLCT.faceTexPart));
-            VTBFMethods.addBytes(slct, 0x48, 0x8, BitConverter.GetBytes(xxp.baseSLCT.makeup1Part));
-            VTBFMethods.addBytes(slct, 0x49, 0x8, BitConverter.GetBytes(xxp.baseSLCT.hairPart));
-            VTBFMethods.addBytes(slct, 0x50, 0x8, BitConverter.GetBytes(xxp.baseSLCT.acc1Part));
-            VTBFMethods.addBytes(slct, 0x51, 0x8, BitConverter.GetBytes(xxp.baseSLCT.acc2Part));
-            VTBFMethods.addBytes(slct, 0x52, 0x8, BitConverter.GetBytes(xxp.baseSLCT.acc3Part));
-            VTBFMethods.addBytes(slct, 0x53, 0x8, BitConverter.GetBytes(xxp.baseSLCT.makeup2Part));
-            VTBFMethods.addBytes(slct, 0x54, 0x8, BitConverter.GetBytes(xxp.baseSLCT.legPart));
-            VTBFMethods.addBytes(slct, 0x55, 0x8, BitConverter.GetBytes(xxp.baseSLCT.armPart));
+            VTBFMethods.AddBytes(slct, 0x40, 0x8, BitConverter.GetBytes(xxp.baseSLCT.costumePart));
+            VTBFMethods.AddBytes(slct, 0x41, 0x8, BitConverter.GetBytes(xxp.baseSLCT.bodyPaintPart));
+            VTBFMethods.AddBytes(slct, 0x42, 0x8, BitConverter.GetBytes(xxp.baseSLCT.stickerPart));
+            VTBFMethods.AddBytes(slct, 0x43, 0x8, BitConverter.GetBytes(xxp.baseSLCT.eyePart));
+            VTBFMethods.AddBytes(slct, 0x44, 0x8, BitConverter.GetBytes(xxp.baseSLCT.eyebrowPart));
+            VTBFMethods.AddBytes(slct, 0x45, 0x8, BitConverter.GetBytes(xxp.baseSLCT.eyelashPart));
+            VTBFMethods.AddBytes(slct, 0x46, 0x8, BitConverter.GetBytes(xxp.baseSLCT.faceTypePart));
+            VTBFMethods.AddBytes(slct, 0x47, 0x8, BitConverter.GetBytes(xxp.baseSLCT.faceTexPart));
+            VTBFMethods.AddBytes(slct, 0x48, 0x8, BitConverter.GetBytes(xxp.baseSLCT.makeup1Part));
+            VTBFMethods.AddBytes(slct, 0x49, 0x8, BitConverter.GetBytes(xxp.baseSLCT.hairPart));
+            VTBFMethods.AddBytes(slct, 0x50, 0x8, BitConverter.GetBytes(xxp.baseSLCT.acc1Part));
+            VTBFMethods.AddBytes(slct, 0x51, 0x8, BitConverter.GetBytes(xxp.baseSLCT.acc2Part));
+            VTBFMethods.AddBytes(slct, 0x52, 0x8, BitConverter.GetBytes(xxp.baseSLCT.acc3Part));
+            VTBFMethods.AddBytes(slct, 0x53, 0x8, BitConverter.GetBytes(xxp.baseSLCT.makeup2Part));
+            VTBFMethods.AddBytes(slct, 0x54, 0x8, BitConverter.GetBytes(xxp.baseSLCT.legPart));
+            VTBFMethods.AddBytes(slct, 0x55, 0x8, BitConverter.GetBytes(xxp.baseSLCT.armPart));
 
             //Ep4 
-            VTBFMethods.addBytes(slct, 0x56, 0x8, BitConverter.GetBytes(xxp.baseSLCT2.acc4Part));
-            VTBFMethods.addBytes(slct, 0x57, 0x8, BitConverter.GetBytes(xxp.baseSLCT2.basewearPart));
-            VTBFMethods.addBytes(slct, 0x58, 0x8, BitConverter.GetBytes(xxp.baseSLCT2.innerwearPart));
-            VTBFMethods.addBytes(slct, 0x59, 0x8, BitConverter.GetBytes(xxp.baseSLCT2.bodyPaint2Part));
+            VTBFMethods.AddBytes(slct, 0x56, 0x8, BitConverter.GetBytes(xxp.baseSLCT2.acc4Part));
+            VTBFMethods.AddBytes(slct, 0x57, 0x8, BitConverter.GetBytes(xxp.baseSLCT2.basewearPart));
+            VTBFMethods.AddBytes(slct, 0x58, 0x8, BitConverter.GetBytes(xxp.baseSLCT2.innerwearPart));
+            VTBFMethods.AddBytes(slct, 0x59, 0x8, BitConverter.GetBytes(xxp.baseSLCT2.bodyPaint2Part));
 
-            VTBFMethods.addBytes(slct, 0x63, 0x8, BitConverter.GetBytes(xxp.leftEyePart));
+            VTBFMethods.AddBytes(slct, 0x63, 0x8, BitConverter.GetBytes(xxp.leftEyePart));
 
             //Pre NGS
-            VTBFMethods.addBytes(slct, 0x0, 0x8, BitConverter.GetBytes(xxp.baseSLCTNGS.skinTextureSet));
+            VTBFMethods.AddBytes(slct, 0x0, 0x8, BitConverter.GetBytes(xxp.baseSLCTNGS.skinTextureSet));
 
             //NGS launch
-            VTBFMethods.addBytes(slct, 0x1, 0x8, BitConverter.GetBytes(xxp.baseSLCTNGS.earsPart));
-            VTBFMethods.addBytes(slct, 0x2, 0x8, BitConverter.GetBytes(xxp.baseSLCTNGS.teethPart));
-            VTBFMethods.addBytes(slct, 0x3, 0x8, BitConverter.GetBytes(xxp.baseSLCTNGS.hornPart));
-            VTBFMethods.addBytes(slct, 0x4, 0x8, BitConverter.GetBytes(xxp.baseSLCTNGS.acc5Part));
+            VTBFMethods.AddBytes(slct, 0x1, 0x8, BitConverter.GetBytes(xxp.baseSLCTNGS.earsPart));
+            VTBFMethods.AddBytes(slct, 0x2, 0x8, BitConverter.GetBytes(xxp.baseSLCTNGS.teethPart));
+            VTBFMethods.AddBytes(slct, 0x3, 0x8, BitConverter.GetBytes(xxp.baseSLCTNGS.hornPart));
+            VTBFMethods.AddBytes(slct, 0x4, 0x8, BitConverter.GetBytes(xxp.baseSLCTNGS.acc5Part));
 
-            VTBFMethods.addBytes(slct, 0x5, 0x8, BitConverter.GetBytes(xxp.baseSLCTNGS.acc6Part));
-            VTBFMethods.addBytes(slct, 0x6, 0x8, BitConverter.GetBytes(xxp.baseSLCTNGS.acc7Part));
-            VTBFMethods.addBytes(slct, 0x7, 0x8, BitConverter.GetBytes(xxp.baseSLCTNGS.acc8Part));
-            VTBFMethods.addBytes(slct, 0x8, 0x8, BitConverter.GetBytes(xxp.baseSLCTNGS.acc9Part));
+            VTBFMethods.AddBytes(slct, 0x5, 0x8, BitConverter.GetBytes(xxp.baseSLCTNGS.acc6Part));
+            VTBFMethods.AddBytes(slct, 0x6, 0x8, BitConverter.GetBytes(xxp.baseSLCTNGS.acc7Part));
+            VTBFMethods.AddBytes(slct, 0x7, 0x8, BitConverter.GetBytes(xxp.baseSLCTNGS.acc8Part));
+            VTBFMethods.AddBytes(slct, 0x8, 0x8, BitConverter.GetBytes(xxp.baseSLCTNGS.acc9Part));
 
-            VTBFMethods.addBytes(slct, 0x9, 0x8, BitConverter.GetBytes(xxp.baseSLCTNGS.acc10Part));
-            VTBFMethods.addBytes(slct, 0xA, 0x8, BitConverter.GetBytes(xxp.baseSLCTNGS.acc11Part));
-            VTBFMethods.addBytes(slct, 0xB, 0x8, BitConverter.GetBytes(xxp.baseSLCTNGS.acc12Part));
+            VTBFMethods.AddBytes(slct, 0x9, 0x8, BitConverter.GetBytes(xxp.baseSLCTNGS.acc10Part));
+            VTBFMethods.AddBytes(slct, 0xA, 0x8, BitConverter.GetBytes(xxp.baseSLCTNGS.acc11Part));
+            VTBFMethods.AddBytes(slct, 0xB, 0x8, BitConverter.GetBytes(xxp.baseSLCTNGS.acc12Part));
 
             //NGS Extended Accessories
-            VTBFMethods.addBytes(slct, 0xC, 0x8, BitConverter.GetBytes(xxp.slctNGSExtended.acc13Part));
-            VTBFMethods.addBytes(slct, 0xD, 0x8, BitConverter.GetBytes(xxp.slctNGSExtended.acc14Part));
-            VTBFMethods.addBytes(slct, 0xD, 0x8, BitConverter.GetBytes(xxp.slctNGSExtended.acc15Part));
-            VTBFMethods.addBytes(slct, 0xD, 0x8, BitConverter.GetBytes(xxp.slctNGSExtended.acc16Part));
-            VTBFMethods.addBytes(slct, 0xD, 0x8, BitConverter.GetBytes(xxp.slctNGSExtended.acc17Part));
-            VTBFMethods.addBytes(slct, 0xD, 0x8, BitConverter.GetBytes(xxp.slctNGSExtended.acc18Part));
+            VTBFMethods.AddBytes(slct, 0xC, 0x8, BitConverter.GetBytes(xxp.slctNGSExtended.acc13Part));
+            VTBFMethods.AddBytes(slct, 0xD, 0x8, BitConverter.GetBytes(xxp.slctNGSExtended.acc14Part));
+            VTBFMethods.AddBytes(slct, 0xD, 0x8, BitConverter.GetBytes(xxp.slctNGSExtended.acc15Part));
+            VTBFMethods.AddBytes(slct, 0xD, 0x8, BitConverter.GetBytes(xxp.slctNGSExtended.acc16Part));
+            VTBFMethods.AddBytes(slct, 0xD, 0x8, BitConverter.GetBytes(xxp.slctNGSExtended.acc17Part));
+            VTBFMethods.AddBytes(slct, 0xD, 0x8, BitConverter.GetBytes(xxp.slctNGSExtended.acc18Part));
 
             VTBFMethods.WriteTagHeader(slct, "SLCT", 0, 0x27);
             cml.AddRange(slct);
 
             //SLCT - Paint Priority
             List<byte> slctBP = new List<byte>();
-            VTBFMethods.addBytes(slctBP, 0x60, 0x8, BitConverter.GetBytes((int)xxp.paintPriority.priority1));
-            VTBFMethods.addBytes(slctBP, 0x61, 0x8, BitConverter.GetBytes((int)xxp.paintPriority.priority2));
-            VTBFMethods.addBytes(slctBP, 0x62, 0x8, BitConverter.GetBytes((int)xxp.paintPriority.priority3));
+            VTBFMethods.AddBytes(slctBP, 0x60, 0x8, BitConverter.GetBytes((int)xxp.paintPriority.priority1));
+            VTBFMethods.AddBytes(slctBP, 0x61, 0x8, BitConverter.GetBytes((int)xxp.paintPriority.priority2));
+            VTBFMethods.AddBytes(slctBP, 0x62, 0x8, BitConverter.GetBytes((int)xxp.paintPriority.priority3));
             VTBFMethods.WriteTagHeader(slctBP, "SLCT", 0, 0x3);
             cml.AddRange(slctBP);
 
             //SLID - Extra NGS Sliders
             List<byte> slid = new List<byte>();
-            VTBFMethods.addBytes(slid, 0x0, 0x8, BitConverter.GetBytes(xxp.ngsSLID.shoulderSize));
-            VTBFMethods.addBytes(slid, 0x1, 0x8, BitConverter.GetBytes(xxp.ngsSLID.hairAdjust));
-            VTBFMethods.addBytes(slid, 0x2, 0x8, BitConverter.GetBytes(xxp.ngsSLID.skinGloss));
-            VTBFMethods.addBytes(slid, 0x3, 0x8, BitConverter.GetBytes(xxp.ngsSLID.mouthVertical));
+            VTBFMethods.AddBytes(slid, 0x0, 0x8, BitConverter.GetBytes(xxp.ngsSLID.shoulderSize));
+            VTBFMethods.AddBytes(slid, 0x1, 0x8, BitConverter.GetBytes(xxp.ngsSLID.hairAdjust));
+            VTBFMethods.AddBytes(slid, 0x2, 0x8, BitConverter.GetBytes(xxp.ngsSLID.skinGloss));
+            VTBFMethods.AddBytes(slid, 0x3, 0x8, BitConverter.GetBytes(xxp.ngsSLID.mouthVertical));
 
-            VTBFMethods.addBytes(slid, 0x4, 0x8, BitConverter.GetBytes(xxp.ngsSLID.eyebrowHoriz));
-            VTBFMethods.addBytes(slid, 0x5, 0x8, BitConverter.GetBytes(xxp.ngsSLID.irisVertical));
-            VTBFMethods.addBytes(slid, 0x6, 0x8, BitConverter.GetBytes(xxp.ngsSLID.facePaint1Opacity));
-            VTBFMethods.addBytes(slid, 0x7, 0x8, BitConverter.GetBytes(xxp.ngsSLID.facePaint2Opacity));
+            VTBFMethods.AddBytes(slid, 0x4, 0x8, BitConverter.GetBytes(xxp.ngsSLID.eyebrowHoriz));
+            VTBFMethods.AddBytes(slid, 0x5, 0x8, BitConverter.GetBytes(xxp.ngsSLID.irisVertical));
+            VTBFMethods.AddBytes(slid, 0x6, 0x8, BitConverter.GetBytes(xxp.ngsSLID.facePaint1Opacity));
+            VTBFMethods.AddBytes(slid, 0x7, 0x8, BitConverter.GetBytes(xxp.ngsSLID.facePaint2Opacity));
 
-            VTBFMethods.addBytes(slid, 0x8, 0x8, BitConverter.GetBytes(xxp.ngsSLID.shoulderVertical));
-            VTBFMethods.addBytes(slid, 0x9, 0x8, BitConverter.GetBytes(xxp.ngsSLID.thighsAdjust));
-            VTBFMethods.addBytes(slid, 0xA, 0x8, BitConverter.GetBytes(xxp.ngsSLID.calvesAdjust));
-            VTBFMethods.addBytes(slid, 0xB, 0x8, BitConverter.GetBytes(xxp.ngsSLID.forearmsAdjust));
+            VTBFMethods.AddBytes(slid, 0x8, 0x8, BitConverter.GetBytes(xxp.ngsSLID.shoulderVertical));
+            VTBFMethods.AddBytes(slid, 0x9, 0x8, BitConverter.GetBytes(xxp.ngsSLID.thighsAdjust));
+            VTBFMethods.AddBytes(slid, 0xA, 0x8, BitConverter.GetBytes(xxp.ngsSLID.calvesAdjust));
+            VTBFMethods.AddBytes(slid, 0xB, 0x8, BitConverter.GetBytes(xxp.ngsSLID.forearmsAdjust));
 
-            VTBFMethods.addBytes(slid, 0xC, 0x8, BitConverter.GetBytes(xxp.ngsSLID.handThickness));
-            VTBFMethods.addBytes(slid, 0xD, 0x8, BitConverter.GetBytes(xxp.ngsSLID.footSize));
-            VTBFMethods.addBytes(slid, 0xE, 0x8, BitConverter.GetBytes(xxp.ngsSLID.int_32C));
+            VTBFMethods.AddBytes(slid, 0xC, 0x8, BitConverter.GetBytes(xxp.ngsSLID.handThickness));
+            VTBFMethods.AddBytes(slid, 0xD, 0x8, BitConverter.GetBytes(xxp.ngsSLID.footSize));
+            VTBFMethods.AddBytes(slid, 0xE, 0x8, BitConverter.GetBytes(xxp.ngsSLID.int_32C));
             VTBFMethods.WriteTagHeader(slid, "SLID", 0, 0xF);
             cml.AddRange(slid);
 
             //MTON
             List<byte> mton = new List<byte>();
-            VTBFMethods.addBytes(mton, 0x0, 0x8, BitConverter.GetBytes(xxp.ngsMTON.int_330));
-            VTBFMethods.addBytes(mton, 0x1, 0x8, BitConverter.GetBytes(xxp.ngsMTON.walkRunMotion));
-            VTBFMethods.addBytes(mton, 0x2, 0x8, BitConverter.GetBytes(xxp.ngsMTON.swimMotion));
-            VTBFMethods.addBytes(mton, 0x3, 0x8, BitConverter.GetBytes(xxp.ngsMTON.dashMotion));
+            VTBFMethods.AddBytes(mton, 0x0, 0x8, BitConverter.GetBytes(xxp.ngsMTON.int_330));
+            VTBFMethods.AddBytes(mton, 0x1, 0x8, BitConverter.GetBytes(xxp.ngsMTON.walkRunMotion));
+            VTBFMethods.AddBytes(mton, 0x2, 0x8, BitConverter.GetBytes(xxp.ngsMTON.swimMotion));
+            VTBFMethods.AddBytes(mton, 0x3, 0x8, BitConverter.GetBytes(xxp.ngsMTON.dashMotion));
 
-            VTBFMethods.addBytes(mton, 0x4, 0x8, BitConverter.GetBytes(xxp.ngsMTON.glideMotion));
-            VTBFMethods.addBytes(mton, 0x5, 0x8, BitConverter.GetBytes(xxp.ngsMTON.landingMotion));
-            VTBFMethods.addBytes(mton, 0x6, 0x8, BitConverter.GetBytes(xxp.ngsMTON.idleMotion));
-            VTBFMethods.addBytes(mton, 0x7, 0x8, BitConverter.GetBytes(xxp.ngsMTON.jumpMotion));
+            VTBFMethods.AddBytes(mton, 0x4, 0x8, BitConverter.GetBytes(xxp.ngsMTON.glideMotion));
+            VTBFMethods.AddBytes(mton, 0x5, 0x8, BitConverter.GetBytes(xxp.ngsMTON.landingMotion));
+            VTBFMethods.AddBytes(mton, 0x6, 0x8, BitConverter.GetBytes(xxp.ngsMTON.idleMotion));
+            VTBFMethods.AddBytes(mton, 0x7, 0x8, BitConverter.GetBytes(xxp.ngsMTON.jumpMotion));
             VTBFMethods.WriteTagHeader(mton, "MTON", 0, 0x8);
             cml.AddRange(mton);
 
@@ -712,8 +714,8 @@ namespace Character_Making_File_Tool
 
             byte bitflags = (byte)(0 | base1 | base2 | head | body | arm | leg | outer | inner);
 
-            VTBFMethods.addBytes(visi, 0xC0, 0x8, new byte[] { bitflags, 0, 0, 0 });
-            VTBFMethods.addBytes(visi, 0xC1, 0x8, new byte[] { 0, 0, 0, 0 });
+            VTBFMethods.AddBytes(visi, 0xC0, 0x8, new byte[] { bitflags, 0, 0, 0 });
+            VTBFMethods.AddBytes(visi, 0xC1, 0x8, new byte[] { 0, 0, 0, 0 });
             VTBFMethods.WriteTagHeader(visi, "VISI", 0, 0x2);
             cml.AddRange(visi);
 
@@ -723,35 +725,35 @@ namespace Character_Making_File_Tool
             switch (version)
             {
                 case 0xA:
-                    VTBFMethods.addBytes(expr, 0x0, 0x83, 0x8, 0x11, Reloaded.Memory.Struct.GetBytes(xxp.faceNatural.expStruct));
-                    VTBFMethods.addBytes(expr, 0x1, 0x83, 0x8, 0x11, Reloaded.Memory.Struct.GetBytes(xxp.faceSmile.expStruct));
-                    VTBFMethods.addBytes(expr, 0x2, 0x83, 0x8, 0x11, Reloaded.Memory.Struct.GetBytes(xxp.faceAngry.expStruct));
-                    VTBFMethods.addBytes(expr, 0x3, 0x83, 0x8, 0x11, Reloaded.Memory.Struct.GetBytes(xxp.faceSad.expStruct));
-
-                    VTBFMethods.addBytes(expr, 0x4, 0x83, 0x8, 0x11, Reloaded.Memory.Struct.GetBytes(xxp.faceSus.expStruct));
-                    VTBFMethods.addBytes(expr, 0x5, 0x83, 0x8, 0x11, Reloaded.Memory.Struct.GetBytes(xxp.faceEyesClosed.expStruct));
-                    VTBFMethods.addBytes(expr, 0x6, 0x83, 0x8, 0x11, Reloaded.Memory.Struct.GetBytes(xxp.faceSmile2.expStruct));
-                    VTBFMethods.addBytes(expr, 0x7, 0x83, 0x8, 0x11, Reloaded.Memory.Struct.GetBytes(xxp.faceWink.expStruct));
-
-                    VTBFMethods.addBytes(expr, 0x8, 0x83, 0x8, 0x11, Reloaded.Memory.Struct.GetBytes(xxp.faceUnused1.expStruct));
-                    VTBFMethods.addBytes(expr, 0x9, 0x83, 0x8, 0x11, Reloaded.Memory.Struct.GetBytes(xxp.faceUnused2.expStruct));
+                    VTBFMethods.AddBytes(expr, 0x0, 0x83, 0x8, 0x11, DataHelpers.ConvertStruct(xxp.faceNatural.expStruct));
+                    VTBFMethods.AddBytes(expr, 0x1, 0x83, 0x8, 0x11, DataHelpers.ConvertStruct(xxp.faceSmile.expStruct));
+                    VTBFMethods.AddBytes(expr, 0x2, 0x83, 0x8, 0x11, DataHelpers.ConvertStruct(xxp.faceAngry.expStruct));
+                    VTBFMethods.AddBytes(expr, 0x3, 0x83, 0x8, 0x11, DataHelpers.ConvertStruct(xxp.faceSad.expStruct));
+                                                                     
+                    VTBFMethods.AddBytes(expr, 0x4, 0x83, 0x8, 0x11, DataHelpers.ConvertStruct(xxp.faceSus.expStruct));
+                    VTBFMethods.AddBytes(expr, 0x5, 0x83, 0x8, 0x11, DataHelpers.ConvertStruct(xxp.faceEyesClosed.expStruct));
+                    VTBFMethods.AddBytes(expr, 0x6, 0x83, 0x8, 0x11, DataHelpers.ConvertStruct(xxp.faceSmile2.expStruct));
+                    VTBFMethods.AddBytes(expr, 0x7, 0x83, 0x8, 0x11, DataHelpers.ConvertStruct(xxp.faceWink.expStruct));
+                                                                     
+                    VTBFMethods.AddBytes(expr, 0x8, 0x83, 0x8, 0x11, DataHelpers.ConvertStruct(xxp.faceUnused1.expStruct));
+                    VTBFMethods.AddBytes(expr, 0x9, 0x83, 0x8, 0x11, DataHelpers.ConvertStruct(xxp.faceUnused2.expStruct));
                     VTBFMethods.WriteTagHeader(expr, "EXPR", 0, 0xA);
                     break;
                 case 0xB:
                 case 0xC:
                 case 0xD:
-                    VTBFMethods.addBytes(expr, 0x0, 0x83, 0x8, 0x13, Reloaded.Memory.Struct.GetBytes(xxp.faceNatural));
-                    VTBFMethods.addBytes(expr, 0x1, 0x83, 0x8, 0x13, Reloaded.Memory.Struct.GetBytes(xxp.faceSmile));
-                    VTBFMethods.addBytes(expr, 0x2, 0x83, 0x8, 0x13, Reloaded.Memory.Struct.GetBytes(xxp.faceAngry));
-                    VTBFMethods.addBytes(expr, 0x3, 0x83, 0x8, 0x13, Reloaded.Memory.Struct.GetBytes(xxp.faceSad));
-
-                    VTBFMethods.addBytes(expr, 0x4, 0x83, 0x8, 0x13, Reloaded.Memory.Struct.GetBytes(xxp.faceSus));
-                    VTBFMethods.addBytes(expr, 0x5, 0x83, 0x8, 0x13, Reloaded.Memory.Struct.GetBytes(xxp.faceEyesClosed));
-                    VTBFMethods.addBytes(expr, 0x6, 0x83, 0x8, 0x13, Reloaded.Memory.Struct.GetBytes(xxp.faceSmile2));
-                    VTBFMethods.addBytes(expr, 0x7, 0x83, 0x8, 0x13, Reloaded.Memory.Struct.GetBytes(xxp.faceWink));
-
-                    VTBFMethods.addBytes(expr, 0x8, 0x83, 0x8, 0x13, Reloaded.Memory.Struct.GetBytes(xxp.faceUnused1));
-                    VTBFMethods.addBytes(expr, 0x9, 0x83, 0x8, 0x13, Reloaded.Memory.Struct.GetBytes(xxp.faceUnused2));
+                    VTBFMethods.AddBytes(expr, 0x0, 0x83, 0x8, 0x13, DataHelpers.ConvertStruct(xxp.faceNatural));
+                    VTBFMethods.AddBytes(expr, 0x1, 0x83, 0x8, 0x13, DataHelpers.ConvertStruct(xxp.faceSmile));
+                    VTBFMethods.AddBytes(expr, 0x2, 0x83, 0x8, 0x13, DataHelpers.ConvertStruct(xxp.faceAngry));
+                    VTBFMethods.AddBytes(expr, 0x3, 0x83, 0x8, 0x13, DataHelpers.ConvertStruct(xxp.faceSad));
+                                                                    
+                    VTBFMethods.AddBytes(expr, 0x4, 0x83, 0x8, 0x13, DataHelpers.ConvertStruct(xxp.faceSus));
+                    VTBFMethods.AddBytes(expr, 0x5, 0x83, 0x8, 0x13, DataHelpers.ConvertStruct(xxp.faceEyesClosed));
+                    VTBFMethods.AddBytes(expr, 0x6, 0x83, 0x8, 0x13, DataHelpers.ConvertStruct(xxp.faceSmile2));
+                    VTBFMethods.AddBytes(expr, 0x7, 0x83, 0x8, 0x13, DataHelpers.ConvertStruct(xxp.faceWink));
+                                                                   
+                    VTBFMethods.AddBytes(expr, 0x8, 0x83, 0x8, 0x13, DataHelpers.ConvertStruct(xxp.faceUnused1));
+                    VTBFMethods.AddBytes(expr, 0x9, 0x83, 0x8, 0x13, DataHelpers.ConvertStruct(xxp.faceUnused2));
                     VTBFMethods.WriteTagHeader(expr, "EXPR", 0, 0xA);
                     break;
                 default:
@@ -759,7 +761,7 @@ namespace Character_Making_File_Tool
                     break;
             }
             cml.AddRange(expr);
-            AquaGeneralMethods.AlignWriter(cml, 0x10);
+            cml.AlignWriter(0x10);
 
             return cml.ToArray();
         }

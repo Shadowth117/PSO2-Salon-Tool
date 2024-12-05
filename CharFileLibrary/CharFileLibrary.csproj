@@ -18,15 +18,16 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Pfim" Version="0.11.1" />
-    <PackageReference Include="Reloaded.Memory" Version="8.1.0" />
-    <PackageReference Include="System.Drawing.Common" Version="6.0.0-preview.5.21301.5" />
+    <PackageReference Include="Pfim" Version="0.11.3" />
+    <PackageReference Include="Reloaded.Memory" Version="9.4.2" />
+    <PackageReference Include="System.Drawing.Common" Version="8.0.11" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\PSO2-Aqua-Library\AquaModelLibrary.Core\AquaModelLibrary.Core.csproj" />
+    <ProjectReference Include="..\PSO2-Aqua-Library\AquaModelLibrary.Data\AquaModelLibrary.Data.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="AquaModelLibrary, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>Libraries\AquaLib\AquaModelLibrary.dll</HintPath>
-    </Reference>
     <Reference Include="Microsoft.WindowsAPICodePack, Version=1.1.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.WindowsAPICodePack-Core.1.1.0.0\lib\Microsoft.WindowsAPICodePack.dll</HintPath>
     </Reference>
@@ -35,9 +36,6 @@
     </Reference>
     <Reference Include="Microsoft.WindowsAPICodePack.ShellExtensions, Version=1.1.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.WindowsAPICodePack-Shell.1.1.0.0\lib\Microsoft.WindowsAPICodePack.ShellExtensions.dll</HintPath>
-    </Reference>
-    <Reference Include="ZamboniLib">
-      <HintPath>Libraries\AquaLib\ZamboniLib.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>

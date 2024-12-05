@@ -1,4 +1,4 @@
-﻿using AquaModelLibrary;
+﻿using AquaModelLibrary.Data.PSO2.Aqua;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -8,7 +8,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Windows.Media.Imaging;
 using Zamboni;
-using static AquaModelLibrary.Extra.ReferenceGenerator;
+using static AquaModelLibrary.Data.Utility.ReferenceGenerator;
 
 namespace Character_Making_File_Tool
 {

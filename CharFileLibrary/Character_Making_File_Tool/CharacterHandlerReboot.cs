@@ -1,4 +1,5 @@
-﻿using System;
+﻿using AquaModelLibrary.Helpers;
+using System;
 using static Character_Making_File_Tool.CharacterDataStructs;
 using static Character_Making_File_Tool.CharacterDataStructsReboot;
 using static Character_Making_File_Tool.CharacterMainStructs;
@@ -1191,27 +1192,27 @@ namespace Character_Making_File_Tool
                 switch (xxpVersion)
                 {
                     case 2:
-                        return Reloaded.Memory.Struct.GetBytes(GetXXPV2());
+                        return DataHelpers.ConvertStruct(GetXXPV2());
                     case 5:
-                        return Reloaded.Memory.Struct.GetBytes(GetXXPV5());
+                        return DataHelpers.ConvertStruct(GetXXPV5());
                     case 6:
-                        return Reloaded.Memory.Struct.GetBytes(GetXXPV6());
+                        return DataHelpers.ConvertStruct(GetXXPV6());
                     case 9:
-                        return Reloaded.Memory.Struct.GetBytes(GetXXPV9());
+                        return DataHelpers.ConvertStruct(GetXXPV9());
                     case 10:
-                        return Reloaded.Memory.Struct.GetBytes(GetXXPV10());
+                        return DataHelpers.ConvertStruct(GetXXPV10());
                     case 11:
-                        return Reloaded.Memory.Struct.GetBytes(GetXXPV11());
+                        return DataHelpers.ConvertStruct(GetXXPV11());
                     case 12:
-                        return Reloaded.Memory.Struct.GetBytes(GetXXPV12());
+                        return DataHelpers.ConvertStruct(GetXXPV12());
                     case 13:
-                        return Reloaded.Memory.Struct.GetBytes(GetXXPV13());
+                        return DataHelpers.ConvertStruct(GetXXPV13());
                     case 14:
-                        return Reloaded.Memory.Struct.GetBytes(GetXXPV14());
+                        return DataHelpers.ConvertStruct(GetXXPV14());
                     case 15:
-                        return Reloaded.Memory.Struct.GetBytes(GetXXPV15());
+                        return DataHelpers.ConvertStruct(GetXXPV15());
                     default:
-                        return Reloaded.Memory.Struct.GetBytes(GetXXPV15());
+                        return DataHelpers.ConvertStruct(GetXXPV15());
                 }
                 throw new NotImplementedException();
             }

@@ -1,10 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using static Character_Making_File_Tool.CharacterConstants;
 using static Character_Making_File_Tool.Vector3Int;
-using static Character_Making_File_Tool.CharacterConstants;
 
 namespace Character_Making_File_Tool
 {

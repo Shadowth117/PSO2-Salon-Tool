@@ -1,15 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 
 namespace NGS_Salon_Tool
 {
     public static class MiscReference
     {
-        public static List<string> proportionStrings = new List<string>() 
-        { 
+        public static List<string> proportionStrings = new List<string>()
+        {
             "Body",
             "Arm",
             "Leg",

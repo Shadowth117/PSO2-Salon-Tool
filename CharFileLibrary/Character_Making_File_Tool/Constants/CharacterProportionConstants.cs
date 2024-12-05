@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace CharFileLibrary.Character_Making_File_Tool.Constants
+﻿namespace CharFileLibrary.Character_Making_File_Tool.Constants
 {
     public static class CharacterProportionConstants
     {

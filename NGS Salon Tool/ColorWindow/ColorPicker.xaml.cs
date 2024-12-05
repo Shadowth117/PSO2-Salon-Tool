@@ -1,18 +1,9 @@
 ﻿using Character_Making_File_Tool;
-using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
 
 namespace NGS_Salon_Tool
 {
@@ -155,17 +146,17 @@ namespace NGS_Salon_Tool
             internalColor[1] = SelColor.Color.G;
             internalColor[2] = SelColor.Color.R;
             internalColor[3] = SelColor.Color.A;
-            
-            if(internalColorPtr != null)
+
+            if (internalColorPtr != null)
             {
                 internalColorPtr[0] = internalColor[0];
                 internalColorPtr[1] = internalColor[1];
                 internalColorPtr[2] = internalColor[2];
                 internalColorPtr[3] = internalColor[3];
             }
-            if(internalButton != null && SelColor != null)
+            if (internalButton != null && SelColor != null)
             {
-                if(!(internalButton.Background is SolidColorBrush))
+                if (!(internalButton.Background is SolidColorBrush))
                 {
                     internalButton.Background = new SolidColorBrush(new Color());
                 }
@@ -223,7 +214,7 @@ namespace NGS_Salon_Tool
             if (SelColor != null && ignoreValueChanges == false)
             {
                 var color = SelColor.Color;
-                
+
                 color.G = (byte)(int)e.NewValue;
                 SelColor.Color = color;
                 SetInternalColor();
@@ -255,7 +246,7 @@ namespace NGS_Salon_Tool
         public void UpdateHorizSlider(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
             Canvas.SetLeft(selector, e.NewValue / horizSlider.Maximum * ColorCanvas.Width);
-            if(SelColor != null && ignoreValueChanges == false)
+            if (SelColor != null && ignoreValueChanges == false)
             {
                 SelColor.Color = ColorLogic.ColorFromHSV(hueSlider.Value, horizSlider.Value / horizSlider.Maximum, vertSlider.Value / vertSlider.Maximum);
                 SetInternalColor();
@@ -285,7 +276,7 @@ namespace NGS_Salon_Tool
         }
         public void MoveSelector(object sender, MouseButtonEventArgs e)
         {
-            if(e.LeftButton == MouseButtonState.Pressed)
+            if (e.LeftButton == MouseButtonState.Pressed)
             {
                 Point pt = e.GetPosition((UIElement)sender);
                 ignoreValueChanges = true;

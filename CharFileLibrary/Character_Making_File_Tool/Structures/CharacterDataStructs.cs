@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using static Character_Making_File_Tool.Vector3Int;
+﻿using static Character_Making_File_Tool.Vector3Int;
 
 namespace Character_Making_File_Tool
 {
@@ -275,7 +270,7 @@ namespace Character_Making_File_Tool
                     exp.tongue = raw[0x11];
                 }
 
-                if(raw.Length > 0x12)
+                if (raw.Length > 0x12)
                 {
                     obj.tongueVertical = raw[0x12];
                     obj.tongueHorizontal = raw[0x13];

@@ -1,4 +1,5 @@
 ﻿using AquaModelLibrary;
+using AquaModelLibrary.Data.PSO2.Aqua;
 using Character_Making_File_Tool;
 using Microsoft.WindowsAPICodePack.Dialogs;
 using System;
@@ -8,8 +9,9 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
-using static AquaModelLibrary.AquaMethods.AquaGeneralMethods;
-using static AquaModelLibrary.CharacterMakingIndex;
+using static AquaModelLibrary.Helpers.HashHelpers;
+using static AquaModelLibrary.Data.PSO2.Constants.CharacterMakingStatic;
+using static AquaModelLibrary.Data.PSO2.Constants.CharacterMakingIce;
 
 namespace NGS_Salon_Tool
 {
@@ -42,23 +44,23 @@ namespace NGS_Salon_Tool
                 {
                     bool isGlobal = false;
                     int startId = 0;
-                    if (Directory.Exists(Path.Combine(pso2_binDir, dataNADir)) || Directory.Exists(Path.Combine(pso2_binDir, dataRebootNA)))
+                    if (Directory.Exists(Path.Combine(pso2_binDir, CharacterMakingIndex.dataNADir)) || Directory.Exists(Path.Combine(pso2_binDir, CharacterMakingIndex.dataRebootNA)))
                     {
                         isGlobal = true;
                         startId = 1;
                     }
-                    Dictionary<string, List<List<PSO2Text.textPair>>> actorNameByCat = new Dictionary<string, List<List<PSO2Text.textPair>>>();
-                    Dictionary<string, List<List<PSO2Text.textPair>>> rbActorNameByCat = new Dictionary<string, List<List<PSO2Text.textPair>>>();
+                    Dictionary<string, List<List<PSO2Text.TextPair>>> actorNameByCat = new Dictionary<string, List<List<PSO2Text.TextPair>>>();
+                    Dictionary<string, List<List<PSO2Text.TextPair>>> rbActorNameByCat = new Dictionary<string, List<List<PSO2Text.TextPair>>>();
                     //Get NPC name references from classic and reboot
                     //Classic
                     string actorNameIce = GetFileHash(classicActorName);
-                    string actorNameTextPath = Path.Combine(pso2_binDir, dataDir, actorNameIce);
-                    string actorNameTextPathNA = Path.Combine(pso2_binDir, dataNADir, actorNameIce);
+                    string actorNameTextPath = Path.Combine(pso2_binDir, CharacterMakingIndex.dataDir, actorNameIce);
+                    string actorNameTextPathNA = Path.Combine(pso2_binDir, CharacterMakingIndex.dataNADir, actorNameIce);
                     PSO2Text actorNameText = null;
 
                     if (File.Exists(actorNameTextPath))
                     {
-                        actorNameText = AquaMiscMethods.GetTextConditional(actorNameTextPath, actorNameTextPathNA, actorNameName);
+                        actorNameText = PSO2Text.GetTextConditional(actorNameTextPath, actorNameTextPathNA, actorNameName);
 
                         if (actorNameText != null)
                         {
@@ -71,12 +73,12 @@ namespace NGS_Salon_Tool
 
                     //Reboot
                     string rbActorNameIce = GetRebootHash(GetFileHash(rebootActorNameNPC));
-                    string rbActorNameTextPath = Path.Combine(pso2_binDir, dataReboot, rbActorNameIce);
-                    string rbActorNameTextPathNA = Path.Combine(pso2_binDir, dataRebootNA, rbActorNameIce);
+                    string rbActorNameTextPath = Path.Combine(pso2_binDir, CharacterMakingIndex.dataReboot, rbActorNameIce);
+                    string rbActorNameTextPathNA = Path.Combine(pso2_binDir, CharacterMakingIndex.dataRebootNA, rbActorNameIce);
                     PSO2Text rbActorNameText = null;
                     if (File.Exists(rbActorNameTextPath))
                     {
-                        rbActorNameText = AquaMiscMethods.GetTextConditional(rbActorNameTextPath, rbActorNameTextPathNA, actorNameNPCName);
+                        rbActorNameText = PSO2Text.GetTextConditional(rbActorNameTextPath, rbActorNameTextPathNA, actorNameNPCName);
 
                         if (rbActorNameText != null)
                         {
@@ -99,7 +101,7 @@ namespace NGS_Salon_Tool
                         {
                             if ((filePath.Contains(baseName) && filePath.Contains("datareboot")) || filePath.Contains(rbActorNameIce) && rbActorNameText == null)
                             {
-                                rbActorNameText = AquaMiscMethods.GetTextConditional(filePath, filePath, actorNameNPCName);
+                                rbActorNameText = PSO2Text.GetTextConditional(filePath, filePath, actorNameNPCName);
 
                                 if (rbActorNameText != null)
                                 {
@@ -111,7 +113,7 @@ namespace NGS_Salon_Tool
                             }
                             else if (filePath.Contains(baseName) || filePath.Contains(actorNameIce) && actorNameText == null)
                             {
-                                actorNameText = AquaMiscMethods.GetTextConditional(filePath, filePath, actorNameName);
+                                actorNameText = PSO2Text.GetTextConditional(filePath, filePath, actorNameName);
 
                                 if (actorNameText != null)
                                 {
@@ -215,7 +217,7 @@ namespace NGS_Salon_Tool
                                 //NGS event 'name'. Less prevalent, but exists sometimes in this very specific way
                                 if (iceEvt != "" && texts.ContainsKey(iceEvt))
                                 {
-                                    var textFile = AquaMiscMethods.ReadPSO2Text(texts[iceEvt]);
+                                    var textFile = new PSO2Text(texts[iceEvt]);
                                     if (textFile.categoryNames.Contains("Basic"))
                                     {
                                         var id = textFile.categoryNames.IndexOf("Basic");
@@ -365,7 +367,7 @@ namespace NGS_Salon_Tool
             }
         }
 
-        public static void GatherTextIdsStringRefToLower(Dictionary<string, List<List<PSO2Text.textPair>>> textByCat, List<Dictionary<string, string>> nameDicts, string category, bool rebootNPC = false)
+        public static void GatherTextIdsStringRefToLower(Dictionary<string, List<List<PSO2Text.TextPair>>> textByCat, List<Dictionary<string, string>> nameDicts, string category, bool rebootNPC = false)
         {
             for (int sub = 0; sub < textByCat[category].Count; sub++)
             {

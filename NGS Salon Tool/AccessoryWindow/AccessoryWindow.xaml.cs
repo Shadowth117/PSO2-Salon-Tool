@@ -1,19 +1,7 @@
 ﻿using Character_Making_File_Tool;
 using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
 
 namespace NGS_Salon_Tool
 {
@@ -63,7 +51,7 @@ namespace NGS_Salon_Tool
 
         private void PosXChanged(object sender, RoutedEventArgs e)
         {
-            if(posXUD.Value != null && enabled)
+            if (posXUD.Value != null && enabled)
             {
                 _xxp.accessorySlidersRebootExtended.posSliders[_accessoryNum * 3] = (sbyte)posXUD.Value;
             }

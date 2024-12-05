@@ -64,7 +64,7 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Reloaded.Memory" Version="8.1.0" />
+    <PackageReference Include="Reloaded.Memory" Version="9.4.2" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\CharFileLibrary\CharFileLibrary.csproj">

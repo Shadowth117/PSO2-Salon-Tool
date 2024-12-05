@@ -470,7 +470,7 @@ namespace Character_Making_File_Tool
             public AccessoryMisc GetAccessoryMisc()
             {
                 AccessoryMisc am = new AccessoryMisc();
-                for(int i = 0; i < 0xC; i++)
+                for (int i = 0; i < 0xC; i++)
                 {
                     am.accessoryAttach[i] = accessoryAttach[i];
                 }
