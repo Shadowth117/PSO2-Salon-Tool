@@ -467,7 +467,7 @@ namespace Character_Making_File_Tool
         public unsafe static byte[] GetNGSCML(CharacterHandlerReboot.xxpGeneralReboot xxp)
         {
             List<byte> cml = new List<byte>();
-            int version = 0xA;
+            int version = 0xB;
 
             //Header
             cml.AddRange(ConstantCMLHeader); //Always the same in all observed files
