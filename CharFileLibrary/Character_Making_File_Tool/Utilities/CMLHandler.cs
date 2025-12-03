@@ -2,7 +2,6 @@
 using AquaModelLibrary.Helpers.Extensions;
 using AquaModelLibrary.Helpers.PSO2;
 using AquaModelLibrary.Helpers.Readers;
-using Reloaded.Memory.Streams;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -287,11 +286,11 @@ namespace Character_Making_File_Tool
 
                         TryGet(ref xxp.ngsSLID.handThickness, slid, 0xC);
                         TryGet(ref xxp.ngsSLID.footSize, slid, 0xD);
-                        TryGet(ref xxp.ngsSLID.int_32C, slid, 0xE); //May not actually exist
+                        TryGet(ref xxp.ngsSLID.waistClothWidth, slid, 0xE); //May not actually exist
                         break;
                     case "MTON":
                         var mton = data[0];
-                        TryGet(ref xxp.ngsMTON.int_330, mton, 0x0);
+                        TryGet(ref xxp.motionUnused, mton, 0x0);
                         TryGet(ref xxp.ngsMTON.walkRunMotion, mton, 0x1);
                         TryGet(ref xxp.ngsMTON.swimMotion, mton, 0x2);
                         TryGet(ref xxp.ngsMTON.dashMotion, mton, 0x3);
@@ -304,24 +303,11 @@ namespace Character_Making_File_Tool
                     case "VISI":
                         //VISI values are stored in the first byte of the int as bitflags. Why? I don't know!
                         var visi = data[0];
-                        //Usually has 0xC0 and 0xC1. Unsure if 0xC1 is used.
-                        if (visi.ContainsKey(0xC0))
-                        {
-                            byte[] ornaments = BitConverter.GetBytes((int)visi[0xC0]);
-                            xxp.ngsVISI.hideBasewearOrnament1 = (ornaments[0] & 0b00000001) > 0 ? 1 : 0;
-                            xxp.ngsVISI.hideBasewearOrnament2 = (ornaments[0] & 0b00000010) > 0 ? 1 : 0;
-
-                            xxp.ngsVISI.hideHeadPartOrnament = (ornaments[0] & 0b00000100) > 0 ? 1 : 0;
-                            xxp.ngsVISI.hideBodyPartOrnament = (ornaments[0] & 0b00001000) > 0 ? 1 : 0;
-                            xxp.ngsVISI.hideArmPartOrnament = (ornaments[0] & 0b00010000) > 0 ? 1 : 0;
-                            xxp.ngsVISI.hideLegPartOrnament = (ornaments[0] & 0b00100000) > 0 ? 1 : 0;
-
-                            xxp.ngsVISI.hideOuterwearOrnament = (ornaments[0] & 0b01000000) > 0 ? 1 : 0;
-                            xxp.ngsVISI.hideInnerwear = (ornaments[0] & 0b10000000) > 0 ? 1 : 0;
-                        }
+                        //Usually has 0xC0 and 0xC1. 
+                        xxp.ngsVISI = GetVISIFromFlags((byte)(visi.ContainsKey(0xC0) ? visi[0xC0] : 0), (byte)(visi.ContainsKey(0xC1) ? visi[0xC1] : 0));
                         break;
                     case "EXPR":
-                        FaceExpressionV11[] expressions;
+                        FaceExpressionV12[] expressions;
                         if (xxp.baseDOC.gender == 0)
                         {
                             expressions = CharacterStructConstants.defaultMaleExpressions;
@@ -342,8 +328,9 @@ namespace Character_Making_File_Tool
                         xxp.faceSmile2 = TryGetEXPR(expr, 0x6, expressions[6]);
                         xxp.faceWink = TryGetEXPR(expr, 0x7, expressions[7]);
 
-                        xxp.faceUnused1 = TryGetEXPR(expr, 0x1, expressions[8]);
-                        xxp.faceUnused2 = TryGetEXPR(expr, 0x9, expressions[9]);
+                        xxp.faceCustom1 = TryGetEXPR(expr, 0x1, expressions[8]);
+                        xxp.faceCustom2 = TryGetEXPR(expr, 0x9, expressions[9]);
+                        xxp.faceCustom3 = TryGetEXPR(expr, 0xA, expressions[0xA]);
                         break;
                     default:
                         //Data being null signfies that the last thing read wasn't a proper tag. This should mean the end of the VTBF stream if nothing else.
@@ -442,7 +429,7 @@ namespace Character_Making_File_Tool
             }
         }
 
-        public static unsafe FaceExpressionV11 TryGetEXPR(Dictionary<int, object> dict, int key, FaceExpressionV11 defaultExpression)
+        public static unsafe FaceExpressionV12 TryGetEXPR(Dictionary<int, object> dict, int key, FaceExpressionV12 defaultExpression)
         {
             if (dict.TryGetValue(key, out object dictValue))
             {
@@ -458,7 +445,7 @@ namespace Character_Making_File_Tool
                 {
                     values.AddRange((sbyte[])dictValue);
                 }
-                return FaceExpressionV11.CreateExpression(values.ToArray());
+                return FaceExpressionV12.CreateExpression(values.ToArray());
             }
 
             return defaultExpression;
@@ -505,7 +492,7 @@ namespace Character_Making_File_Tool
             VTBFMethods.AddBytes(figr, 0x5, 0x48, 0x1, DataHelpers.ConvertStruct(faceValues.faceShapeVerts));
             VTBFMethods.AddBytes(figr, 0x6, 0x48, 0x1, DataHelpers.ConvertStruct(faceValues.eyeShapeVerts));
             VTBFMethods.AddBytes(figr, 0x7, 0x48, 0x1, DataHelpers.ConvertStruct(faceValues.noseHeightVerts));
-                                                       
+
             VTBFMethods.AddBytes(figr, 0x8, 0x48, 0x1, DataHelpers.ConvertStruct(faceValues.noseShapeVerts));
             VTBFMethods.AddBytes(figr, 0x9, 0x48, 0x1, DataHelpers.ConvertStruct(faceValues.mouthVerts));
             VTBFMethods.AddBytes(figr, 0xA, 0x48, 0x1, DataHelpers.ConvertStruct(faceValues.ear_hornVerts));
@@ -682,13 +669,13 @@ namespace Character_Making_File_Tool
 
             VTBFMethods.AddBytes(slid, 0xC, 0x8, BitConverter.GetBytes(xxp.ngsSLID.handThickness));
             VTBFMethods.AddBytes(slid, 0xD, 0x8, BitConverter.GetBytes(xxp.ngsSLID.footSize));
-            VTBFMethods.AddBytes(slid, 0xE, 0x8, BitConverter.GetBytes(xxp.ngsSLID.int_32C));
+            VTBFMethods.AddBytes(slid, 0xE, 0x8, BitConverter.GetBytes(xxp.ngsSLID.waistClothWidth));
             VTBFMethods.WriteTagHeader(slid, "SLID", 0, 0xF);
             cml.AddRange(slid);
 
             //MTON
             List<byte> mton = new List<byte>();
-            VTBFMethods.AddBytes(mton, 0x0, 0x8, BitConverter.GetBytes(xxp.ngsMTON.int_330));
+            VTBFMethods.AddBytes(mton, 0x0, 0x8, BitConverter.GetBytes(xxp.motionUnused));
             VTBFMethods.AddBytes(mton, 0x1, 0x8, BitConverter.GetBytes(xxp.ngsMTON.walkRunMotion));
             VTBFMethods.AddBytes(mton, 0x2, 0x8, BitConverter.GetBytes(xxp.ngsMTON.swimMotion));
             VTBFMethods.AddBytes(mton, 0x3, 0x8, BitConverter.GetBytes(xxp.ngsMTON.dashMotion));
@@ -702,20 +689,11 @@ namespace Character_Making_File_Tool
 
             //VISI
             List<byte> visi = new List<byte>();
-            //Build bitflag
-            byte base1 = (byte)(xxp.ngsVISI.hideBasewearOrnament1 > 0 ? 0b00000001 : 0b00000000);
-            byte base2 = (byte)(xxp.ngsVISI.hideBasewearOrnament2 > 0 ? 0b00000010 : 0b00000000);
-            byte head = (byte)(xxp.ngsVISI.hideHeadPartOrnament > 0 ? 0b00000100 : 0b00000000);
-            byte body = (byte)(xxp.ngsVISI.hideHeadPartOrnament > 0 ? 0b00001000 : 0b00000000);
-            byte arm = (byte)(xxp.ngsVISI.hideHeadPartOrnament > 0 ? 0b00010000 : 0b00000000);
-            byte leg = (byte)(xxp.ngsVISI.hideHeadPartOrnament > 0 ? 0b00100000 : 0b00000000);
-            byte outer = (byte)(xxp.ngsVISI.hideOuterwearOrnament > 0 ? 0b01000000 : 0b00000000);
-            byte inner = (byte)(xxp.ngsVISI.hideInnerwear > 0 ? 0b10000000 : 0b00000000);
-
-            byte bitflags = (byte)(0 | base1 | base2 | head | body | arm | leg | outer | inner);
+            GetBitflagVISI(xxp.ngsVISI, out byte bitflags, out byte bitflags2);
 
             VTBFMethods.AddBytes(visi, 0xC0, 0x8, new byte[] { bitflags, 0, 0, 0 });
-            VTBFMethods.AddBytes(visi, 0xC1, 0x8, new byte[] { 0, 0, 0, 0 });
+            VTBFMethods.AddBytes(visi, 0xC1, 0x8, new byte[] { bitflags2, 0, 0, 0 });
+
             VTBFMethods.WriteTagHeader(visi, "VISI", 0, 0x2);
             cml.AddRange(visi);
 
@@ -735,8 +713,8 @@ namespace Character_Making_File_Tool
                     VTBFMethods.AddBytes(expr, 0x6, 0x83, 0x8, 0x11, DataHelpers.ConvertStruct(xxp.faceSmile2.expStruct));
                     VTBFMethods.AddBytes(expr, 0x7, 0x83, 0x8, 0x11, DataHelpers.ConvertStruct(xxp.faceWink.expStruct));
                                                                      
-                    VTBFMethods.AddBytes(expr, 0x8, 0x83, 0x8, 0x11, DataHelpers.ConvertStruct(xxp.faceUnused1.expStruct));
-                    VTBFMethods.AddBytes(expr, 0x9, 0x83, 0x8, 0x11, DataHelpers.ConvertStruct(xxp.faceUnused2.expStruct));
+                    VTBFMethods.AddBytes(expr, 0x8, 0x83, 0x8, 0x11, DataHelpers.ConvertStruct(xxp.faceCustom1.expStruct));
+                    VTBFMethods.AddBytes(expr, 0x9, 0x83, 0x8, 0x11, DataHelpers.ConvertStruct(xxp.faceCustom2.expStruct));
                     VTBFMethods.WriteTagHeader(expr, "EXPR", 0, 0xA);
                     break;
                 case 0xB:
@@ -752,13 +730,12 @@ namespace Character_Making_File_Tool
                     VTBFMethods.AddBytes(expr, 0x6, 0x83, 0x8, 0x13, DataHelpers.ConvertStruct(xxp.faceSmile2));
                     VTBFMethods.AddBytes(expr, 0x7, 0x83, 0x8, 0x13, DataHelpers.ConvertStruct(xxp.faceWink));
                                                                    
-                    VTBFMethods.AddBytes(expr, 0x8, 0x83, 0x8, 0x13, DataHelpers.ConvertStruct(xxp.faceUnused1));
-                    VTBFMethods.AddBytes(expr, 0x9, 0x83, 0x8, 0x13, DataHelpers.ConvertStruct(xxp.faceUnused2));
+                    VTBFMethods.AddBytes(expr, 0x8, 0x83, 0x8, 0x13, DataHelpers.ConvertStruct(xxp.faceCustom1));
+                    VTBFMethods.AddBytes(expr, 0x9, 0x83, 0x8, 0x13, DataHelpers.ConvertStruct(xxp.faceCustom2));
                     VTBFMethods.WriteTagHeader(expr, "EXPR", 0, 0xA);
                     break;
                 default:
                     throw new Exception();
-                    break;
             }
             cml.AddRange(expr);
             cml.AlignWriter(0x10);

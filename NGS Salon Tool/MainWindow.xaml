@@ -8,7 +8,7 @@
         x:Class="NGS_Salon_Tool.MainWindow"
         Closing="OnWindowClosing"
         mc:Ignorable="d"
-        Title="NGS Salon Tool" Height="340" Width="930">
+        Title="NGS Salon Tool" Height="472" Width="930">
 
     <Grid Margin="0,0,0,0" VerticalAlignment="Top">
         <Grid.ColumnDefinitions>
@@ -67,7 +67,8 @@
                         <CheckBox x:Name="legOrnCheck" Content="Hide Leg Parts Ornament" HorizontalAlignment="Left" Margin="14,144,0,0" VerticalAlignment="Top" Checked="LegOrnChanged" Unchecked="LegOrnChanged"/>
                         <CheckBox x:Name="outerOrnCheck" Content="Hide Outer Wear Ornament" HorizontalAlignment="Left" Margin="14,69,0,0" VerticalAlignment="Top" Checked="OuterWearOrnChanged" Unchecked="OuterWearOrnChanged"/>
                         <CheckBox x:Name="innerCheck" Content="Hide Inner Wear" HorizontalAlignment="Left" Margin="14,84,0,0" VerticalAlignment="Top" Checked="InnerWearVisiChanged" Unchecked="InnerWearVisiChanged"/>
-                        <CheckBox x:Name="celShadingIsEnabledCheck" Content="Cel Shading Enabled" HorizontalAlignment="Left" Margin="14,174,0,0" VerticalAlignment="Top" Checked="CelShadingEnabledChanged" Unchecked="CelShadingEnabledChanged"/>
+                        <CheckBox x:Name="faceOrnCheck" Content="Hide Face Ornament" HorizontalAlignment="Left" Margin="14,159,0,0" VerticalAlignment="Top" Checked="FaceOrnChanged" Unchecked="FaceOrnChanged"/>
+                        <CheckBox x:Name="celShadingIsEnabledCheck" Content="Cel Shading Enabled" HorizontalAlignment="Left" Margin="14,189,0,0" VerticalAlignment="Top" Checked="CelShadingEnabledChanged" Unchecked="CelShadingEnabledChanged"/>
                         <Label x:Name="bpLabel" Content="Bodypaint/Innerwear order" HorizontalAlignment="Left" Margin="224,36,0,0" VerticalAlignment="Top"/>
                         <ComboBox x:Name="bpOrder0" HorizontalAlignment="Left" Margin="240,65,0,0" VerticalAlignment="Top" Width="120" SelectionChanged="bpOrder0_SelectionChanged"/>
                         <ComboBox x:Name="bpOrder1" HorizontalAlignment="Left" Margin="240,95,0,0" VerticalAlignment="Top" Width="120" SelectionChanged="bpOrder1_SelectionChanged"/>
@@ -125,6 +126,8 @@
                         <Label x:Name="handThicknessLabel" Content="Hand Thickness" HorizontalAlignment="Left" Margin="59,165,0,0" VerticalAlignment="Top" Grid.Column="3"/>
                         <xctk:IntegerUpDown x:Name="footSizeUD" Margin="209,191,189,0" Maximum="127" Minimum="-127" Value="0" VerticalAlignment="Top" ValueChanged="FootSizeUDChanged" Grid.Column="3"/>
                         <Label x:Name="footSizeLabel" Content="Foot Size" HorizontalAlignment="Left" Margin="209,165,0,0" VerticalAlignment="Top" Grid.Column="3"/>
+                        <xctk:IntegerUpDown x:Name="waistClothWidthUD" Margin="359,191,39,0" Maximum="127" Minimum="-127" Value="0" VerticalAlignment="Top" ValueChanged="WaistClothWidthUDChanged" Grid.Column="3"/>
+                        <Label x:Name="waistClothWidthLabel" Content="Waistcloth Width" HorizontalAlignment="Left" Margin="359,165,0,0" VerticalAlignment="Top" Grid.Column="3"/>
                     </Grid>
                 </TabItem>
                 <TabItem x:Name="colorsTab" Header="Colors">
@@ -622,57 +625,90 @@
                     </ScrollViewer>
                 </TabItem>
                 <TabItem x:Name="customizeExpressionsTab" Header="Customize Expressions">
-                    <Grid Background="#FFE5E5E5">
+                    <Grid Background="#FFE5E5E5" Height="399">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="117*"/>
                             <ColumnDefinition Width="19*"/>
-                            <ColumnDefinition Width="788*"/>
+                            <ColumnDefinition Width="188*"/>
+                            <ColumnDefinition Width="135*"/>
+                            <ColumnDefinition Width="465*"/>
                         </Grid.ColumnDefinitions>
                         <Label x:Name="expLabel" Content="Expressions" Margin="10,10,0,0" HorizontalAlignment="Left" VerticalAlignment="Top"/>
                         <ComboBox x:Name="expressionsCB" HorizontalAlignment="Left" Margin="14,32,0,0" VerticalAlignment="Top" Width="171" SelectionChanged="expressionsCB_SelectionChanged" Grid.ColumnSpan="3"/>
 
                         <xctk:IntegerUpDown x:Name="irisSizeUD" Margin="14,82,6,0" Maximum="127" Minimum="-127" Value="0" VerticalAlignment="Top" ValueChanged="SetExpressionInternal"/>
                         <Label x:Name="irisSizeLabel" Content="Iris Size" HorizontalAlignment="Left" Margin="14,56,0,0" VerticalAlignment="Top"/>
-                        <xctk:IntegerUpDown x:Name="leftEyebrowVerticalUD" Margin="28,82,664,0" Maximum="127" Minimum="-127" Value="0" VerticalAlignment="Top" ValueChanged="SetExpressionInternal" Grid.Column="2"/>
+                        <xctk:IntegerUpDown x:Name="leftEyebrowVerticalUD" Margin="28,82,64,0" Maximum="127" Minimum="-127" Value="0" VerticalAlignment="Top" ValueChanged="SetExpressionInternal" Grid.Column="2"/>
                         <Label x:Name="leftEyebrowVerticalLabel" Content="Left Eyebrow Vertical" HorizontalAlignment="Left" Margin="28,56,0,0" VerticalAlignment="Top" Grid.Column="2"/>
-                        <xctk:IntegerUpDown x:Name="leftMouthVerticalUD" Margin="178,82,517,0" Maximum="127" Minimum="-127" Value="0" VerticalAlignment="Top" ValueChanged="SetExpressionInternal" Grid.Column="2"/>
-                        <Label x:Name="leftMouthVerticalLabel" Content="Left Mouth Vertical" HorizontalAlignment="Left" Margin="178,56,0,0" VerticalAlignment="Top" Grid.Column="2"/>
-                        <xctk:IntegerUpDown x:Name="rightEyebrowVerticalUD" Margin="329,82,366,0" Maximum="127" Minimum="-127" Value="0" VerticalAlignment="Top" ValueChanged="SetExpressionInternal" Grid.Column="2"/>
-                        <Label x:Name="rightEyebrowVerticalLabel" Content="Right Eyebrow Vertical" HorizontalAlignment="Center" Margin="0,56,0,0" VerticalAlignment="Top" Grid.Column="2"/>
-                        <xctk:IntegerUpDown x:Name="rightMouthVerticalUD" Margin="479,82,189,0" Maximum="127" Minimum="-127" Value="0" VerticalAlignment="Top" ValueChanged="SetExpressionInternal" Grid.Column="2"/>
-                        <Label x:Name="rightMouthVerticalLabel" Content="Right Mouth Vertical" HorizontalAlignment="Left" Margin="479,56,0,0" VerticalAlignment="Top" Grid.Column="2"/>
-                        <xctk:IntegerUpDown x:Name="eyeCornerUD" Margin="629,82,39,0" Maximum="127" Minimum="-127" Value="0" VerticalAlignment="Top" ValueChanged="SetExpressionInternal" Grid.Column="2"/>
-                        <Label x:Name="eyeCornerLabel" Content="Eye Corner" HorizontalAlignment="Left" Margin="629,56,0,0" VerticalAlignment="Top" Grid.Column="2"/>
+                        <xctk:IntegerUpDown x:Name="leftMouthVerticalUD" Margin="178,82,52,0" Maximum="127" Minimum="-127" Value="0" VerticalAlignment="Top" ValueChanged="SetExpressionInternal" Grid.Column="2" Grid.ColumnSpan="2"/>
+                        <Label x:Name="leftMouthVerticalLabel" Content="Left Mouth Vertical" HorizontalAlignment="Left" Margin="178,56,0,0" VerticalAlignment="Top" Grid.Column="2" Grid.ColumnSpan="2"/>
+                        <xctk:IntegerUpDown x:Name="rightEyebrowVerticalUD" Margin="6,82,366,0" Maximum="127" Minimum="-127" Value="0" VerticalAlignment="Top" ValueChanged="SetExpressionInternal" Grid.Column="4"/>
+                        <Label x:Name="rightEyebrowVerticalLabel" Content="Right Eyebrow Vertical" HorizontalAlignment="Left" Margin="7,56,0,0" VerticalAlignment="Top" Grid.Column="4"/>
+                        <xctk:IntegerUpDown x:Name="rightMouthVerticalUD" Margin="156,82,213,0" Maximum="127" Minimum="-127" Value="0" VerticalAlignment="Top" ValueChanged="SetExpressionInternal" Grid.Column="4"/>
+                        <Label x:Name="rightMouthVerticalLabel" Content="Right Mouth Vertical" HorizontalAlignment="Left" Margin="156,56,0,0" VerticalAlignment="Top" Grid.Column="4"/>
+                        <xctk:IntegerUpDown x:Name="eyeCornerUD" Margin="306,82,63,0" Maximum="127" Minimum="-127" Value="0" VerticalAlignment="Top" ValueChanged="SetExpressionInternal" Grid.Column="4"/>
+                        <Label x:Name="eyeCornerLabel" Content="Eye Corner" HorizontalAlignment="Left" Margin="306,56,0,0" VerticalAlignment="Top" Grid.Column="4"/>
 
                         <xctk:IntegerUpDown x:Name="leftEyelidVerticalUD" Margin="14,130,6,0" Maximum="127" Minimum="-127" Value="0" VerticalAlignment="Top" ValueChanged="SetExpressionInternal"/>
-                        <Label x:Name="leftEyeLidLabel" Content="Left Eyelid Vertical" HorizontalAlignment="Left" Margin="15,104,0,0" VerticalAlignment="Top" Grid.ColumnSpan="2"/>
-                        <xctk:IntegerUpDown x:Name="leftEyebrowExpressionUD" Margin="28,130,664,0" Maximum="127" Minimum="-127" Value="0" VerticalAlignment="Top" ValueChanged="SetExpressionInternal" Grid.Column="2"/>
+                        <Label x:Name="leftEyeLidLabel" Content="Left Eyelid Vertical" HorizontalAlignment="Center" Margin="0,104,0,0" VerticalAlignment="Top" Grid.ColumnSpan="2"/>
+                        <xctk:IntegerUpDown x:Name="leftEyebrowExpressionUD" Margin="28,130,64,0" Maximum="127" Minimum="-127" Value="0" VerticalAlignment="Top" ValueChanged="SetExpressionInternal" Grid.Column="2"/>
                         <Label x:Name="leftEyebrowExpressionLabel" Content="Left Eyebrow Expression" HorizontalAlignment="Left" Margin="28,104,0,0" VerticalAlignment="Top" Grid.Column="2"/>
-                        <xctk:IntegerUpDown x:Name="rightEyelidVerticalUD" Margin="178,130,517,0" Maximum="127" Minimum="-127" Value="0" VerticalAlignment="Top" ValueChanged="SetExpressionInternal" Grid.Column="2"/>
-                        <Label x:Name="rightEyelidVerticalLabel" Content="Right Eyelid Vertical" HorizontalAlignment="Left" Margin="178,104,0,0" VerticalAlignment="Top" Grid.Column="2"/>
-                        <xctk:IntegerUpDown x:Name="rightEyebrowExpressionUD" Margin="329,130,366,0" Maximum="127" Minimum="-127" Value="0" VerticalAlignment="Top" ValueChanged="SetExpressionInternal" Grid.Column="2"/>
-                        <Label x:Name="rightEyebrowExpressionLabel" Content="Right Eyebrow Expression" HorizontalAlignment="Left" Margin="329,104,0,0" VerticalAlignment="Top" Grid.Column="2"/>
-                        <xctk:IntegerUpDown x:Name="mouthAUD" Margin="479,130,189,0" Maximum="127" Minimum="-127" Value="0" VerticalAlignment="Top" ValueChanged="SetExpressionInternal" Grid.Column="2"/>
-                        <Label x:Name="mouthAUDLabel" Content="Mouth A" HorizontalAlignment="Left" Margin="479,104,0,0" VerticalAlignment="Top" Grid.Column="2"/>
-                        <xctk:IntegerUpDown x:Name="mouthIUD" Margin="629,130,39,0" Maximum="127" Minimum="-127" Value="0" VerticalAlignment="Top" ValueChanged="SetExpressionInternal" Grid.Column="2"/>
-                        <Label x:Name="mouthILabel" Content="Mouth I" HorizontalAlignment="Left" Margin="629,104,0,0" VerticalAlignment="Top" Grid.Column="2"/>
+                        <xctk:IntegerUpDown x:Name="rightEyelidVerticalUD" Margin="178,130,52,0" Maximum="127" Minimum="-127" Value="0" VerticalAlignment="Top" ValueChanged="SetExpressionInternal" Grid.Column="2" Grid.ColumnSpan="2"/>
+                        <Label x:Name="rightEyelidVerticalLabel" Content="Right Eyelid Vertical" HorizontalAlignment="Left" Margin="178,104,0,0" VerticalAlignment="Top" Grid.Column="2" Grid.ColumnSpan="2"/>
+                        <xctk:IntegerUpDown x:Name="rightEyebrowExpressionUD" Margin="6,130,366,0" Maximum="127" Minimum="-127" Value="0" VerticalAlignment="Top" ValueChanged="SetExpressionInternal" Grid.Column="4"/>
+                        <Label x:Name="rightEyebrowExpressionLabel" Content="Right Eyebrow Expression" HorizontalAlignment="Left" Margin="6,104,0,0" VerticalAlignment="Top" Grid.Column="4"/>
+                        <xctk:IntegerUpDown x:Name="mouthAUD" Margin="156,130,213,0" Maximum="127" Minimum="-127" Value="0" VerticalAlignment="Top" ValueChanged="SetExpressionInternal" Grid.Column="4"/>
+                        <Label x:Name="mouthAUDLabel" Content="Mouth A" HorizontalAlignment="Left" Margin="156,104,0,0" VerticalAlignment="Top" Grid.Column="4"/>
+                        <xctk:IntegerUpDown x:Name="mouthIUD" Margin="306,130,63,0" Maximum="127" Minimum="-127" Value="0" VerticalAlignment="Top" ValueChanged="SetExpressionInternal" Grid.Column="4"/>
+                        <Label x:Name="mouthILabel" Content="Mouth I" HorizontalAlignment="Left" Margin="306,104,0,0" VerticalAlignment="Top" Grid.Column="4"/>
 
                         <xctk:IntegerUpDown x:Name="mouthUUD" Margin="14,178,6,0" Maximum="127" Minimum="-127" Value="0" VerticalAlignment="Top" ValueChanged="SetExpressionInternal"/>
                         <Label x:Name="mouthULabel" Content="Mouth U" HorizontalAlignment="Left" Margin="14,152,0,0" VerticalAlignment="Top"/>
-                        <xctk:IntegerUpDown x:Name="mouthEUD" Margin="28,178,664,0" Maximum="127" Minimum="-127" Value="0" VerticalAlignment="Top" ValueChanged="SetExpressionInternal" Grid.Column="2"/>
+                        <xctk:IntegerUpDown x:Name="mouthEUD" Margin="28,178,64,0" Maximum="127" Minimum="-127" Value="0" VerticalAlignment="Top" ValueChanged="SetExpressionInternal" Grid.Column="2"/>
                         <Label x:Name="mouthELabel" Content="Mouth E" HorizontalAlignment="Left" Margin="28,152,0,0" VerticalAlignment="Top" Grid.Column="2"/>
-                        <xctk:IntegerUpDown x:Name="mouthOUD" Margin="178,178,517,0" Maximum="127" Minimum="-127" Value="0" VerticalAlignment="Top" ValueChanged="SetExpressionInternal" Grid.Column="2"/>
-                        <Label x:Name="mouthOLabel" Content="Mouth O" HorizontalAlignment="Left" Margin="178,152,0,0" VerticalAlignment="Top" Grid.Column="2"/>
-                        <xctk:IntegerUpDown x:Name="leftEyebrowVerticalUnusedUD" Margin="329,178,366,0" Maximum="127" Minimum="-127" Value="0" VerticalAlignment="Top" ValueChanged="SetExpressionInternal" Grid.Column="2"/>
-                        <Label x:Name="leftEyebrowVerticalUnusedLabel" Content="Left Eyebrow (Unused)" HorizontalAlignment="Center" Margin="0,152,0,0" VerticalAlignment="Top" Grid.Column="2"/>
-                        <xctk:IntegerUpDown x:Name="rightEyebrowVerticalUnusedUD" Margin="479,178,189,0" Maximum="127" Minimum="-127" Value="0" VerticalAlignment="Top" ValueChanged="SetExpressionInternal" Grid.Column="2"/>
-                        <Label x:Name="rightEyebrowVerticalUnusedLabel" Content="Right Eyebrow (Unused)" HorizontalAlignment="Left" Margin="479,152,0,0" VerticalAlignment="Top" Grid.Column="2"/>
-                        <xctk:IntegerUpDown x:Name="tongueUD" Margin="629,178,39,0" Maximum="127" Minimum="-127" Value="0" VerticalAlignment="Top" ValueChanged="SetExpressionInternal" Grid.Column="2"/>
-                        <Label x:Name="tongueLabel" Content="Tongue" HorizontalAlignment="Left" Margin="629,152,0,0" VerticalAlignment="Top" Grid.Column="2"/>
+                        <xctk:IntegerUpDown x:Name="mouthOUD" Margin="178,178,52,0" Maximum="127" Minimum="-127" Value="0" VerticalAlignment="Top" ValueChanged="SetExpressionInternal" Grid.Column="2" Grid.ColumnSpan="2"/>
+                        <Label x:Name="mouthOLabel" Content="Mouth O" HorizontalAlignment="Left" Margin="178,152,0,0" VerticalAlignment="Top" Grid.Column="2" Grid.ColumnSpan="2"/>
+                        <xctk:IntegerUpDown x:Name="leftEyebrowVerticalUnusedUD" Margin="6,178,366,0" Maximum="127" Minimum="-127" Value="0" VerticalAlignment="Top" ValueChanged="SetExpressionInternal" Grid.Column="4"/>
+                        <Label x:Name="leftEyebrowVerticalUnusedLabel" Content="Left Eyebrow (Unused)" HorizontalAlignment="Left" Margin="7,152,0,0" VerticalAlignment="Top" Grid.Column="4"/>
+                        <xctk:IntegerUpDown x:Name="rightEyebrowVerticalUnusedUD" Margin="156,178,213,0" Maximum="127" Minimum="-127" Value="0" VerticalAlignment="Top" ValueChanged="SetExpressionInternal" Grid.Column="4"/>
+                        <Label x:Name="rightEyebrowVerticalUnusedLabel" Content="Right Eyebrow (Unused)" HorizontalAlignment="Left" Margin="156,152,0,0" VerticalAlignment="Top" Grid.Column="4"/>
+                        <xctk:IntegerUpDown x:Name="tongueUD" Margin="306,178,63,0" Maximum="127" Minimum="-127" Value="0" VerticalAlignment="Top" ValueChanged="SetExpressionInternal" Grid.Column="4"/>
+                        <Label x:Name="tongueLabel" Content="Tongue" HorizontalAlignment="Left" Margin="306,152,0,0" VerticalAlignment="Top" Grid.Column="4"/>
+                        
                         <xctk:IntegerUpDown x:Name="tongueVerticalUD" Margin="14,226,6,0" Maximum="127" Minimum="-127" Value="0" VerticalAlignment="Top" ValueChanged="SetExpressionInternal"/>
-                        <Label x:Name="tongueVerticalLabel" Content="Tongue Vertical" HorizontalAlignment="Left" Margin="14,200,0,0" VerticalAlignment="Top"/>
-                        <xctk:IntegerUpDown x:Name="tongueHorizontalUD" Margin="28,226,664,0" Maximum="127" Minimum="-127" Value="0" VerticalAlignment="Top" ValueChanged="SetExpressionInternal" Grid.Column="2"/>
+                        <Label x:Name="tongueVerticalLabel" Content="Tongue Vertical" HorizontalAlignment="Center" Margin="0,200,0,0" VerticalAlignment="Top"/>
+                        <xctk:IntegerUpDown x:Name="tongueHorizontalUD" Margin="28,226,64,0" Maximum="127" Minimum="-127" Value="0" VerticalAlignment="Top" ValueChanged="SetExpressionInternal" Grid.Column="2"/>
                         <Label x:Name="tongueHorizontalLabel" Content="Tongue Horizontal" HorizontalAlignment="Left" Margin="28,200,0,0" VerticalAlignment="Top" Grid.Column="2"/>
+                        <xctk:IntegerUpDown x:Name="mouthOpenCloseUD" Margin="178,226,49,0" Maximum="127" Minimum="-127" Value="0" VerticalAlignment="Top" ValueChanged="SetExpressionInternal" Grid.Column="2" Grid.ColumnSpan="2"/>
+                        <Label x:Name="mouthOpenCloseLabel" Content="Mouth Open/Close" HorizontalAlignment="Left" Margin="178,200,0,0" VerticalAlignment="Top" Grid.Column="2" Grid.ColumnSpan="2"/>
+                        <xctk:IntegerUpDown x:Name="mouthCornerPositionUD" Margin="7,226,362,0" Maximum="127" Minimum="-127" Value="0" VerticalAlignment="Top" ValueChanged="SetExpressionInternal" Grid.Column="4"/>
+                        <Label x:Name="mouthCornerPositionLabel" Content="Mouth Corner Position" HorizontalAlignment="Left" Margin="7,200,0,0" VerticalAlignment="Top" Grid.Column="4"/>
+                        <xctk:IntegerUpDown x:Name="mouthCornerShapeUD" Margin="156,226,213,0" Maximum="127" Minimum="-127" Value="0" VerticalAlignment="Top" ValueChanged="SetExpressionInternal" Grid.Column="4"/>
+                        <Label x:Name="mouthCornerShapeLabel" Content="Mouth Corner Shape" HorizontalAlignment="Left" Margin="156,200,0,0" VerticalAlignment="Top" Grid.Column="4"/>
+                        <xctk:IntegerUpDown x:Name="upperLipShapeUD" Margin="306,226,63,0" Maximum="127" Minimum="-127" Value="0" VerticalAlignment="Top" ValueChanged="SetExpressionInternal" Grid.Column="4"/>
+                        <Label x:Name="upperLipShapeLabel" Content="Upper Lip Shape" HorizontalAlignment="Left" Margin="306,200,0,0" VerticalAlignment="Top" Grid.Column="4"/>
+                        
+                        <xctk:IntegerUpDown x:Name="lowerLipShapeUD" Margin="14,277,6,0" Maximum="127" Minimum="-127" Value="0" VerticalAlignment="Top" ValueChanged="SetExpressionInternal"/>
+                        <Label x:Name="lowerLipShapeLabel" Content="Lower Lip Shape" HorizontalAlignment="Center" Margin="0,251,0,0" VerticalAlignment="Top"/>
+                        <xctk:IntegerUpDown x:Name="upperLowerLipRatioUD" Margin="28,277,64,0" Maximum="127" Minimum="-127" Value="0" VerticalAlignment="Top" ValueChanged="SetExpressionInternal" Grid.Column="2"/>
+                        <Label x:Name="upperLowerLipRatioLabel" Content="Upper/Lower Lip Ratio" HorizontalAlignment="Left" Margin="28,251,0,0" VerticalAlignment="Top" Grid.Column="2"/>
+                        <xctk:IntegerUpDown x:Name="teethOpenCloseUD" Margin="178,277,49,0" Maximum="127" Minimum="-127" Value="0" VerticalAlignment="Top" ValueChanged="SetExpressionInternal" Grid.Column="2" Grid.ColumnSpan="2"/>
+                        <Label x:Name="teethOpenCloseLabel" Content="Teeth Open/Close" HorizontalAlignment="Left" Margin="178,251,0,0" VerticalAlignment="Top" Grid.Column="2" Grid.ColumnSpan="2"/>
+                        <xctk:IntegerUpDown x:Name="teethVerticalPositionUD" Margin="7,277,362,0" Maximum="127" Minimum="-127" Value="0" VerticalAlignment="Top" ValueChanged="SetExpressionInternal" Grid.Column="4"/>
+                        <Label x:Name="teethVerticalPositionLabel" Content="Teeth Vertical Position" HorizontalAlignment="Left" Margin="7,251,0,0" VerticalAlignment="Top" Grid.Column="4"/>
+                        <xctk:IntegerUpDown x:Name="lowerJawOpenCloseUD" Margin="156,277,213,0" Maximum="127" Minimum="-127" Value="0" VerticalAlignment="Top" ValueChanged="SetExpressionInternal" Grid.Column="4"/>
+                        <Label x:Name="lowerJawOpenCloseLabel" Content="Lower Jaw Open/Close" HorizontalAlignment="Left" Margin="156,251,0,0" VerticalAlignment="Top" Grid.Column="4"/>
+                        <xctk:IntegerUpDown x:Name="eyelashAngleUD" Margin="306,277,63,0" Maximum="127" Minimum="-127" Value="0" VerticalAlignment="Top" ValueChanged="SetExpressionInternal" Grid.Column="4"/>
+                        <Label x:Name="eyelashAngleLabel" Content="Eyelash Angle" HorizontalAlignment="Left" Margin="306,251,0,0" VerticalAlignment="Top" Grid.Column="4"/>
+                        
+                        <xctk:IntegerUpDown x:Name="eyelashLengthUD" Margin="14,328,6,0" Maximum="127" Minimum="-127" Value="0" VerticalAlignment="Top" ValueChanged="SetExpressionInternal"/>
+                        <Label x:Name="eyelashLengthLabel" Content="Eyelash Length" HorizontalAlignment="Center" Margin="0,302,0,0" VerticalAlignment="Top"/>
+                        <xctk:IntegerUpDown x:Name="eyeShadowsUD" Margin="28,328,64,0" Maximum="127" Minimum="-127" Value="0" VerticalAlignment="Top" ValueChanged="SetExpressionInternal" Grid.Column="2"/>
+                        <Label x:Name="eyeShadowsLabel" Content="Eye Shadows" HorizontalAlignment="Left" Margin="28,302,0,0" VerticalAlignment="Top" Grid.Column="2"/>
+                        <xctk:IntegerUpDown x:Name="pupilShapeUD" Margin="178,328,49,0" Maximum="127" Minimum="-127" Value="0" VerticalAlignment="Top" ValueChanged="SetExpressionInternal" Grid.Column="2" Grid.ColumnSpan="2"/>
+                        <Label x:Name="pupilShapeLabel" Content="Pupil Shape" HorizontalAlignment="Left" Margin="178,302,0,0" VerticalAlignment="Top" Grid.Column="2" Grid.ColumnSpan="2"/>
+                        <xctk:IntegerUpDown x:Name="lipSyncStrengthUD" Margin="7,328,362,0" Maximum="127" Minimum="-127" Value="0" VerticalAlignment="Top" ValueChanged="SetExpressionInternal" Grid.Column="4"/>
+                        <Label x:Name="lipSyncStrengthLabel" Content="Lip-Sync Strength" HorizontalAlignment="Left" Margin="7,302,0,0" VerticalAlignment="Top" Grid.Column="4"/>
                     </Grid>
                 </TabItem>
                 <TabItem x:Name="startupTab" Header="StartupTab" IsSelected="True" Visibility="Hidden">

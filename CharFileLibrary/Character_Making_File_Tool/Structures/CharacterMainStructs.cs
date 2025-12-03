@@ -192,31 +192,20 @@ namespace Character_Making_File_Tool
             public ushort padding14;
             public uint padding15;
             public uint padding16;
+            public uint padding17;
 
-            //0x2F0 NGS extra slider data
+            //0x2F4 NGS extra slider data
             public NGSSLID ngsSLID;
 
             //0x330 - Motion change 
             public NGSMTON ngsMTON;
 
-            //0x350 - Costume ornament hiding leftover?
+            //0x350 
             public int int_350;
             public int int_354;
 
-            //0x358 Ornament Display - VISI, stored as 0 or 1 in xxp. In CML, these are stored as bits in a single byte.
+            //0x358 Ornament Display - VISI, stored as 0 or 1 in xxp. In CML,these are stored as bitflags in 2 bytes
             public VISI ngsVISI;
-
-            //0x378
-            public uint padding18;
-            public uint padding19;
-
-            public uint padding20;
-            public uint padding21;
-            public uint padding22;
-            public uint padding23;
-
-            public uint padding24;
-            public uint padding25;
 
             //0x398 - Accessory attach points followed by color choices
             public AccessoryMisc accessoryMiscData;
@@ -286,31 +275,20 @@ namespace Character_Making_File_Tool
             public ushort padding14;
             public uint padding15;
             public uint padding16;
+            public uint padding17;
 
-            //0x304 NGS extra slider data
+            //0x308 NGS extra slider data
             public NGSSLID ngsSLID;
 
             //0x344 - Motion change 
             public NGSMTON ngsMTON;
 
-            //0x364 - Costume ornament hiding leftover?
+            //0x364 
             public int int_350;
             public int int_354;
 
-            //0x36C Ornament Display - VISI, stored as 0 or 1 in xxp. In CML, these are stored as bits in a single byte.
+            //0x36C Ornament Display - VISI, stored as 0 or 1 in xxp. In CML,these are stored as bitflags in 2 bytes
             public VISI ngsVISI;
-
-            //0x38C
-            public uint padding18;
-            public uint padding19;
-
-            public uint padding20;
-            public uint padding21;
-            public uint padding22;
-            public uint padding23;
-
-            public uint padding24;
-            public uint padding25;
 
             //0x3AC - Accessory attach points followed by color choices
             public AccessoryMisc accessoryMiscData;
@@ -383,31 +361,20 @@ namespace Character_Making_File_Tool
             public ushort padding14;
             public uint padding15;
             public uint padding16;
+            public uint padding17;
 
-            //0x37C NGS extra slider data
+            //0x380 NGS extra slider data
             public NGSSLID ngsSLID;
 
             //0x3BC - Motion change 
             public NGSMTON ngsMTON;
 
-            //0x3DC - Costume ornament hiding leftover?
+            //0x3DC 
             public int int_350;
             public int int_354;
 
-            //0x3E4 Ornament Display - VISI, stored as 0 or 1 in xxp. In CML, these are stored as bits in a single byte.
+            //0x3E4 Ornament Display - VISI, stored as 0 or 1 in xxp. In CML,these are stored as bitflags in 2 bytes
             public VISI ngsVISI;
-
-            //0x404
-            public uint padding18;
-            public uint padding19;
-
-            public uint padding20;
-            public uint padding21;
-            public uint padding22;
-            public uint padding23;
-
-            public uint padding24;
-            public uint padding25;
 
             //0x424 - Accessory attach points followed by color choices
             public AccessoryMisc accessoryMiscData;
@@ -480,31 +447,20 @@ namespace Character_Making_File_Tool
             public ushort padding14;
             public uint padding15;
             public uint padding16;
+            public uint padding17;
 
-            //0x37C NGS extra slider data
+            //0x380 NGS extra slider data
             public NGSSLID ngsSLID;
 
             //0x3BC - Motion change 
             public NGSMTON ngsMTON;
 
-            //0x3DC - Costume ornament hiding leftover?
+            //0x3DC 
             public int int_350;
             public int int_354;
 
-            //0x3E4 Ornament Display - VISI, stored as 0 or 1 in xxp. In CML, these are stored as bits in a single byte.
+            //0x3E4 Ornament Display - VISI, stored as 0 or 1 in xxp. In CML,these are stored as bitflags in 2 bytes
             public VISI ngsVISI;
-
-            //0x404
-            public uint padding18;
-            public uint padding19;
-
-            public uint padding20;
-            public uint padding21;
-            public uint padding22;
-            public uint padding23;
-
-            public uint padding24;
-            public uint padding25;
 
             //0x424 - Accessory attach points followed by color choices
             public AccessoryMisc accessoryMiscData;
@@ -580,31 +536,20 @@ namespace Character_Making_File_Tool
             public ushort padding14;
             public uint padding15;
             public uint padding16;
+            public uint padding17;
 
-            //0x37C NGS extra slider data
+            //0x380 NGS extra slider data
             public NGSSLID ngsSLID;
 
             //0x3BC - Motion change 
             public NGSMTON ngsMTON;
 
-            //0x3DC - Costume ornament hiding leftover?
+            //0x3DC 
             public int int_350;
             public int int_354;
 
-            //0x3E4 Ornament Display - VISI, stored as 0 or 1 in xxp. In CML, these are stored as bits in a single byte.
+            //0x3E4 Ornament Display - VISI, stored as 0 or 1 in xxp. In CML,these are stored as bitflags in 2 bytes
             public VISI ngsVISI;
-
-            //0x404
-            public uint padding18;
-            public uint padding19;
-
-            public uint padding20;
-            public uint padding21;
-            public uint padding22;
-            public uint padding23;
-
-            public uint padding24;
-            public uint padding25;
 
             //0x424 - Accessory attach points followed by color choices
             public AccessoryMisc accessoryMiscData;
@@ -658,8 +603,9 @@ namespace Character_Making_File_Tool
 
             //0x23C 
             public AccessorySlidersRebootExtended accessorySlidersRebootExtended;
+            public ushort padding;
 
-            //0x2E0
+            //0x2E2
             public FaceExpressionV11 faceNatural;
             public FaceExpressionV11 faceSmile;
             public FaceExpressionV11 faceAngry;
@@ -678,38 +624,119 @@ namespace Character_Making_File_Tool
             public ushort padding14;
             public uint padding15;
             public uint padding16;
+            public uint padding17;
 
-            //0x3CC NGS extra slider data
+            //0x3D0 NGS extra slider data
             public NGSSLID ngsSLID;
 
             //0x40C - Motion change 
             public NGSMTON ngsMTON;
 
-            //0x42C - Costume ornament hiding leftover?
+            //0x42C 
             public int int_350;
             public int int_354;
 
-            //0x420 Ornament Display - VISI, stored as 0 or 1 in xxp. In CML, these are stored as bits in a single byte.
+            //0x420 Ornament Display - VISI, stored as 0 or 1 in xxp. In CML,these are stored as bitflags in 2 bytes
             public VISI ngsVISI;
-
-            //0x440
-            public uint padding18;
-            public uint padding19;
-            public uint padding20;
-            public uint padding21;
-
-            public uint padding22;
-            public uint padding23;
-            public uint padding24;
-            public uint padding25;
 
             //0x460 - Accessory attach points followed by color choices
             public AccessoryMiscExtended accessoryMiscDataExtended;
 
-            //0x498 - Cast Color id assignments
+            //0x496 - Cast Color id assignments
             public CastColorIdSet castColorIds;
 
+            public ushort ushtPadding;
+
             //0x4A8 - Cel Shading
+            public int celShadingIsEnabled;
+        }
+
+        /// <summary>
+        /// Optimizes value types and space usage, adds expression sliders, adds expression variant slot
+        /// </summary>
+        public struct XXPV16
+        {
+            //DOC 0x10
+            public BaseDOC baseDOC;
+            public byte skinVariant; //0 or above 3 for default, 1 for human, 2 for dewman, 3 for cast. This decides the color map used for the skin. 
+            public sbyte eyebrowDensity; //-100 to 100 
+            public short cmlVariant;
+
+            //0x20
+            public BaseFIGR baseFIGR;
+            public Vec3Int neckVerts;
+            public Vec3Int waistVerts;
+
+            //0xBC
+            public Vec3Int hands;
+            public Vec3Int horns;
+            public int eyeSize;
+            public int eyeHorizontalPosition;
+            public int neckAngle;
+
+            //0xE0 AltFaceFIGR
+            public FaceFIGR classicFace;
+
+            //0x158 COL2 - These are just standard RGBA in NGS as opposed to the original COLR slider positions
+            public COL2 ngsCOL2;
+
+            //0x1A0 SLCT
+            public BaseSLCT baseSLCT;
+            public BaseSLCT2 baseSLCT2;
+            public uint leftEyePart;
+
+            //0x1F8 SLCT continued
+            public BaseSLCTNGS baseSLCTNGS;
+
+            //0x224 18 Accessory slot extension
+            public SLCTNGSExtended slctNGSExtended;
+
+            //0x23C 
+            public AccessorySlidersRebootExtended accessorySlidersRebootExtended;
+
+            //0x2E0
+            public FaceExpressionV12 faceNatural;
+            public FaceExpressionV12 faceSmile;
+            public FaceExpressionV12 faceAngry;
+            public FaceExpressionV12 faceSad;
+
+            public FaceExpressionV12 faceSus;
+            public FaceExpressionV12 faceEyesClosed;
+            public FaceExpressionV12 faceSmile2;
+            public FaceExpressionV12 faceWink;
+
+            public FaceExpressionV12 faceCustom1;
+            public FaceExpressionV12 faceCustom2;
+            public FaceExpressionV12 faceCustom3;
+
+            //0x454
+            public PaintPriority paintPriority;
+            public ushort padding14;
+            public uint padding15;
+            public uint padding16;
+            public uint padding17;
+
+            //0x468 NGS extra slider data
+            public NGSSLIDBytes ngsSLID;
+
+            //0x478 - Motion change 
+            public NGSMTON ngsMTON;
+
+            //0x494 - ?
+            public int int_350;
+            public int int_354;
+
+            //0x49C Ornament Display - VISI, these are stored as bitflags in 2 bytes.
+            public byte ngsVISI0;
+            public byte ngsVISI1;
+
+            //0x49E - Accessory attach points followed by color choices
+            public AccessoryMiscExtended accessoryMiscDataExtended;
+
+            //0x4DC - Cast Color id assignments
+            public CastColorIdSet castColorIds;
+
+            //0x4E4 - Cel Shading
             public int celShadingIsEnabled;
         }
     }

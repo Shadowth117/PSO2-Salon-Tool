@@ -43,8 +43,9 @@ namespace NGS_Salon_Tool
             "Eyes Closed",
             "Smile 2",
             "Wink",
-            "Unused 1",
-            "Unused 2",
+            "Customization 1",
+            "Customization 2",
+            "Customization 3",
         };
 
         public static List<string> paintPriorityStrings = new List<string>()

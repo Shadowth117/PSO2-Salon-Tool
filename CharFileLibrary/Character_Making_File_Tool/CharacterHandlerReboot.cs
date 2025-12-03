@@ -45,18 +45,19 @@ namespace Character_Making_File_Tool
 
             public AccessorySlidersRebootExtended accessorySlidersRebootExtended;
 
-            public FaceExpressionV11 faceNatural;
-            public FaceExpressionV11 faceSmile;
-            public FaceExpressionV11 faceAngry;
-            public FaceExpressionV11 faceSad;
+            public FaceExpressionV12 faceNatural;
+            public FaceExpressionV12 faceSmile;
+            public FaceExpressionV12 faceAngry;
+            public FaceExpressionV12 faceSad;
 
-            public FaceExpressionV11 faceSus;
-            public FaceExpressionV11 faceEyesClosed;
-            public FaceExpressionV11 faceSmile2;
-            public FaceExpressionV11 faceWink;
+            public FaceExpressionV12 faceSus;
+            public FaceExpressionV12 faceEyesClosed;
+            public FaceExpressionV12 faceSmile2;
+            public FaceExpressionV12 faceWink;
 
-            public FaceExpressionV11 faceUnused1;
-            public FaceExpressionV11 faceUnused2;
+            public FaceExpressionV12 faceCustom1;
+            public FaceExpressionV12 faceCustom2;
+            public FaceExpressionV12 faceCustom3;
 
             public PaintPriority paintPriority = PaintPriority.GetDefault();
 
@@ -64,6 +65,7 @@ namespace Character_Making_File_Tool
             public NGSSLID ngsSLID;
 
             //Motion change 
+            public int motionUnused; //cml only?
             public NGSMTON ngsMTON;
 
             //Costume ornament hiding leftover?
@@ -333,18 +335,18 @@ namespace Character_Making_File_Tool
 
                 accessorySlidersRebootExtended = tempXXP.accessorySlidersReboot.GetRebootExtendedSliders();
 
-                faceNatural = FaceExpressionV11.CreateExpression(tempXXP.faceNatural);
-                faceSmile = FaceExpressionV11.CreateExpression(tempXXP.faceSmile);
-                faceAngry = FaceExpressionV11.CreateExpression(tempXXP.faceAngry);
-                faceSad = FaceExpressionV11.CreateExpression(tempXXP.faceSad);
+                faceNatural = FaceExpressionV12.CreateExpression(tempXXP.faceNatural);
+                faceSmile = FaceExpressionV12.CreateExpression(tempXXP.faceSmile);
+                faceAngry = FaceExpressionV12.CreateExpression(tempXXP.faceAngry);
+                faceSad = FaceExpressionV12.CreateExpression(tempXXP.faceSad);
 
-                faceSus = FaceExpressionV11.CreateExpression(tempXXP.faceSus);
-                faceEyesClosed = FaceExpressionV11.CreateExpression(tempXXP.faceEyesClosed);
-                faceSmile2 = FaceExpressionV11.CreateExpression(tempXXP.faceSmile2);
-                faceWink = FaceExpressionV11.CreateExpression(tempXXP.faceWink);
+                faceSus = FaceExpressionV12.CreateExpression(tempXXP.faceSus);
+                faceEyesClosed = FaceExpressionV12.CreateExpression(tempXXP.faceEyesClosed);
+                faceSmile2 = FaceExpressionV12.CreateExpression(tempXXP.faceSmile2);
+                faceWink = FaceExpressionV12.CreateExpression(tempXXP.faceWink);
 
-                faceUnused1 = FaceExpressionV11.CreateExpression(tempXXP.faceUnused1);
-                faceUnused2 = FaceExpressionV11.CreateExpression(tempXXP.faceUnused2);
+                faceCustom1 = FaceExpressionV12.CreateExpression(tempXXP.faceUnused1);
+                faceCustom2 = FaceExpressionV12.CreateExpression(tempXXP.faceUnused2);
 
                 paintPriority = tempXXP.paintPriority;
 
@@ -393,18 +395,18 @@ namespace Character_Making_File_Tool
 
                 accessorySlidersRebootExtended = tempXXP.accessorySlidersReboot.GetRebootExtendedSliders();
 
-                faceNatural = tempXXP.faceNatural;
-                faceSmile = tempXXP.faceSmile;
-                faceAngry = tempXXP.faceAngry;
-                faceSad = tempXXP.faceSad;
+                faceNatural = FaceExpressionV12.CreateExpression(tempXXP.faceNatural);
+                faceSmile = FaceExpressionV12.CreateExpression(tempXXP.faceSmile);
+                faceAngry = FaceExpressionV12.CreateExpression(tempXXP.faceAngry);
+                faceSad = FaceExpressionV12.CreateExpression(tempXXP.faceSad);
 
-                faceSus = tempXXP.faceSus;
-                faceEyesClosed = tempXXP.faceEyesClosed;
-                faceSmile2 = tempXXP.faceSmile2;
-                faceWink = tempXXP.faceWink;
+                faceSus = FaceExpressionV12.CreateExpression(tempXXP.faceSus);
+                faceEyesClosed = FaceExpressionV12.CreateExpression(tempXXP.faceEyesClosed);
+                faceSmile2 = FaceExpressionV12.CreateExpression(tempXXP.faceSmile2);
+                faceWink = FaceExpressionV12.CreateExpression(tempXXP.faceWink);
 
-                faceUnused1 = tempXXP.faceUnused1;
-                faceUnused2 = tempXXP.faceUnused2;
+                faceCustom1 = FaceExpressionV12.CreateExpression(tempXXP.faceUnused1);
+                faceCustom2 = FaceExpressionV12.CreateExpression(tempXXP.faceUnused2);
 
                 paintPriority = tempXXP.paintPriority;
 
@@ -455,18 +457,18 @@ namespace Character_Making_File_Tool
 
                 accessorySlidersRebootExtended = tempXXP.accessorySlidersReboot.GetRebootExtendedSliders();
 
-                faceNatural = tempXXP.faceNatural;
-                faceSmile = tempXXP.faceSmile;
-                faceAngry = tempXXP.faceAngry;
-                faceSad = tempXXP.faceSad;
+                faceNatural = FaceExpressionV12.CreateExpression(tempXXP.faceNatural);
+                faceSmile = FaceExpressionV12.CreateExpression(tempXXP.faceSmile);
+                faceAngry = FaceExpressionV12.CreateExpression(tempXXP.faceAngry);
+                faceSad = FaceExpressionV12.CreateExpression(tempXXP.faceSad);
 
-                faceSus = tempXXP.faceSus;
-                faceEyesClosed = tempXXP.faceEyesClosed;
-                faceSmile2 = tempXXP.faceSmile2;
-                faceWink = tempXXP.faceWink;
+                faceSus = FaceExpressionV12.CreateExpression(tempXXP.faceSus);
+                faceEyesClosed = FaceExpressionV12.CreateExpression(tempXXP.faceEyesClosed);
+                faceSmile2 = FaceExpressionV12.CreateExpression(tempXXP.faceSmile2);
+                faceWink = FaceExpressionV12.CreateExpression(tempXXP.faceWink);
 
-                faceUnused1 = tempXXP.faceUnused1;
-                faceUnused2 = tempXXP.faceUnused2;
+                faceCustom1 = FaceExpressionV12.CreateExpression(tempXXP.faceUnused1);
+                faceCustom2 = FaceExpressionV12.CreateExpression(tempXXP.faceUnused2);
 
                 paintPriority = tempXXP.paintPriority;
 
@@ -511,18 +513,18 @@ namespace Character_Making_File_Tool
 
                 accessorySlidersRebootExtended = tempXXP.accessorySlidersReboot.GetRebootExtendedSliders();
 
-                faceNatural = tempXXP.faceNatural;
-                faceSmile = tempXXP.faceSmile;
-                faceAngry = tempXXP.faceAngry;
-                faceSad = tempXXP.faceSad;
+                faceNatural = FaceExpressionV12.CreateExpression(tempXXP.faceNatural);
+                faceSmile = FaceExpressionV12.CreateExpression(tempXXP.faceSmile);
+                faceAngry = FaceExpressionV12.CreateExpression(tempXXP.faceAngry);
+                faceSad = FaceExpressionV12.CreateExpression(tempXXP.faceSad);
 
-                faceSus = tempXXP.faceSus;
-                faceEyesClosed = tempXXP.faceEyesClosed;
-                faceSmile2 = tempXXP.faceSmile2;
-                faceWink = tempXXP.faceWink;
+                faceSus = FaceExpressionV12.CreateExpression(tempXXP.faceSus);
+                faceEyesClosed = FaceExpressionV12.CreateExpression(tempXXP.faceEyesClosed);
+                faceSmile2 = FaceExpressionV12.CreateExpression(tempXXP.faceSmile2);
+                faceWink = FaceExpressionV12.CreateExpression(tempXXP.faceWink);
 
-                faceUnused1 = tempXXP.faceUnused1;
-                faceUnused2 = tempXXP.faceUnused2;
+                faceCustom1 = FaceExpressionV12.CreateExpression(tempXXP.faceUnused1);
+                faceCustom2 = FaceExpressionV12.CreateExpression(tempXXP.faceUnused2);
 
                 paintPriority = tempXXP.paintPriority;
 
@@ -569,18 +571,18 @@ namespace Character_Making_File_Tool
 
                 accessorySlidersRebootExtended = tempXXP.accessorySlidersReboot.GetRebootExtendedSliders();
 
-                faceNatural = tempXXP.faceNatural;
-                faceSmile = tempXXP.faceSmile;
-                faceAngry = tempXXP.faceAngry;
-                faceSad = tempXXP.faceSad;
+                faceNatural = FaceExpressionV12.CreateExpression(tempXXP.faceNatural);
+                faceSmile = FaceExpressionV12.CreateExpression(tempXXP.faceSmile);
+                faceAngry = FaceExpressionV12.CreateExpression(tempXXP.faceAngry);
+                faceSad = FaceExpressionV12.CreateExpression(tempXXP.faceSad);
 
-                faceSus = tempXXP.faceSus;
-                faceEyesClosed = tempXXP.faceEyesClosed;
-                faceSmile2 = tempXXP.faceSmile2;
-                faceWink = tempXXP.faceWink;
+                faceSus = FaceExpressionV12.CreateExpression(tempXXP.faceSus);
+                faceEyesClosed = FaceExpressionV12.CreateExpression(tempXXP.faceEyesClosed);
+                faceSmile2 = FaceExpressionV12.CreateExpression(tempXXP.faceSmile2);
+                faceWink = FaceExpressionV12.CreateExpression(tempXXP.faceWink);
 
-                faceUnused1 = tempXXP.faceUnused1;
-                faceUnused2 = tempXXP.faceUnused2;
+                faceCustom1 = FaceExpressionV12.CreateExpression(tempXXP.faceUnused1);
+                faceCustom2 = FaceExpressionV12.CreateExpression(tempXXP.faceUnused2);
 
                 paintPriority = tempXXP.paintPriority;
 
@@ -631,6 +633,68 @@ namespace Character_Making_File_Tool
 
                 accessorySlidersRebootExtended = tempXXP.accessorySlidersRebootExtended;
 
+                faceNatural = FaceExpressionV12.CreateExpression(tempXXP.faceNatural);
+                faceSmile = FaceExpressionV12.CreateExpression(tempXXP.faceSmile);
+                faceAngry = FaceExpressionV12.CreateExpression(tempXXP.faceAngry);
+                faceSad = FaceExpressionV12.CreateExpression(tempXXP.faceSad);
+
+                faceSus = FaceExpressionV12.CreateExpression(tempXXP.faceSus);
+                faceEyesClosed = FaceExpressionV12.CreateExpression(tempXXP.faceEyesClosed);
+                faceSmile2 = FaceExpressionV12.CreateExpression(tempXXP.faceSmile2);
+                faceWink = FaceExpressionV12.CreateExpression(tempXXP.faceWink);
+
+                faceCustom1 = FaceExpressionV12.CreateExpression(tempXXP.faceUnused1);
+                faceCustom2 = FaceExpressionV12.CreateExpression(tempXXP.faceUnused2);
+
+                paintPriority = tempXXP.paintPriority;
+
+                ngsSLID = tempXXP.ngsSLID;
+                ngsMTON = tempXXP.ngsMTON;
+
+                int_350 = tempXXP.int_350;
+                int_354 = tempXXP.int_354;
+                ngsVISI = tempXXP.ngsVISI;
+
+                accessoryMiscDataExtended = tempXXP.accessoryMiscDataExtended;
+
+                castColorIds = tempXXP.castColorIds;
+
+                celShadingIsEnabled = tempXXP.celShadingIsEnabled;
+            }
+
+            public xxpGeneralReboot(XXPV16 tempXXP)
+            {
+                xxpVersion = 16;
+
+                baseDOC = tempXXP.baseDOC;
+                skinVariant = tempXXP.skinVariant;
+                eyebrowDensity = tempXXP.eyebrowDensity;
+                cmlVariant = tempXXP.cmlVariant;
+
+                baseFIGR = tempXXP.baseFIGR;
+                neckVerts = tempXXP.neckVerts;
+                waistVerts = tempXXP.waistVerts;
+
+                hands = tempXXP.hands;
+                hornVerts = tempXXP.horns;
+                eyeSize = tempXXP.eyeSize;
+                eyeHorizontalPosition = tempXXP.eyeHorizontalPosition;
+                neckAngle = tempXXP.neckAngle;
+
+                classicFace = tempXXP.classicFace;
+
+                ngsCOL2 = tempXXP.ngsCOL2;
+
+                baseSLCT = tempXXP.baseSLCT;
+                baseSLCT2 = tempXXP.baseSLCT2;
+                leftEyePart = tempXXP.leftEyePart;
+
+                baseSLCTNGS = tempXXP.baseSLCTNGS;
+
+                slctNGSExtended = tempXXP.slctNGSExtended;
+
+                accessorySlidersRebootExtended = tempXXP.accessorySlidersRebootExtended;
+
                 faceNatural = tempXXP.faceNatural;
                 faceSmile = tempXXP.faceSmile;
                 faceAngry = tempXXP.faceAngry;
@@ -641,17 +705,18 @@ namespace Character_Making_File_Tool
                 faceSmile2 = tempXXP.faceSmile2;
                 faceWink = tempXXP.faceWink;
 
-                faceUnused1 = tempXXP.faceUnused1;
-                faceUnused2 = tempXXP.faceUnused2;
+                faceCustom1 = tempXXP.faceCustom1;
+                faceCustom2 = tempXXP.faceCustom2;
+                faceCustom2 = tempXXP.faceCustom3;
 
                 paintPriority = tempXXP.paintPriority;
 
-                ngsSLID = tempXXP.ngsSLID;
+                ngsSLID = tempXXP.ngsSLID.GetNGSSLID();
                 ngsMTON = tempXXP.ngsMTON;
 
                 int_350 = tempXXP.int_350;
                 int_354 = tempXXP.int_354;
-                ngsVISI = tempXXP.ngsVISI;
+                ngsVISI = GetVISIFromFlags(tempXXP.ngsVISI0, tempXXP.ngsVISI1);
 
                 accessoryMiscDataExtended = tempXXP.accessoryMiscDataExtended;
 
@@ -817,16 +882,16 @@ namespace Character_Making_File_Tool
                 tempXXP.leftEyePart = leftEyePart;
                 tempXXP.baseSLCTNGS = baseSLCTNGS;
                 tempXXP.accessorySlidersReboot = accessorySlidersRebootExtended.GetRebootAccessorySliders();
-                tempXXP.faceNatural = faceNatural.expStruct;
-                tempXXP.faceSmile = faceSmile.expStruct;
-                tempXXP.faceAngry = faceAngry.expStruct;
-                tempXXP.faceSad = faceSad.expStruct;
-                tempXXP.faceSus = faceSus.expStruct;
-                tempXXP.faceEyesClosed = faceEyesClosed.expStruct;
-                tempXXP.faceSmile2 = faceSmile2.expStruct;
-                tempXXP.faceWink = faceWink.expStruct;
-                tempXXP.faceUnused1 = faceUnused1.expStruct;
-                tempXXP.faceUnused2 = faceUnused2.expStruct;
+                tempXXP.faceNatural = faceNatural.expStruct.expStruct;
+                tempXXP.faceSmile = faceSmile.expStruct.expStruct;
+                tempXXP.faceAngry = faceAngry.expStruct.expStruct;
+                tempXXP.faceSad = faceSad.expStruct.expStruct;
+                tempXXP.faceSus = faceSus.expStruct.expStruct;
+                tempXXP.faceEyesClosed = faceEyesClosed.expStruct.expStruct;
+                tempXXP.faceSmile2 = faceSmile2.expStruct.expStruct;
+                tempXXP.faceWink = faceWink.expStruct.expStruct;
+                tempXXP.faceUnused1 = faceCustom1.expStruct.expStruct;
+                tempXXP.faceUnused2 = faceCustom2.expStruct.expStruct;
                 tempXXP.paintPriority = paintPriority;
                 tempXXP.ngsSLID = ngsSLID;
                 tempXXP.ngsMTON = ngsMTON;
@@ -870,16 +935,16 @@ namespace Character_Making_File_Tool
                 tempXXP.leftEyePart = leftEyePart;
                 tempXXP.baseSLCTNGS = baseSLCTNGS;
                 tempXXP.accessorySlidersReboot = accessorySlidersRebootExtended.GetRebootAccessorySliders();
-                tempXXP.faceNatural = faceNatural;
-                tempXXP.faceSmile = faceSmile;
-                tempXXP.faceAngry = faceAngry;
-                tempXXP.faceSad = faceSad;
-                tempXXP.faceSus = faceSus;
-                tempXXP.faceEyesClosed = faceEyesClosed;
-                tempXXP.faceSmile2 = faceSmile2;
-                tempXXP.faceWink = faceWink;
-                tempXXP.faceUnused1 = faceUnused1;
-                tempXXP.faceUnused2 = faceUnused2;
+                tempXXP.faceNatural = faceNatural.expStruct;
+                tempXXP.faceSmile = faceSmile.expStruct;
+                tempXXP.faceAngry = faceAngry.expStruct;
+                tempXXP.faceSad = faceSad.expStruct;
+                tempXXP.faceSus = faceSus.expStruct;
+                tempXXP.faceEyesClosed = faceEyesClosed.expStruct;
+                tempXXP.faceSmile2 = faceSmile2.expStruct;
+                tempXXP.faceWink = faceWink.expStruct;
+                tempXXP.faceUnused1 = faceCustom1.expStruct;
+                tempXXP.faceUnused2 = faceCustom2.expStruct;
                 tempXXP.paintPriority = paintPriority;
                 tempXXP.ngsSLID = ngsSLID;
                 tempXXP.ngsMTON = ngsMTON;
@@ -918,16 +983,16 @@ namespace Character_Making_File_Tool
                 tempXXP.leftEyePart = leftEyePart;
                 tempXXP.baseSLCTNGS = baseSLCTNGS;
                 tempXXP.accessorySlidersReboot = accessorySlidersRebootExtended.GetRebootAccessorySliders();
-                tempXXP.faceNatural = faceNatural;
-                tempXXP.faceSmile = faceSmile;
-                tempXXP.faceAngry = faceAngry;
-                tempXXP.faceSad = faceSad;
-                tempXXP.faceSus = faceSus;
-                tempXXP.faceEyesClosed = faceEyesClosed;
-                tempXXP.faceSmile2 = faceSmile2;
-                tempXXP.faceWink = faceWink;
-                tempXXP.faceUnused1 = faceUnused1;
-                tempXXP.faceUnused2 = faceUnused2;
+                tempXXP.faceNatural = faceNatural.expStruct;
+                tempXXP.faceSmile = faceSmile.expStruct;
+                tempXXP.faceAngry = faceAngry.expStruct;
+                tempXXP.faceSad = faceSad.expStruct;
+                tempXXP.faceSus = faceSus.expStruct;
+                tempXXP.faceEyesClosed = faceEyesClosed.expStruct;
+                tempXXP.faceSmile2 = faceSmile2.expStruct;
+                tempXXP.faceWink = faceWink.expStruct;
+                tempXXP.faceUnused1 = faceCustom1.expStruct;
+                tempXXP.faceUnused2 = faceCustom2.expStruct;
                 tempXXP.paintPriority = paintPriority;
                 tempXXP.ngsSLID = ngsSLID;
                 tempXXP.ngsMTON = ngsMTON;
@@ -962,16 +1027,16 @@ namespace Character_Making_File_Tool
                 tempXXP.leftEyePart = leftEyePart;
                 tempXXP.baseSLCTNGS = baseSLCTNGS;
                 tempXXP.accessorySlidersReboot = accessorySlidersRebootExtended.GetRebootAccessorySliders();
-                tempXXP.faceNatural = faceNatural;
-                tempXXP.faceSmile = faceSmile;
-                tempXXP.faceAngry = faceAngry;
-                tempXXP.faceSad = faceSad;
-                tempXXP.faceSus = faceSus;
-                tempXXP.faceEyesClosed = faceEyesClosed;
-                tempXXP.faceSmile2 = faceSmile2;
-                tempXXP.faceWink = faceWink;
-                tempXXP.faceUnused1 = faceUnused1;
-                tempXXP.faceUnused2 = faceUnused2;
+                tempXXP.faceNatural = faceNatural.expStruct;
+                tempXXP.faceSmile = faceSmile.expStruct;
+                tempXXP.faceAngry = faceAngry.expStruct;
+                tempXXP.faceSad = faceSad.expStruct;
+                tempXXP.faceSus = faceSus.expStruct;
+                tempXXP.faceEyesClosed = faceEyesClosed.expStruct;
+                tempXXP.faceSmile2 = faceSmile2.expStruct;
+                tempXXP.faceWink = faceWink.expStruct;
+                tempXXP.faceUnused1 = faceCustom1.expStruct;
+                tempXXP.faceUnused2 = faceCustom2.expStruct;
                 tempXXP.paintPriority = paintPriority;
                 tempXXP.ngsSLID = ngsSLID;
                 tempXXP.ngsMTON = ngsMTON;
@@ -1007,16 +1072,16 @@ namespace Character_Making_File_Tool
                 tempXXP.leftEyePart = leftEyePart;
                 tempXXP.baseSLCTNGS = baseSLCTNGS;
                 tempXXP.accessorySlidersReboot = accessorySlidersRebootExtended.GetRebootAccessorySliders();
-                tempXXP.faceNatural = faceNatural;
-                tempXXP.faceSmile = faceSmile;
-                tempXXP.faceAngry = faceAngry;
-                tempXXP.faceSad = faceSad;
-                tempXXP.faceSus = faceSus;
-                tempXXP.faceEyesClosed = faceEyesClosed;
-                tempXXP.faceSmile2 = faceSmile2;
-                tempXXP.faceWink = faceWink;
-                tempXXP.faceUnused1 = faceUnused1;
-                tempXXP.faceUnused2 = faceUnused2;
+                tempXXP.faceNatural = faceNatural.expStruct;
+                tempXXP.faceSmile = faceSmile.expStruct;
+                tempXXP.faceAngry = faceAngry.expStruct;
+                tempXXP.faceSad = faceSad.expStruct;
+                tempXXP.faceSus = faceSus.expStruct;
+                tempXXP.faceEyesClosed = faceEyesClosed.expStruct;
+                tempXXP.faceSmile2 = faceSmile2.expStruct;
+                tempXXP.faceWink = faceWink.expStruct;
+                tempXXP.faceUnused1 = faceCustom1.expStruct;
+                tempXXP.faceUnused2 = faceCustom2.expStruct;
                 tempXXP.paintPriority = paintPriority;
                 tempXXP.ngsSLID = ngsSLID;
                 tempXXP.ngsMTON = ngsMTON;
@@ -1054,6 +1119,53 @@ namespace Character_Making_File_Tool
                 tempXXP.baseSLCTNGS = baseSLCTNGS;
                 tempXXP.slctNGSExtended = slctNGSExtended;
                 tempXXP.accessorySlidersRebootExtended = accessorySlidersRebootExtended;
+                tempXXP.faceNatural = faceNatural.expStruct;
+                tempXXP.faceSmile = faceSmile.expStruct;
+                tempXXP.faceAngry = faceAngry.expStruct;
+                tempXXP.faceSad = faceSad.expStruct;
+                tempXXP.faceSus = faceSus.expStruct;
+                tempXXP.faceEyesClosed = faceEyesClosed.expStruct;
+                tempXXP.faceSmile2 = faceSmile2.expStruct;
+                tempXXP.faceWink = faceWink.expStruct;
+                tempXXP.faceUnused1 = faceCustom1.expStruct;
+                tempXXP.faceUnused2 = faceCustom2.expStruct;
+                tempXXP.paintPriority = paintPriority;
+                tempXXP.ngsSLID = ngsSLID;
+                tempXXP.ngsMTON = ngsMTON;
+                tempXXP.int_350 = int_350;
+                tempXXP.int_354 = int_354;
+                tempXXP.ngsVISI = ngsVISI;
+                tempXXP.accessoryMiscDataExtended = accessoryMiscDataExtended;
+                tempXXP.castColorIds = castColorIds;
+                tempXXP.celShadingIsEnabled = celShadingIsEnabled;
+
+                return tempXXP;
+            }
+
+            public XXPV16 GetXXPV16()
+            {
+                XXPV16 tempXXP = new();
+
+                tempXXP.baseDOC = baseDOC;
+                tempXXP.skinVariant = skinVariant;
+                tempXXP.eyebrowDensity = eyebrowDensity;
+                tempXXP.cmlVariant = cmlVariant;
+                tempXXP.baseFIGR = baseFIGR;
+                tempXXP.neckVerts = neckVerts;
+                tempXXP.waistVerts = waistVerts;
+                tempXXP.hands = hands;
+                tempXXP.horns = hornVerts;
+                tempXXP.eyeSize = eyeSize;
+                tempXXP.eyeHorizontalPosition = eyeHorizontalPosition;
+                tempXXP.neckAngle = neckAngle;
+                tempXXP.classicFace = classicFace;
+                tempXXP.ngsCOL2 = ngsCOL2;
+                tempXXP.baseSLCT = baseSLCT;
+                tempXXP.baseSLCT2 = baseSLCT2;
+                tempXXP.leftEyePart = leftEyePart;
+                tempXXP.baseSLCTNGS = baseSLCTNGS;
+                tempXXP.slctNGSExtended = slctNGSExtended;
+                tempXXP.accessorySlidersRebootExtended = accessorySlidersRebootExtended;
                 tempXXP.faceNatural = faceNatural;
                 tempXXP.faceSmile = faceSmile;
                 tempXXP.faceAngry = faceAngry;
@@ -1062,14 +1174,18 @@ namespace Character_Making_File_Tool
                 tempXXP.faceEyesClosed = faceEyesClosed;
                 tempXXP.faceSmile2 = faceSmile2;
                 tempXXP.faceWink = faceWink;
-                tempXXP.faceUnused1 = faceUnused1;
-                tempXXP.faceUnused2 = faceUnused2;
+                tempXXP.faceCustom1 = faceCustom1;
+                tempXXP.faceCustom2 = faceCustom2;
+                tempXXP.faceCustom3 = faceCustom3;
                 tempXXP.paintPriority = paintPriority;
-                tempXXP.ngsSLID = ngsSLID;
+                tempXXP.ngsSLID = ngsSLID.GetNGSSLIDBytes();
                 tempXXP.ngsMTON = ngsMTON;
                 tempXXP.int_350 = int_350;
                 tempXXP.int_354 = int_354;
-                tempXXP.ngsVISI = ngsVISI;
+                
+                GetBitflagVISI(ngsVISI, out var visiFlags0, out var visiFlags1);
+                tempXXP.ngsVISI0 = visiFlags0;
+                tempXXP.ngsVISI1 = visiFlags1;
                 tempXXP.accessoryMiscDataExtended = accessoryMiscDataExtended;
                 tempXXP.castColorIds = castColorIds;
                 tempXXP.celShadingIsEnabled = celShadingIsEnabled;
@@ -1091,8 +1207,8 @@ namespace Character_Making_File_Tool
                     faceSmile2 = defaultMaleExpressions[6];
                     faceWink = defaultMaleExpressions[7];
 
-                    faceUnused1 = defaultMaleExpressions[8];
-                    faceUnused2 = defaultMaleExpressions[9];
+                    faceCustom1 = defaultMaleExpressions[8];
+                    faceCustom2 = defaultMaleExpressions[9];
                 }
                 else
                 {
@@ -1106,8 +1222,8 @@ namespace Character_Making_File_Tool
                     faceSmile2 = defaultFemaleExpressions[6];
                     faceWink = defaultFemaleExpressions[7];
 
-                    faceUnused1 = defaultFemaleExpressions[8];
-                    faceUnused2 = defaultFemaleExpressions[9];
+                    faceCustom1 = defaultFemaleExpressions[8];
+                    faceCustom2 = defaultFemaleExpressions[9];
                 }
             }
 
@@ -1211,8 +1327,11 @@ namespace Character_Making_File_Tool
                         return DataHelpers.ConvertStruct(GetXXPV14());
                     case 15:
                         return DataHelpers.ConvertStruct(GetXXPV15());
+                    case 16:
+                        return DataHelpers.ConvertStruct(GetXXPV16());
                     default:
-                        return DataHelpers.ConvertStruct(GetXXPV15());
+                        return DataHelpers.ConvertStruct(GetXXPV16());
+                        break;
                 }
                 throw new NotImplementedException();
             }

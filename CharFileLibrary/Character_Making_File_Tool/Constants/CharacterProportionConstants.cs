@@ -111,8 +111,8 @@
         public static int EyeHorizontalPositionMax = 84;
         public static int UnusedMin = 86; //Does nothing
         public static int UnusedMax = 88; //Does nothing
-        public static int EyeSizeMin = 90; //CorrelatestoIrisbone,butdoesnothing?
-        public static int EyeSizeMax = 92; //CorrelatestoIrisbone,butdoesnothing?
+        public static int EyeSizeMin = 90; //Correlates to Iris bone,but does nothing?
+        public static int EyeSizeMax = 92; //Correlates to Iris bone,but does nothing?
         public static int LeftEyebrowVerticalPositionMin = 94;
         public static int LeftEyebrowVerticalPositionMax = 96;
         public static int LeftMouthVerticalPositionMin = 98;

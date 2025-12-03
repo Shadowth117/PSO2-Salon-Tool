@@ -291,5 +291,110 @@ namespace Character_Making_File_Tool
                 return obj;
             }
         }
+
+        public struct FaceExpressionV12
+        {
+            public FaceExpressionV11 expStruct;
+            public sbyte mouthOpenClose;
+            public sbyte mouthCornerPosition;
+            public sbyte mouthCornerShape;
+            public sbyte upperLipShape;
+
+            public sbyte lowerLipShape;
+            public sbyte upperLowerLipRatio;
+            public sbyte teethOpenClose;
+            public sbyte teethVerticalPosition;
+
+            public sbyte lowerJawOpenClose;
+            public sbyte eyelashAngle;
+            public sbyte eyelashLength;
+            public sbyte eyeShadows;
+
+            public sbyte pupilShape;
+            public sbyte lipSyncStrength;
+
+            public static FaceExpressionV12 CreateExpression(sbyte[] raw)
+            {
+                FaceExpressionV12 exp12 = new();
+                FaceExpressionV11 exp11 = new();
+                FaceExpressionV10 exp10 = new();
+
+                exp10.irisSize = raw[0];
+                exp10.leftEyebrowVertical = raw[1];
+                exp10.leftMouthVertical = raw[2];
+                exp10.rightEyebrowVertical = raw[3];
+
+                exp10.rightMouthVertical = raw[4];
+                exp10.eyeCorner = raw[5];
+                exp10.leftEyelidVertical = raw[6];
+                exp10.leftEyebrowExpression = raw[7];
+
+                exp10.rightEyelidVertical = raw[8];
+                exp10.rightEyebrowExpression = raw[9];
+                exp10.mouthA = raw[0xA];
+                exp10.mouthI = raw[0xB];
+
+                if (raw.Length > 0xC)
+                {
+                    exp10.mouthU = raw[0xC];
+                    exp10.mouthE = raw[0xD];
+                    exp10.mouthO = raw[0xE];
+                    exp10.leftEyebrowVerticalUnused = raw[0xF];
+
+                    exp10.rightEyebrowVerticalUnused = raw[0x10];
+                    exp10.tongue = raw[0x11];
+                }
+
+                if (raw.Length > 0x12)
+                {
+                    exp11.tongueVertical = raw[0x12];
+                    exp11.tongueHorizontal = raw[0x13];
+                }
+
+                if (raw.Length > 0x14)
+                {
+                    exp12.mouthOpenClose = raw[0x14];
+                    exp12.mouthCornerPosition = raw[0x15];
+                    exp12.mouthCornerShape = raw[0x16];
+                    exp12.upperLipShape = raw[0x17];
+
+                    exp12.lowerLipShape = raw[0x18];
+                    exp12.upperLowerLipRatio = raw[0x19];
+                    exp12.teethOpenClose = raw[0x1A];
+                    exp12.teethVerticalPosition = raw[0x1B];
+                    
+                    exp12.lowerJawOpenClose = raw[0x1C];
+                    exp12.eyelashAngle = raw[0x1D];
+                    exp12.eyelashLength = raw[0x1E];
+                    exp12.eyeShadows = raw[0x1F];
+
+                    exp12.pupilShape = raw[0x20];
+                    exp12.lipSyncStrength = raw[0x21];
+                }
+
+                exp11.expStruct = exp10;
+                exp12.expStruct = exp11;
+
+                return exp12;
+            }
+            public static FaceExpressionV12 CreateExpression(FaceExpressionV10 exp)
+            {
+                FaceExpressionV12 obj = new();
+                FaceExpressionV11 exp11 = new();
+
+                exp11.expStruct = exp;
+                obj.expStruct = exp11;
+
+                return obj;
+            }
+            public static FaceExpressionV12 CreateExpression(FaceExpressionV11 exp)
+            {
+                FaceExpressionV12 obj = new();
+
+                obj.expStruct = exp;
+
+                return obj;
+            }
+        }
     }
 }

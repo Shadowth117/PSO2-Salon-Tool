@@ -8,14 +8,11 @@ using System.Reflection;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
-using AquaModelLibrary;
-using AquaModelLibrary.Data.PSO2.Aqua;
 using AquaModelLibrary.Data.PSO2.Constants;
 using AquaModelLibrary.Helpers.Readers;
 using Character_Making_File_Tool;
 using CharFileLibrary.Character_Making_File_Tool.Utilities;
 using Microsoft.WindowsAPICodePack.Dialogs;
-using Reloaded.Memory.Streams;
 using static Character_Making_File_Tool.CharacterDataStructs;
 using static NGS_Salon_Tool.MiscReference;
 
@@ -262,9 +259,10 @@ namespace NGS_Salon_Tool
             + "|V13 Salon files (*." + letterOne + letterTwo + "p)|*." + letterOne + letterTwo + "p"
             + "|V14 Salon files (*." + letterOne + letterTwo + "p)|*." + letterOne + letterTwo + "p"
             + "|V15 Salon files (*." + letterOne + letterTwo + "p)|*." + letterOne + letterTwo + "p"
+            + "|V16 Salon files (*." + letterOne + letterTwo + "p)|*." + letterOne + letterTwo + "p"
             + "|cml files (*.cml)|*.cml";
 
-            saveFileDialog.FilterIndex = 10;
+            saveFileDialog.FilterIndex = 11;
             //+ "|Data Dump (*.txt)|*.txt";
 
             if (saveFileDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
@@ -312,6 +310,10 @@ namespace NGS_Salon_Tool
                         SaveXXP(saveFileDialog.FileName);
                         break;
                     case 11:
+                        xxpHandler.xxpVersion = 0x10;
+                        SaveXXP(saveFileDialog.FileName);
+                        break;
+                    case 12:
                         SaveCML(saveFileDialog.FileName);
                         break;
                     default:
@@ -414,6 +416,8 @@ namespace NGS_Salon_Tool
                     return new CharacterHandlerReboot.xxpGeneralReboot(streamReader.Read<CharacterMainStructs.XXPV14>());
                 case 15:
                     return new CharacterHandlerReboot.xxpGeneralReboot(streamReader.Read<CharacterMainStructs.XXPV15>());
+                case 16:
+                    return new CharacterHandlerReboot.xxpGeneralReboot(streamReader.Read<CharacterMainStructs.XXPV16>());
                 default:
                     MessageBox.Show("Error: File version unknown. If this is a proper salon file, please report this!");
                     return null;
@@ -547,6 +551,7 @@ namespace NGS_Salon_Tool
             bodyOrnCheck.IsChecked = xxpHandler.ngsVISI.hideBodyPartOrnament > 0 ? true : false;
             armOrnCheck.IsChecked = xxpHandler.ngsVISI.hideArmPartOrnament > 0 ? true : false;
             legOrnCheck.IsChecked = xxpHandler.ngsVISI.hideLegPartOrnament > 0 ? true : false;
+            faceOrnCheck.IsChecked = xxpHandler.ngsVISI.hideFaceOrnament > 0 ? true : false;
 
             //Paint Priority
             canReorderPaint = false;
@@ -1876,6 +1881,10 @@ namespace NGS_Salon_Tool
         {
             xxpHandler.ngsVISI.hideInnerwear = (bool)innerCheck.IsChecked ? 1 : 0;
         }
+        private void FaceOrnChanged(object sender, RoutedEventArgs e)
+        {
+            xxpHandler.ngsVISI.hideFaceOrnament = (bool)faceOrnCheck.IsChecked ? 1 : 0;
+        }
         private void CelShadingEnabledChanged(object sender, RoutedEventArgs e)
         {
             xxpHandler.celShadingIsEnabled = (bool)celShadingIsEnabledCheck.IsChecked ? 1 : 0;
@@ -2161,39 +2170,39 @@ namespace NGS_Salon_Tool
                     SetExpressionUI(xxpHandler.faceWink);
                     break;
                 case "Unused 1":
-                    SetExpressionUI(xxpHandler.faceUnused1);
+                    SetExpressionUI(xxpHandler.faceCustom1);
                     break;
                 case "Unused 2":
-                    SetExpressionUI(xxpHandler.faceUnused2);
+                    SetExpressionUI(xxpHandler.faceCustom2);
                     break;
             }
         }
 
-        private void SetExpressionUI(FaceExpressionV11 exp)
+        private void SetExpressionUI(FaceExpressionV12 exp)
         {
             canUpdateExpressions = false;
             
-            irisSizeUD.Value = exp.expStruct.irisSize;
-            leftEyebrowVerticalUD.Value = exp.expStruct.leftEyebrowVertical;
-            leftMouthVerticalUD.Value = exp.expStruct.leftMouthVertical;
-            rightEyebrowVerticalUD.Value = exp.expStruct.rightEyebrowVertical;
-            rightMouthVerticalUD.Value = exp.expStruct.rightMouthVertical;
-            eyeCornerUD.Value = exp.expStruct.eyeCorner;
+            irisSizeUD.Value = exp.expStruct.expStruct.irisSize;
+            leftEyebrowVerticalUD.Value = exp.expStruct.expStruct.leftEyebrowVertical;
+            leftMouthVerticalUD.Value = exp.expStruct.expStruct.leftMouthVertical;
+            rightEyebrowVerticalUD.Value = exp.expStruct.expStruct.rightEyebrowVertical;
+            rightMouthVerticalUD.Value = exp.expStruct.expStruct.rightMouthVertical;
+            eyeCornerUD.Value = exp.expStruct.expStruct.eyeCorner;
 
-            leftEyelidVerticalUD.Value = exp.expStruct.leftEyelidVertical;
-            leftEyebrowExpressionUD.Value = exp.expStruct.leftEyebrowExpression;
-            rightEyelidVerticalUD.Value = exp.expStruct.rightEyelidVertical;
-            rightEyebrowExpressionUD.Value = exp.expStruct.rightEyebrowExpression;
-            mouthAUD.Value = exp.expStruct.mouthA;
-            mouthIUD.Value = exp.expStruct.mouthI;
-            mouthUUD.Value = exp.expStruct.mouthU;
-            mouthEUD.Value = exp.expStruct.mouthE;
-            mouthOUD.Value = exp.expStruct.mouthO;
-            leftEyebrowVerticalUnusedUD.Value = exp.expStruct.leftEyebrowVerticalUnused;
-            rightEyebrowVerticalUnusedUD.Value = exp.expStruct.rightEyebrowVerticalUnused;
-            tongueUD.Value = exp.expStruct.tongue;
-            tongueVerticalUD.Value = exp.tongueVertical;
-            tongueHorizontalUD.Value = exp.tongueHorizontal;
+            leftEyelidVerticalUD.Value = exp.expStruct.expStruct.leftEyelidVertical;
+            leftEyebrowExpressionUD.Value = exp.expStruct.expStruct.leftEyebrowExpression;
+            rightEyelidVerticalUD.Value = exp.expStruct.expStruct.rightEyelidVertical;
+            rightEyebrowExpressionUD.Value = exp.expStruct.expStruct.rightEyebrowExpression;
+            mouthAUD.Value = exp.expStruct.expStruct.mouthA;
+            mouthIUD.Value = exp.expStruct.expStruct.mouthI;
+            mouthUUD.Value = exp.expStruct.expStruct.mouthU;
+            mouthEUD.Value = exp.expStruct.expStruct.mouthE;
+            mouthOUD.Value = exp.expStruct.expStruct.mouthO;
+            leftEyebrowVerticalUnusedUD.Value = exp.expStruct.expStruct.leftEyebrowVerticalUnused;
+            rightEyebrowVerticalUnusedUD.Value = exp.expStruct.expStruct.rightEyebrowVerticalUnused;
+            tongueUD.Value = exp.expStruct.expStruct.tongue;
+            tongueVerticalUD.Value = exp.expStruct.tongueVertical;
+            tongueHorizontalUD.Value = exp.expStruct.tongueHorizontal;
 
             canUpdateExpressions = true;
         }
@@ -2202,29 +2211,48 @@ namespace NGS_Salon_Tool
         {
             if (canUpdateExpressions)
             {
-                var faceExp = new FaceExpressionV11() {
-                        expStruct = new FaceExpressionV10() {
-                        irisSize = (sbyte)irisSizeUD.Value,
-                        leftEyebrowVertical = (sbyte)leftEyebrowVerticalUD.Value,
-                        leftMouthVertical = (sbyte)leftMouthVerticalUD.Value,
-                        rightEyebrowVertical = (sbyte)rightEyebrowVerticalUD.Value,
-                        rightMouthVertical = (sbyte)rightMouthVerticalUD.Value,
-                        eyeCorner = (sbyte)eyeCornerUD.Value,
-                        leftEyelidVertical = (sbyte)leftEyelidVerticalUD.Value,
-                        leftEyebrowExpression = (sbyte)leftEyebrowExpressionUD.Value,
-                        rightEyelidVertical = (sbyte)rightEyelidVerticalUD.Value,
-                        rightEyebrowExpression = (sbyte)rightEyebrowExpressionUD.Value,
-                        mouthA = (sbyte)mouthAUD.Value,
-                        mouthI = (sbyte)mouthIUD.Value,
-                        mouthU = (sbyte)mouthUUD.Value,
-                        mouthE = (sbyte)mouthEUD.Value,
-                        mouthO = (sbyte)mouthOUD.Value,
-                        leftEyebrowVerticalUnused = (sbyte)leftEyebrowVerticalUnusedUD.Value,
-                        rightEyebrowVerticalUnused = (sbyte)rightEyebrowVerticalUnusedUD.Value,
-                        tongue = (sbyte)tongueUD.Value
+                var faceExp = new FaceExpressionV12 {
+                    expStruct = new FaceExpressionV11() {
+                            expStruct = new FaceExpressionV10() {
+                            irisSize = (sbyte)irisSizeUD.Value,
+                            leftEyebrowVertical = (sbyte)leftEyebrowVerticalUD.Value,
+                            leftMouthVertical = (sbyte)leftMouthVerticalUD.Value,
+                            rightEyebrowVertical = (sbyte)rightEyebrowVerticalUD.Value,
+                            rightMouthVertical = (sbyte)rightMouthVerticalUD.Value,
+                            eyeCorner = (sbyte)eyeCornerUD.Value,
+                            leftEyelidVertical = (sbyte)leftEyelidVerticalUD.Value,
+                            leftEyebrowExpression = (sbyte)leftEyebrowExpressionUD.Value,
+                            rightEyelidVertical = (sbyte)rightEyelidVerticalUD.Value,
+                            rightEyebrowExpression = (sbyte)rightEyebrowExpressionUD.Value,
+                            mouthA = (sbyte)mouthAUD.Value,
+                            mouthI = (sbyte)mouthIUD.Value,
+                            mouthU = (sbyte)mouthUUD.Value,
+                            mouthE = (sbyte)mouthEUD.Value,
+                            mouthO = (sbyte)mouthOUD.Value,
+                            leftEyebrowVerticalUnused = (sbyte)leftEyebrowVerticalUnusedUD.Value,
+                            rightEyebrowVerticalUnused = (sbyte)rightEyebrowVerticalUnusedUD.Value,
+                            tongue = (sbyte)tongueUD.Value
+                        },
+                        tongueVertical = (sbyte)tongueVerticalUD.Value,
+                        tongueHorizontal = (sbyte)tongueHorizontalUD.Value
                     },
-                    tongueVertical = (sbyte)tongueVerticalUD.Value, 
-                    tongueHorizontal = (sbyte)tongueHorizontalUD.Value 
+                    mouthOpenClose = (sbyte)mouthOpenCloseUD.Value,
+                    mouthCornerPosition = (sbyte)mouthCornerPositionUD.Value,
+                    mouthCornerShape = (sbyte)mouthCornerShapeUD.Value,
+                    upperLipShape = (sbyte)upperLipShapeUD.Value,
+
+                    lowerLipShape = (sbyte)lowerLipShapeUD.Value,
+                    upperLowerLipRatio = (sbyte)upperLowerLipRatioUD.Value,
+                    teethOpenClose = (sbyte)teethOpenCloseUD.Value,
+                    teethVerticalPosition = (sbyte)teethVerticalPositionUD.Value,
+
+                    lowerJawOpenClose = (sbyte)lowerJawOpenCloseUD.Value,
+                    eyelashAngle = (sbyte)eyelashAngleUD.Value,
+                    eyelashLength = (sbyte)eyelashLengthUD.Value,
+                    eyeShadows = (sbyte)eyeShadowsUD.Value,
+
+                    pupilShape = (sbyte)pupilShapeUD.Value,
+                    lipSyncStrength = (sbyte)lipSyncStrengthUD.Value,
                 };
                 switch ((string)expressionsCB.SelectedItem)
                 {
@@ -2252,12 +2280,17 @@ namespace NGS_Salon_Tool
                     case "Wink":
                         xxpHandler.faceWink = faceExp;
                         break;
-                    case "Unused 1":
-                        xxpHandler.faceUnused1 = faceExp;
+                    case "Custom 1":
+                        xxpHandler.faceCustom1 = faceExp;
                         break;
-                    case "Unused 2":
-                        xxpHandler.faceUnused2 = faceExp;
+                    case "Custom 2":
+                        xxpHandler.faceCustom2 = faceExp;
                         break;
+                    case "Custom 3":
+                        xxpHandler.faceCustom3 = faceExp;
+                        break;
+                    default:
+                        throw new Exception("Unexpected face variation!");
                 }
             }
         }
@@ -2329,6 +2362,10 @@ namespace NGS_Salon_Tool
         private void FootSizeUDChanged(object sender, RoutedEventArgs e)
         {
             xxpHandler.ngsSLID.footSize = (sbyte)footSizeUD.Value;
+        }
+        private void WaistClothWidthUDChanged(object sender, RoutedEventArgs e)
+        {
+            xxpHandler.ngsSLID.waistClothWidth = (sbyte)waistClothWidthUD.Value;
         }
 
         private void bpOrder0_SelectionChanged(object sender, SelectionChangedEventArgs e)

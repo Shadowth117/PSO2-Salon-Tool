@@ -1,4 +1,7 @@
-﻿using static Character_Making_File_Tool.NibbleUtility;
+﻿using AquaModelLibrary.Data.AM2.BorderBreakPS4;
+using System;
+using static Character_Making_File_Tool.CharacterDataStructsReboot;
+using static Character_Making_File_Tool.NibbleUtility;
 using static Character_Making_File_Tool.Vector3Int;
 
 namespace Character_Making_File_Tool
@@ -10,10 +13,6 @@ namespace Character_Making_File_Tool
             public fixed sbyte posSliders[0x36];
             public fixed sbyte scaleSliders[0x36];
             public fixed sbyte rotSliders[0x36];
-            /// <summary>
-            /// Probably just padding to 0x4
-            /// </summary>
-            public ushort padding;
 
             public AccessorySlidersReboot GetRebootAccessorySliders()
             {
@@ -558,7 +557,6 @@ namespace Character_Making_File_Tool
         //1 dimensional extra sliders added by NGS
         public struct NGSSLID
         {
-            public int int_2F0; //Unknown, possibly unused
             public int shoulderSize;
             public int hairAdjust;
             public int skinGloss;
@@ -576,12 +574,94 @@ namespace Character_Making_File_Tool
             public int forearmsAdjust;
             public int handThickness;
             public int footSize;
-            public int int_32C;
+            public int waistClothWidth;
+
+            public int int_330; //Unused?
+
+            public NGSSLIDBytes GetNGSSLIDBytes()
+            {
+                NGSSLIDBytes slid = new();
+                slid.shoulderSize = (sbyte)shoulderSize;
+                slid.hairAdjust = (sbyte)hairAdjust;
+                slid.skinGloss = (sbyte)skinGloss;
+                
+                slid.mouthVertical = (sbyte)mouthVertical;
+                slid.eyebrowHoriz = (sbyte)eyebrowHoriz;
+                slid.irisVertical = (sbyte)irisVertical;
+                slid.facePaint1Opacity = (sbyte)facePaint1Opacity;
+                
+                slid.facePaint2Opacity = (sbyte)facePaint2Opacity;
+                slid.shoulderVertical = (sbyte)shoulderVertical;
+                slid.thighsAdjust = (sbyte)thighsAdjust;
+                slid.calvesAdjust = (sbyte)calvesAdjust;
+                
+                slid.forearmsAdjust = (sbyte)forearmsAdjust;
+                slid.handThickness = (sbyte)handThickness;
+                slid.footSize = (sbyte)footSize;
+                slid.waistClothWidth = (sbyte)waistClothWidth;
+                
+                slid.int_330 = (sbyte)int_330; //Unused?
+
+                return slid;
+            }
+        }
+
+        /// <summary>
+        /// NGSSLID, but 1 byte each, as probably originally intended. 
+        /// </summary>
+        public struct NGSSLIDBytes
+        {
+            public sbyte shoulderSize;
+            public sbyte hairAdjust;
+            public sbyte skinGloss;
+                   
+            public sbyte mouthVertical;
+            public sbyte eyebrowHoriz;
+            public sbyte irisVertical;
+            public sbyte facePaint1Opacity;
+                   
+            public sbyte facePaint2Opacity;
+            public sbyte shoulderVertical;
+            public sbyte thighsAdjust;
+            public sbyte calvesAdjust;
+                   
+            public sbyte forearmsAdjust;
+            public sbyte handThickness;
+            public sbyte footSize;
+            public sbyte waistClothWidth;
+                   
+            public sbyte int_330;
+
+            public NGSSLID GetNGSSLID()
+            {
+                NGSSLID slid = new();
+                slid.shoulderSize = shoulderSize;
+                slid.hairAdjust = hairAdjust;
+                slid.skinGloss = skinGloss;
+
+                slid.mouthVertical = mouthVertical;
+                slid.eyebrowHoriz = eyebrowHoriz;
+                slid.irisVertical = irisVertical;
+                slid.facePaint1Opacity = facePaint1Opacity;
+
+                slid.facePaint2Opacity = facePaint2Opacity;
+                slid.shoulderVertical = shoulderVertical;
+                slid.thighsAdjust = thighsAdjust;
+                slid.calvesAdjust = calvesAdjust;
+
+                slid.forearmsAdjust = forearmsAdjust;
+                slid.handThickness = handThickness;
+                slid.footSize = footSize;
+                slid.waistClothWidth = waistClothWidth;
+
+                slid.int_330 = int_330; 
+
+                return slid;
+            }
         }
 
         public struct NGSMTON
         {
-            public int int_330; //Unused motion change property
             public int walkRunMotion;
             public int swimMotion;
             public int dashMotion;
@@ -592,7 +672,7 @@ namespace Character_Making_File_Tool
             public int jumpMotion;
         }
 
-        public struct VISI //VISI, stored as 0 or 1 in xxp. In CML, these are stored as bits with the first 8 being a single byte.
+        public struct VISI //VISI, stored as 0 or 1 in xxp. In CML, these are stored as bitflags in 2 bytes.
         {
             public int hideBasewearOrnament1;
             public int hideBasewearOrnament2;
@@ -604,6 +684,71 @@ namespace Character_Making_File_Tool
 
             public int hideOuterwearOrnament;
             public int hideInnerwear;
+
+            public int hideFaceOrnament;
+            public int hideUnk9;
+            public int hideUnk10;
+            public int hideUnk11;
+
+            public int hideUnk12;
+            public int hideUnk13;
+            public int hideUnk14;
+            public int hideUnk15;
+        }
+
+        public static VISI GetVISIFromFlags(byte visiFlags0, byte visiFlags1)
+        {
+            VISI visi = new();
+            visi.hideBasewearOrnament1 = (visiFlags0 & 0b00000001) > 0 ? 1 : 0;
+            visi.hideBasewearOrnament2 = (visiFlags0 & 0b00000010) > 0 ? 1 : 0;
+
+            visi.hideHeadPartOrnament = (visiFlags0 & 0b00000100) > 0 ? 1 : 0;
+            visi.hideBodyPartOrnament = (visiFlags0 & 0b00001000) > 0 ? 1 : 0;
+            visi.hideArmPartOrnament = (visiFlags0 & 0b00010000) > 0 ? 1 : 0;
+            visi.hideLegPartOrnament = (visiFlags0 & 0b00100000) > 0 ? 1 : 0;
+
+            visi.hideOuterwearOrnament = (visiFlags0 & 0b01000000) > 0 ? 1 : 0;
+            visi.hideInnerwear = (visiFlags0 & 0b10000000) > 0 ? 1 : 0;
+
+            visi.hideFaceOrnament = (visiFlags1 & 0b00000001) > 0 ? 1 : 0;
+            visi.hideUnk9 = (visiFlags1 & 0b00000010) > 0 ? 1 : 0;
+
+            visi.hideUnk10 = (visiFlags1 & 0b00000100) > 0 ? 1 : 0;
+            visi.hideUnk11 = (visiFlags1 & 0b00001000) > 0 ? 1 : 0;
+            visi.hideUnk12 = (visiFlags1 & 0b00010000) > 0 ? 1 : 0;
+            visi.hideUnk13 = (visiFlags1 & 0b00100000) > 0 ? 1 : 0;
+
+            visi.hideUnk14 = (visiFlags1 & 0b01000000) > 0 ? 1 : 0;
+            visi.hideUnk15 = (visiFlags1 & 0b10000000) > 0 ? 1 : 0;
+
+            return visi;
+        }
+
+        public static void GetBitflagVISI(VISI visi, out byte visiFlags0, out byte visiFlags1)
+        {
+            //Build bitflag
+            byte base1 = (byte)(visi.hideBasewearOrnament1 > 0 ? 0b00000001 : 0b00000000);
+            byte base2 = (byte)(visi.hideBasewearOrnament2 > 0 ? 0b00000010 : 0b00000000);
+            byte head = (byte)(visi.hideHeadPartOrnament > 0 ? 0b00000100 : 0b00000000);
+            byte body = (byte)(visi.hideHeadPartOrnament > 0 ? 0b00001000 : 0b00000000);
+            byte arm = (byte)(visi.hideHeadPartOrnament > 0 ? 0b00010000 : 0b00000000);
+            byte leg = (byte)(visi.hideHeadPartOrnament > 0 ? 0b00100000 : 0b00000000);
+            byte outer = (byte)(visi.hideOuterwearOrnament > 0 ? 0b01000000 : 0b00000000);
+            byte inner = (byte)(visi.hideInnerwear > 0 ? 0b10000000 : 0b00000000);
+
+            visiFlags0 = (byte)(0 | base1 | base2 | head | body | arm | leg | outer | inner);
+
+            //Build bitflag2
+            byte face = (byte)(visi.hideFaceOrnament > 0 ? 0b00000001 : 0b00000000);
+            byte unk9 = (byte)(visi.hideUnk9 > 0 ? 0b00000010 : 0b00000000);
+            byte unk10 = (byte)(visi.hideUnk10 > 0 ? 0b00000100 : 0b00000000);
+            byte unk11 = (byte)(visi.hideUnk11 > 0 ? 0b00001000 : 0b00000000);
+            byte unk12 = (byte)(visi.hideUnk12 > 0 ? 0b00010000 : 0b00000000);
+            byte unk13 = (byte)(visi.hideUnk13 > 0 ? 0b00100000 : 0b00000000);
+            byte unk14 = (byte)(visi.hideUnk14 > 0 ? 0b01000000 : 0b00000000);
+            byte unk15 = (byte)(visi.hideUnk15 > 0 ? 0b10000000 : 0b00000000);
+
+            visiFlags1 = (byte)(0 | face | unk9 | unk10 | unk11 | unk12 | unk13 | unk14 | unk15);
         }
 
         public struct CastColorIdSet
