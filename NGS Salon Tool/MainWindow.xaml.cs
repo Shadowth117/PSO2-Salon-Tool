@@ -62,6 +62,7 @@ namespace NGS_Salon_Tool
         WIPBox wipBox = null;
         ColorPicker colorPicker = null;
         AccessoryWindow[] accWindows = new AccessoryWindow[0x12];
+        private FaceExpressionV12? copiedExpression = null;
 
         private bool motionWait = false; //Used to avoid loops when changing motion controls
 
@@ -2169,11 +2170,14 @@ namespace NGS_Salon_Tool
                 case "Wink":
                     SetExpressionUI(xxpHandler.faceWink);
                     break;
-                case "Unused 1":
+                case "Customization 1":
                     SetExpressionUI(xxpHandler.faceCustom1);
                     break;
-                case "Unused 2":
+                case "Customization 2":
                     SetExpressionUI(xxpHandler.faceCustom2);
+                    break;
+                case "Customization 3":
+                    SetExpressionUI(xxpHandler.faceCustom3);
                     break;
             }
         }
@@ -2204,95 +2208,27 @@ namespace NGS_Salon_Tool
             tongueVerticalUD.Value = exp.expStruct.tongueVertical;
             tongueHorizontalUD.Value = exp.expStruct.tongueHorizontal;
 
+            mouthOpenCloseUD.Value = exp.mouthOpenClose;
+            mouthCornerPositionUD.Value = exp.mouthCornerPosition;
+            mouthCornerShapeUD.Value = exp.mouthCornerShape;
+            upperLipShapeUD.Value = exp.mouthCornerShape;
+            lowerLipShapeUD.Value = exp.lowerLipShape;
+            upperLowerLipRatioUD.Value = exp.upperLowerLipRatio;
+            teethOpenCloseUD.Value = exp.teethOpenClose;
+            teethVerticalPositionUD.Value = exp.teethVerticalPosition;
+            lowerJawOpenCloseUD.Value = exp.lowerJawOpenClose;
+            eyelashAngleUD.Value = exp.eyelashAngle;
+            eyelashLengthUD.Value = exp.eyelashLength;
+            eyeShadowsUD.Value = exp.eyeShadows;
+            pupilShapeUD.Value = exp.pupilShape;
+            lipSyncStrengthUD.Value = exp.lipSyncStrength;
+
             canUpdateExpressions = true;
         }
 
         private void SetExpressionInternal(object sender, RoutedEventArgs e)
         {
-            if (canUpdateExpressions)
-            {
-                var faceExp = new FaceExpressionV12 {
-                    expStruct = new FaceExpressionV11() {
-                            expStruct = new FaceExpressionV10() {
-                            irisSize = (sbyte)irisSizeUD.Value,
-                            leftEyebrowVertical = (sbyte)leftEyebrowVerticalUD.Value,
-                            leftMouthVertical = (sbyte)leftMouthVerticalUD.Value,
-                            rightEyebrowVertical = (sbyte)rightEyebrowVerticalUD.Value,
-                            rightMouthVertical = (sbyte)rightMouthVerticalUD.Value,
-                            eyeCorner = (sbyte)eyeCornerUD.Value,
-                            leftEyelidVertical = (sbyte)leftEyelidVerticalUD.Value,
-                            leftEyebrowExpression = (sbyte)leftEyebrowExpressionUD.Value,
-                            rightEyelidVertical = (sbyte)rightEyelidVerticalUD.Value,
-                            rightEyebrowExpression = (sbyte)rightEyebrowExpressionUD.Value,
-                            mouthA = (sbyte)mouthAUD.Value,
-                            mouthI = (sbyte)mouthIUD.Value,
-                            mouthU = (sbyte)mouthUUD.Value,
-                            mouthE = (sbyte)mouthEUD.Value,
-                            mouthO = (sbyte)mouthOUD.Value,
-                            leftEyebrowVerticalUnused = (sbyte)leftEyebrowVerticalUnusedUD.Value,
-                            rightEyebrowVerticalUnused = (sbyte)rightEyebrowVerticalUnusedUD.Value,
-                            tongue = (sbyte)tongueUD.Value
-                        },
-                        tongueVertical = (sbyte)tongueVerticalUD.Value,
-                        tongueHorizontal = (sbyte)tongueHorizontalUD.Value
-                    },
-                    mouthOpenClose = (sbyte)mouthOpenCloseUD.Value,
-                    mouthCornerPosition = (sbyte)mouthCornerPositionUD.Value,
-                    mouthCornerShape = (sbyte)mouthCornerShapeUD.Value,
-                    upperLipShape = (sbyte)upperLipShapeUD.Value,
-
-                    lowerLipShape = (sbyte)lowerLipShapeUD.Value,
-                    upperLowerLipRatio = (sbyte)upperLowerLipRatioUD.Value,
-                    teethOpenClose = (sbyte)teethOpenCloseUD.Value,
-                    teethVerticalPosition = (sbyte)teethVerticalPositionUD.Value,
-
-                    lowerJawOpenClose = (sbyte)lowerJawOpenCloseUD.Value,
-                    eyelashAngle = (sbyte)eyelashAngleUD.Value,
-                    eyelashLength = (sbyte)eyelashLengthUD.Value,
-                    eyeShadows = (sbyte)eyeShadowsUD.Value,
-
-                    pupilShape = (sbyte)pupilShapeUD.Value,
-                    lipSyncStrength = (sbyte)lipSyncStrengthUD.Value,
-                };
-                switch ((string)expressionsCB.SelectedItem)
-                {
-                    case "Natural":
-                        xxpHandler.faceNatural = faceExp;
-                        break;
-                    case "Smile":
-                        xxpHandler.faceSmile = faceExp;
-                        break;
-                    case "Angry":
-                        xxpHandler.faceAngry = faceExp;
-                        break;
-                    case "Sad":
-                        xxpHandler.faceSad = faceExp;
-                        break;
-                    case "Sus":
-                        xxpHandler.faceSus = faceExp;
-                        break;
-                    case "Eyes Closed":
-                        xxpHandler.faceEyesClosed = faceExp;
-                        break;
-                    case "Smile 2":
-                        xxpHandler.faceSmile2 = faceExp;
-                        break;
-                    case "Wink":
-                        xxpHandler.faceWink = faceExp;
-                        break;
-                    case "Custom 1":
-                        xxpHandler.faceCustom1 = faceExp;
-                        break;
-                    case "Custom 2":
-                        xxpHandler.faceCustom2 = faceExp;
-                        break;
-                    case "Custom 3":
-                        xxpHandler.faceCustom3 = faceExp;
-                        break;
-                    default:
-                        throw new Exception("Unexpected face variation!");
-                }
-            }
+            SetExpressionInternalLogic();
         }
 
         private void EyeSizeUDChanged(object sender, RoutedEventArgs e)
@@ -2467,6 +2403,135 @@ namespace NGS_Salon_Tool
         private void DumpCMLs(object sender, RoutedEventArgs e)
         {
             CMLSearchUtility.DumpCMLs(pso2_binDir);
+        }
+
+        private void SetExpressionInternal(object sender, RoutedPropertyChangedEventArgs<object> e)
+        {
+            SetExpressionInternalLogic();
+        }
+
+        private void SetExpressionInternalLogic()
+        {
+            if (canUpdateExpressions)
+            {
+                FaceExpressionV12 faceExp = GetCurrentUIExpression();
+                switch ((string)expressionsCB.SelectedItem)
+                {
+                    case "Natural":
+                        xxpHandler.faceNatural = faceExp;
+                        break;
+                    case "Smile":
+                        xxpHandler.faceSmile = faceExp;
+                        break;
+                    case "Angry":
+                        xxpHandler.faceAngry = faceExp;
+                        break;
+                    case "Sad":
+                        xxpHandler.faceSad = faceExp;
+                        break;
+                    case "Sus":
+                        xxpHandler.faceSus = faceExp;
+                        break;
+                    case "Eyes Closed":
+                        xxpHandler.faceEyesClosed = faceExp;
+                        break;
+                    case "Smile 2":
+                        xxpHandler.faceSmile2 = faceExp;
+                        break;
+                    case "Wink":
+                        xxpHandler.faceWink = faceExp;
+                        break;
+                    case "Customization 1":
+                        xxpHandler.faceCustom1 = faceExp;
+                        break;
+                    case "Customization 2":
+                        xxpHandler.faceCustom2 = faceExp;
+                        break;
+                    case "Customization 3":
+                        xxpHandler.faceCustom3 = faceExp;
+                        break;
+                    default:
+                        throw new Exception("Unexpected face variation!");
+                }
+            }
+        }
+
+        public void CopyExpressionUI()
+        {
+            copiedExpression = GetCurrentUIExpression();
+        }
+
+        public void PasteExpressionUI()
+        {
+            if(copiedExpression != null)
+            {
+                SetExpressionUI(copiedExpression.Value);
+            }
+            else
+            {
+                MessageBox.Show("Please copy an expression before pasting!");
+            }
+        }
+
+        private FaceExpressionV12 GetCurrentUIExpression()
+        {
+            return new FaceExpressionV12
+            {
+                expStruct = new FaceExpressionV11()
+                {
+                    expStruct = new FaceExpressionV10()
+                    {
+                        irisSize = (sbyte)irisSizeUD.Value,
+                        leftEyebrowVertical = (sbyte)leftEyebrowVerticalUD.Value,
+                        leftMouthVertical = (sbyte)leftMouthVerticalUD.Value,
+                        rightEyebrowVertical = (sbyte)rightEyebrowVerticalUD.Value,
+                        rightMouthVertical = (sbyte)rightMouthVerticalUD.Value,
+                        eyeCorner = (sbyte)eyeCornerUD.Value,
+                        leftEyelidVertical = (sbyte)leftEyelidVerticalUD.Value,
+                        leftEyebrowExpression = (sbyte)leftEyebrowExpressionUD.Value,
+                        rightEyelidVertical = (sbyte)rightEyelidVerticalUD.Value,
+                        rightEyebrowExpression = (sbyte)rightEyebrowExpressionUD.Value,
+                        mouthA = (sbyte)mouthAUD.Value,
+                        mouthI = (sbyte)mouthIUD.Value,
+                        mouthU = (sbyte)mouthUUD.Value,
+                        mouthE = (sbyte)mouthEUD.Value,
+                        mouthO = (sbyte)mouthOUD.Value,
+                        leftEyebrowVerticalUnused = (sbyte)leftEyebrowVerticalUnusedUD.Value,
+                        rightEyebrowVerticalUnused = (sbyte)rightEyebrowVerticalUnusedUD.Value,
+                        tongue = (sbyte)tongueUD.Value
+                    },
+                    tongueVertical = (sbyte)tongueVerticalUD.Value,
+                    tongueHorizontal = (sbyte)tongueHorizontalUD.Value
+                },
+                mouthOpenClose = mouthOpenCloseUD.Value != null ? (sbyte)mouthOpenCloseUD.Value : (sbyte)0,
+                mouthCornerPosition = mouthCornerPositionUD.Value != null ? (sbyte)mouthCornerPositionUD.Value : (sbyte)0,
+                mouthCornerShape = mouthCornerShapeUD.Value != null ? (sbyte)mouthCornerShapeUD.Value : (sbyte)0,
+                upperLipShape = upperLipShapeUD.Value != null ? (sbyte)upperLipShapeUD.Value : (sbyte)0,
+
+                lowerLipShape = lowerLipShapeUD.Value != null ? (sbyte)lowerLipShapeUD.Value : (sbyte)0,
+                upperLowerLipRatio = upperLowerLipRatioUD.Value != null ? (sbyte)upperLowerLipRatioUD.Value : (sbyte)0,
+                teethOpenClose = teethOpenCloseUD.Value != null ? (sbyte)teethOpenCloseUD.Value : (sbyte)0,
+                teethVerticalPosition = teethVerticalPositionUD.Value != null ? (sbyte)teethVerticalPositionUD.Value : (sbyte)0,
+
+                lowerJawOpenClose = lowerJawOpenCloseUD.Value != null ? (sbyte)lowerJawOpenCloseUD.Value : (sbyte)0,
+                eyelashAngle = eyelashAngleUD.Value != null ? (sbyte)eyelashAngleUD.Value : (sbyte)0,
+                eyelashLength = eyelashLengthUD.Value != null ? (sbyte)eyelashLengthUD.Value : (sbyte)0,
+                eyeShadows = eyeShadowsUD.Value != null ? (sbyte)(sbyte)eyeShadowsUD.Value : (sbyte)0,
+
+                pupilShape = pupilShapeUD.Value != null ? (sbyte)(sbyte)pupilShapeUD.Value : (sbyte)0,
+                lipSyncStrength = lipSyncStrengthUD.Value != null ? (sbyte)(sbyte)lipSyncStrengthUD.Value : (sbyte)0,
+            };
+        }
+
+        private void CopyExpressionClick(object sender, RoutedEventArgs e)
+        {
+            CopyExpressionUI();
+        }
+
+        private void PasteExpressionClick(object sender, RoutedEventArgs e)
+        {
+            PasteExpressionUI();
+            SetExpressionInternalLogic();
         }
     }
 }

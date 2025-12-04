@@ -1,7 +1,4 @@
-﻿using AquaModelLibrary.Data.AM2.BorderBreakPS4;
-using System;
-using static Character_Making_File_Tool.CharacterDataStructsReboot;
-using static Character_Making_File_Tool.NibbleUtility;
+﻿using static Character_Making_File_Tool.NibbleUtility;
 using static Character_Making_File_Tool.Vector3Int;
 
 namespace Character_Making_File_Tool

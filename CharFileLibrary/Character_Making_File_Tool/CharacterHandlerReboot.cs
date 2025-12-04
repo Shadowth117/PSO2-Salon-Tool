@@ -707,7 +707,7 @@ namespace Character_Making_File_Tool
 
                 faceCustom1 = tempXXP.faceCustom1;
                 faceCustom2 = tempXXP.faceCustom2;
-                faceCustom2 = tempXXP.faceCustom3;
+                faceCustom3 = tempXXP.faceCustom3;
 
                 paintPriority = tempXXP.paintPriority;
 
@@ -1209,6 +1209,7 @@ namespace Character_Making_File_Tool
 
                     faceCustom1 = defaultMaleExpressions[8];
                     faceCustom2 = defaultMaleExpressions[9];
+                    faceCustom3 = defaultMaleExpressions[10];
                 }
                 else
                 {
@@ -1224,6 +1225,7 @@ namespace Character_Making_File_Tool
 
                     faceCustom1 = defaultFemaleExpressions[8];
                     faceCustom2 = defaultFemaleExpressions[9];
+                    faceCustom3 = defaultFemaleExpressions[10];
                 }
             }
 
