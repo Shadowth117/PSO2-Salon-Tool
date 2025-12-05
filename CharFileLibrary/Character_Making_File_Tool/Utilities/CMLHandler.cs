@@ -304,7 +304,8 @@ namespace Character_Making_File_Tool
                         //VISI values are stored in the first byte of the int as bitflags. Why? I don't know!
                         var visi = data[0];
                         //Usually has 0xC0 and 0xC1. 
-                        xxp.ngsVISI = GetVISIFromFlags((byte)(visi.ContainsKey(0xC0) ? visi[0xC0] : 0), (byte)(visi.ContainsKey(0xC1) ? visi[0xC1] : 0));
+                        //Int, then byte casting necessary because of the unboxing
+                        xxp.ngsVISI = GetVISIFromFlags(visi.ContainsKey(0xC0) ? (byte)(int)visi[0xC0] : (byte)0, visi.ContainsKey(0xC1) ? (byte)(int)visi[0xC1] : (byte)0);
                         break;
                     case "EXPR":
                         FaceExpressionV12[] expressions;
@@ -720,18 +721,19 @@ namespace Character_Making_File_Tool
                 case 0xB:
                 case 0xC:
                 case 0xD:
-                    VTBFMethods.AddBytes(expr, 0x0, 0x83, 0x8, 0x13, DataHelpers.ConvertStruct(xxp.faceNatural));
-                    VTBFMethods.AddBytes(expr, 0x1, 0x83, 0x8, 0x13, DataHelpers.ConvertStruct(xxp.faceSmile));
-                    VTBFMethods.AddBytes(expr, 0x2, 0x83, 0x8, 0x13, DataHelpers.ConvertStruct(xxp.faceAngry));
-                    VTBFMethods.AddBytes(expr, 0x3, 0x83, 0x8, 0x13, DataHelpers.ConvertStruct(xxp.faceSad));
+                    VTBFMethods.AddBytes(expr, 0x0, 0x83, 0x8, 0x21, DataHelpers.ConvertStruct(xxp.faceNatural));
+                    VTBFMethods.AddBytes(expr, 0x1, 0x83, 0x8, 0x21, DataHelpers.ConvertStruct(xxp.faceSmile));
+                    VTBFMethods.AddBytes(expr, 0x2, 0x83, 0x8, 0x21, DataHelpers.ConvertStruct(xxp.faceAngry));
+                    VTBFMethods.AddBytes(expr, 0x3, 0x83, 0x8, 0x21, DataHelpers.ConvertStruct(xxp.faceSad));
                                                                     
-                    VTBFMethods.AddBytes(expr, 0x4, 0x83, 0x8, 0x13, DataHelpers.ConvertStruct(xxp.faceSus));
-                    VTBFMethods.AddBytes(expr, 0x5, 0x83, 0x8, 0x13, DataHelpers.ConvertStruct(xxp.faceEyesClosed));
-                    VTBFMethods.AddBytes(expr, 0x6, 0x83, 0x8, 0x13, DataHelpers.ConvertStruct(xxp.faceSmile2));
-                    VTBFMethods.AddBytes(expr, 0x7, 0x83, 0x8, 0x13, DataHelpers.ConvertStruct(xxp.faceWink));
+                    VTBFMethods.AddBytes(expr, 0x4, 0x83, 0x8, 0x21, DataHelpers.ConvertStruct(xxp.faceSus));
+                    VTBFMethods.AddBytes(expr, 0x5, 0x83, 0x8, 0x21, DataHelpers.ConvertStruct(xxp.faceEyesClosed));
+                    VTBFMethods.AddBytes(expr, 0x6, 0x83, 0x8, 0x21, DataHelpers.ConvertStruct(xxp.faceSmile2));
+                    VTBFMethods.AddBytes(expr, 0x7, 0x83, 0x8, 0x21, DataHelpers.ConvertStruct(xxp.faceWink));
                                                                    
-                    VTBFMethods.AddBytes(expr, 0x8, 0x83, 0x8, 0x13, DataHelpers.ConvertStruct(xxp.faceCustom1));
-                    VTBFMethods.AddBytes(expr, 0x9, 0x83, 0x8, 0x13, DataHelpers.ConvertStruct(xxp.faceCustom2));
+                    VTBFMethods.AddBytes(expr, 0x8, 0x83, 0x8, 0x21, DataHelpers.ConvertStruct(xxp.faceCustom1));
+                    VTBFMethods.AddBytes(expr, 0x9, 0x83, 0x8, 0x21, DataHelpers.ConvertStruct(xxp.faceCustom2));
+                    VTBFMethods.AddBytes(expr, 0xA, 0x83, 0x8, 0x21, DataHelpers.ConvertStruct(xxp.faceCustom3));
                     VTBFMethods.WriteTagHeader(expr, "EXPR", 0, 0xA);
                     break;
                 default:
