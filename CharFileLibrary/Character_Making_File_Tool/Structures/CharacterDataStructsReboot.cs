@@ -727,9 +727,9 @@ namespace Character_Making_File_Tool
             byte base1 = (byte)(visi.hideBasewearOrnament1 > 0 ? 0b00000001 : 0b00000000);
             byte base2 = (byte)(visi.hideBasewearOrnament2 > 0 ? 0b00000010 : 0b00000000);
             byte head = (byte)(visi.hideHeadPartOrnament > 0 ? 0b00000100 : 0b00000000);
-            byte body = (byte)(visi.hideHeadPartOrnament > 0 ? 0b00001000 : 0b00000000);
-            byte arm = (byte)(visi.hideHeadPartOrnament > 0 ? 0b00010000 : 0b00000000);
-            byte leg = (byte)(visi.hideHeadPartOrnament > 0 ? 0b00100000 : 0b00000000);
+            byte body = (byte)(visi.hideBodyPartOrnament > 0 ? 0b00001000 : 0b00000000);
+            byte arm = (byte)(visi.hideArmPartOrnament > 0 ? 0b00010000 : 0b00000000);
+            byte leg = (byte)(visi.hideLegPartOrnament > 0 ? 0b00100000 : 0b00000000);
             byte outer = (byte)(visi.hideOuterwearOrnament > 0 ? 0b01000000 : 0b00000000);
             byte inner = (byte)(visi.hideInnerwear > 0 ? 0b10000000 : 0b00000000);
 
@@ -773,3 +773,4 @@ namespace Character_Making_File_Tool
 
     }
 }
+
