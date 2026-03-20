@@ -2075,28 +2075,28 @@ namespace NGS_Salon_Tool
                     case "Bust":
                         xxpHandler.baseFIGR.bustVerts = vec3UI;
                         break;
-                    case "Head":
+                    case "NGS Face Head":
                         xxpHandler.baseFIGR.headVerts = vec3UI;
                         break;
-                    case "Face Shape":
+                    case "NGS Face Face Shape":
                         xxpHandler.baseFIGR.faceShapeVerts = vec3UI;
                         break;
-                    case "Eye Shape":
+                    case "NGS Face Eye Shape":
                         xxpHandler.baseFIGR.eyeShapeVerts = vec3UI;
                         break;
-                    case "Nose Height":
+                    case "NGS Face Nose Height":
                         xxpHandler.baseFIGR.noseHeightVerts = vec3UI;
                         break;
-                    case "Nose Shape":
+                    case "NGS Face Nose Shape":
                         xxpHandler.baseFIGR.noseShapeVerts = vec3UI;
                         break;
-                    case "Mouth":
+                    case "NGS Face Mouth":
                         xxpHandler.baseFIGR.mouthVerts = vec3UI;
                         break;
-                    case "Ears":
+                    case "NGS Face Ears":
                         xxpHandler.baseFIGR.ear_hornVerts = vec3UI;
                         break;
-                    case "Neck":
+                    case "NGS Face Neck":
                         xxpHandler.neckVerts = vec3UI;
                         break;
                     case "Waist":
@@ -2105,37 +2105,37 @@ namespace NGS_Salon_Tool
                     case "Hands":
                         xxpHandler.hands = vec3UI;
                         break;
-                    case "Horns":
+                    case "NGS Face Horns":
                         xxpHandler.hornVerts = vec3UI;
                         break;
-                    case "Alt Face Head":
+                    case "Classic Face Head":
                         xxpHandler.classicFace.headVerts = vec3UI;
                         break;
-                    case "Alt Face Face Shape":
+                    case "Classic Face Face Shape":
                         xxpHandler.classicFace.faceShapeVerts = vec3UI;
                         break;
-                    case "Alt Face Eye Shape":
+                    case "Classic Face Eye Shape":
                         xxpHandler.classicFace.eyeShapeVerts = vec3UI;
                         break;
-                    case "Alt Face Nose Height":
+                    case "Classic Face Nose Height":
                         xxpHandler.classicFace.noseHeightVerts = vec3UI;
                         break;
-                    case "Alt Face Nose Shape":
+                    case "Classic Face Nose Shape":
                         xxpHandler.classicFace.noseShapeVerts = vec3UI;
                         break;
-                    case "Alt Face Mouth":
+                    case "Classic Face Mouth":
                         xxpHandler.classicFace.mouthVerts = vec3UI;
                         break;
-                    case "Alt Face Ears":
+                    case "Classic Face Ears":
                         xxpHandler.classicFace.ear_hornVerts = vec3UI;
                         break;
-                    case "Alt Face Necks":
+                    case "Classic Face Necks":
                         xxpHandler.classicFace.neckVerts = vec3UI;
                         break;
-                    case "Alt Face Horns":
+                    case "Classic Face Horns":
                         xxpHandler.classicFace.hornVerts = vec3UI;
                         break;
-                    case "Alt Face Unknown":
+                    case "Classic Face Unknown":
                         xxpHandler.classicFace.unkFaceVerts = vec3UI;
                         break;
                 }
