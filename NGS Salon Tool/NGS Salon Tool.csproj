@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
-    <TargetFramework>net6.0-windows</TargetFramework>
+    <TargetFramework>net9.0-windows7.0</TargetFramework>
     <RootNamespace>NGS_Salon_Tool</RootNamespace>
     <UseWPF>true</UseWPF>
   </PropertyGroup>

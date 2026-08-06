@@ -1375,9 +1375,9 @@ namespace Character_Making_File_Tool
                 cml.WriteByte(0x73); cml.WriteByte(0x8);
                 cml.WriteByte(0x9); cml.WriteByte(0); cml.WriteByte(0); cml.WriteByte(0); //Equivalent Salon File version? Determines mostly how accessory sliders will be interpreted seemingly. Same with Deuman eyes. Use 9
                 cml.WriteByte(0x74); cml.WriteByte(0x8);
-                cml.Write(BitConverter.GetBytes(xxpGeneral.skinVariant), 0, 1); cml.WriteByte(0); cml.WriteByte(0); cml.WriteByte(0);
+                cml.WriteByte(xxpGeneral.skinVariant); cml.WriteByte(0); cml.WriteByte(0); cml.WriteByte(0);
                 cml.WriteByte(0x75); cml.WriteByte(0x8);
-                cml.Write(BitConverter.GetBytes(xxpGeneral.eyebrowDensity), 0, 1); cml.WriteByte(0); cml.WriteByte(0); cml.WriteByte(0);
+                cml.WriteByte((byte)xxpGeneral.eyebrowDensity); cml.WriteByte(0); cml.WriteByte(0); cml.WriteByte(0);
 
                 //FIGR tag
                 cml.Write(Vtc0.ToArray(), 0, 4);
@@ -1430,13 +1430,13 @@ namespace Character_Making_File_Tool
                 cml.Write(OfstText, 0, 4);
                 cml.Write(BitConverter.GetBytes(0), 0, 2); cml.Write(BitConverter.GetBytes(0x4), 0, 2);
                 cml.WriteByte(0x90); cml.WriteByte(0x83); cml.WriteByte(0x8); cml.WriteByte(0x2);
-                for (int i = 0; i < 3; i++) { cml.Write(BitConverter.GetBytes(xxpGeneral.accessorySliders[i]), 0, 1); }
+                for (int i = 0; i < 3; i++) { cml.WriteByte((byte)xxpGeneral.accessorySliders[i]); }
                 cml.WriteByte(0x91); cml.WriteByte(0x83); cml.WriteByte(0x8); cml.WriteByte(0x2);
-                for (int i = 3; i < 6; i++) { cml.Write(BitConverter.GetBytes(xxpGeneral.accessorySliders[i]), 0, 1); }
+                for (int i = 3; i < 6; i++) { cml.WriteByte((byte)xxpGeneral.accessorySliders[i]); }
                 cml.WriteByte(0x92); cml.WriteByte(0x83); cml.WriteByte(0x8); cml.WriteByte(0x2);
-                for (int i = 6; i < 9; i++) { cml.Write(BitConverter.GetBytes(xxpGeneral.accessorySliders[i]), 0, 1); }
+                for (int i = 6; i < 9; i++) { cml.WriteByte((byte)xxpGeneral.accessorySliders[i]); }
                 cml.WriteByte(0x93); cml.WriteByte(0x83); cml.WriteByte(0x8); cml.WriteByte(0x2);
-                for (int i = 9; i < 12; i++) { cml.Write(BitConverter.GetBytes(xxpGeneral.accessorySliders[i]), 0, 1); }
+                for (int i = 9; i < 12; i++) { cml.WriteByte((byte)xxpGeneral.accessorySliders[i]); }
 
                 //OFST - Accessory Scale
                 cml.Write(Vtc0.ToArray(), 0, 4);
@@ -1444,13 +1444,13 @@ namespace Character_Making_File_Tool
                 cml.Write(OfstText, 0, 4);
                 cml.Write(BitConverter.GetBytes(0), 0, 2); cml.Write(BitConverter.GetBytes(0x4), 0, 2);
                 cml.WriteByte(0x95); cml.WriteByte(0x83); cml.WriteByte(0x8); cml.WriteByte(0x2);
-                for (int i = 24; i < 27; i++) { cml.Write(BitConverter.GetBytes(xxpGeneral.accessorySliders[i]), 0, 1); }  //In XXP, rotation is stored after scale, unlike here. So we start later in the array
+                for (int i = 24; i < 27; i++) { cml.WriteByte((byte)xxpGeneral.accessorySliders[i]); }  //In XXP, rotation is stored after scale, unlike here. So we start later in the array
                 cml.WriteByte(0x96); cml.WriteByte(0x83); cml.WriteByte(0x8); cml.WriteByte(0x2);
-                for (int i = 27; i < 30; i++) { cml.Write(BitConverter.GetBytes(xxpGeneral.accessorySliders[i]), 0, 1); }
+                for (int i = 27; i < 30; i++) { cml.WriteByte((byte)xxpGeneral.accessorySliders[i]); }
                 cml.WriteByte(0x97); cml.WriteByte(0x83); cml.WriteByte(0x8); cml.WriteByte(0x2);
-                for (int i = 30; i < 33; i++) { cml.Write(BitConverter.GetBytes(xxpGeneral.accessorySliders[i]), 0, 1); }
+                for (int i = 30; i < 33; i++) { cml.WriteByte((byte)xxpGeneral.accessorySliders[i]); }
                 cml.WriteByte(0x98); cml.WriteByte(0x83); cml.WriteByte(0x8); cml.WriteByte(0x2);
-                for (int i = 33; i < 36; i++) { cml.Write(BitConverter.GetBytes(xxpGeneral.accessorySliders[i]), 0, 1); }
+                for (int i = 33; i < 36; i++) { cml.WriteByte((byte)xxpGeneral.accessorySliders[i]); }
 
                 //OFST - Accessory Rotation
                 cml.Write(Vtc0.ToArray(), 0, 4);
@@ -1458,13 +1458,13 @@ namespace Character_Making_File_Tool
                 cml.Write(OfstText, 0, 4);
                 cml.Write(BitConverter.GetBytes(0), 0, 2); cml.Write(BitConverter.GetBytes(0x4), 0, 2);
                 cml.WriteByte(0x9B); cml.WriteByte(0x83); cml.WriteByte(0x8); cml.WriteByte(0x2);
-                for (int i = 12; i < 15; i++) { cml.Write(BitConverter.GetBytes(xxpGeneral.accessorySliders[i]), 0, 1); }
+                for (int i = 12; i < 15; i++) { cml.WriteByte((byte)xxpGeneral.accessorySliders[i]); }
                 cml.WriteByte(0x9C); cml.WriteByte(0x83); cml.WriteByte(0x8); cml.WriteByte(0x2);
-                for (int i = 15; i < 18; i++) { cml.Write(BitConverter.GetBytes(xxpGeneral.accessorySliders[i]), 0, 1); }
+                for (int i = 15; i < 18; i++) { cml.WriteByte((byte)xxpGeneral.accessorySliders[i]); }
                 cml.WriteByte(0x9D); cml.WriteByte(0x83); cml.WriteByte(0x8); cml.WriteByte(0x2);
-                for (int i = 18; i < 21; i++) { cml.Write(BitConverter.GetBytes(xxpGeneral.accessorySliders[i]), 0, 1); }
+                for (int i = 18; i < 21; i++) { cml.WriteByte((byte)xxpGeneral.accessorySliders[i]); }
                 cml.WriteByte(0x9E); cml.WriteByte(0x83); cml.WriteByte(0x8); cml.WriteByte(0x2);
-                for (int i = 21; i < 24; i++) { cml.Write(BitConverter.GetBytes(xxpGeneral.accessorySliders[i]), 0, 1); }
+                for (int i = 21; i < 24; i++) { cml.WriteByte((byte)xxpGeneral.accessorySliders[i]); }
 
                 //COLR
                 cml.Write(Vtc0.ToArray(), 0, 4);
